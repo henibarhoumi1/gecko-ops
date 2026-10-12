@@ -1,0 +1,105 @@
+/* ==========================================================================
+   GECKO Ops · design tokens (V03). DESIGN.md is the law; token names are fixed.
+   Dark (total black) is the default. Light follows the theme switch (auto / light / dark).
+   Brand palette: Gel #F6CBDA, Chroma #3946EC, Slate, Bounce #F7F6F2. No yellow, orange or green.
+   Legacy names (--ink, --surface, --pill-*, --rail-*) are aliases so V01/V02 modules keep working.
+   ========================================================================== */
+:root{
+  /* brand constants */
+  --gel:#F6CBDA;
+  --chroma:#3946EC;
+  --slate:#0E0E0E;
+  --bounce:#F7F6F2;
+
+  /* dark: total black (default) */
+  --bg:#000000;
+  --s1:#0B0B0B;
+  --s2:#141414;
+  --s3:#1C1C1C;
+  --line:#1E1E1E;
+  --line-2:#2C2C2C;
+  --tx:#F7F6F2;
+  --tx-2:rgba(247,246,242,.64);
+  --tx-3:rgba(247,246,242,.40);
+  --chroma-soft:rgba(57,70,236,.16);
+  --chroma-tx:#8F97FF;          /* Chroma as small text on black (links, positive delta): same hue, readable */
+  --gel-deep:#EE8FB1;
+  --gel-soft:rgba(246,203,218,.14);
+  --on-chroma:#F7F6F2;
+  --accent-word:var(--gel);     /* Trovical word: Gel on black, Chroma on light */
+  --hero:radial-gradient(90% 120% at 0% 0%,rgba(246,203,218,.62) 0%,rgba(246,203,218,0) 55%),radial-gradient(100% 130% at 100% 100%,rgba(57,70,236,1) 0%,rgba(57,70,236,0) 65%),radial-gradient(60% 70% at 78% 8%,rgba(57,70,236,.45) 0%,rgba(57,70,236,0) 70%),#05050F;
+  --hero-tx:#F7F6F2;
+  --scrim:rgba(0,0,0,.72);
+  --shadow:none;
+  --shadow-pop:0 0 0 1px var(--line-2),0 24px 64px rgba(0,0,0,.7);
+
+  /* type */
+  --f-display:"Anton","Impact","Arial Narrow Bold",sans-serif;
+  --f-accent:"Trovical","Times New Roman",serif;
+  --f-text:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-derja:"Jomhuria","Noto Naskh Arabic",serif;
+  --fs-12:12px;--fs-13:13px;--fs-14:14px;--fs-16:16px;--fs-20:20px;--fs-28:28px;--fs-40:40px;--fs-64:64px;
+
+  /* spacing (4px scale) */
+  --sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-5:20px;--sp-6:24px;--sp-8:32px;--sp-12:48px;
+
+  /* radius */
+  --r-sm:8px;--r-md:12px;--r-lg:16px;--r-xl:22px;--r-pill:999px;
+  --r-box:12px;                 /* legacy name, used by modules for inputs */
+
+  /* motion */
+  --ease:cubic-bezier(.2,.7,.2,1);--dur:140ms;
+
+  /* layout */
+  --side-w:248px;--rail-w:72px;--top-h:64px;--page-max:1440px;--gutter:24px;
+
+  color-scheme:dark;
+}
+/* light: an explicit choice, or "auto" on a light system */
+@media (prefers-color-scheme: light){:root[data-theme="auto"]{
+  --bg:#F7F6F2;--s1:#FFFFFF;--s2:#F0EFEA;--s3:#E7E5DE;--line:#E3E1DA;--line-2:#CFCCC3;
+  --tx:#000000;--tx-2:rgba(0,0,0,.62);--tx-3:rgba(0,0,0,.42);
+  --chroma-soft:rgba(57,70,236,.10);--chroma-tx:#3946EC;--gel-deep:#D9608C;--gel-soft:rgba(217,96,140,.12);
+  --accent-word:var(--chroma);
+  --hero:radial-gradient(90% 120% at 0% 0%,rgba(246,203,218,1) 0%,rgba(246,203,218,0) 58%),radial-gradient(100% 130% at 100% 100%,rgba(57,70,236,1) 0%,rgba(57,70,236,0) 65%),radial-gradient(60% 70% at 78% 8%,rgba(57,70,236,.35) 0%,rgba(57,70,236,0) 70%),#14103A;
+  --scrim:rgba(20,18,14,.38);
+  --shadow:0 1px 2px rgba(20,18,10,.04),0 6px 20px rgba(20,18,10,.04);
+  --shadow-pop:0 0 0 1px var(--line),0 24px 64px rgba(20,18,10,.18);
+  color-scheme:light;
+}}
+:root[data-theme="light"]{
+  --bg:#F7F6F2;--s1:#FFFFFF;--s2:#F0EFEA;--s3:#E7E5DE;--line:#E3E1DA;--line-2:#CFCCC3;
+  --tx:#000000;--tx-2:rgba(0,0,0,.62);--tx-3:rgba(0,0,0,.42);
+  --chroma-soft:rgba(57,70,236,.10);--chroma-tx:#3946EC;--gel-deep:#D9608C;--gel-soft:rgba(217,96,140,.12);
+  --accent-word:var(--chroma);
+  --hero:radial-gradient(90% 120% at 0% 0%,rgba(246,203,218,1) 0%,rgba(246,203,218,0) 58%),radial-gradient(100% 130% at 100% 100%,rgba(57,70,236,1) 0%,rgba(57,70,236,0) 65%),radial-gradient(60% 70% at 78% 8%,rgba(57,70,236,.35) 0%,rgba(57,70,236,0) 70%),#14103A;
+  --scrim:rgba(20,18,14,.38);
+  --shadow:0 1px 2px rgba(20,18,10,.04),0 6px 20px rgba(20,18,10,.04);
+  --shadow-pop:0 0 0 1px var(--line),0 24px 64px rgba(20,18,10,.18);
+  color-scheme:light;
+}
+
+/* paper: printable documents (quotes, invoices, plans) stay light in every theme */
+.doc,.paper{
+  --bg:#F7F6F2;--s1:#FFFFFF;--s2:#F0EFEA;--s3:#E7E5DE;--line:rgba(14,14,14,.14);--line-2:rgba(14,14,14,.22);
+  --tx:#0E0E0E;--tx-2:rgba(14,14,14,.62);--tx-3:rgba(14,14,14,.42);
+  --chroma-soft:rgba(57,70,236,.10);--chroma-tx:#3946EC;--gel-deep:#D9608C;--gel-soft:rgba(217,96,140,.12);
+  --accent-word:var(--chroma);--shadow:none;color-scheme:light;
+}
+.doc.slate{
+  --bg:#0E0E0E;--s1:#0E0E0E;--s2:#181818;--s3:#222222;--line:rgba(247,246,242,.16);--line-2:rgba(247,246,242,.24);
+  --tx:#F7F6F2;--tx-2:rgba(247,246,242,.66);--tx-3:rgba(247,246,242,.44);--accent-word:var(--gel);color-scheme:dark;
+}
+
+/* legacy aliases: declared on every element that redefines the base tokens, so they resolve locally */
+:root,.doc,.paper,.doc.slate{
+  --ink:var(--tx);--ink-2:var(--tx-2);--ink-3:var(--tx-3);
+  --surface:var(--s1);
+  --accent:var(--gel);--accent-2:var(--chroma);--on-accent:var(--slate);--on-accent-2:var(--bounce);
+  --rail-bg:var(--bg);--rail-fg:var(--tx);--rail-mute:var(--tx-3);--rail-line:var(--line);
+  /* pills: tone = soft fill + dot, never a new hue */
+  --pill-todo-bg:var(--s2);--pill-todo-fg:var(--tx-2);--pill-todo-bd:var(--line);
+  --pill-wip-bg:var(--chroma-soft);--pill-wip-fg:var(--tx);--pill-wip-bd:transparent;
+  --pill-done-bg:var(--s3);--pill-done-fg:var(--tx);--pill-done-bd:transparent;
+  --pill-alert-bg:var(--gel-soft);--pill-alert-fg:var(--tx);--pill-alert-bd:transparent;
+}
