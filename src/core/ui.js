@@ -253,6 +253,8 @@
   UI.avatar = function (x, o) {
     o = o || {};
     var name = x && typeof x === "object" ? x.name : x;
+    var ph = GK.photos && GK.photos[String(name || "").trim().split(/\s+/)[0]];
+    if (ph) return '<span class="av ph ' + esc(o.size || "") + '" aria-hidden="true"><img src="' + ph + '" alt=""></span>';
     return '<span class="av ' + esc(o.size || "") + '"' + tintStyle(UI.tint(name)) + ' aria-hidden="true">' + esc(initials(name)) + "</span>";
   };
   /** avatars([names|members], max) -> stacked group */

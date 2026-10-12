@@ -2,6 +2,7 @@
 core/util.js
 core/i18n.js
 assets/logo.js
+assets/photos.js
 core/model.js
 core/store.js
 core/charts.js
