@@ -146,7 +146,7 @@ DESIGN.md is the spec; this is how to use it from a module. Write class names an
 - `activity({icon, text, when, who, tone, a, data})`: one row of an activity feed; wrap rows in `.acts`.
 - `card({title, icon, link: {label, a, data}, actions, body, cls})`: a standard card with a header row.
 - `table({id, cols: [{key, label, align: "r", html(row), value(row), sort: false}], rows, sort: {key, dir}, search, row(row) -> {a, data}, empty})`: a sortable, searchable table. Sorting and search state are kept per `id` (actions `ui-sort` and input `ui-tblq` are built in).
-- `avatar(name | member, {size: "sm"|"lg", tone: "gel"|"chroma"|"ink"})` and `avatars(list, max)`; legacy `av(name, cls)`.
+- `avatar(name | member, {size: "sm"|"lg"})` (solid palette fill by hash of the name) and `avatars(list, max)`; legacy `av(name, cls)`. `chip(text, key)` for a solid category chip; `tint(key)` returns `{bg, fg, bd}` from the palette (string = hash, number = position mod 5).
 - `pill(text, tone)`: tones are `neutral` (or ""), `chroma`, `gel`, `urgent`, `done`. The legacy `wip` and `alert` still map.
 - `btn(label, action, {cls: "primary|gel|ghost|sm|icon", icon, data, disabled, title})`: with `cls: "icon"` the label becomes the aria-label.
 - `empty(text | {icon, title, text, action: {label, a, data, icon}})`: an empty state with one primary action.

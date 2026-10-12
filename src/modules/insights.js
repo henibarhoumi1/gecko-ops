@@ -112,7 +112,7 @@
     tiles = tiles.filter(Boolean);
     if (!tiles.length && !dec) return "";
     return '<section aria-label="' + esc(t("ins_label")) + '" style="display:grid;gap:16px;min-width:0">' +
-      (tiles.length ? '<div class="kpis">' + tiles.map(function (o) { return ui.kpi(o); }).join("") + "</div>" : "") + (dec || "") + "</section>";
+      (tiles.length ? ui.kpis(tiles) : "") + (dec || "") + "</section>";
   }
   /** Weekly series: fn(from, to) for the `n` weeks ending `endOffset` days from today. */
   function weekly(n, fn, endOffset) {

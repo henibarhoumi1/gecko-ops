@@ -432,7 +432,7 @@
   }
   function detail(p) {
     var pk = m.pack(p.pack);
-    var sub = '<span class="row">' + ui.stagePill(p) + ui.pill(pk.name) + (p.month ? '<span class="small">' + esc(monthLabel(p)) + "</span>" : "") +
+    var sub = '<span class="row">' + ui.stagePill(p) + ui.chip(pk.name, p.pack) + (p.month ? '<span class="small">' + esc(monthLabel(p)) + "</span>" : "") +
       (p.mohamed ? ui.pill(t("pj_f_moh")) : "") + ui.sample() + "</span>";
     var h = ui.head({
       label: t("nav_projects"), title: m.brand(p.clientId) + " · " + p.name, accent: t("pj_d_accent"), sub: sub,

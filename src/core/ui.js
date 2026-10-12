@@ -96,6 +96,27 @@
   /** Count shown next to a nav item (a view's own count()). */
   UI.viewCount = function (v) { var c = ""; try { c = views[v] && views[v].count ? views[v].count() : ""; } catch (e) {} return c; };
 
+  // ---------- solid palette: avatars, KPI badges, count pills, category chips (DESIGN.md §2) ----------
+  /** Rotating highlight palette: blue, pink, yellow, green, work (black). Text: #000 on blue/pink/yellow, #F7F6F2 on green and black. */
+  var PALETTE = [
+    { bg: "var(--c-blue)", fg: "var(--on-hi)", bd: "transparent" },
+    { bg: "var(--c-pink)", fg: "var(--on-hi)", bd: "transparent" },
+    { bg: "var(--c-yellow)", fg: "var(--on-hi)", bd: "transparent" },
+    { bg: "var(--c-green)", fg: "var(--on-green)", bd: "transparent" },
+    { bg: "var(--c-work)", fg: "var(--on-green)", bd: "var(--line-2)" }
+  ];
+  /** tint(key) -> {bg, fg, bd}. A string (name, category value) is hashed, so it keeps its colour; a number is a position, taken mod 5. */
+  UI.tint = function (key) {
+    var n = 0;
+    if (typeof key === "number") n = Math.abs(Math.floor(key));
+    else { var s = String(key == null ? "" : key); for (var i = 0; i < s.length; i++) n = (n * 31 + s.charCodeAt(i)) % 4294967296; }
+    return PALETTE[n % PALETTE.length];
+  };
+  /** Inline style for a solid tint: background, text and border. */
+  function tintStyle(tn) { return ' style="background:' + tn.bg + ";color:" + tn.fg + ";border-color:" + tn.bd + '"'; }
+  /** chip(text, key) -> small solid category chip; colour by hash of key (default: the text). */
+  UI.chip = function (text, key) { return '<span class="chip"' + tintStyle(UI.tint(key == null ? text : key)) + ">" + esc(text == null ? "" : text) + "</span>"; };
+
   // ---------- small builders (all return HTML strings) ----------
   /** data-* attributes from an object: {id:"x"} -> ' data-id="x"' */
   UI.attrs = function (o) { var s = ""; for (var k in o || {}) if (o[k] != null) s += " data-" + k + '="' + esc(o[k]) + '"'; return s; };
@@ -147,12 +168,13 @@
   };
 
   /** Micro bar chart for KPI tiles: 7 to 12 bars, the last one highlighted. */
-  function microBars(values, down) {
+  function microBars(values, bg) {
     var v = (values || []).map(function (x) { return +x || 0; }).slice(-12);
     if (v.length < 2) return "";
     var mx = Math.max.apply(null, v.map(Math.abs)) || 1;
-    return '<span class="mbars' + (down ? " down" : "") + '" aria-hidden="true">' + v.map(function (x, i) {
-      return '<i class="' + (i === v.length - 1 ? "on" : "") + '" style="height:' + Math.max(8, Math.round(Math.abs(x) / mx * 100)) + '%"></i>';
+    return '<span class="mbars" aria-hidden="true">' + v.map(function (x, i) {
+      var on = i === v.length - 1;
+      return '<i class="' + (on ? "on" : "") + '" style="height:' + Math.max(8, Math.round(Math.abs(x) / mx * 100)) + "%" + (on ? ";background:" + bg : "") + '"></i>';
     }).join("") + "</span>";
   }
   /** Delta chip. delta: number (percent) or preformatted text with tone "up"|"down". good: "up" (default) or "down" when a fall is good news. */
@@ -167,19 +189,21 @@
     var cls = !dir ? "" : (dir === "up") === (good !== "down") ? "up" : "down";
     return '<span class="delta ' + cls + '">' + (icon ? UI.icon(icon) : dir ? UI.icon(dir === "up" ? "up" : "dn") : "") + esc(txt) + "</span>";
   };
-  /** One KPI tile. o: {label, value (formatted), delta (number % or text), deltaTone, deltaIcon, deltaLabel ("vs last month"), good ("up"|"down"), spark:[numbers], hint, icon, a (action), data} */
+  /** One KPI tile. o: {label, value (formatted), delta (number % or text), deltaTone, deltaIcon, deltaLabel ("vs last month"), good ("up"|"down"), spark:[numbers], hint, icon, tint (palette position, 0 = blue), a (action), data} */
   UI.kpi = function (o) {
-    var dl = UI.delta(o.delta, o.good, o.deltaTone, o.deltaIcon), down = / down"/.test(dl);
+    var dl = UI.delta(o.delta, o.good, o.deltaTone, o.deltaIcon), tn = UI.tint(o.tint == null ? 0 : o.tint);
     var open = o.a ? '<button type="button" class="kpi click" data-a="' + esc(o.a) + '"' + UI.attrs(o.data) + ">" : '<div class="kpi">';
     var foot = dl + (o.deltaLabel ? '<span class="n">' + esc(o.deltaLabel) + "</span>" : "") + (o.hint && !o.deltaLabel ? '<span class="n">' + esc(o.hint) + "</span>" : "");
-    return open + '<span class="kh">' + (o.icon ? UI.icon(o.icon) : "") + "<span>" + esc(o.label || "") + "</span></span>" +
-      '<span class="kb"><span class="v">' + unitHTML(o.value) + "</span>" + microBars(o.spark, down) + "</span>" +
+    var badge = o.icon ? '<span class="kbadge"' + tintStyle(tn) + ">" + UI.icon(o.icon) + "</span>" : "";
+    return open + '<span class="kh">' + badge + "<span>" + esc(o.label || "") + "</span></span>" +
+      '<span class="kb"><span class="v">' + unitHTML(o.value) + "</span>" + microBars(o.spark, tn.bg) + "</span>" +
       (foot ? '<span class="kf">' + foot + "</span>" : "") + (o.a ? "</button>" : "</div>");
   };
   /** kpis([{lab, v, n}]) (legacy) or kpis([ui.kpi options]) -> a row of KPI tiles */
   UI.kpis = function (items) {
-    return '<div class="kpis">' + (items || []).map(function (k) {
-      return k.label != null ? UI.kpi(k) : UI.kpi({ label: k.lab, value: k.v, hint: k.n });
+    return '<div class="kpis">' + (items || []).map(function (k, i) {
+      var tint = k.tint == null ? i : k.tint;
+      return k.label != null ? UI.kpi(Object.assign({}, k, { tint: tint })) : UI.kpi({ label: k.lab, value: k.v, hint: k.n, tint: tint });
     }).join("") + "</div>";
   };
   /** meter(pct) slim bar · meter(pct, true) gel bar (legacy) · meter(pct, {segments: 32, tone: "tx"|"chroma"|"gel", label: true|"text", sm}) */
@@ -225,18 +249,18 @@
     var w = String(name || "?").trim().split(/\s+/).filter(Boolean);
     return ((w[0] || "?").charAt(0) + (w.length > 1 ? w[w.length - 1].charAt(0) : "")).toUpperCase();
   }
-  /** avatar(name | member, {size:"sm"|"lg", tone:"gel"|"chroma"|"ink"}) -> initials disc */
+  /** avatar(name | member, {size:"sm"|"lg"}) -> initials disc, solid palette fill chosen by a hash of the name (tone is ignored, kept for old calls) */
   UI.avatar = function (x, o) {
     o = o || {};
     var name = x && typeof x === "object" ? x.name : x;
-    return '<span class="av ' + esc((o.size || "") + " " + (o.tone || "")) + '" aria-hidden="true">' + esc(initials(name)) + "</span>";
+    return '<span class="av ' + esc(o.size || "") + '"' + tintStyle(UI.tint(name)) + ' aria-hidden="true">' + esc(initials(name)) + "</span>";
   };
   /** avatars([names|members], max) -> stacked group */
   UI.avatars = function (list, max) {
     list = list || []; max = max || 4;
     return '<span class="avs">' + list.slice(0, max).map(function (x) { return UI.avatar(x, { size: "sm" }); }).join("") + (list.length > max ? '<span class="av sm">+' + (list.length - max) + "</span>" : "") + "</span>";
   };
-  UI.av = function (name, cls) { return UI.avatar(name, { tone: cls }); };
+  UI.av = function (name) { return UI.avatar(name); };
   /** empty(text) one quiet line · empty({icon, title, text, action:{label, a, data, icon}}) a full empty state with one primary action */
   UI.empty = function (o) {
     if (o == null || typeof o === "string") return '<p class="empty">' + esc(o || t("none")) + "</p>";
@@ -409,9 +433,10 @@
 
   // ---------- shell ----------
   function navItem(v) {
-    var c = UI.viewCount(v), on = UI.state.view === v, label = t("nav_" + v);
+    var c = UI.viewCount(v), on = UI.state.view === v, label = t("nav_" + v), gid = UI.groupOf(v), gi = 0;
+    UI.GROUPS.forEach(function (g, i) { if (g.id === gid) gi = i; });
     return '<button type="button" class="nv" data-a="nav" data-v="' + v + '"' + (on ? ' aria-current="page"' : "") + ' title="' + esc(label) + '">' +
-      UI.icon(v) + '<span class="nl">' + esc(label) + "</span>" + (c !== "" && c != null && c !== 0 ? '<span class="cnt">' + esc(c) + "</span>" : "") + "</button>";
+      UI.icon(v) + '<span class="nl">' + esc(label) + "</span>" + (c !== "" && c != null && c !== 0 ? '<span class="cnt"' + tintStyle(UI.tint(gi)) + ">" + esc(c) + "</span>" : "") + "</button>";
   }
   /** The monogram cropped to its glyph (the source file has a wide safe area). */
   UI.monogram = function () { return (GK.logo.monogram || GK.logo.wordmark).replace('viewBox="0 0 1000 1000"', 'viewBox="225 150 550 700"'); };

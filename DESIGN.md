@@ -29,7 +29,7 @@ Dark is the default theme. Light is supported.
 | `--gel-soft` | rgba(246,203,218,.14) | rgba(217,96,140,.10) | attention backgrounds |
 | `--hero` | radial Gel to Chroma mesh on black | same on white | the one hero card per screen |
 
-The five highlight colours (`--c-blue` #6F93D4, `--c-pink` #E88FBF, `--c-yellow` #F0D25A, `--c-green` #3A8A6A, `--c-work` #0A0A0A, with `-soft` at .16) are allowed as category and status colours only: pipeline and project stages, task and board kinds, file and idea status, chart series 2 to 5. Never as backgrounds of big areas, never for primary buttons. Text on blue, pink and yellow chips is #000; text on green is #F7F6F2; never black text on Chroma. Orange and red remain banned. Positive delta = Chroma, negative = Gel deep, neutral = tx-2.
+The five highlight colours (`--c-blue` #6F93D4, `--c-pink` #E88FBF, `--c-yellow` #F0D25A, `--c-green` #3A8A6A, `--c-work` #0A0A0A, with `-soft` at .16) are category and status colours: pipeline and project stages, task and board kinds, file and idea status, chart series 2 to 5. They also fill solid, flat shapes: avatars, KPI icon badges (32px, round), sidebar count pills and category chips in tables (sector, pack, stage). Those solid fills rotate through one palette in this order: blue, pink, yellow, green, work (black, with a 1px `--line-2` border). `GK.ui.tint(key)` picks the colour: a name or other text is hashed so it keeps its colour, a number is a position (mod 5). Never as big areas (cards, hero, page backgrounds), never for primary buttons. Text on solid blue, pink and yellow is #000; on green and black it is #F7F6F2; never black text on Chroma. Orange and red remain banned. Positive delta = Chroma, negative = Gel deep, neutral = tx-2.
 Never Slate/black text on Chroma: text on Chroma is #F7F6F2.
 
 Type: Archivo for all UI. Sizes 12 / 13 / 14 (body) / 16 / 20 / 28 (page title) / 40 (KPI) / 64 (hero number). Weights 400, 500, 600. Sentence case everywhere except the 11px uppercase label style (`.lbl`, tracking .08em, tx-3). Tabular numbers on every figure. Trovical italic for the one accent word, in Chroma on light surfaces and Gel on black.
@@ -37,7 +37,7 @@ Type: Archivo for all UI. Sizes 12 / 13 / 14 (body) / 16 / 20 / 28 (page title) 
 Spacing on a 4px scale: 4, 8, 12, 16, 20, 24, 32, 48. Radius: 8 (small controls), 12 (inputs, buttons), 16 (inner blocks), 22 (cards), 999 (pills). Shadows: none in dark (borders do the work); one soft shadow in light. Motion 140ms ease-out, no bounce.
 
 ## 3. Layout
-- **Sidebar** 248px, black, collapsible to a 72px icon rail (remembered). Logo at top, a primary "New" button, then groups with small labels: Main (Home, Inbox, Tasks, Calendar), Work (Pipeline, Clients, Projects, Production, Deliveries), Studio (Ideas, Whiteboards, What won), Money (Dashboard, Finance, Client pages), Team (Team, Activity, Settings). Counts as small pills on the right. User card at the bottom.
+- **Sidebar** 248px, black, collapsible to a 72px icon rail (remembered). Logo at top, a primary "New" button, then groups with small labels: Main (Home, Inbox, Tasks, Calendar), Work (Pipeline, Clients, Projects, Production, Deliveries), Studio (Ideas, Whiteboards, What won), Money (Dashboard, Finance, Client pages), Team (Team, Activity, Settings). Counts as small solid pills on the right, coloured by group (Main blue, Work pink, Studio yellow, Money green, Team black). Icons stay grey; the active item has a 3px Chroma bar on its left. User card at the bottom.
 - **Top bar** 64px: search field with Cmd/Ctrl K hint, then quick create, notifications bell with count, avatar menu.
 - **Content**: max 1440px, 24px padding (16 on phone), 12-column grid with 16px gaps. Page header = title (28px) + one-line subtitle on the left, actions on the right.
 - **Detail** opens in a right side panel (480px, full screen on phone) instead of replacing the page, when the item is small (task, invoice, idea, lead). Big items (project, client, board) get their own page with a back button.
@@ -45,14 +45,14 @@ Spacing on a 4px scale: 4, 8, 12, 16, 20, 24, 32, 48. Radius: 8 (small controls)
 
 ## 4. Components (one implementation each, in core)
 - **Card** `.card`: s1, 1px line, radius 22, padding 20. Header row = title 16/600 + optional "View all" ghost link + kebab.
-- **KPI tile** `ui.kpi({label, value, delta, deltaLabel, spark})`: label, 40px value, delta chip (arrow + %), micro bar chart (7 to 12 bars, the last one highlighted).
+- **KPI tile** `ui.kpi({label, value, delta, deltaLabel, spark, icon, tint})`: icon in a 32px round solid badge (colour by position in the row: blue, pink, yellow, green), label, 40px value, delta chip (arrow + %), micro bar chart (7 to 12 bars, the last one in the tile colour).
 - **Meter** `ui.meter(pct, {segments})`: segmented bar (like the "Today task" card): 24 to 40 thin vertical segments, filled in tx or chroma, empty in s3. Also a slim pill variant for tables.
 - **Hero card** `.hero`: the one gradient card per screen (Gel to Chroma mesh), used for the single most important number or decision.
 - **Activity card** `ui.activity({icon, text, when, who})`: small icon tile, two-line text, relative time.
 - **Insight / decision card** `ui.decision({title, why, recommend, action})`: what is happening, why it matters (with the number), what Claude recommends, one button.
 - **Table** `.tbl`: sticky header in tx-3 labels, 52px rows, hover s2, avatar + name cells, meter cells, right-aligned tabular numbers, sortable headers, search and filter chips above.
 - **Pill** `ui.pill(text, tone)`: tones `neutral`, `chroma`, `gel`, `urgent`, `done`, and the highlight status tones `blue`, `pink`, `yellow`, `green`. Dot + text, radius 999. Category dots (`dot-blue` etc.) give stages and kinds a colour without a solid chip.
-- **Avatar**: initials on s3, 28px; stacked group variant.
+- **Avatar**: initials on a solid palette fill chosen by a hash of the name, 28px; stacked group variant. **Chip** `ui.chip(text, key)`: small solid palette fill for a category value.
 - **Buttons**: primary (Chroma fill, Bounce text), secondary (s2 fill, line border), ghost (text only), icon (36px square, radius 12).
 - **Inputs**: s2 fill, line-2 border, radius 12, 40px tall, focus ring 2px Chroma.
 - **Tabs**: segmented control on s2 with the active segment on s1.

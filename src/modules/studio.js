@@ -264,7 +264,7 @@
         return '<tr class="click" tabindex="0" data-a="st-open"' + ui.attrs({ id: i.id }) + '><td style="min-width:220px">' +
           (i.hook ? "“" + esc(i.hook) + "”" : '<span class="faint">' + esc(t("st_no_hook")) + "</span>") + '<br><span class="small muted">' + esc(i.title) + "</span></td>" +
           "<td>" + esc(i.clientId ? m.brand(i.clientId) : "—") + "</td><td>" + esc(angleOf(i) || "—") + "</td>" +
-          "<td>" + ui.pill(stName(es), IDEA_DOT[es]) + "</td><td>" + prioPill(i) + "</td>" +
+          "<td>" + ui.chip(stName(es), es) + "</td><td>" + prioPill(i) + "</td>" +
           "<td style=\"min-width:160px\">" + (w.length ? ui.pill(t("st_won_n", { n: w.length }), "wip") + '<br><span class="small muted">“' + esc(w[0].text) + "”</span>" : '<span class="small faint">' + esc(t("st_won_none")) + "</span>") + "</td>" +
           "<td>" + (i.hook ? ui.btn(t("st_copy_hook"), "st-copy-hook", { cls: "ghost sm", data: { id: i.id } }) : "") + "</td></tr>";
       }).join("") + "</tbody></table></div></div>";

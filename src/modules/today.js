@@ -241,10 +241,10 @@
       '<div class="hrow"><span class="small" style="opacity:.8">' + esc(lastCash ? t("td_h_last", { a: u.money(lastCash) }) : "") + '</span><div class="actions">' + ui.btn(t("td_h_open"), "td-go", { cls: "primary sm", data: { v: "finance" } }) + "</div></div></section>";
 
     var kpis = '<div class="kpis c7" style="grid-template-columns:repeat(2,minmax(0,1fr))">' +
-      ui.kpi({ label: t("td_k_owed"), icon: "invoice", value: u.money(owed), delta: late.length ? t("td_k_late_amt", { a: u.money(lateAmt) }) : null, deltaTone: "up", good: "down", deltaIcon: "alert", deltaLabel: plural("td_k_owed", open.length), a: "td-go", data: { v: "finance" } }) +
-      ui.kpi({ label: t("td_k_invoiced"), icon: "trend", value: u.money(cur.invoiced), delta: pctChange(cur.invoiced, prev.invoiced), deltaLabel: t("td_vs_last"), spark: rows.map(function (r) { return r.invoiced; }), a: "td-go", data: { v: "dashboard" } }) +
-      ui.kpi({ label: t("td_k_pipe"), icon: "pipeline", value: u.money(pv.weighted), hint: wr == null ? t("td_k_pipe_n", { a: u.money(pv.total) }) : t("td_k_pipe_wr", { a: u.money(pv.total), w: u.pct(wr) }), a: "td-go", data: { v: "pipeline" } }) +
-      ui.kpi({ label: t("td_k_runway"), icon: "clock", value: rw.months == null ? "—" : t("td_k_months", { n: u.dec(rw.months, 1) }), hint: rw.months == null ? t("td_k_runway_none") : t("td_k_burn", { a: u.money(rw.burn) }), a: "td-go", data: { v: rw.months == null ? "settings" : "finance" } }) +
+      ui.kpi({ tint: 0, label: t("td_k_owed"), icon: "invoice", value: u.money(owed), delta: late.length ? t("td_k_late_amt", { a: u.money(lateAmt) }) : null, deltaTone: "up", good: "down", deltaIcon: "alert", deltaLabel: plural("td_k_owed", open.length), a: "td-go", data: { v: "finance" } }) +
+      ui.kpi({ tint: 1, label: t("td_k_invoiced"), icon: "trend", value: u.money(cur.invoiced), delta: pctChange(cur.invoiced, prev.invoiced), deltaLabel: t("td_vs_last"), spark: rows.map(function (r) { return r.invoiced; }), a: "td-go", data: { v: "dashboard" } }) +
+      ui.kpi({ tint: 2, label: t("td_k_pipe"), icon: "pipeline", value: u.money(pv.weighted), hint: wr == null ? t("td_k_pipe_n", { a: u.money(pv.total) }) : t("td_k_pipe_wr", { a: u.money(pv.total), w: u.pct(wr) }), a: "td-go", data: { v: "pipeline" } }) +
+      ui.kpi({ tint: 3, label: t("td_k_runway"), icon: "clock", value: rw.months == null ? "—" : t("td_k_months", { n: u.dec(rw.months, 1) }), hint: rw.months == null ? t("td_k_runway_none") : t("td_k_burn", { a: u.money(rw.burn) }), a: "td-go", data: { v: rw.months == null ? "settings" : "finance" } }) +
       "</div>";
 
     var h = '<div class="g12">' + hero + kpis + "</div>";

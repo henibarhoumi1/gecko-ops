@@ -62,9 +62,9 @@
     var rows = clients.map(function (c) {
       var k = activeContract(c), ow = owed(c);
       return '<tr class="click" tabindex="0" data-a="cl-open" data-id="' + esc(c.id) + '"><td><strong>' + esc(c.brand) + '</strong><br><span class="code faint">' + esc(c.code || "—") + "</span></td>" +
-        '<td data-l="' + esc(t("cl_sector")) + '">' + esc(c.sector || "—") + '</td><td data-l="' + esc(t("cl_contact")) + '">' + esc(c.contact || "—") + '</td><td class="r num" data-l="' + esc(t("cl_active")) + '">' + activeProjects(c).length + "</td>" +
+        '<td data-l="' + esc(t("cl_sector")) + '">' + (c.sector ? ui.chip(c.sector) : "—") + '</td><td data-l="' + esc(t("cl_contact")) + '">' + esc(c.contact || "—") + '</td><td class="r num" data-l="' + esc(t("cl_active")) + '">' + activeProjects(c).length + "</td>" +
         '<td class="r num" data-l="' + esc(t("cl_invoiced")) + '">' + esc(u.money(invoiced(c))) + '</td><td class="r num" data-l="' + esc(t("cl_owed")) + '">' + (ow > 0 ? "<strong>" + esc(u.money(ow)) + "</strong>" : '<span class="faint">' + esc(u.money(0)) + "</span>") + "</td>" +
-        "<td>" + (k ? ui.pill(m.pack(k.pack).name, "done") : "") + "</td></tr>";
+        "<td>" + (k ? ui.chip(m.pack(k.pack).name, k.pack) : "") + "</td></tr>";
     }).join("");
     return ui.head({ label: t("nav_clients"), title: t("cl_title"), accent: t("cl_accent"), sub: esc(t("cl_sub", { n: clients.length, owed: u.money(totOwed) })) + " " + ui.sample(), actions: add }) +
       GK.insight.clients() +
