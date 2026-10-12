@@ -29,7 +29,7 @@ Dark is the default theme. Light is supported.
 | `--gel-soft` | rgba(246,203,218,.14) | rgba(217,96,140,.10) | attention backgrounds |
 | `--hero` | radial Gel to Chroma mesh on black | same on white | the one hero card per screen |
 
-No yellow, no orange, no green. Positive delta = Chroma, negative = Gel deep, neutral = tx-2.
+The five highlight colours (`--c-blue` #6F93D4, `--c-pink` #E88FBF, `--c-yellow` #F0D25A, `--c-green` #3A8A6A, `--c-work` #0A0A0A, with `-soft` at .16) are allowed as category and status colours only: pipeline and project stages, task and board kinds, file and idea status, chart series 2 to 5. Never as backgrounds of big areas, never for primary buttons. Text on blue, pink and yellow chips is #000; text on green is #F7F6F2; never black text on Chroma. Orange and red remain banned. Positive delta = Chroma, negative = Gel deep, neutral = tx-2.
 Never Slate/black text on Chroma: text on Chroma is #F7F6F2.
 
 Type: Archivo for all UI. Sizes 12 / 13 / 14 (body) / 16 / 20 / 28 (page title) / 40 (KPI) / 64 (hero number). Weights 400, 500, 600. Sentence case everywhere except the 11px uppercase label style (`.lbl`, tracking .08em, tx-3). Tabular numbers on every figure. Trovical italic for the one accent word, in Chroma on light surfaces and Gel on black.
@@ -51,7 +51,7 @@ Spacing on a 4px scale: 4, 8, 12, 16, 20, 24, 32, 48. Radius: 8 (small controls)
 - **Activity card** `ui.activity({icon, text, when, who})`: small icon tile, two-line text, relative time.
 - **Insight / decision card** `ui.decision({title, why, recommend, action})`: what is happening, why it matters (with the number), what Claude recommends, one button.
 - **Table** `.tbl`: sticky header in tx-3 labels, 52px rows, hover s2, avatar + name cells, meter cells, right-aligned tabular numbers, sortable headers, search and filter chips above.
-- **Pill** `ui.pill(text, tone)`: tones `neutral`, `chroma`, `gel`, `urgent`, `done`. Dot + text, radius 999.
+- **Pill** `ui.pill(text, tone)`: tones `neutral`, `chroma`, `gel`, `urgent`, `done`, and the highlight status tones `blue`, `pink`, `yellow`, `green`. Dot + text, radius 999. Category dots (`dot-blue` etc.) give stages and kinds a colour without a solid chip.
 - **Avatar**: initials on s3, 28px; stacked group variant.
 - **Buttons**: primary (Chroma fill, Bounce text), secondary (s2 fill, line border), ghost (text only), icon (36px square, radius 12).
 - **Inputs**: s2 fill, line-2 border, radius 12, 40px tall, focus ring 2px Chroma.

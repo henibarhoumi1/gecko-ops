@@ -117,7 +117,7 @@
       (o.sub ? '<p class="subline">' + o.sub + "</p>" : "") +
       "</div>" + (o.actions ? '<div class="actions">' + o.actions + "</div>" : "") + "</header>";
   };
-  /** pill(text, tone): tones "neutral" | "chroma" | "gel" | "urgent" | "done". Legacy: "" = neutral, "wip" = chroma, "alert" = urgent. */
+  /** pill(text, tone): tones "neutral" | "chroma" | "gel" | "urgent" | "done" | "blue" | "pink" | "yellow" | "green" (status, solid chip). Category dots: "dot-blue" etc. Legacy: "" = neutral, "wip" = chroma, "alert" = urgent. */
   UI.pill = function (text, kind) { return '<span class="pill ' + esc(kind || "") + '">' + esc(text) + "</span>"; };
   /** btn(label, action, {cls:"primary|gel|ghost|sm|icon", icon, data:{}, disabled, title}) */
   UI.btn = function (label, a, o) {
@@ -291,8 +291,13 @@
   UI.sample = function () { return ""; };
   /** Shared status pills */
   UI.invPill = function (i) { var s = GK.m.invStatus(i); return UI.pill(t("inv_" + s), { paid: "done", overdue: "urgent", partial: "chroma", issued: "chroma", credited: "", credit: "", draft: "" }[s]); };
-  UI.stagePill = function (p) { return UI.pill(t("st_" + p.stage), p.stage === "done" ? "done" : GK.m.gates(p).length ? "urgent" : "chroma"); };
-  UI.filePill = function (s) { return UI.pill(t("s_" + (s || "todo")), { approved: "done", revise: "urgent", review: "gel", edit: "chroma" }[s] || ""); };
+  /** Project stage: one dot colour per stage. Blocked by a gate shows urgent; closed shows green. */
+  var STAGE_DOT = { onboard: "", plan: "dot-yellow", shoot: "dot-pink", edit: "dot-blue", delivered: "dot-chroma", testing: "dot-gel", report: "dot-work", done: "" };
+  UI.STAGE_DOT = STAGE_DOT;
+  UI.stagePill = function (p) { return UI.pill(t("st_" + p.stage), p.stage === "done" ? "green" : GK.m.gates(p).length ? "urgent" : STAGE_DOT[p.stage] || ""); };
+  /** Small coloured swatch for column headers. cls: a dot-* class. */
+  UI.dot = function (cls) { return '<i class="sd ' + esc(cls || "") + '" aria-hidden="true"></i>'; };
+  UI.filePill = function (s) { return UI.pill(t("s_" + (s || "todo")), { approved: "green", revise: "urgent", review: "yellow", edit: "blue" }[s] || ""); };
 
   /** Save a text file the viewer asked for (csv, json, txt, md). On claude.ai the viewer confirms; on a website it downloads. */
   UI.download = function (filename, text) {

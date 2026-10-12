@@ -35,6 +35,7 @@
   });
 
   var COLS = ["todo", "edit", "review", "revise", "approved"];
+  var FILE_DOT = { todo: "", edit: "dot-blue", review: "dot-yellow", revise: "dot-pink", approved: "dot-green" };
   var LIVE = ["shoot", "edit", "delivered", "testing"];
 
   function activeProjects() {
@@ -131,7 +132,7 @@
     projects.forEach(function (p) { m.files(p).forEach(function (f) { all.push({ p: p, f: f }); }); });
     return '<div class="board" style="grid-auto-columns:minmax(200px,1fr)">' + COLS.map(function (c) {
       var items = all.filter(function (x) { return (x.f.item.status || "todo") === c; });
-      return '<section class="col" aria-label="' + esc(t("s_" + c)) + '"><div class="col-h"><h3 class="sec">' + esc(t("s_" + c)) + '</h3><span class="small muted num">' + items.length + "</span></div>" +
+      return '<section class="col" aria-label="' + esc(t("s_" + c)) + '"><div class="col-h"><h3 class="sec">' + ui.dot(FILE_DOT[c]) + esc(t("s_" + c)) + '</h3><span class="small muted num">' + items.length + "</span></div>" +
         (items.length ? items.map(function (x) { return cardHTML(x.p, x.f, showProject); }).join("") : '<p class="empty">' + esc(t("pr_col_empty")) + "</p>") + "</section>";
     }).join("") + "</div>";
   }

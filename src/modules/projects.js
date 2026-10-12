@@ -230,7 +230,7 @@
         ps.sort(u.by(function (p) { return p.shootDate || ""; }, "desc"));
         shown = ps.slice(0, 5); more = ps.length - shown.length;
       } else ps.sort(u.by(function (p) { return p.shootDate || "9999"; }));
-      return '<div class="col"><div class="col-h"><span class="lab">' + esc(t("st_" + s)) + '</span><span class="num small muted">' + ps.length + "</span></div>" +
+      return '<div class="col"><div class="col-h"><span class="lab">' + ui.dot(ui.STAGE_DOT[s]) + esc(t("st_" + s)) + '</span><span class="num small muted">' + ps.length + "</span></div>" +
         (shown.length ? shown.map(card).join("") : '<p class="empty small">' + esc(t("pj_empty_col")) + "</p>") +
         (more > 0 ? '<span class="small muted">' + esc(t("pj_done_more", { n: more })) + "</span>" : "") + "</div>";
     }).join("") + "</div>";

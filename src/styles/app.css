@@ -293,6 +293,22 @@ th button.sort:focus-visible{outline:2px solid var(--chroma);outline-offset:2px;
 .pill.done::before{content:"";width:8px;height:5px;border-radius:0;background:transparent;border-left:1.6px solid var(--tx);border-bottom:1.6px solid var(--tx);transform:rotate(-45deg) translate(1px,-1px)}
 .pill.neutral{background:var(--s2)}
 .pill.plain::before{display:none}
+/* highlight tones (status): solid chip. Text #000 on blue, pink, yellow; #F7F6F2 on green. Dot = text colour. */
+.pill.blue,.pill.pink,.pill.yellow,.pill.green{border-color:transparent}
+.pill.blue{background:var(--c-blue);color:var(--on-hi)}
+.pill.pink{background:var(--c-pink);color:var(--on-hi)}
+.pill.yellow{background:var(--c-yellow);color:var(--on-hi)}
+.pill.green{background:var(--c-green);color:var(--on-green)}
+.pill.blue::before,.pill.pink::before,.pill.yellow::before,.pill.green::before{background:currentColor}
+/* category dots (categories: pipeline, project, studio, task and board stages): neutral chip or column header, coloured dot only */
+.dot-blue{--d:var(--c-blue)}.dot-pink{--d:var(--c-pink)}.dot-yellow{--d:var(--c-yellow)}.dot-green{--d:var(--c-green)}
+.dot-chroma{--d:var(--chroma)}.dot-gel{--d:var(--gel)}.dot-work{--d:var(--c-work)}
+.pill.dot-blue::before,.pill.dot-pink::before,.pill.dot-yellow::before,.pill.dot-green::before,.pill.dot-chroma::before,.pill.dot-gel::before,.pill.dot-work::before,.sd.dot-blue,.sd.dot-pink,.sd.dot-yellow,.sd.dot-green,.sd.dot-chroma,.sd.dot-gel,.sd.dot-work{background:var(--d)}
+.pill.dot-work::before{box-shadow:0 0 0 1px var(--line-2)}
+.sd{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--tx-3);flex:none}
+.sd.dot-work{box-shadow:inset 0 0 0 1px var(--line-2)}
+.col-h .lab{display:inline-flex;align-items:center;gap:8px}
+.col-h h3.sec{display:inline-flex;align-items:center;gap:8px}
 button.pill{cursor:pointer}
 button.pill:hover{border-color:var(--line-2)}
 
@@ -543,8 +559,10 @@ input[type="date"],input[type="month"]{color-scheme:inherit}
 .ch-legend li{display:inline-flex;align-items:center;gap:6px}
 .sw{width:8px;height:8px;border-radius:50%;display:inline-block}
 .sw.s1,.bar.s1{background:var(--chroma);fill:var(--chroma)}
-.sw.s2,.bar.s2{background:var(--gel);fill:var(--gel)}
-.sw.s3,.bar.s3{background:var(--tx-3);fill:var(--tx-3)}
+.sw.s2,.bar.s2{background:var(--c-blue);fill:var(--c-blue)}
+.sw.s3,.bar.s3{background:var(--c-pink);fill:var(--c-pink)}
+.sw.s4,.bar.s4{background:var(--c-yellow);fill:var(--c-yellow)}
+.sw.s5,.bar.s5{background:var(--c-green);fill:var(--c-green)}
 .ch-svg{width:100%;height:auto;display:block;overflow:visible}
 .ch-svg .grid{stroke:var(--line);stroke-width:1;stroke-dasharray:2 4}
 .ch-svg .zero{stroke:var(--line-2);stroke-width:1}
@@ -555,11 +573,11 @@ input[type="date"],input[type="month"]{color-scheme:inherit}
 .ch-svg .hit:hover{fill:var(--tx);fill-opacity:.04}
 .ch-svg .ln{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
 .ch-svg .ln.dash{stroke-dasharray:5 4}
-.ch-svg .ln.s1{stroke:var(--chroma)}.ch-svg .ln.s2{stroke:var(--gel)}.ch-svg .ln.s3{stroke:var(--tx-3)}
+.ch-svg .ln.s1{stroke:var(--chroma)}.ch-svg .ln.s2{stroke:var(--c-blue)}.ch-svg .ln.s3{stroke:var(--c-pink)}.ch-svg .ln.s4{stroke:var(--c-yellow)}.ch-svg .ln.s5{stroke:var(--c-green)}
 .ch-svg .area{fill:var(--chroma);opacity:.16}
-.ch-svg .area.s2{fill:var(--gel)}
+.ch-svg .area.s2{fill:var(--c-blue)}
 .ch-svg .dot{stroke:var(--s1);stroke-width:2}
-.ch-svg .dot.s1{fill:var(--chroma)}.ch-svg .dot.s2{fill:var(--gel)}.ch-svg .dot.s3{fill:var(--tx-3)}
+.ch-svg .dot.s1{fill:var(--chroma)}.ch-svg .dot.s2{fill:var(--c-blue)}.ch-svg .dot.s3{fill:var(--c-pink)}.ch-svg .dot.s4{fill:var(--c-yellow)}.ch-svg .dot.s5{fill:var(--c-green)}
 .spark{display:block}.spark .ln{fill:none;stroke-width:1.75;stroke:var(--chroma)}
 .hb,.fn{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
 .hb li,.fn li{display:grid;grid-template-columns:minmax(80px,30%) 1fr auto;gap:12px;align-items:center;font-size:13px}

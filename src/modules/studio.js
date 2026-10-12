@@ -44,6 +44,7 @@
   });
 
   var STAGES = ["idea", "concept", "script", "ready", "shot"];
+  var IDEA_DOT = { idea: "", concept: "dot-blue", script: "dot-pink", ready: "dot-yellow", shot: "dot-green" };
   var ORDER = { idea: 0, concept: 1, script: 2, ready: 3, shot: 4, parked: 5 };
   function can() { return m.can("ideas"); }
   function isUrl(s) { return /^https?:\/\/\S+$/i.test(String(s || "").trim()); }
@@ -214,7 +215,7 @@
     var h = '<div class="board" style="grid-auto-columns:minmax(232px,1fr)">' + STAGES.map(function (s) {
       var items = ideas.filter(function (i) { return effStage(i) === s; })
         .sort(function (a, b) { return ((+a.priority || 2) - (+b.priority || 2)) || String(b.created || "").localeCompare(String(a.created || "")); });
-      return '<section class="col" aria-label="' + esc(stName(s)) + '"><div class="col-h"><h3 class="sec">' + esc(stName(s)) + '</h3><span class="small muted num">' + items.length + "</span></div>" +
+      return '<section class="col" aria-label="' + esc(stName(s)) + '"><div class="col-h"><h3 class="sec">' + ui.dot(IDEA_DOT[s]) + esc(stName(s)) + '</h3><span class="small muted num">' + items.length + "</span></div>" +
         (s === "idea" && can() ? quickAdd(f) : "") +
         (items.length ? items.map(cardHTML).join("") : '<p class="empty">' + esc(t("st_col_empty")) + "</p>") + "</section>";
     }).join("") + "</div>";
@@ -263,7 +264,7 @@
         return '<tr class="click" tabindex="0" data-a="st-open"' + ui.attrs({ id: i.id }) + '><td style="min-width:220px">' +
           (i.hook ? "“" + esc(i.hook) + "”" : '<span class="faint">' + esc(t("st_no_hook")) + "</span>") + '<br><span class="small muted">' + esc(i.title) + "</span></td>" +
           "<td>" + esc(i.clientId ? m.brand(i.clientId) : "—") + "</td><td>" + esc(angleOf(i) || "—") + "</td>" +
-          "<td>" + ui.pill(stName(es), es === "ready" || es === "shot" ? "done" : "") + "</td><td>" + prioPill(i) + "</td>" +
+          "<td>" + ui.pill(stName(es), IDEA_DOT[es]) + "</td><td>" + prioPill(i) + "</td>" +
           "<td style=\"min-width:160px\">" + (w.length ? ui.pill(t("st_won_n", { n: w.length }), "wip") + '<br><span class="small muted">“' + esc(w[0].text) + "”</span>" : '<span class="small faint">' + esc(t("st_won_none")) + "</span>") + "</td>" +
           "<td>" + (i.hook ? ui.btn(t("st_copy_hook"), "st-copy-hook", { cls: "ghost sm", data: { id: i.id } }) : "") + "</td></tr>";
       }).join("") + "</tbody></table></div></div>";

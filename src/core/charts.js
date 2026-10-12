@@ -1,4 +1,4 @@
-/* GECKO Ops · charts. Plain SVG, no library. Palette (tokens, set in app.css): series 1 Chroma, series 2 Gel, series 3 tx-3. No yellow, orange or green.
+/* GECKO Ops · charts. Plain SVG, no library. Palette (tokens, set in app.css): series 1 Chroma, then blue, pink, yellow, green (s2 to s5). No orange or red.
    Every chart returns an HTML string with a title, a legend (2+ series), hover tooltips (data-tip) and a "table view" for screen readers.
    Status is never shown by hue: use the series order, labels and the table. Max 3 series per chart; fold the rest into "Other". */
 (function (GK) {

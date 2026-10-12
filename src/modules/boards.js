@@ -215,6 +215,7 @@
 
   // ---------- templates ----------
   var KINDS = ["free", "moodboard", "storyboard", "angles", "shotlist", "hooks", "campaign"];
+  var KIND_DOT = { free: "", moodboard: "dot-pink", storyboard: "dot-blue", angles: "dot-yellow", shotlist: "dot-green", hooks: "dot-chroma", campaign: "dot-gel" };
   var TPL = [
     { k: "blank", kind: "free", name: "bd_tpl_blank", hint: "bd_tpl_blank_h" },
     { k: "mood", kind: "moodboard", name: "bd_tpl_mood", hint: "bd_tpl_mood_h" },
@@ -372,7 +373,7 @@
       return '<article class="panel bd-card" tabindex="0" data-a="bd-open" data-id="' + esc(b.id) + '">' +
         '<div class="bd-thumb" aria-hidden="true">' + svg + "</div>" +
         '<div class="bd-cb"><h3>' + esc(b.title || t("bd_untitled")) + "</h3>" +
-        '<div class="bd-meta">' + ui.pill(B.kindLabel(b.kind)) + "<span>" + esc(countLabel(b)) + "</span><span>" + esc(fmtUpdated(b)) + "</span></div>" +
+        '<div class="bd-meta">' + ui.pill(B.kindLabel(b.kind), KIND_DOT[KINDS.indexOf(b.kind) >= 0 ? b.kind : "free"]) + "<span>" + esc(countLabel(b)) + "</span><span>" + esc(fmtUpdated(b)) + "</span></div>" +
         (ctx.length ? '<div class="bd-meta"><span>' + esc(ctx.join(" · ")) + "</span></div>" : "") +
         (can ? '<div class="row">' + ui.btn(t("bd_dup"), "bd-dup", { cls: "ghost sm", data: { id: b.id } }) + ui.btn(t("bd_rename"), "bd-rename", { cls: "ghost sm", data: { id: b.id } }) +
           ui.btn(t("bd_delete"), "bd-del", { cls: "ghost sm", data: { id: b.id }, disabled: !B.canDelete(b), title: !B.canDelete(b) ? t("bd_del_no") : "" }) + "</div>" : "") +

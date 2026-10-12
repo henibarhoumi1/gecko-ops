@@ -352,8 +352,9 @@
     var doing = list.filter(isDoing).sort(byDue);
     var todo = list.filter(function (x) { return !x.done && !isDoing(x); }).sort(byDue);
     var done = list.filter(function (x) { return x.done && (x.doneOn || "") >= since; }).sort(u.by(function (x) { return x.doneOn || ""; }, "desc"));
+    var TASK_DOT = { todo: "", doing: "dot-blue", done: "dot-green" };
     function col(key, items, k, sub) {
-      return '<section class="tk-col" aria-label="' + esc(t(key)) + '"><div class="tk-col-h"><h2>' + esc(t(key)) + '</h2><span class="n">' + items.length + "</span></div>" +
+      return '<section class="tk-col" aria-label="' + esc(t(key)) + '"><div class="tk-col-h"><h2>' + ui.dot(TASK_DOT[k]) + esc(t(key)) + '</h2><span class="n">' + items.length + "</span></div>" +
         (sub ? '<span class="tk-m" style="padding:0 4px;white-space:normal">' + esc(sub) + "</span>" : "") +
         (items.length ? items.map(function (x) { return card(x, k); }).join("") : ui.empty(t("none"))) + "</section>";
     }

@@ -1,7 +1,8 @@
 /* ==========================================================================
    GECKO Ops · design tokens (V03). DESIGN.md is the law; token names are fixed.
    Dark (total black) is the default. Light follows the theme switch (auto / light / dark).
-   Brand palette: Gel #F6CBDA, Chroma #3946EC, Slate, Bounce #F7F6F2. No yellow, orange or green.
+   Brand palette: Gel #F6CBDA, Chroma #3946EC, Slate, Bounce #F7F6F2. No orange or red.
+   Highlight accents (from the founder's Instagram highlight covers): category and status colours only.
    Legacy names (--ink, --surface, --pill-*, --rail-*) are aliases so V01/V02 modules keep working.
    ========================================================================== */
 :root{
@@ -25,6 +26,19 @@
   --chroma-tx:#8F97FF;          /* Chroma as small text on black (links, positive delta): same hue, readable */
   --gel-deep:#EE8FB1;
   --gel-soft:rgba(246,203,218,.14);
+  /* highlight accents: category/status only, never big areas, never primary buttons. Same in both themes. */
+  --c-work:#0A0A0A;             /* black: only as a swatch, with a --line-2 border on dark */
+  --c-blue:#6F93D4;
+  --c-pink:#E88FBF;
+  --c-yellow:#F0D25A;
+  --c-green:#3A8A6A;
+  --c-work-soft:rgba(10,10,10,.16);
+  --c-blue-soft:rgba(111,147,212,.16);
+  --c-pink-soft:rgba(232,143,191,.16);
+  --c-yellow-soft:rgba(240,210,90,.16);
+  --c-green-soft:rgba(58,138,106,.16);
+  --on-hi:#000000;              /* text on yellow, pink and blue chips */
+  --on-green:#F7F6F2;           /* text on green chips */
   --on-chroma:#F7F6F2;
   --accent-word:var(--gel);     /* Trovical word: Gel on black, Chroma on light */
   --hero:radial-gradient(90% 120% at 0% 0%,rgba(246,203,218,.62) 0%,rgba(246,203,218,0) 55%),radial-gradient(100% 130% at 100% 100%,rgba(57,70,236,1) 0%,rgba(57,70,236,0) 65%),radial-gradient(60% 70% at 78% 8%,rgba(57,70,236,.45) 0%,rgba(57,70,236,0) 70%),#05050F;

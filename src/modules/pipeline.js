@@ -44,6 +44,7 @@
   });
 
   var OPEN = ["dm", "replied", "call", "proposal"];
+  var LEAD_DOT = { dm: "dot-blue", replied: "dot-yellow", call: "dot-pink", proposal: "dot-chroma" };
   var QN = 4;
 
   function canEdit() { return m.can("leads"); }
@@ -87,7 +88,7 @@
   function board(leads) {
     return '<div class="board">' + OPEN.map(function (s) {
       var list = leads.filter(function (l) { return l.stage === s; }).sort(byNext);
-      return '<section class="col" aria-label="' + esc(t("ls_" + s)) + '"><div class="col-h"><span class="lab">' + esc(t("ls_" + s)) + '</span><span class="small muted num">' + list.length + "</span></div>" +
+      return '<section class="col" aria-label="' + esc(t("ls_" + s)) + '"><div class="col-h"><span class="lab">' + ui.dot(LEAD_DOT[s]) + esc(t("ls_" + s)) + '</span><span class="small muted num">' + list.length + "</span></div>" +
         (list.length ? list.map(card).join("") : '<p class="small faint" style="margin:0">—</p>') + "</section>";
     }).join("") + "</div>";
   }
