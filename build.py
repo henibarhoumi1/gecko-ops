@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
 """Build GECKO Ops into one self-contained page: dist/gecko-ops.html
 
-  python3 build.py            -> dist/gecko-ops.html (CSS, JS and the Trovical font inlined)
+  python3 build.py            -> dist/gecko-ops.html (CSS, JS and the brand fonts inlined)
   GK_OUT=/some/dir python3 build.py   -> build somewhere else (parallel work, CI)
 
 The same file runs as a claude.ai artifact (shared team data through the artifact database)
 and as a plain static website (data kept in the browser until a hosted backend is plugged in).
-Google Fonts (Anton, Archivo, Jomhuria) load from fonts.googleapis.com; Trovical is inlined.
+The brand fonts (Geist, Instrument Serif; woff2 from gecko/brand/fonts) are inlined, so nothing loads from a font CDN.
 """
-import os, pathlib, sys
+import base64, os, pathlib, re, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent
 SRC = ROOT / "src"
-FONTS = "https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wdth,wght@62..125,100..900&family=Jomhuria&display=swap"
 
 def order():
     out = []
@@ -27,20 +26,19 @@ def order():
     return out
 
 def build():
-    font = (SRC / "assets" / "trovical-italic.b64").read_text().strip()
     css = (SRC / "styles" / "tokens.css").read_text() + "\n" + (SRC / "styles" / "app.css").read_text()
-    css = css.replace("__TROVICAL_ITALIC__", "data:font/otf;base64," + font)
+    def font(m):
+        f = SRC / "assets" / "fonts" / (m.group(1) + ".woff2")
+        return "data:font/woff2;base64," + base64.b64encode(f.read_bytes()).decode()
+    css = re.sub(r"__FONT_([a-z0-9-]+)__", font, css)
     js = []
     for rel in order():
         code = (SRC / rel).read_text()
         if "</script" in code.lower():
             sys.exit(f"{rel}: contains '</script', which would break the inlined page")
         js.append(f"/* ---- {rel} ---- */\n{code}")
-    html = f"""<title>GECKO Ops</title>
-<meta name="description" content="GECKO studio operations: pipeline, projects, production, deliveries, money and the client view.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="{FONTS}">
+    html = f"""<title>Gecko Ops</title>
+<meta name="description" content="Gecko's team app: sales pipeline, clients, projects, production, money, docs and the client view.">
 <style>
 {css}
 </style>

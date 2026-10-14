@@ -159,7 +159,7 @@
     // reels, hooks per reel, carousels, angles
     var PACKSIZE = { GRIP: [4, 3, 0, 2], SEASON: [16, 3, 4, 4], SKIN10: [10, 3, 3, 3], SKIN20: [20, 3, 6, 4] };
     function proj(o) {
-      var si = m.STAGES.indexOf(o.stage), ps = PACKSIZE[o.pack];
+      var si = ["onboard", "plan", "shoot", "edit", "delivered", "testing", "report", "done"].indexOf(o.stage) /* written against the first stages; migrated after */, ps = PACKSIZE[o.pack];
       var p = { id: o.id, clientId: o.clientId, contractId: o.contractId || "", month: o.month || 0, name: o.name, pack: o.pack, stage: o.stage,
         planApproved: o.plan != null, planApprovedOn: o.plan != null ? d(o.plan) : "", shootDate: o.shoot != null ? d(o.shoot) : "", format: "9x16", mohamed: !!o.mohamed,
         onboarding: [0, 1, 2, 3, 4, 5, 6].map(function (k) { return si >= 2 ? true : si === 1 ? k < 5 : k < (o.ob || 2); }),

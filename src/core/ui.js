@@ -75,18 +75,18 @@
     swap: '<path d="M4 8h13l-3.5-3.5M20 16H7l3.5 3.5"/>', edit: '<path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
     dot: '<circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/>'
   };
-  ICONS.today = ICONS.home; ICONS.idea = ICONS.studio; ICONS.globe = ICONS.portal; ICONS.money = ICONS.finance; ICONS.chart = ICONS.dashboard;
+  ICONS.today = ICONS.home; ICONS.guide = '<circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>'; ICONS.docs = ICONS.file || ICONS.dot; ICONS.idea = ICONS.studio; ICONS.globe = ICONS.portal; ICONS.money = ICONS.finance; ICONS.chart = ICONS.dashboard;
   UI.ICONS = ICONS;
   /** icon(name, extraClass) -> inline SVG (24px grid, 1.6 stroke) that follows currentColor. Unknown names fall back to a dot. */
   UI.icon = function (n, cls) { return '<svg class="ic' + (cls ? " " + cls : "") + '" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + (ICONS[n] || ICONS.dot) + "</svg>"; };
 
   /** Sidebar groups (DESIGN.md §3). A view not listed here lands in Main. */
   UI.GROUPS = [
-    { id: "main", views: ["today", "inbox", "tasks", "calendar"] },
-    { id: "work", views: ["pipeline", "clients", "projects", "production", "deliveries"] },
-    { id: "studio", views: ["studio", "boards", "reports"] },
+    { id: "main", views: ["guide", "today", "tasks", "calendar", "inbox"] },
+    { id: "sell", views: ["pipeline", "clients"] },
+    { id: "make", views: ["projects", "production", "deliveries", "studio", "boards", "reports"] },
     { id: "money", views: ["dashboard", "finance", "portal"] },
-    { id: "team", views: ["team", "activity", "settings"] }
+    { id: "team", views: ["docs", "team", "activity", "settings"] }
   ];
   UI.groupOf = function (v) { for (var i = 0; i < UI.GROUPS.length; i++) if (UI.GROUPS[i].views.indexOf(v) > -1) return UI.GROUPS[i].id; return "main"; };
   /** Remembered sidebar state: {mini: icon rail} */
@@ -120,14 +120,14 @@
   // ---------- small builders (all return HTML strings) ----------
   /** data-* attributes from an object: {id:"x"} -> ' data-id="x"' */
   UI.attrs = function (o) { var s = ""; for (var k in o || {}) if (o[k] != null) s += " data-" + k + '="' + esc(o[k]) + '"'; return s; };
-  /** "1,250 DT" -> 1,250<span class="u">DT</span> (the unit quieter than the number) */
+  /** "1,250 TND" -> 1,250<span class="u">TND</span> (the unit quieter than the number) */
   function unitHTML(v) {
-    var s = String(v == null ? "" : v), mm = s.match(/^(.*?\d)(\s| )?(DT|%)$/);
+    var s = String(v == null ? "" : v), mm = s.match(/^(.*?\d)(\s| )?(TND|DT|%|€|\$)$/);
     return mm ? esc(mm[1]) + '<span class="u">' + esc(mm[3]) + "</span>" : esc(s);
   }
   UI.unit = unitHTML;
 
-  /** Page header: title (+ one Trovical accent word), one-line subtitle, actions on the right.
+  /** Page header: title (+ an accent word, set in the same font), one-line subtitle, actions on the right.
       o: {title, accent, sub (HTML), actions (HTML), label (eyebrow, shown only when it adds something), back:{label, a, data}} */
   UI.head = function (o) {
     var lab = o.label && o.label !== t("nav_" + UI.state.view) ? o.label : "";

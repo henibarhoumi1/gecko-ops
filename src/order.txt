@@ -10,11 +10,16 @@ core/metrics.js
 core/ui.js
 core/seed.js
 modules/today.js
+modules/today_*.js
 modules/insights.js
 modules/pipeline.js
+modules/pipeline_*.js
 modules/clients.js
+modules/clients_*.js
 modules/projects.js
+modules/projects_*.js
 modules/production.js
+modules/production_*.js
 modules/deliveries.js
 modules/reports.js
 modules/finance.js
@@ -27,6 +32,9 @@ modules/calendar.js
 modules/inbox.js
 modules/activity.js
 modules/settings.js
+modules/settings_*.js
+modules/docs*.js
+modules/guide*.js
 modules/dashboard.js
 modules/dashboard_*.js
 modules/studio.js
@@ -44,4 +52,5 @@ modules/finance.seed.js
 modules/clientmode.seed.js
 modules/history.seed.js
 modules/demo.seed.js
+modules/*.v2seed.js
 core/main.js
