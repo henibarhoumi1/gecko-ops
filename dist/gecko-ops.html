@@ -949,12 +949,12 @@ window.GK = window.GK || {};
   /* core words used by the shell, model and shared components */
   I.add({
     app_name: ["Gecko Ops", "Gecko Ops"],
-    nav_today: ["Home", "Accueil"], nav_pipeline: ["Pipeline", "Prospection"], nav_clients: ["Clients", "Clients"],
-    nav_projects: ["Projects", "Projets"], nav_production: ["Production", "Production"], nav_deliveries: ["Deliveries", "Livraisons"],
-    nav_reports: ["What won", "Ce qui gagne"], nav_finance: ["Money", "Argent"], nav_portal: ["Client pages", "Pages client"],
-    nav_dashboard: ["Dashboard", "Tableau de bord"], nav_studio: ["Ideas", "Idées"], nav_boards: ["Whiteboards", "Tableaux"], nav_team: ["Team", "Équipe"], nav_settings: ["Settings", "Réglages"],
-    nav_tasks: ["Tasks", "Tâches"], nav_calendar: ["Calendar", "Calendrier"], nav_inbox: ["Inbox", "Messages"], nav_activity: ["Activity", "Activité"],
-    grp_main: ["Main", "Principal"], grp_work: ["Work", "Travail"], grp_studio: ["Studio", "Studio"], grp_money: ["Money", "Argent"], grp_clients: ["Clients", "Clients"], grp_team: ["Team", "Équipe"],
+    nav_today: ["Home", "Accueil"], nav_pipeline: ["Sales pipeline", "Ventes"], nav_clients: ["Clients", "Clients"],
+    nav_projects: ["Projects", "Projets"], nav_production: ["Shoots and edits", "Tournages et montage"], nav_deliveries: ["Deliveries", "Livraisons"],
+    nav_reports: ["Ad results", "Résultats pubs"], nav_finance: ["Money", "Argent"], nav_portal: ["Client pages", "Pages client"],
+    nav_dashboard: ["Numbers", "Chiffres"], nav_studio: ["Ideas and scripts", "Idées et scripts"], nav_boards: ["Whiteboards", "Tableaux"], nav_team: ["Team", "Équipe"], nav_settings: ["Settings", "Réglages"],
+    nav_tasks: ["Tasks", "Tâches"], nav_calendar: ["Calendar", "Calendrier"], nav_inbox: ["Inbox", "Messages"], nav_activity: ["Activity", "Activité"], nav_guide: ["Start here", "Commencer ici"], nav_docs: ["Docs", "Docs"],
+    grp_main: ["Main", "Principal"], grp_sell: ["Sell", "Vendre"], grp_make: ["Make", "Produire"], grp_work: ["Work", "Travail"], grp_studio: ["Studio", "Studio"], grp_money: ["Money", "Argent"], grp_clients: ["Clients", "Clients"], grp_team: ["Team", "Équipe"],
     sh_menu: ["Menu", "Menu"], sh_more: ["More", "Plus"], sh_expand: ["Expand the menu", "Déplier le menu"], sh_collapse: ["Collapse the menu", "Replier le menu"],
     undo: ["Undo", "Annuler"],
     working_as: ["Working as", "Connecté en tant que"], theme: ["Theme", "Thème"], language: ["Language", "Langue"],
@@ -1429,10 +1429,10 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
 
   // ---------- roles ----------
   M.ROLE_NAV = {
-    founder: ["today", "tasks", "calendar", "inbox", "activity", "dashboard", "pipeline", "clients", "projects", "production", "studio", "boards", "deliveries", "reports", "finance", "portal", "docs", "team", "settings"],
-    sales: ["today", "tasks", "calendar", "inbox", "pipeline", "clients", "projects", "production", "studio", "boards", "deliveries", "reports", "portal", "docs", "team", "settings"],
-    editor: ["today", "tasks", "calendar", "inbox", "projects", "production", "studio", "boards", "deliveries", "docs", "team"],
-    assistant: ["today", "tasks", "calendar", "inbox", "projects", "production", "studio", "boards", "docs", "team"]
+    founder: ["guide", "today", "tasks", "calendar", "inbox", "activity", "dashboard", "pipeline", "clients", "projects", "production", "studio", "boards", "deliveries", "reports", "finance", "portal", "docs", "team", "settings"],
+    sales: ["guide", "today", "tasks", "calendar", "inbox", "pipeline", "clients", "projects", "production", "studio", "boards", "deliveries", "reports", "portal", "docs", "team", "settings"],
+    editor: ["guide", "today", "tasks", "calendar", "inbox", "projects", "production", "studio", "boards", "deliveries", "docs", "team"],
+    assistant: ["guide", "today", "tasks", "calendar", "inbox", "projects", "production", "studio", "boards", "docs", "team"]
   };
   /** Permission check for the current viewer. */
   M.can = function (what) {
@@ -2397,18 +2397,18 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     swap: '<path d="M4 8h13l-3.5-3.5M20 16H7l3.5 3.5"/>', edit: '<path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
     dot: '<circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/>'
   };
-  ICONS.today = ICONS.home; ICONS.idea = ICONS.studio; ICONS.globe = ICONS.portal; ICONS.money = ICONS.finance; ICONS.chart = ICONS.dashboard;
+  ICONS.today = ICONS.home; ICONS.guide = '<circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>'; ICONS.docs = ICONS.file || ICONS.dot; ICONS.idea = ICONS.studio; ICONS.globe = ICONS.portal; ICONS.money = ICONS.finance; ICONS.chart = ICONS.dashboard;
   UI.ICONS = ICONS;
   /** icon(name, extraClass) -> inline SVG (24px grid, 1.6 stroke) that follows currentColor. Unknown names fall back to a dot. */
   UI.icon = function (n, cls) { return '<svg class="ic' + (cls ? " " + cls : "") + '" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + (ICONS[n] || ICONS.dot) + "</svg>"; };
 
   /** Sidebar groups (DESIGN.md §3). A view not listed here lands in Main. */
   UI.GROUPS = [
-    { id: "main", views: ["today", "inbox", "tasks", "calendar"] },
-    { id: "work", views: ["pipeline", "clients", "projects", "production", "deliveries"] },
-    { id: "studio", views: ["studio", "boards", "reports"] },
+    { id: "main", views: ["guide", "today", "tasks", "calendar", "inbox"] },
+    { id: "sell", views: ["pipeline", "clients"] },
+    { id: "make", views: ["projects", "production", "deliveries", "studio", "boards", "reports"] },
     { id: "money", views: ["dashboard", "finance", "portal"] },
-    { id: "team", views: ["team", "activity", "settings"] }
+    { id: "team", views: ["docs", "team", "activity", "settings"] }
   ];
   UI.groupOf = function (v) { for (var i = 0; i < UI.GROUPS.length; i++) if (UI.GROUPS[i].views.indexOf(v) > -1) return UI.GROUPS[i].id; return "main"; };
   /** Remembered sidebar state: {mini: icon rail} */

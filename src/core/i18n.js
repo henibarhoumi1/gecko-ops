@@ -25,12 +25,12 @@
   /* core words used by the shell, model and shared components */
   I.add({
     app_name: ["Gecko Ops", "Gecko Ops"],
-    nav_today: ["Home", "Accueil"], nav_pipeline: ["Pipeline", "Prospection"], nav_clients: ["Clients", "Clients"],
-    nav_projects: ["Projects", "Projets"], nav_production: ["Production", "Production"], nav_deliveries: ["Deliveries", "Livraisons"],
-    nav_reports: ["What won", "Ce qui gagne"], nav_finance: ["Money", "Argent"], nav_portal: ["Client pages", "Pages client"],
-    nav_dashboard: ["Dashboard", "Tableau de bord"], nav_studio: ["Ideas", "Idées"], nav_boards: ["Whiteboards", "Tableaux"], nav_team: ["Team", "Équipe"], nav_settings: ["Settings", "Réglages"],
-    nav_tasks: ["Tasks", "Tâches"], nav_calendar: ["Calendar", "Calendrier"], nav_inbox: ["Inbox", "Messages"], nav_activity: ["Activity", "Activité"],
-    grp_main: ["Main", "Principal"], grp_work: ["Work", "Travail"], grp_studio: ["Studio", "Studio"], grp_money: ["Money", "Argent"], grp_clients: ["Clients", "Clients"], grp_team: ["Team", "Équipe"],
+    nav_today: ["Home", "Accueil"], nav_pipeline: ["Sales pipeline", "Ventes"], nav_clients: ["Clients", "Clients"],
+    nav_projects: ["Projects", "Projets"], nav_production: ["Shoots and edits", "Tournages et montage"], nav_deliveries: ["Deliveries", "Livraisons"],
+    nav_reports: ["Ad results", "Résultats pubs"], nav_finance: ["Money", "Argent"], nav_portal: ["Client pages", "Pages client"],
+    nav_dashboard: ["Numbers", "Chiffres"], nav_studio: ["Ideas and scripts", "Idées et scripts"], nav_boards: ["Whiteboards", "Tableaux"], nav_team: ["Team", "Équipe"], nav_settings: ["Settings", "Réglages"],
+    nav_tasks: ["Tasks", "Tâches"], nav_calendar: ["Calendar", "Calendrier"], nav_inbox: ["Inbox", "Messages"], nav_activity: ["Activity", "Activité"], nav_guide: ["Start here", "Commencer ici"], nav_docs: ["Docs", "Docs"],
+    grp_main: ["Main", "Principal"], grp_sell: ["Sell", "Vendre"], grp_make: ["Make", "Produire"], grp_work: ["Work", "Travail"], grp_studio: ["Studio", "Studio"], grp_money: ["Money", "Argent"], grp_clients: ["Clients", "Clients"], grp_team: ["Team", "Équipe"],
     sh_menu: ["Menu", "Menu"], sh_more: ["More", "Plus"], sh_expand: ["Expand the menu", "Déplier le menu"], sh_collapse: ["Collapse the menu", "Replier le menu"],
     undo: ["Undo", "Annuler"],
     working_as: ["Working as", "Connecté en tant que"], theme: ["Theme", "Thème"], language: ["Language", "Langue"],
