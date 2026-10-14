@@ -120,14 +120,14 @@
   // ---------- small builders (all return HTML strings) ----------
   /** data-* attributes from an object: {id:"x"} -> ' data-id="x"' */
   UI.attrs = function (o) { var s = ""; for (var k in o || {}) if (o[k] != null) s += " data-" + k + '="' + esc(o[k]) + '"'; return s; };
-  /** "1,250 DT" -> 1,250<span class="u">DT</span> (the unit quieter than the number) */
+  /** "1,250 TND" -> 1,250<span class="u">TND</span> (the unit quieter than the number) */
   function unitHTML(v) {
-    var s = String(v == null ? "" : v), mm = s.match(/^(.*?\d)(\s| )?(DT|%)$/);
+    var s = String(v == null ? "" : v), mm = s.match(/^(.*?\d)(\s| )?(TND|DT|%|€|\$)$/);
     return mm ? esc(mm[1]) + '<span class="u">' + esc(mm[3]) + "</span>" : esc(s);
   }
   UI.unit = unitHTML;
 
-  /** Page header: title (+ one Trovical accent word), one-line subtitle, actions on the right.
+  /** Page header: title (+ an accent word, set in the same font), one-line subtitle, actions on the right.
       o: {title, accent, sub (HTML), actions (HTML), label (eyebrow, shown only when it adds something), back:{label, a, data}} */
   UI.head = function (o) {
     var lab = o.label && o.label !== t("nav_" + UI.state.view) ? o.label : "";

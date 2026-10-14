@@ -34,15 +34,17 @@ window.GK = window.GK || {};
     var dt = new Date(ym + "-15T12:00:00");
     return dt.toLocaleDateString(U.fr() ? "fr-FR" : "en-GB", { month: "long", year: "numeric" });
   };
-  /** 1500 -> "1,500 DT" (EN) / "1 500 DT" (FR). Tunisian dinar, no decimals unless asked. */
-  U.money = function (n, decimals) {
+  /** 1500 -> "1,500 TND" (EN) / "1 500 TND" (FR); money(600, 0, "EUR") -> "€600". No decimals unless asked. */
+  U.money = function (n, decimals, cur) {
     var v = +n || 0, neg = v < 0; v = Math.abs(v);
     var dec = decimals || 0;
     var parts = v.toFixed(dec).split(".");
     var sep = U.fr() ? " " : ",";
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, sep);
     var s = parts.join(U.fr() ? "," : ".");
-    return (neg ? "−" : "") + s + " DT";
+    if (cur === "EUR") return (neg ? "−" : "") + (U.fr() ? s + " €" : "€" + s);
+    if (cur === "USD") return (neg ? "−" : "") + (U.fr() ? s + " $" : "$" + s);
+    return (neg ? "−" : "") + s + " TND";
   };
   U.num = function (n, decimals) { var v = +n || 0; return decimals ? v.toFixed(decimals) : String(Math.round(v)); };
   U.pct = function (n) { return (isFinite(n) ? Math.round(n) : 0) + (U.fr() ? "\u00a0%" : "%"); };

@@ -884,15 +884,17 @@ window.GK = window.GK || {};
     var dt = new Date(ym + "-15T12:00:00");
     return dt.toLocaleDateString(U.fr() ? "fr-FR" : "en-GB", { month: "long", year: "numeric" });
   };
-  /** 1500 -> "1,500 DT" (EN) / "1 500 DT" (FR). Tunisian dinar, no decimals unless asked. */
-  U.money = function (n, decimals) {
+  /** 1500 -> "1,500 TND" (EN) / "1 500 TND" (FR); money(600, 0, "EUR") -> "€600". No decimals unless asked. */
+  U.money = function (n, decimals, cur) {
     var v = +n || 0, neg = v < 0; v = Math.abs(v);
     var dec = decimals || 0;
     var parts = v.toFixed(dec).split(".");
     var sep = U.fr() ? " " : ",";
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, sep);
     var s = parts.join(U.fr() ? "," : ".");
-    return (neg ? "−" : "") + s + " DT";
+    if (cur === "EUR") return (neg ? "−" : "") + (U.fr() ? s + " €" : "€" + s);
+    if (cur === "USD") return (neg ? "−" : "") + (U.fr() ? s + " $" : "$" + s);
+    return (neg ? "−" : "") + s + " TND";
   };
   U.num = function (n, decimals) { var v = +n || 0; return decimals ? v.toFixed(decimals) : String(Math.round(v)); };
   U.pct = function (n) { return (isFinite(n) ? Math.round(n) : 0) + (U.fr() ? "\u00a0%" : "%"); };
@@ -927,9 +929,8 @@ window.GK = window.GK || {};
 })(window.GK);
 
 /* ---- core/i18n.js ---- */
-/* GECKO Ops · words. English first, French toggle.
-   Modules add their own words with GK.i18n.add({key:["English","Français"]}).
-   Trovical (the italic accent face) breaks ç and œ: keep French accent words free of them. */
+/* Gecko Ops · words. English first, French toggle.
+   Modules add their own words with GK.i18n.add({key:["English","Français"]}). */
 (function (GK) {
   "use strict";
   var dict = {};
@@ -954,7 +955,7 @@ window.GK = window.GK || {};
 
   /* core words used by the shell, model and shared components */
   I.add({
-    app_name: ["GECKO Ops", "GECKO Ops"],
+    app_name: ["Gecko Ops", "Gecko Ops"],
     nav_today: ["Home", "Accueil"], nav_pipeline: ["Pipeline", "Prospection"], nav_clients: ["Clients", "Clients"],
     nav_projects: ["Projects", "Projets"], nav_production: ["Production", "Production"], nav_deliveries: ["Deliveries", "Livraisons"],
     nav_reports: ["What won", "Ce qui gagne"], nav_finance: ["Money", "Argent"], nav_portal: ["Client pages", "Pages client"],
@@ -984,14 +985,31 @@ window.GK = window.GK || {};
     join_body: ["Pick your role once. It decides what you see first.", "Choisissez votre rôle une fois. Il décide de ce que vous voyez en premier."],
     your_name: ["Your name", "Votre nom"], your_role: ["Your role", "Votre rôle"], join: ["Join", "Rejoindre"],
     // roles
-    role_founder: ["Founder · creative director", "Fondateur · directeur créatif"], role_sales: ["Sales & outreach", "Ventes & prospection"],
+    role_founder: ["Founder · creative director", "Fondateur · directeur créatif"], role_sales: ["Client Lead", "Responsable clients"],
     role_editor: ["Freelance editor", "Monteur freelance"], role_assistant: ["Freelance assistant", "Assistant freelance"],
-    // project stages
-    st_onboard: ["Onboarding", "Démarrage"], st_plan: ["Creative plan", "Plan créatif"], st_shoot: ["Shoot", "Tournage"], st_edit: ["Editing", "Montage"],
-    st_delivered: ["Delivered", "Livré"], st_testing: ["Testing", "En test"], st_report: ["Report", "Rapport"], st_done: ["Closed", "Clôturé"],
-    // lead stages
-    ls_dm: ["DM sent", "DM envoyé"], ls_replied: ["Replied", "A répondu"], ls_call: ["Call booked", "Appel prévu"], ls_proposal: ["Proposal sent", "Proposition envoyée"],
-    ls_won: ["Won", "Gagné"], ls_lost: ["Lost", "Perdu"],
+    // project stages (crm-pipeline.md, after won)
+    st_onboarding: ["Onboarding", "Démarrage"], st_scripting: ["Scripting", "Scripts"], st_pre_production: ["Pre-production", "Préproduction"], st_shoot: ["Shoot", "Tournage"],
+    st_editing: ["Editing", "Montage"], st_client_review: ["Client review", "Revue client"], st_revisions: ["Revisions", "Retouches"], st_delivered: ["Delivered", "Livré"],
+    st_paid: ["Paid", "Payé"], st_retention: ["Next offer", "Offre suivante"],
+    // lead stages (crm-pipeline.md)
+    ls_prospect: ["Prospect", "Prospect"], ls_contacted: ["Contacted", "Contacté"], ls_conversation: ["In conversation", "En discussion"], ls_meeting_booked: ["Meeting booked", "Rendez-vous fixé"],
+    ls_qualified: ["Qualified", "Qualifié"], ls_proposal_sent: ["Proposal sent", "Proposition envoyée"], ls_negotiation: ["Negotiation", "Négociation"], ls_accepted: ["Offer accepted", "Offre acceptée"],
+    ls_signed: ["Signed", "Signé"], ls_won: ["Won: deposit paid", "Gagné : acompte payé"], ls_lost: ["Lost", "Perdu"], ls_nurture: ["Later", "Plus tard"],
+    // default next action when a lead enters a stage
+    nx_prospect: ["Send the first message", "Envoyer le premier message"], nx_contacted: ["Follow up", "Relancer"], nx_conversation: ["Book a call or meeting", "Fixer un appel ou un rendez-vous"],
+    nx_meeting_booked: ["Hold the meeting, ask the 4 questions", "Faire le rendez-vous, poser les 4 questions"], nx_qualified: ["Send the proposal", "Envoyer la proposition"],
+    nx_proposal_sent: ["Check they received the proposal", "Vérifier qu'ils ont reçu la proposition"], nx_negotiation: ["Answer the objection with a revised offer", "Répondre à l'objection avec une offre revue"],
+    nx_accepted: ["Get the quote signed", "Faire signer le devis"], nx_signed: ["Collect the deposit", "Encaisser l'acompte"], nx_won: ["", ""], nx_lost: ["Recontact", "Recontacter"], nx_nurture: ["Recontact", "Recontacter"],
+    // qualifier and ideal client score
+    q_need: ["Need: posts weekly (or wants to) and unhappy with results", "Besoin : publie chaque semaine (ou veut) et n'est pas satisfait"],
+    q_budget: ["Budget: 1,000 TND test, 2,500 TND a month after", "Budget : test à 1 000 TND, puis 2 500 TND par mois"],
+    q_decision: ["Decision: the person on the call decides and pays", "Décision : la personne au rendez-vous décide et paie"],
+    q_timing: ["Timing: can shoot within 30 days", "Délai : peut tourner sous 30 jours"],
+    fit_active: ["Posted on Instagram or TikTok in the last 30 days", "A publié sur Instagram ou TikTok ces 30 derniers jours"],
+    fit_weak_content: ["Content looks weak or inconsistent", "Contenu faible ou irrégulier"],
+    fit_spending_power: ["Spending power: runs Meta ads, good location or 5,000+ followers", "Moyens : pubs Meta, bon emplacement ou 5 000+ abonnés"],
+    fit_priority_sector: ["Sector on the priority list", "Secteur prioritaire"],
+    fit_decision_maker: ["Decision maker reachable", "Décideur joignable"],
     // file statuses
     s_todo: ["To do", "À faire"], s_edit: ["Editing", "Montage"], s_review: ["Internal review", "Relecture"], s_approved: ["Approved", "Validé"], s_revise: ["Changes asked", "Retouches"],
     // invoice statuses
@@ -999,16 +1017,19 @@ window.GK = window.GK || {};
     inv_overdue: ["Overdue", "En retard"], inv_credited: ["Credited", "Annulée par avoir"], inv_credit: ["Credit note", "Avoir"],
     k_deposit: ["Deposit 50%", "Acompte 50 %"], k_balance: ["Balance 50%", "Solde 50 %"], k_month: ["Monthly", "Mensuel"], k_extra: ["Extra", "Extra"], k_credit: ["Credit note", "Avoir"],
     // gates
-    gate_shoot: ["No shoot until the plan is approved and paid.", "Pas de tournage avant validation du plan et paiement."],
-    gate_files: ["No files until the balance is paid.", "Pas de fichiers avant le paiement du solde."],
+    gate_shoot: ["No shoot until the scripts are approved and the deposit is paid.", "Pas de tournage avant validation des scripts et paiement de l'acompte."],
+    gate_files: ["No final files until the balance is paid.", "Pas de fichiers finaux avant le paiement du solde."],
+    gate_paid: ["Not paid in full yet.", "Pas encore payé en entier."],
     gate_mf: ["No matricule fiscal (tax ID) yet: invoices can't be issued.", "Pas encore de matricule fiscal : impossible d'émettre une facture."],
-    blocked: ["Blocked", "Bloqué"], no_discount: ["Discounts become extra reels, never a lower price.", "Les remises deviennent des reels en plus, jamais un prix plus bas."],
+    blocked: ["Blocked", "Bloqué"], no_discount: ["Discounts are extra pieces or the test credit, never a lower price.", "Les remises sont des pièces en plus ou le crédit du test, jamais un prix plus bas."],
+    launch_price: ["Launch price", "Prix de lancement"], standard_price: ["Standard price", "Prix standard"],
     per_month: ["/ month", "/ mois"], sample_tag: ["Sample", "Exemple"],
     orders_week: ["orders / week", "commandes / semaine"],
-    est_shoot_half: ["Heni shoot (half day)", "Tournage Heni (demi-journée)"], est_shoot_day: ["Heni shoot day", "Journée de tournage Heni"],
-    est_gear: ["Gear rental", "Location de matériel"], est_assistant: ["Assistant", "Assistant"], est_transport: ["Transport and small buys", "Transport et petits achats"],
-    est_edits: ["Reel edits ({n} × {r})", "Montage des reels ({n} × {r})"], est_recuts: ["Hook re-cuts ({n} × {r})", "Variantes d'accroche ({n} × {r})"],
-    est_carousels: ["Carousels ({n} × {r})", "Carrousels ({n} × {r})"], est_report: ["Monthly report", "Rapport mensuel"]
+    est_owner_days: ["Heni, director and camera ({n} day × {r})", "Heni, réalisation et image ({n} j × {r})"],
+    est_owner_project: ["Heni, director and camera (project)", "Heni, réalisation et image (projet)"],
+    est_owner_edit: ["Heni, editing ({n} reels)", "Heni, montage ({n} reels)"],
+    est_camera: ["Camera rental ({n} day × {r})", "Location caméra ({n} j × {r})"], est_transport: ["Transport ({n} day × {r})", "Transport ({n} j × {r})"],
+    est_food: ["Food and water on set ({n} day × {r})", "Repas sur le tournage ({n} j × {r})"], est_assistant: ["Assistant ({n} day × {r})", "Assistant ({n} j × {r})"]
   });
 })(window.GK);
 
@@ -1022,57 +1043,131 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
 (function(){window.GK=window.GK||{};GK.photos={Heni:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBAUEBAYFBQUGBgYHCQ4JCQgICRINDQoOFRIWFhUSFBQXGiEcFxgfGRQUHScdHyIjJSUlFhwpLCgkKyEkJST/2wBDAQYGBgkICREJCREkGBQYJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCT/wAARCACgAKADASIAAhEBAxEB/8QAHQABAAIDAQEBAQAAAAAAAAAAAAYHBAUIAwIBCf/EAEAQAAEDAwIDBQMKAwcFAAAAAAEAAgMEBRESIQYxQQcTIlFhCHGBFCMyQlJikaGx0RUk8BYlM0NyweFTgpKy8f/EABkBAQADAQEAAAAAAAAAAAAAAAABAwQCBf/EACMRAAIDAAICAgIDAAAAAAAAAAABAgMREiExUSJBBDITI0L/2gAMAwEAAhEDEQA/AOoERFACIiAIiIAiKPcX9oHDXAkMUvEN1iojNkxx6XPkeB1DWgnHryQEhRc68Ue1vDHN3fDFgEsRZnv7nIYzq9I2Z297t1Car2ou0CpZGyKS10paSXyRUgJcPLxEjA/FMJw7ARcj2n2qON6BpbWwWy6eIbyw924jruwgb+eFZXCXtS8P3WGFl+t1XbJneF80A76EOz5DxgYx0KYMLuRY9vuFJdaOGtoKmKpppmh8csTtTXAjOxWQhAREQBERAEREAREQBERAERUH2+9sz7a6o4SsMzmTAFldUxuw4ZH+E09Ofid8B1QJGd2pe0XBwzXSWfhiKlrqmMFs1bIdcUb/ALLGj6ZHU5wDtvuuYb3eay/V01wuNVUVVVM4udNNIXOdn38h+Xkv2KKWtkLpHax1dzx/WV7zWSp7t0jWO0BuC4jAAXLkkWKLNE8Pa06Q57cjxAdEMcjHPGktDdjjrle7qSSOXTodjbpgf1svVn829kYjMTicOfqOM5/ZOQ4mLTte6UMGlhPPbkM9V+GSSnnwHnnjLcjK2Tac0Uzhpe+DSRqHIOzuT1wsd9BLLUtDYXAY1Y6acZP6805E8SZ9nPaVfuA7l8qtlW+SmkINRSSu+an97eh+8N11j2edqVk7Q6T+Tf8AJ7hG3VLRSHxNGcamn6zfUcs7ri63Wd8paGeYaRgndbu21t14PuFPXW2eSmnp3a45Yz9EeXqCMgjG+U5JkODzTuhFDuy/tCpe0PhxlYDFHcYMR1tOz/LfvhwH2XAZHxHRTFdFYREQBERAEREAREQGh474kHCHB92vgDS+jp3PiDuTpDswf+RC4UuNbWXqvfNUyOlqJ5C+Rx5uc45JJ65/3XWntK1UsHZo+niJBqq6CI48gXOP/qFzNQ2bupY3PbktIJyOeT/wuXLCyEdJzwdwZFSUMcla1jpXEPA5geQUsPDlBXOaJYtYbyGMALwoZB3UX+kbKQ0IGAeq8m2x6evCCSwjNX2T2isY4wiSFzhgkHO3lvyWHP2L0T48RVEsTjuXNaAfgrRowHAA4C2IjjAA5/BIWT9lclH0UjF2JY7yN1xe6JzS05j8Ts+ZW6peym2Ujg9jqlzu67reT6vl6BWm6JnkF5mJnkF1KyfsRUV9Fe0/AVto3mSOAtJOeZOnbGAsa58F0ctHJEANWjSzI+jgbKf1AaBthaW4O68vVcwtenUoporTsev0/AfaFHFO9zKGtkFFVM+qNR8Dvg7HwJXWvJclXqxuqLpVvjaQXAuGPNdT2KqdW2S31T865qWKR2eeSwE/mvVhLktPKtjxZnIiLsrCIiAIiIAiIgK77c7U67cIU0TQC1ldG9wI6aXj9SFR0ljeM626Xadm/BdNcaUYreGq1haHaGiUDH2Tn9MqlKiBvfu1D3Ki54aKDV24SMZCDzxjHopVR5AGxytLE0CYHb0WzZdKCjwJ52NdyxqXmTi5Po9RSSRv6R7jyW0h1HCj1Jf7a6RrG1MZcemoKTUUkMzWkPbg8khBryVykj8cH9BkLze1xGy2YhZ9oLVXu922y075quojiYxpcS442HNWOtnCmYc8D9ytPcY3NbnnhQ669vNoZUOgp6eoJzhr5G6WuHmsKm7YqOrq46aspXhkjsCaPdrPeoX4013hP88fGkoZQMlkklP1gAcq8bDF3Fjt0RGNFNG3H/aFUFvjZUH5ohwkxpI6g8irsjjEUbIxyY0N/AYW+j9TD+R+x9IiLQZwiIgCIiAIiIDTXviK0W57qG4zOYJWYedBLWtcCN8Kk3VUdS9xicCA5zc+eOqnnahbc3OmroyWPfAWOPR2CcA+fMKtqKRk9VVFmA5pAc0dHdVjssbk4s310pQU0YHEFbV0dE6OhYXVE3gY7ONHmcqvq2wXSJ4L7wGyPOpweCT8MblW26hE8LpNIJaNtuRUHrrS43uOoukUklDnLoGHSZP9R6j7qqrs74l8q9XLyRaSzRQxh8vEEj5HHAjY1rMEb8g7/ZSrgu93m13CKCS999TPOWsnYQSPQ9V88KcFWiy8QNu4rXVFJA8zRUhpg2Qk8g524wP6AytterXAIpaiGmZSw1EoMFKzOYzzLhkDA8+i7tl1505phsu1hb1FVzVFD3urOAqk4+qYK2vfBKZaog47tp2yeWT5+isHhV889nbHITnRjIUUgt8lvvtTL4HVEcrpYWyRhzX55nnzACzVy19l0oZpXdNf7RI+OhiszZqgvMfdtpnO8QIGnfmd1ILRHaLtG+lbQU0WMtxGzToPUEcwR5FbKGyWq3cRfx2nszhXFxlMZlIhbJz1BvP1xnGVmUVjdW3eW7TRhlVLguc0Yz6FaJyil8X2VQjLfmuiScPufaqSnIb3pptOGuONQac4Vi8LcT3G9XmannEZhEbnnSMCM5GGjz59VAooSwFmObSph2fRYrpHtBDfk4znnnICVzk5RwrnCPGTaJ2iIt55wREQBERAEREBGePaNk9ojqHDeCUb+jtj+eFU9Q63/wAQd8icHFzNMnmHDp+qvO729t2tlTQuOkTxlod9k9D8DhURe6SotdW01UBiqIT3UriDl3v6eufVZLo/NSN1Fn9bgZFE4BxjPUrOltFPOAXMDs+a1cEoeWyMOxGVvKKbvmAHJ9FhmsZsi9WnjFa6OkYe6ha6Q/Va3JP7LU19qzUioqMF3kOTR5Kc0dLG7GAAtJxNSNfVwUwf3bSC97vMDojUmjuElyPvhs4iIAwF411C2S4ObIwEu8TSsrhyqtzfmjONMfhcYyHbr7rqqhqKsMjqY++hOrQXDVj3KePQcuzGFo7sbt1g9f8AhZENJHGNmgeey3j4md01w5EZWrrfm2kqHv2cbprJyGzOIHJpKmXZ26WWOsdMPHGI43HGBnBO35KB1Mzi4Bo8UjhGPTKtPg+hbR2ZjwS51Q4ykn8B+Q/Na6I9pmO+WRa9m7REW4whERAEREAREQBRPjnhCmvVJUXDvpoaiCBz8MALZdIJAcD7sbKWLxrYu/o6iH/qRPZ+LSFy0muyYyaeo5qZdfkVYyBx1Rvxy20qW2x42LSMHCqfiq9MhLe6lbqjyC4cwQcEfqtxwnxtGY4opHl2HCMkHlssF9TfyR6dU/8ALLfZc46SJznO5DZQDjnjK200TnVUuZWjwsjd4j6LQdoXF1ZQ1tJQ0edUzS4kdOQCjH8NoJx3t0ndPUSjPdRnJGx5u6eey4hDUnIt5ZLI+TYWfjn5RVz9/S9yPE5jovCSGjqRzysmy9olD/Fv7wpWwMMg0PB5EjHiPM/svGgrrdQt7qKxwyxgc305e7O2Dq5nkF8Vws12lfPcbYWOeMOmhYYyPXA2PxCucI+ieFq70uu08QRVsGGytkadgQV+XCfUMcx5qhJLxX8J3GkfSVbZ6SWQBrgfpjPIjzVlcWcUCgtby17WyFnU4wfIeqzyraaXs55p79YSLgl8d647gpjG2WnpI3yvDhlpIbt6cyFdAAaAAAANgAuffZlkqK68XmolOpkNO0Z+89/7NOV0GvSrjxjh5dsuUtCIisKwiIgCIiAIiIAgGSB5lF41ddTW+PvaueOBgycyODc432zz+CA4P47ZNbOJ7nTaiIzUyaS7qNRwVgcO17ornTAY0Zy4F2cgefwCk3a/Ta7o2tiY49485OduZ6KuYal0cLotOc9DgkH9t1UvnHovewl2WXfLpT3m52trBL30Q8UreWM9fNbyeSnpHhwLIScZwOfvVTwXOSGrZODHqb4Q71x5f/FYfDrrbW0b466oHeZ8UmvJ92eQ3ys84uGYbKbdbf2b+Dimw0zAyocHSl3Nh5+nJfU15tlQ0OjlaGnYNbuV5HhvhWhphJIHETuAc8v1FoJOPcM4G3osC5Wew2352GR+oksA1eFuADkhc89NLtnmNnxxOyCKno6/uxoZI12nr6bKP8W8RvuUbZdbcAaTEDgggg5+P7ryv98bLSCmL3vhaOWd245t9QCduuAoi2SSaTu9eQ/63XHr5q6qt+WYLre+jpX2SBVywcR1BBFGTAxo5jWNZxnnsD+a6HVedg/DNLw32c0HcN+drc1M7sAZcdgNugAG/VWGtJiCIiAIiIAiLAvN9tfDtG6tu9wpqCnb/mTyBoPu6k+gQGevGtraW3UstXW1MNNTxN1SSzPDGMHmSdgqS4y9qmw2wPpuGKGW7VHIVFRmGAeuPpu/BvvVBcbdr/FvG7v74uXe0jX6mUcTBHCw+jRzI6EklCcL77V/aUtVlpJrVwfUNr7k8Fhr2DMFP6tJ+m7y6D15KjeF+MBU3SsuFwqqipuVWMNqaiYyOA6gZPhzjJwq8qnucdQdqa/kVisqHRPyAee2FEo8lh1CXF6X/WUEHE1qdDLguc3LXc8FUjeqCa03OajkYWvYcOx9bfmpFwz2iVlm0RytFRCMAtdsQPQqSX678M8Y2yR2v5JcA3LXSM5nyLh0WSCnVLGtRtsdd0dTxlVgua7RnUQOWFsIbs+J/hcW5IOkYx/W6w6+jloKp7XHMm+NJBGDleG+A9pw7OcD3jBWvE0YdcWST+1sr2tZO572ABwZqxgg5BGOnvWPUcSSTvdh+WOyCeRx/QC0JLpNIcyNgbqPqfT15JTzBjACwbNI0kdc5UcEiXNs2T6p0mvdpBwNs7+Wyk3ZvFRy8V203FpdQCpZ3nQAE4z+aidvpJZy5zT4Gka3OHI+f5BTCximo6Noke1wEglDT1cD+6nUukSot9s70o6WnoaSGlpGNjp4WBkbW8g0cl7Kg+y3t3pKSKlsXELnNgy2KnrSRiIHk2T7ueTug57bq+mPZKxr2Oa9jhlrmnII8wVJXh9IiIAiIgOaON/acuksbqew0kVsadjK5wlmHx+i34A+9UVf+MLpxBWOqa+uqauYn/EmkL3D8Tt8FoZ55JydTiSV5h3dbDmdsqTo9nyuJO+5Oc5XwHEMII5LwMpyB1z1X61+p2SdkB8S+EEAAtPNvr6LxwSMsJcOo6he0rdydhlY7vC/Lcg9CEIPpryCsunrHREYPJYhkIHzjGv9RsUa6M/Rm0nykGD+KA20kkVYw97kuI5k7rDfb5QTokaWbYGBsF8RibSNLdQx0Of0Xt3kjAMtePeEB8OoKhjmv1NlIPXovttvDG6nHbmV+OrHAgnI/deRrXO6khRhOmwilZBFoj+scu9V7MrC5w5+4LTh8pOQxxH4LKimbq+cfv8AYZuT7/JTg03dFVF0ofKS2GI63u93T3qyezztw4h4KayJjm1tu1EuoJ3HS0E58DubDv7vRVEZ3StEQwyNu+hvn6+ayYJcscweWUJO3uBu2rhLjgRwQ1gt9xdt8irHBrnH7jvov+G/op6v50QVb43B2TjOTjz81afA3b1xVwmIoH1hulCBj5NWu16R91/0m/mPRRhzh2IirTgzt84U4pDIayU2asdgd3UuzG4/dk5fjhWU1zXtDmODmkZBByCEIP/Z",Mohamed:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBAUEBAYFBQUGBgYHCQ4JCQgICRINDQoOFRIWFhUSFBQXGiEcFxgfGRQUHScdHyIjJSUlFhwpLCgkKyEkJST/2wBDAQYGBgkICREJCREkGBQYJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCT/wAARCACgAKADASIAAhEBAxEB/8QAHAAAAgIDAQEAAAAAAAAAAAAABQYDBwECBAgA/8QAOxAAAgEDAgQEAgcHBAMBAAAAAQIDAAQRBSEGEjFBEyJRYQdxFCMyUoGhsRUzQmKRwdEkY3LhNUOS8f/EABkBAAMBAQEAAAAAAAAAAAAAAAIDBAEABf/EACMRAAMAAgMBAAIDAQEAAAAAAAABAgMREiExBBMiMkFRQmH/2gAMAwEAAhEDEQA/ALj5c1nlrbFfYqYPRgLWwX1r6tgK43RrivgK3xWk0scEbSyuqRoMsxOwFcY0YJA3OwHc0Hv+L9KsMqJfGcdo9x/WlHjPjcSwtDpk/NGx5XYbf09qT7e4kuXVSxO9Px49+irvRYo48upSQsMaDsR2oRrnxCmhzErnzfaAPahFzOllaF3OMCkHUtVNxOzDfJquscpdCVbbGduNp4Jn8ORmjP8AC5zWlp8R9SspPLcTlRsFL+UD5Ui3NzykEEgntX0TqxDM2aVxQ3kyzJ+P1veSYSfRrhPMrIcDbenjh74naZqEES3cqxykeZu2fevPlxep9n7JxsRUFtqrW0o5H396U4C5Hru0v7W9Tnt5o5R6owNb3m9lcD/bb9DXm3g3je90K7dEuSIJDkjbAPtmrh0D4kabr1ncQTOILlVI5W/iXGzDt1pVToNAp0OBtXfokf8AqG9eQ/2rnKE4rv0VcXhH+21Qw+ymvDvaLaoyhzXby1EynJ2potBvGayAK25RXwXem6MMcue1fBak5AKyFGK4xkcjJFG8kjBUQFmJ7AVSXHvxEm1t2s7Hmhsge/2pD6n29qZfitx7PojnR7FlRnj+ukIycEdBVLLM1xJzFi3vT8cf6LphO1lkmOC5Pzpn0i3wPEI7UB0m35mUAZzTJd3CabYMSQCBVUTontb6AHGetYAto26dcUm/SjnJ611ahcteXDv1JNQQ6bJIeYAnPal3l7GY8T8OO5ndnBPSsJMz+RTvRqXh55rf7JD9qGSaJeRjyoSw9qBZU/7HPDX+AfUL2dPIGO1R27XEmHcfL1og2izqwMi75+eKzJG1m5VsHbuK12gfxtG9pOY33VZMdUbvXZZa7NY3wcgxgnAAOwX7vypfvdSkBHKBt371JY3CXjETMvTvQPs7ei++GeIfp9tFCT4j46+lOWhHnvh/wb9K898Ma3JpFyuJGKZAIznar44FvF1Awzgkh1Y7/Korx8b2h6vaGorWhQGukpWpTFaAgiFrIWs1kDNMZyMYqK9vItOtJrqdgsUSlia6QBSd8QtVX6INJgBeaUhpMHZVG4zQ1SlbYcQ7pSioeL7K/wCLNXudR8aGMvusDMS4UdB060uabpF05wkDkc2CcVYsdikOCfM5710afp6xMEUbZzRYfpb9G/R8sz4CtH4dmgjEkigNjpXBruj6hqUvgphEHUk7U+yoIIcUHuiY1ZgvM3YUWT6mlpAYvll9sS7fgQIQ895+AWjlpotjaxhVCkj+IneoL2zu70kvM0S9gKDXGmz2/NzSSTD7y52qfbv1lSlR5I3x2MLL5UUj2rSbSI3U+QDPtSXpmv3Gl3Xhl3ZAcFGNWLouqWuqQ5Tdu4I3FLvHU9jMeWa6FK+4cVkPIvnHTApS13h66UEmJumOlXRNpyMeZdtqFanpheLdOcHbetjI0FeJUeebvTrmKTzrgdvlXJag20zA8wBPerP4j0JVLKyAL2qudRK2dy0ZQnB3qzHl5Hm5sLhnXbsUZTzHIwRirX+HHEupaXd6fOW8aymm8D6MpHMc7ZHvk1TMOpIWVETfNWF8PJDDxJps9wWaNZlKoOhbp0rqQmXo9OwTR3UKTRNzI4yDWSKj022FvaqgJOSWJ9STk1OVpNLsNHb3rdR3r7k3zW6rmjOOTVb9NL0+e8fBEa5A+8ew/rVV380rl7mUl5JDzMfc06/EeV10SOGM4Mswz8hvSRcTRrbIMFllPLnOcGpfofaR6XxSlLpnHaG4nl5nx4edgBTDZ2yxrzt1PahiTeJMqKMKuygURlmKoF6V0/qjsn71ogv5udyB0FDblmUZAJrv5cnpmsyWpaFiBg4pFW2yiI4oVLi4e6dkgnTK7MvcfhUX7Lv5N1nRj93uaBcQaZJNfyTwPLFPG3nEbY519RQfTOMNR4fvmWW4M8KSBWtbgHxgp7qcVTEbW5Yqsql6pBnWdKaQskqGOdenrQ/StZutC1JJTzOh8rp6j1pq1bUYtYihukIYkDcdwaC3OnieNmRAZF2x60SvXTMvDv8AZFpaNqVvrFgtxA4bI3welTyxh0OaQ+ErxdLlFou8khBbHQU9mUvH1FT30+huNNrsSuJ7MshJUn0qrtf0TnaSXlOau6/txOMMARSdr+mRFZV5QNs1uHJpmZsapFNW9kiOwOQ1OXBdyINXsmlkYKkoPXpvSjcSYuZkU4w53/GjfDsrG8gJBYs3KD716T8PFc99HsWwmFxbRyDYMAcVOw2NAuBp5J+GrQz58ZAUkz6g/wD5R47g0ivQ0dtbAV8BWwrdnCt8QLKWbTYblAWSBz4gA6A96rqZ44RgPlOuPerk1i9jsNLubiUAhUICnuTsBVCXUqveycpABPal3Cp7KsWbUaC+ny88hkJ2AqdrzxZeUHauCxcGE+maltlPiE980jK0uin5532HrSLJBJAHpRSO1V0wKDQTrCBzuM13QatChH1in8amXpdwYv8AEnCrXhMkP1cwzh1H5EdxSLdaLcWl+k15Y+I0eyzKnNy/3q5fp9rOMhlDVz3EtuQSyRt+FPm+IusXL0qS2tp45mAKPDMedSn8DehHaienWks8pBVlBbqRTn9Himct4caj5VLDZxBxgD8KGsuwlGkD7XRo7CJpig9jjeuWTiCGO68BicgdewopxTfnTdKeUrnlGAB3J6VUmoXF5dc0gYo59RtXTPL0XdcfCz4NTgu1PI6n5Glni+UWtrNcEgAITmq4g13UtJvl55GUZ6dmovxvxUmp6DBbxAiWckSewFPnBprRK/pTT36IVvGLx3Od2Oc1YXw94Tutbv4o4nREjIbzrzb52ob8N+AJ+JrpizmCzjxzyYySfQV6D4T4YtuH5oliCheZFAUY79T71RkyJdI89TtbY08O6M2h6VHaSSmaXJZ3+8xoiVqWTqfnWlC2CjrU9q2G9Rqc1x6xq0ej2D3D4L9I0+81Yak30KPxJ1/w1WyhJYRDmfHTmx3+X96qS5vAGLnALHNNHEV/IbeaZyXeQnmY+9VrqWpZnWNMEZ33oo7Wxtzx0hss7+NjFGr5LnoDRnUr8aPp/jBS0rbIPw3J9qRNAui+poD9kMMU93toNSkMD7oI+THz6/2qTJrkel8/8G0JUHEQ1K8JuL+b5IcKKcNJsrOdFdLiSXPcuaQNcs7LSNfezmhZU5VMbL13HWimmW9xIee21ASsi5RWblOaZ+NNGxkuX/pYMlstvGWQ9B60PtNbtFBN5KI8HGScAUrXPE+r6VE8WoQyqW+y7rkY9j0rhtdVsddjktLscqz7ZB6e9B+BjV9Mt8X6WnZCzvQr284kRuhVsg0WisRHggk1S/DGjalwbr8MVrdSz6ddEhk3IQ4yG9quWy1dJbYJzA+vrS7xqX6Gm2hN+K2qfszSULKCnNzvn7o7fnS9oDaJq+mAojpd4DPG7eZVI2OPT3o/8SraTULCKWEc6wlhImM8ysN6puCKXhnUoLy2WbAkC84bKeGeqkVRilOdf2S5bc134N3EehQqHjBBx5kbG4rh4R4Il4quUM7+DZ274kkP6D3pvtdHueJrj/ToShH2j0VfWn7Q+F7PQ7CO2jTmKnmLN1LdzQ/l4zolzQqrZ06Fo9notitrZxLHGvYDr70Ytz9fET1Dr+tcaEL3zmpYZD46YPRh+tImtsFrobZBh2+ZqMkVJLku3zqFtqtbJdHRJIkETSysFRASxPYVW3EOtvrF6zjIgTaNfQevzNd/EfFQ1SJba1SSKE+Z+fZmPpj0pac8oJNJuv6Rdgw/9MXuM7z6PpTEbb1Vsk5ZuZjuaf8AjuXn06Qc3vVa3EoiAZV59qbi7kX9C1Y38N2wmuYJAxUA5xVlacpJMj7lt6qrha9KTq2c7dKtfT3zao3Ly5HSpsyaou+ZpyLfGPDqard2t2hCTRgxknoQTtmprf4d3L/Sbm1nxDaJnnG/iNjfFGLkeLz9Cam0rVLrTShictAG5ngP2X9vamQ21oc4fsixHfOg/Z+rWrCOQY5JV2Yeu9LXEXBcujY1TRpmntgeZoWPmT5eo/Or0sotB47sJb64tzFeQK0b274MkBGcZA9eoPfNV5r2lajoKJFqEaxpITy4Oacq4i0py/rXTQmWnH8HhIJAyONiT2NMuma7q1zIgtokkibHmGdgaSOKuFDcZ1OyC+GozOq9/fFOvBd1Fb8O2zBhkHlJ+VKyzKnkjMV2r/HY+JZmezxJgsRvS7NwlaPcHmhU+IeUr2OaabS5R4Fwe1dGmW63eqxl8eHF523x06fnU0U99B5kktsIaLodvoOnR2cCgBRknO5NbTlU6539qJzXFin7x4h/ykrim1fSo9vFtz8gWrXLfp5nIGvOEcjNTW7FZVdgeUEZrZtTsplZYYzzn+PwsfnWsbeXeuS0d6FLzXLibmEQEQPcbmi0Tc9vCxOSY1JPqcUqu46Cme1PNY259YxT4rYq1orAbnJqC7kwMVKZAorhnbmJNT8j2JkSfiC7rp4Krlc71WrMXKspwKtDjtS2iy47b1VFtJjqc5PSrfn7k877OrHfguF7m9QFfIhGT61dBt+SJQq48tVZwEA93Gyr5DgVcaxiQ4H3QKR9H8iz41+ohahqE2m6sQwIjbbHY0WtZY3IIIKncip+JNDF5BhsjkPMCvek221RtPnMWW5QcDmFbD6KU3D78G+/so5Z4NQsrqSy1O2wYZ035v5XHRl9jRT9ujjCwuNP1y0js76JP3qeaNk++hPTPp1FKa6p4oypyD2z0rSSf6UkkTh+V1KkgkHBpjrYWXFNLkvRR0viSI3txDEGe3WVkViNmXpUVrffQrqXTInLI0oZMfOjOncGWdlHlfGKLnlTmzUukcKixuzqd/yhQfqk7se1BVLTJa3tP/BztLl44o0UFnOAAOpNNdpoiGBDcqTKRlhnp7VFwvoSwwJezjmnkGVBH7sHt8/emAxECp0tCfozc3pA+PR7VdxEn9Kk+gxxsCqKB7CuwbDeo5H5ulGifYPvseMuO4qJWAre+IEqY9CK5y9CzkbFskmmnT35tOtz/Jj8zSkTTRpT8+mwewI/M0zG/QLKvlkzsK5pNlrAkOd6+lby1MeykLPGEby6LdRoMkqapeNgJFy3er21FBLGVIzntVJ8VaQ2j6tIoUiGQlkPtV3yV7J533Y31Q/8B34gBc5wmMHtmrj0bU454kdjkOOteaNB1k27ojO/hZ3APWrV0HiO4jto13EZHIpI7etbmjvYXy5VrRbEscc8Wc5pN1/hiC5JeNeVgc/Oj1hd4tI1MnMxHUmvp5kdcYyal5aPSWmtMq+80zUbC6VrcF1z9kUbtBOkfPclUUDNF9bu7PSrZ7u6kWNF9epqs9T1XXuK7kQaVbSrbuSECDd/xps7pdkWbNOLr0cJeKbSBxFArXM7bJDGMkn3p94X4Kl1BE1HXXJmYZSFN1i/Pc0lcEfCbWLKcXF27W2Rlm25z7Va8OmT28SoNSvcD+f/AKrG5n/0leS8nvSC1tpsVrH4aTOQD3T/ALqbwEI/eH/5oC1leknGqXgHpzD/ABWBZX4O2rXX44/xQ8kBxYbe1UggSD+lc30AquBIp/A0N+jXyn/ylz/Rf8V80OpZAGqTEH+Rf8V25N4skvNIuJ3Vo3jwoPXNCp4Xt5uSRgxHp0og0OrRgtHqbk+hiU0JimnuB4ly/PKftNjG9ZSWujkmdCEHtTDpb8lhF7lv1paVuWjWlylrUDbyufzroMrwrAGsSNmoYZw6A+taSTdd6Qz2k0RTgGlPifRotTtnDD6wDKN70zyS570OugGBoopp7QGSVS0yknEthdMpBDIelNmg8ZPbXERnkDBByhW6Ci2vcKRamDLCRHOOhxsaRtX0G80rlknTCseq7ivUjLGVafp494smF7Xhbtr8SISwy6gKP4emaxdfFGGHPm5gPTvVNB5XKrE/aspOVcc7ZOevatXzwdX25Eh4v9X1XjnUFVeYxBwEjXoPn716R4F4Vi0DQbSNokFz4YaRuXfJHSvMvBPE0vDF/HqNokM/IcsjrzK3+DXqDgnjfTONrASWcqw3Sr9bayNh09x6j3pH1RSWpXQvFapuqfYf8wqOU5GK6TbyjbAP41G1tL9w1B2U7IeY9xWpbepzC5/9ZFaNDy7EEfhXdnNkRbNYyayQBUZLAnFEgSRG3waWkPKGX+Y/rTAjs0oUDt1pa58Ox/mP60VPo4m58CiulXCxW8jyECNTkmgnNk1K9yP2fJbc28jg7dsVuN9mV2j/2Q=="};})();
 
 /* ---- core/model.js ---- */
-/* GECKO Ops · business rules. Pure functions over store data.
-   Rules come from gecko/01-business-model-v2.md. Modules read through GK.m, never re-implement these. */
+/* Gecko Ops · business rules. Pure functions over store data.
+   Rules come from gecko/plan/ (offers-and-pricing.md, crm-pipeline.md, roles-and-team.md, costs.md). Modules read through GK.m, never re-implement these. */
 (function (GK) {
   "use strict";
   var u = GK.u;
   var M = {};
 
-  M.STAGES = ["onboard", "plan", "shoot", "edit", "delivered", "testing", "report", "done"];
-  M.LEAD_STAGES = ["dm", "replied", "call", "proposal", "won", "lost"];
+  // ---------- delivery (projects): gecko/plan/crm-pipeline.md "After won" ----------
+  M.STAGES = ["onboarding", "scripting", "pre_production", "shoot", "editing", "client_review", "revisions", "delivered", "paid", "retention"];
   M.FILE_STATUS = ["todo", "edit", "review", "approved"]; // "revise" is set by a client's change request
   M.FORMATS = ["9x16", "4x5", "1x1"];
-  M.ROLES = ["founder", "sales", "editor", "assistant"];
-  M.LOST_REASONS = ["no_budget", "no_product", "not_now", "went_elsewhere", "no_reply", "other"];
-  M.CHANNELS = ["teardown_dm", "media_buyer", "referral", "warm", "inbound"];
   M.ONBOARDING_STEPS = 7; // ob1..ob7 words live in the projects module
+  M.REVIEW_SILENCE_DAYS = 3; // client silence in review counts as approved
 
-  M.PACKS_DEFAULT = {
-    GRIP:   { name: "GRIP",    price: 1500, monthly: false, shoot: "half", angles: 2, reels: 4,  variations: 8,  carousels: 0, cost: 711 },
-    SEASON: { name: "SEASON",  price: 4800, monthly: false, shoot: "long", angles: 4, reels: 16, variations: 32, carousels: 4, cost: 1794 },
-    SKIN10: { name: "SKIN 10", price: 3500, monthly: true,  shoot: "day",  angles: 3, reels: 10, variations: 20, carousels: 3, cost: 1540 },
-    SKIN20: { name: "SKIN 20", price: 5000, monthly: true,  shoot: "long", angles: 4, reels: 20, variations: 40, carousels: 6, cost: 2100 }
+  // ---------- sales (leads): gecko/plan/crm-pipeline.md ----------
+  /** Open stages in order, then the two exits. Won = deposit (or first monthly payment) received. */
+  M.LEAD_STAGES = ["prospect", "contacted", "conversation", "meeting_booked", "qualified", "proposal_sent", "negotiation", "accepted", "signed", "won", "lost", "nurture"];
+  M.OPEN_STAGES = M.LEAD_STAGES.slice(0, 9);
+  M.LEAD_ODDS = { prospect: 2, contacted: 5, conversation: 15, meeting_booked: 25, qualified: 40, proposal_sent: 50, negotiation: 60, accepted: 80, signed: 90, won: 100, lost: 0, nurture: 0 };
+  M.STAGE_MAX_DAYS = { prospect: 7, contacted: 14, conversation: 7, meeting_booked: 1, qualified: 2, proposal_sent: 10, negotiation: 7, accepted: 3, signed: 5 };
+  /** Follow-up days after entering a stage; after the last one the lead moves to `after` with that reason. */
+  M.CADENCE = {
+    contacted: { days: [0, 2, 5, 10], after: "nurture", reason: "no_response" },
+    proposal_sent: { days: [1, 3, 6, 10], after: "lost", reason: "no_response" },
+    accepted: { days: [1, 3, 5], after: "negotiation", reason: "" },
+    signed: { days: [1, 3, 5], after: "negotiation", reason: "" }
   };
-  M.RATES_DEFAULT = { heniDay: 350, reel: 28, gear: 400, assistant: 120, transport: 60, recut: 8, carousel: 40, report: 50 };
+  M.RECONTACT_DAYS = 60;
+  M.PROPOSAL_DAYS = 10;
+  M.SOURCES = ["ig_organic", "tiktok_organic", "ig_ads", "tiktok_ads", "website_form", "referral_client", "referral_personal", "outbound_dm", "outbound_visit", "outbound_email", "event", "international_platform", "other"];
+  M.CHANNELS = M.SOURCES; // old name
+  M.LOST_REASONS = ["price", "no_budget_now", "no_response", "chose_competitor", "doing_it_in_house", "bad_fit", "timing", "decision_maker_said_no", "other"];
+  M.OBJECTIONS = ["too_expensive", "want_to_see_results_first", "already_have_someone", "need_to_ask_partner", "not_the_right_time", "want_monthly_without_test", "want_more_pieces", "other"];
+  M.ACTIVITY_TYPES = ["dm_sent", "whatsapp_sent", "call", "visit", "email", "meeting", "proposal_sent", "follow_up", "note"];
+  M.MARKETS = ["tunisia", "international"];
+  M.LANGS = ["derja", "french", "arabic", "english"];
+  M.LEAD_KINDS = ["ecommerce", "personal_brand", "clinic", "food", "real_estate", "hospitality", "other"];
+  /** Qualifier (stage meeting_booked -> qualified): need, budget, decision, timing. Ideal client score: 5 points, prospect at 3+. */
+  M.QUALIFIER = ["need", "budget", "decision", "timing"];
+  M.FIT = ["active", "weak_content", "spending_power", "priority_sector", "decision_maker"];
+  M.FIT_MIN = 3;
+
+  M.ROLES = ["founder", "sales", "editor", "assistant"]; // "sales" is shown as Client Lead
+  M.CURRENCIES = ["TND", "EUR", "USD"];
+
+  /** Offers: gecko/plan/offers-and-pricing.md. price = standard, launch = launch price (null when none).
+      upfront: deposit (50% to book) | month (monthly, paid in advance) | full (paid upfront). */
+  M.PACKS_DEFAULT = {
+    audit:      { name: "Ad Audit",        market: "tunisia", currency: "TND", price: 150,  launch: null, monthly: false, upfront: "full",    shootDays: 0, angles: 0, reels: 0,  variations: 0,  carousels: 0, cost: 0 },
+    test:       { name: "Test Campaign",   market: "tunisia", currency: "TND", price: 1500, launch: 1000, monthly: false, upfront: "deposit", shootDays: 1, angles: 3, reels: 3,  variations: 6,  carousels: 1, cost: 350 },
+    monthly8:   { name: "Monthly 8",       market: "tunisia", currency: "TND", price: 3200, launch: 2500, monthly: true,  upfront: "month",   shootDays: 2, angles: 4, reels: 8,  variations: 16, carousels: 2, cost: 700, minMonths: 3 },
+    monthly12:  { name: "Monthly 12",      market: "tunisia", currency: "TND", price: 4800, launch: 3800, monthly: true,  upfront: "month",   shootDays: 3, angles: 4, reels: 12, variations: 24, carousels: 2, cost: 1050, minMonths: 3, ads: true },
+    campaign:   { name: "Campaign",        market: "tunisia", currency: "TND", price: 4800, launch: 3600, monthly: false, upfront: "deposit", shootDays: 2, angles: 4, reels: 10, variations: 10, carousels: 2, cost: 700 },
+    remote_edit:{ name: "Remote Ad Edit Pack", market: "international", currency: "USD", price: 700, launch: null, monthly: true, upfront: "month", shootDays: 0, angles: 0, reels: 8, variations: 16, carousels: 0, cost: 240 },
+    gulf_trip:  { name: "Gulf Shoot Trip", market: "international", currency: "USD", price: 3500, launch: null, monthly: false, upfront: "deposit", shootDays: 2, angles: 4, reels: 8, variations: 16, carousels: 0, cost: 0 },
+    tn_day:     { name: "Tunisia Shoot Day", market: "international", currency: "EUR", price: 950, launch: null, monthly: false, upfront: "deposit", shootDays: 1, angles: 2, reels: 4, variations: 4, carousels: 0, cost: 350 },
+    support:    { name: "Production support", market: "international", currency: "EUR", price: 250, launch: null, monthly: false, upfront: "deposit", shootDays: 1, angles: 0, reels: 0, variations: 0, carousels: 0, cost: 0, unit: "day" },
+    custom:     { name: "Custom",          market: "tunisia", currency: "TND", price: 0,    launch: null, monthly: false, upfront: "deposit", shootDays: 1, angles: 0, reels: 0,  variations: 0,  carousels: 0, cost: 0 }
+  };
+  /** Add-ons, as quote lines. at: price, or pct of the offer (express). */
+  M.ADDONS_DEFAULT = [
+    { key: "reel_existing", name: "Extra reel from existing footage", price: 150 },
+    { key: "reel_shoot", name: "Extra reel with a new half-day shoot", price: 400 },
+    { key: "carousel", name: "Extra carousel", price: 120 },
+    { key: "community", name: "Posting and community management (month)", price: 600 },
+    { key: "ads", name: "Meta ads management (month)", price: 700 },
+    { key: "raw", name: "Raw footage", price: 300 },
+    { key: "express", name: "Express delivery (72 hours)", pct: 25 },
+    { key: "revision", name: "Extra revision round (per piece)", price: 80 }
+  ];
+  /** Cost rates (TND). Owner pay is what Heni is paid on a project before the partner share is worked out. */
+  M.RATES_DEFAULT = {
+    camera: 300, transport: 50, food: 30, editReel: 30, assistant: 120, lights: 80,
+    ownerDirect: 350, ownerPer: "project", // Heni as director and DOP: per project or per shoot day (internal/team-pay.md)
+    editSmall: 300, editMid: 500, editLarge: 700 // Heni's editing pay: 6 reels or fewer, 7 to 14, 15 or more
+  };
+  /** Client Lead fixed pay levels: recurring monthly clients -> TND a month (internal/team-pay.md). */
+  M.LEVELS_DEFAULT = [{ clients: 5, pay: 1500 }, { clients: 8, pay: 2000 }, { clients: 12, pay: 2600 }];
   M.RULES_DEFAULT = {
-    cap: 75000,          // auto-entrepreneur yearly cap (DT invoiced). Accountant to confirm.
+    cap: 60000,          // revenue in a year that triggers the switch to a SUARL (legal-and-admin.md)
     reserve: 10,         // % of revenue
-    commission: 30,      // Mohamed, % of project profit
-    salary: 1500,        // Heni, DT / month
-    stamp: 1,            // droit de timbre per invoice, DT. Accountant to confirm.
-    withholding: 3,      // default % a company client withholds on service fees. Accountant to confirm.
+    commission: 30,      // partner share, % of project profit after all costs and the owner's pay
+    shareClients: 5,     // the partner share applies to the first N won clients
+    finderPct: 30,       // after that: % on a client the Client Lead found and closed alone
+    finderMonths: 0,     // 0 = for as long as the Client Lead handles that client himself
+    retainerFrom: "",    // date the fixed pay started; the first-5 share stops on projects after it
+    sharePayee: "",      // team id of the Client Lead
+    retainer: 0,         // Client Lead fixed monthly pay once set
+    salary: 0,           // Heni, TND / month taken out (owner draw), once set
+    stamp: 1,            // fiscal stamp per invoice, TND. Accountant to confirm.
+    withholding: 3,      // % a Tunisian company client withholds. Accountant to confirm.
+    vat: 0,              // % VAT on Tunisian invoices (19 under a SUARL). Accountant to confirm.
     dueDays: 7,
-    extrasDirect: true,  // studio/talent invoice the client directly by default (protects the cap)
-    openingCash: 0       // cash in the bank when you start tracking (for the 13-week forecast), DT
+    extrasDirect: true,  // actors, locations: client pays them directly by default
+    openingCash: 0,      // cash when you start tracking, TND
+    launchClients: 5,    // launch prices for the first N won clients...
+    launchUntil: "2026-12-31", // ...or until this date, whichever comes first
+    launchMonths: 3,     // monthly offers: launch price for the client's first N months
+    creditDays: 14,      // a monthly offer signed within N days of a Test Campaign delivery...
+    creditPct: 50,       // ...gets this % of the Test Campaign price off the first month
+    eur: 3.40, usd: 2.95, // TND per EUR / USD, for totals. Check before every quote.
+    floor: 10000,        // Heni's monthly floor, Heni and Gecko together (TND)
+    adBudget: 2000,      // Gecko's own monthly marketing budget (TND)
+    spendApproval: 200   // expenses above this need the founder
   };
   M.COMPANY_DEFAULT = {
-    name: "GECKO", legal: "", mf: "", address: "",
+    name: "Gecko", legal: "", mf: "", address: "",
     phone: "+216 26 191 555", email: "reachoutgecko@gmail.com", instagram: "@geckoagency_",
     appUrl: "https://claude.ai/artifact/FaYCvv65YDNYfUCk66r8uo",
     invoiceNote: ""
   };
   M.defaultConfig = function () {
-    return { live: true, version: 1, company: u.clone(M.COMPANY_DEFAULT), packs: u.clone(M.PACKS_DEFAULT), rates: u.clone(M.RATES_DEFAULT), rules: u.clone(M.RULES_DEFAULT) };
+    return { live: true, version: 2, company: u.clone(M.COMPANY_DEFAULT), packs: u.clone(M.PACKS_DEFAULT), addons: u.clone(M.ADDONS_DEFAULT), levels: u.clone(M.LEVELS_DEFAULT), rates: u.clone(M.RATES_DEFAULT), rules: u.clone(M.RULES_DEFAULT) };
   };
 
   // ---------- lookups ----------
   function S() { return GK.store; }
   M.cfg = function () { return S().config() || M.defaultConfig(); };
-  M.pack = function (k) { var p = (M.cfg().packs || {})[k]; return p || M.PACKS_DEFAULT[k] || { name: k || "—", price: 0, monthly: false, reels: 0, variations: 0, carousels: 0, angles: 0, cost: 0 }; };
-  M.packKeys = function () { return Object.keys(M.cfg().packs || M.PACKS_DEFAULT); };
-  M.rules = function () { var r = M.cfg().rules || {}; var d = M.RULES_DEFAULT; var o = {}; for (var k in d) o[k] = r[k] != null ? r[k] : d[k]; return o; };
-  M.rates = function () { var r = M.cfg().rates || {}; var d = M.RATES_DEFAULT; var o = {}; for (var k in d) o[k] = r[k] != null ? r[k] : d[k]; return o; };
+  function packsCfg() { var c = M.cfg(); return c.version >= 2 && c.packs ? c.packs : M.PACKS_DEFAULT; }
+  M.pack = function (k) { if (M.OLD && M.OLD.pack[k]) k = M.OLD.pack[k]; var p = packsCfg()[k] || M.PACKS_DEFAULT[k]; return p ? Object.assign({ currency: "TND", launch: null, upfront: p && p.monthly ? "month" : "deposit", market: "tunisia" }, p) : { name: k || "—", currency: "TND", price: 0, launch: null, monthly: false, upfront: "deposit", reels: 0, variations: 0, carousels: 0, angles: 0, shootDays: 0, cost: 0 }; };
+  M.packKeys = function (market) { var ps = packsCfg(); return Object.keys(ps).filter(function (k) { return !market || (ps[k].market || "tunisia") === market; }); };
+  M.addons = function () { var c = M.cfg(); return c.version >= 2 && c.addons ? c.addons : M.ADDONS_DEFAULT; };
+  /** Stored rules and rates from the first version (old packs, 75,000 cap) are ignored, except the opening cash. */
+  M.rules = function () { var c = M.cfg(), r = c.version >= 2 ? (c.rules || {}) : { openingCash: (c.rules || {}).openingCash }; var d = M.RULES_DEFAULT; var o = {}; for (var k in d) o[k] = r[k] != null ? r[k] : d[k]; return o; };
+  M.rates = function () { var c = M.cfg(), r = c.version >= 2 ? (c.rates || {}) : {}; var d = M.RATES_DEFAULT; var o = {}; for (var k in d) o[k] = r[k] != null ? r[k] : d[k]; return o; };
   M.company = function () { var c = M.cfg().company || {}; var d = M.COMPANY_DEFAULT; var o = {}; for (var k in d) o[k] = c[k] != null && c[k] !== "" ? c[k] : d[k]; o.appUrl = c.appUrl != null ? c.appUrl : d.appUrl; o.mf = c.mf || ""; o.legal = c.legal || ""; o.invoiceNote = c.invoiceNote || ""; o.address = c.address || (u.fr() ? "Tunis, Tunisie" : "Tunis, Tunisia"); return o; };
   M.client = function (id) { return S().get("clients", id); };
   M.project = function (id) { return S().get("projects", id); };
@@ -1081,6 +1176,59 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   M.projectLabel = function (p) { return p ? M.brand(p.clientId) + " · " + p.name : "—"; };
   M.invoicesOf = function (p) { return S().all("invoices").filter(function (i) { return i.projectId === p.id; }); };
   M.tasksOf = function (p) { return S().all("tasks").filter(function (x) { return x.projectId === p.id; }); };
+
+  // ---------- currency ----------
+  /** TND value of an amount in a currency, at the rates in Settings. */
+  M.toTND = function (n, cur) { var r = M.rules(); n = +n || 0; return cur === "EUR" ? n * r.eur : cur === "USD" ? n * r.usd : n; };
+  M.curOf = function (x) { return (x && x.currency) || "TND"; };
+  /** Money in its own currency: u.money with the currency. */
+  M.fmt = function (n, cur) { return u.money(n, 0, cur || "TND"); };
+
+  // ---------- launch pricing ----------
+  /** Clients in the order they were won (first deposit or first monthly payment received). */
+  M.wonClients = function () {
+    return S().all("clients").filter(function (c) { return !!c.wonOn; }).sort(function (a, b) { return a.wonOn < b.wonOn ? -1 : a.wonOn > b.wonOn ? 1 : String(a.id) < String(b.id) ? -1 : 1; });
+  };
+  /** 1-based rank of a client among won clients (0 when not won yet). */
+  M.clientRank = function (clientId) { var w = M.wonClients(); for (var i = 0; i < w.length; i++) if (w[i].id === clientId) return i + 1; return 0; };
+  /** Launch prices are open for a new client while fewer than N clients are won and the date is before the end date. */
+  M.launchOpen = function (date) { var r = M.rules(); return M.wonClients().length < r.launchClients && (date || u.today()) <= r.launchUntil; };
+  /** Price for an offer for a client: {price, launch, standard, currency}.
+      A client won during the launch keeps launch prices: one-offs for their first project, monthly offers for their first N months. */
+  M.priceFor = function (packKey, clientId, monthN, date) {
+    var pk = M.pack(packKey), r = M.rules(), rank = clientId ? M.clientRank(clientId) : 0;
+    var eligible = pk.launch != null && (rank ? rank <= r.launchClients : M.launchOpen(date));
+    if (eligible && pk.monthly && monthN && monthN > r.launchMonths) eligible = false;
+    return { price: eligible ? pk.launch : pk.price, launch: eligible, standard: pk.price, currency: pk.currency || "TND" };
+  };
+
+  // ---------- leads ----------
+  M.isOpen = function (l) { return M.OPEN_STAGES.indexOf(l.stage) > -1; };
+  M.stageIndex = function (l) { return M.LEAD_STAGES.indexOf(l.stage); };
+  /** When the lead entered its current stage. */
+  M.stageSince = function (l) { var h = (l.history || []).filter(function (x) { return x.stage === l.stage; }); return h.length ? h[h.length - 1].at : (l.created || ""); };
+  M.fitScore = function (l) { return (l.fit || []).filter(Boolean).length; };
+  M.qualified = function (l) { return (l.q || []).filter(Boolean).length === 4; };
+  M.overdue = function (l) { return M.isOpen(l) && !!l.nextDate && l.nextDate < u.today(); };
+  M.noNext = function (l) { return M.isOpen(l) && (!l.next || !l.nextDate); };
+  /** Days in the current stage, and whether that is past the plan's max. */
+  M.stageAge = function (l) { var since = M.stageSince(l); var n = since ? u.daysBetween(since.slice(0, 10), u.today()) : 0; var max = M.STAGE_MAX_DAYS[l.stage]; return { days: n, max: max || 0, stale: !!max && n > max }; };
+  /** Weighted value of an open lead, in TND. */
+  M.leadValue = function (l) { var v = +l.price || (l.pack ? M.priceFor(l.pack).price : 0); return M.toTND(v, l.currency || M.pack(l.pack).currency); };
+  /** The cadence step a lead is on: {step, of, due, last, after} or null when the stage has no cadence. */
+  M.cadence = function (l) {
+    var c = M.CADENCE[l.stage]; if (!c) return null;
+    var since = (M.stageSince(l) || u.today()).slice(0, 10);
+    var done = (l.touches || []).filter(function (t) { return t.stage === l.stage; }).length;
+    var step = Math.min(done, c.days.length);
+    return { step: step, of: c.days.length, due: step < c.days.length ? u.addDays(since, c.days[step]) : "", last: step >= c.days.length, after: c.after, reason: c.reason };
+  };
+  /** Default next action for a lead entering a stage: {next, nextDate}. Words come from i18n (nx_<stage>). */
+  M.nextFor = function (stage, fromDate) {
+    var d0 = fromDate || u.today(), c = M.CADENCE[stage];
+    var days = c ? c.days[0] : { prospect: 1, conversation: 1, meeting_booked: 0, qualified: 2, negotiation: 2, nurture: M.RECONTACT_DAYS, lost: M.RECONTACT_DAYS }[stage];
+    return { next: GK.t("nx_" + stage), nextDate: days == null ? "" : u.addDays(d0, days) };
+  };
 
   // ---------- deliverables: Angle -> Reel (one body, D or I) -> Hook variants; carousels apart ----------
   M.angleIndex = function (p, angleId) { return (p.angles || []).findIndex(function (a) { return a.id === angleId; }); };
@@ -1156,25 +1304,29 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   };
 
   // ---------- gates ----------
+  /** The agreed price of a project (one-off: the whole offer; monthly: one month), in its currency. */
+  M.projectPrice = function (p) { return p.price != null && p.price !== "" ? +p.price : M.priceFor(p.pack, p.clientId, p.month).price; };
   M.upfrontPaid = function (p) {
-    var kinds = M.pack(p.pack).monthly ? ["month"] : ["deposit"];
+    var up = M.pack(p.pack).upfront, kinds = up === "month" ? ["month"] : up === "full" ? ["deposit", "balance", "month"] : ["deposit"];
     return M.invoicesOf(p).some(function (i) { return kinds.indexOf(i.kind) > -1 && M.invIsPaid(i); });
   };
-  /** One-off packs: deposit + balance paid for the full pack price (a credited invoice doesn't count). SKIN: the month is paid. */
+  /** One-off offers: deposit + balance paid for the full price (a credited invoice doesn't count). Monthly: the month is paid. */
   M.fullyPaid = function (p) {
     var inv = M.invoicesOf(p).filter(function (i) { return !i.credited && i.kind !== "credit"; });
     if (M.pack(p.pack).monthly) return inv.some(function (i) { return i.kind === "month" && M.invIsPaid(i); });
     var main = inv.filter(function (i) { return i.kind === "deposit" || i.kind === "balance"; });
     var paid = u.sum(main, function (i) { return M.invIsPaid(i) ? +i.amount || 0 : 0; });
-    return main.length > 0 && paid >= M.pack(p.pack).price - 0.001;
+    return main.length > 0 && paid >= M.projectPrice(p) - 0.001;
   };
+  /** No shoot before the scripts are approved in writing and the deposit (or the month) is paid. */
   M.canShoot = function (p) { return !!p.planApproved && M.upfrontPaid(p); };
+  /** Final files go out only once the balance (or the month) is paid. */
   M.canFiles = function (p) { return M.pack(p.pack).monthly ? M.upfrontPaid(p) : M.fullyPaid(p); };
   /** Reasons a project is blocked at its current stage. */
   M.gates = function (p) {
     var g = [], si = M.STAGES.indexOf(p.stage);
     if (si <= M.STAGES.indexOf("shoot") && !M.canShoot(p)) g.push(GK.t("gate_shoot"));
-    if (si >= M.STAGES.indexOf("edit") && si <= M.STAGES.indexOf("delivered") && !M.canFiles(p)) g.push(GK.t("gate_files"));
+    if (si >= M.STAGES.indexOf("client_review") && si <= M.STAGES.indexOf("delivered") && !M.canFiles(p)) g.push(GK.t("gate_files"));
     return g;
   };
   /** Can the project move to stage s? Returns "" if yes, else the reason. Moving backwards is always allowed. */
@@ -1183,47 +1335,70 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     if (to <= from) return "";
     if (to >= M.STAGES.indexOf("shoot") && !M.canShoot(p)) return GK.t("gate_shoot");
     if (to >= M.STAGES.indexOf("delivered") && !M.canFiles(p)) return GK.t("gate_files");
+    if (to >= M.STAGES.indexOf("paid") && !M.fullyPaid(p)) return GK.t("gate_paid");
     return "";
   };
+  /** Files in client review longer than the silence rule count as approved. */
+  M.reviewSilent = function (p) { return p.stage === "client_review" && !!p.reviewSince && u.daysBetween(p.reviewSince, u.today()) >= M.REVIEW_SILENCE_DAYS; };
 
-  // ---------- money per project ----------
+  // ---------- money per project (TND) ----------
+  function invTND(i, n) { return M.toTND(n, i.currency || "TND"); }
   /** Revenue received for a project: what the client paid, withheld tax included (it counts as paid), stamps excluded. */
-  M.received = function (p) { return u.sum(M.invoicesOf(p).filter(function (i) { return i.kind !== "credit" && !(i.kind === "extra" && i.passThrough); }), function (i) { return Math.min(M.invPaidGross(i), +i.amount || 0); }); };
+  M.received = function (p) { return u.sum(M.invoicesOf(p).filter(function (i) { return i.kind !== "credit" && !(i.kind === "extra" && i.passThrough); }), function (i) { return invTND(i, Math.min(M.invPaidGross(i), +i.amount || 0)); }); };
   /** Cash that actually landed (net of withholding, stamps included). */
-  M.cashIn = function (p) { return u.sum(M.invoicesOf(p), M.invPaidNet); };
-  M.withheld = function (p) { return u.sum(M.invoicesOf(p), M.invWithheld); };
+  M.cashIn = function (p) { return u.sum(M.invoicesOf(p), function (i) { return invTND(i, M.invPaidNet(i)); }); };
+  M.withheld = function (p) { return u.sum(M.invoicesOf(p), function (i) { return invTND(i, M.invWithheld(i)); }); };
   M.costOf = function (p) { return u.sum(p.costs || [], function (c) { return c.amount; }); };
+  /** Owner pay inside a project's costs (cost lines of kind "heni"). */
+  M.ownerPayOf = function (p) { return u.sum((p.costs || []).filter(function (c) { return c.kind === "heni"; }), function (c) { return c.amount; }); };
+  /** Profit after all costs, the owner's pay included. */
   M.profit = function (p) { return M.received(p) - M.costOf(p); };
-  /** Mohamed's share: commission % of profit when he worked the project; 0 on a loss.
-      Payable once the client paid in full AND the work is delivered (before that, costs are only estimates). */
+  /** Which partner-share rule a project falls under: "first" (one of the first N won clients), "finder" (a client the payee found and closed alone, within the period) or "". */
+  M.shareBasis = function (p) {
+    var r = M.rules(), c = M.client(p.clientId); if (!c) return "";
+    var rank = M.clientRank(c.id);
+    var when = p.created || p.shootDate || u.today();
+    if (rank && rank <= r.shareClients && (!r.retainerFrom || when < r.retainerFrom)) return "first";
+    if (c.sourcedAlone && (!r.sharePayee || c.sourcedBy === r.sharePayee) && c.wonOn && c.handledBy !== "other") {
+      if (!r.finderMonths || when <= u.addDays(c.wonOn, Math.round(r.finderMonths * 30.44))) return "finder";
+    }
+    return "";
+  };
+  /** Partner share on a project: {basis, pct, amount, payable, paid, paidOn, owed}. Payable once the client paid in full and the work is delivered. */
   M.commission = function (p) {
-    var pr = M.profit(p), r = M.rules();
-    var amount = p.mohamed && pr > 0 ? Math.round(pr * r.commission / 100) : 0;
+    var r = M.rules(), basis = M.shareBasis(p), pct = basis === "first" ? r.commission : basis === "finder" ? r.finderPct : 0;
+    var pr = M.profit(p);
+    var amount = pct && pr > 0 ? Math.round(pr * pct / 100) : 0;
     var paid = p.payout && p.payout.paidOn ? (+p.payout.amount || 0) : 0;
     var ready = M.fullyPaid(p) && M.STAGES.indexOf(p.stage) >= M.STAGES.indexOf("delivered");
-    return { amount: amount, payable: amount > 0 && ready, paid: paid, paidOn: p.payout ? p.payout.paidOn : "", owed: Math.max(0, (ready ? amount : 0) - paid) };
+    return { basis: basis, pct: pct, amount: amount, payable: amount > 0 && ready, paid: paid, paidOn: p.payout ? p.payout.paidOn : "", owed: Math.max(0, (ready ? amount : 0) - paid) };
   };
-  /** Estimated direct cost lines for a pack, from the rates (section 8 of the business model). */
+  M.share = M.commission;
+  M.levels = function () { var c = M.cfg(); return (c.version >= 2 && c.levels) || M.LEVELS_DEFAULT; };
+  /** Recurring monthly clients right now (active monthly contracts). */
+  M.recurringClients = function () { var ids = {}; S().all("contracts").forEach(function (k) { if (k.status === "active") ids[k.clientId] = 1; }); return Object.keys(ids).length; };
+  /** The fixed-pay level the Client Lead has reached by client count: {level, pay, next} (level 0 = not yet). */
+  M.levelNow = function () { var n = M.recurringClients(), L = M.levels(), lv = 0; L.forEach(function (x, i) { if (n >= x.clients) lv = i + 1; }); return { level: lv, pay: lv ? L[lv - 1].pay : 0, next: L[lv] || null, clients: n }; };
+  /** Estimated direct cost lines for an offer (costs.md), owner pay included so the partner share is worked out after it. */
   M.estimateCosts = function (packKey) {
-    var pk = M.pack(packKey), r = M.rates(), half = pk.shoot === "half";
-    var t = GK.t;
+    var pk = M.pack(packKey), r = M.rates(), t = GK.t, days = pk.shootDays || 0, reels = pk.reels || 0;
+    var direct = r.ownerPer === "day" ? days * r.ownerDirect : (days ? r.ownerDirect : 0);
+    var edit = !reels ? 0 : reels <= 6 ? r.editSmall : reels < 15 ? r.editMid : r.editLarge;
     var lines = [
-      ["heni", t(half ? "est_shoot_half" : "est_shoot_day"), half ? r.heniDay / 2 : r.heniDay],
-      ["gear", t("est_gear"), half ? Math.round(r.gear * 0.625) : r.gear],
-      ["freelance", t("est_assistant"), half ? Math.round(r.assistant * 0.58) : r.assistant],
-      ["other", t("est_transport"), half ? Math.round(r.transport * 0.67) : r.transport],
-      ["heni", t("est_edits", { n: pk.reels, r: r.reel }), pk.reels * r.reel],
-      ["freelance", t("est_recuts", { n: pk.variations, r: r.recut }), pk.variations * r.recut],
-      ["freelance", t("est_carousels", { n: pk.carousels, r: r.carousel }), pk.carousels * r.carousel]
+      ["heni", t(r.ownerPer === "day" ? "est_owner_days" : "est_owner_project", { n: days, r: r.ownerDirect }), direct],
+      ["heni", t("est_owner_edit", { n: reels }), edit],
+      ["gear", t("est_camera", { n: days, r: r.camera }), days * r.camera],
+      ["other", t("est_transport", { n: days, r: r.transport }), days * r.transport],
+      ["other", t("est_food", { n: days, r: r.food }), days * r.food]
     ];
-    if (pk.monthly) lines.push(["other", t("est_report"), r.report]);
+    if (pk.ads || pk.reels >= 10) lines.push(["freelance", t("est_assistant", { n: days, r: r.assistant }), days * r.assistant]);
     return lines.filter(function (l) { return l[2] > 0; }).map(function (l) { return { id: u.uid("c"), kind: l[0], label: l[1], amount: Math.round(l[2]) }; });
   };
 
-  // ---------- contracts (SKIN) ----------
+  // ---------- contracts (monthly offers) ----------
   M.contractOf = function (p) { return p.contractId ? S().get("contracts", p.contractId) : null; };
   M.contractMonths = function (c) { return S().all("projects").filter(function (p) { return p.contractId === c.id; }).sort(u.by("month")); };
-  /** SKIN contracts whose next month should be created (current month passed its first week or the month is not there yet). */
+  /** Monthly contracts whose next month should be created (current month passed its first week or the month is not there yet). */
   M.monthsDue = function () {
     var ym = u.month(u.today());
     return S().all("contracts").filter(function (c) {
@@ -1238,29 +1413,33 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   /** "2026-10" + month 3 -> "2026-12" */
   M.monthKey = function (startYm, n) { var y = +startYm.slice(0, 4), m = +startYm.slice(5, 7) - 1 + (n - 1); y += Math.floor(m / 12); m = m % 12; return y + "-" + String(m + 1).padStart(2, "0"); };
 
-  // ---------- outreach funnel ----------
-  /** Weekly funnel from the outreach log and lead stages. */
+  // ---------- weekly sales numbers (crm-pipeline.md) ----------
+  /** Leads that entered a stage during [from, to). */
+  M.movedIn = function (stage, from, to, owner) {
+    return S().all("leads").filter(function (l) { return (!owner || l.owner === owner) && (l.history || []).some(function (h) { return h.stage === stage && h.at >= from && h.at < to; }); });
+  };
+  /** The week's numbers: first touches, replies, meetings booked, proposals (count, value), won (count, value), plus touches from the daily log. */
   M.funnel = function (weekStart, owner) {
     var end = u.addDays(weekStart, 7);
     var logs = S().all("outreach").filter(function (o) { return o.date >= weekStart && o.date < end && (!owner || o.owner === owner); });
-    var leads = S().all("leads").filter(function (l) { return (!owner || l.owner === owner); });
-    function movedIn(stage) { return leads.filter(function (l) { return (l.history || []).some(function (h) { return h.stage === stage && h.at >= weekStart && h.at < end; }); }).length; }
+    var props = M.movedIn("proposal_sent", weekStart, end, owner), won = M.movedIn("won", weekStart, end, owner);
+    var touches = Math.max(u.sum(logs, function (o) { return o.dms; }), M.movedIn("contacted", weekStart, end, owner).length);
+    var replies = Math.max(u.sum(logs, function (o) { return o.replies; }), M.movedIn("conversation", weekStart, end, owner).length);
     return {
-      dms: u.sum(logs, function (o) { return o.dms; }),
-      replies: u.sum(logs, function (o) { return o.replies; }),
-      calls: Math.max(u.sum(logs, function (o) { return o.calls; }), movedIn("call")),
-      proposals: movedIn("proposal"),
-      won: movedIn("won")
+      touches: touches, dms: touches, replies: replies,
+      meetings: Math.max(u.sum(logs, function (o) { return o.calls; }), M.movedIn("meeting_booked", weekStart, end, owner).length),
+      calls: Math.max(u.sum(logs, function (o) { return o.calls; }), M.movedIn("meeting_booked", weekStart, end, owner).length),
+      proposals: props.length, proposalValue: u.sum(props, M.leadValue),
+      won: won.length, wonValue: u.sum(won, M.leadValue)
     };
   };
-  M.qualified = function (l) { return (l.q || []).filter(Boolean).length === 4; };
 
   // ---------- roles ----------
   M.ROLE_NAV = {
-    founder: ["today", "tasks", "calendar", "inbox", "activity", "dashboard", "pipeline", "clients", "projects", "production", "studio", "boards", "deliveries", "reports", "finance", "portal", "team", "settings"],
-    sales: ["today", "tasks", "calendar", "inbox", "pipeline", "clients", "projects", "production", "studio", "boards", "deliveries", "reports", "portal", "team", "settings"],
-    editor: ["today", "tasks", "calendar", "inbox", "projects", "production", "studio", "boards", "deliveries", "team"],
-    assistant: ["today", "tasks", "calendar", "inbox", "projects", "production", "studio", "boards", "team"]
+    founder: ["today", "tasks", "calendar", "inbox", "activity", "dashboard", "pipeline", "clients", "projects", "production", "studio", "boards", "deliveries", "reports", "finance", "portal", "docs", "team", "settings"],
+    sales: ["today", "tasks", "calendar", "inbox", "pipeline", "clients", "projects", "production", "studio", "boards", "deliveries", "reports", "portal", "docs", "team", "settings"],
+    editor: ["today", "tasks", "calendar", "inbox", "projects", "production", "studio", "boards", "deliveries", "docs", "team"],
+    assistant: ["today", "tasks", "calendar", "inbox", "projects", "production", "studio", "boards", "docs", "team"]
   };
   /** Permission check for the current viewer. */
   M.can = function (what) {
@@ -1268,13 +1447,65 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     if (GK.store.readOnly) return what === "view";
     var P = {
       founder: ["*"],
-      sales: ["leads", "clients", "projects.create", "projects.edit", "tasks", "msgs", "portal", "outreach", "reports.edit", "ideas", "boards"],
-      editor: ["tasks", "msgs", "files.status", "files.edit", "ideas", "boards"],
-      assistant: ["tasks", "msgs", "ideas", "boards"]
+      // Client Lead: opens and moves deals; drafts proposals (sending one needs the founder's approval); no money, costs or pay
+      sales: ["leads", "leads.import", "clients", "projects.create", "projects.edit", "quotes.draft", "tasks", "msgs", "portal", "outreach", "reports.edit", "ideas", "boards", "docs", "docs.edit"],
+      editor: ["tasks", "msgs", "files.status", "files.edit", "ideas", "boards", "docs"],
+      assistant: ["tasks", "msgs", "ideas", "boards", "docs"]
     }[role] || [];
     return P.indexOf("*") > -1 || P.indexOf(what) > -1 || what === "view";
   };
   M.isFounder = function () { var me = GK.me(); return me ? me.role === "founder" : GK.store.backend !== "shared"; };
+
+  // ---------- migration from the first version (old packs, stages and channels) ----------
+  M.OLD = {
+    pack: { GRIP: "test", SEASON: "campaign", SKIN10: "monthly8", SKIN20: "monthly12" },
+    packName: [[/SKIN 20/g, "Monthly 12"], [/SKIN 10/g, "Monthly 8"], [/\bSKIN\b/g, "Monthly"], [/\bGRIP\b/g, "Test Campaign"], [/\bSEASON\b/g, "Campaign"]],
+    stage: { onboard: "onboarding", plan: "scripting", edit: "editing", testing: "delivered", report: "paid", done: "retention" },
+    lead: { dm: "contacted", replied: "conversation", call: "meeting_booked", proposal: "proposal_sent" },
+    source: { teardown_dm: "outbound_dm", media_buyer: "referral_personal", referral: "referral_client", warm: "referral_personal", inbound: "ig_organic" },
+    lost: { no_budget: "no_budget_now", no_product: "bad_fit", not_now: "timing", went_elsewhere: "chose_competitor", no_reply: "no_response" }
+  };
+  function renamePacks(text) { var t = String(text || ""); M.OLD.packName.forEach(function (r) { t = t.replace(r[0], r[1]); }); return t; }
+  M.renamePacks = renamePacks;
+  /** Bring one record from the first version to this one. Returns a new object when something changed, else null. */
+  M.migrateRecord = function (coll, rec) {
+    if (!rec) return null;
+    var o = u.clone(rec), ch = false, O = M.OLD;
+    function set(k, v) { if (o[k] !== v) { o[k] = v; ch = true; } }
+    if (o.pack && O.pack[o.pack]) set("pack", O.pack[o.pack]);
+    if (coll === "projects") {
+      if (O.stage[o.stage]) set("stage", o.stage === "plan" && o.planApproved ? "pre_production" : O.stage[o.stage]);
+      if (o.mohamed != null) { delete o.mohamed; ch = true; }
+      if (/SKIN|GRIP|SEASON/.test(o.name || "")) set("name", renamePacks(o.name));
+    }
+    if (coll === "leads") {
+      if (O.lead[o.stage]) set("stage", O.lead[o.stage]);
+      if (o.history && o.history.some(function (h) { return O.lead[h.stage]; })) { o.history = o.history.map(function (h) { return { stage: O.lead[h.stage] || h.stage, at: h.at }; }); ch = true; }
+      if (o.channel && !o.source) set("source", O.source[o.channel] || (M.SOURCES.indexOf(o.channel) > -1 ? o.channel : "other"));
+      if (o.lostReason && O.lost[o.lostReason]) set("lostReason", O.lost[o.lostReason]);
+      if (!o.market) set("market", "tunisia");
+      if (!o.sourcedBy && o.owner) set("sourcedBy", o.owner);
+    }
+    if (coll === "invoices" || coll === "quotes") {
+      if (/SKIN|GRIP|SEASON/.test(o.label || o.title || "")) { if (o.label) o.label = renamePacks(o.label); if (o.title) o.title = renamePacks(o.title); ch = true; }
+      if (o.lines && o.lines.some(function (l) { return /SKIN|GRIP|SEASON/.test(l.label || ""); })) { o.lines = o.lines.map(function (l) { return Object.assign({}, l, { label: renamePacks(l.label) }); }); ch = true; }
+    }
+    if (coll === "team" && o.role === "sales" && o.title == null) { o.title = ""; ch = true; }
+    return ch ? o : null;
+  };
+  /** Migrate whole collections in place (sample data, or a live workspace loaded from the first version). Returns how many records changed. */
+  M.migrateAll = function (colls) {
+    var n = 0;
+    Object.keys(colls || {}).forEach(function (c) { (colls[c] || []).forEach(function (r, i) { var x = M.migrateRecord(c, r); if (x) { colls[c][i] = x; n++; } }); });
+    // a client counts as won from its first paid deposit or first paid month
+    (colls.clients || []).forEach(function (c, i) {
+      if (c.wonOn) return;
+      var paid = (colls.invoices || []).filter(function (v) { return v.clientId === c.id && v.kind !== "credit" && (v.payments || []).length; })
+        .map(function (v) { return v.payments.map(function (p) { return p.date; }).sort()[0]; }).sort();
+      if (paid.length) { colls.clients[i] = Object.assign({}, c, { wonOn: paid[0] }); n++; }
+    });
+    return n;
+  };
 
   GK.m = M;
 })(window.GK);
@@ -2218,14 +2449,14 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   // ---------- small builders (all return HTML strings) ----------
   /** data-* attributes from an object: {id:"x"} -> ' data-id="x"' */
   UI.attrs = function (o) { var s = ""; for (var k in o || {}) if (o[k] != null) s += " data-" + k + '="' + esc(o[k]) + '"'; return s; };
-  /** "1,250 DT" -> 1,250<span class="u">DT</span> (the unit quieter than the number) */
+  /** "1,250 TND" -> 1,250<span class="u">TND</span> (the unit quieter than the number) */
   function unitHTML(v) {
-    var s = String(v == null ? "" : v), mm = s.match(/^(.*?\d)(\s| )?(DT|%)$/);
+    var s = String(v == null ? "" : v), mm = s.match(/^(.*?\d)(\s| )?(TND|DT|%|€|\$)$/);
     return mm ? esc(mm[1]) + '<span class="u">' + esc(mm[3]) + "</span>" : esc(s);
   }
   UI.unit = unitHTML;
 
-  /** Page header: title (+ one Trovical accent word), one-line subtitle, actions on the right.
+  /** Page header: title (+ an accent word, set in the same font), one-line subtitle, actions on the right.
       o: {title, accent, sub (HTML), actions (HTML), label (eyebrow, shown only when it adds something), back:{label, a, data}} */
   UI.head = function (o) {
     var lab = o.label && o.label !== t("nav_" + UI.state.view) ? o.label : "";
@@ -2750,7 +2981,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
 })(window.GK);
 
 /* ---- core/seed.js ---- */
-/* GECKO Ops · sample data. Lives in this browser only (demo mode); never written to the shared store.
+/* Gecko Ops · sample data. Lives in this browser only (demo mode); never written to the shared store.
    Brands and people are invented. Dates are relative to today so the sample always looks current. */
 (function (GK) {
   "use strict";
@@ -2829,7 +3060,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     var prev = new Date(today + "T12:00:00"); prev.setMonth(prev.getMonth() - 1); contract.start = u.month(u.iso(prev));
 
     var y = u.year(today);
-    conf.seedV = 3;
+    conf.seedV = 4;
     var invoices = [
       { id: "i1", no: "GK-" + y + "-001", clientId: "catl", projectId: "patl0", kind: "deposit", label: "GRIP · Drop 02 · deposit", amount: 750, stamp: 1, issued: d(-96), due: d(-89), payments: [pay(d(-94), 728.5, 22.5)], credited: false, log: [] },
       { id: "i2", no: "GK-" + y + "-002", clientId: "catl", projectId: "patl0", kind: "balance", label: "GRIP · Drop 02 · balance", amount: 750, stamp: 1, issued: d(-80), due: d(-73), payments: [pay(d(-75), 728.5, 22.5)], credited: false, log: [] },
@@ -2873,6 +3104,9 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     // other modules add their own sample data: GK.seedExtra.push(function (data, ctx) { data.colls.ideas = [...]; })
     var ctx = { u: u, m: M, today: today, d: d, ym: ym };
     (GK.seedExtra || []).forEach(function (fn) { fn(data, ctx); });
+    // bring the sample (written against the first offers and stages) to this version
+    M.migrateAll(data.colls);
+    data.colls = JSON.parse(M.renamePacks(JSON.stringify(data.colls)).replace(/(\d)(\s|\u00a0)?DT\b/g, "$1 TND"));
     // sequential numbers per year, by issue date (sample history is added after the base invoices)
     var seqByYear = {};
     data.colls.invoices.filter(function (i) { return i.no; }).sort(function (a, b) { return a.issued < b.issued ? -1 : a.issued > b.issued ? 1 : String(a.id) < String(b.id) ? -1 : 1; }).forEach(function (i) {
@@ -15199,7 +15433,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     // reels, hooks per reel, carousels, angles
     var PACKSIZE = { GRIP: [4, 3, 0, 2], SEASON: [16, 3, 4, 4], SKIN10: [10, 3, 3, 3], SKIN20: [20, 3, 6, 4] };
     function proj(o) {
-      var si = m.STAGES.indexOf(o.stage), ps = PACKSIZE[o.pack];
+      var si = ["onboard", "plan", "shoot", "edit", "delivered", "testing", "report", "done"].indexOf(o.stage) /* written against the first stages; migrated after */, ps = PACKSIZE[o.pack];
       var p = { id: o.id, clientId: o.clientId, contractId: o.contractId || "", month: o.month || 0, name: o.name, pack: o.pack, stage: o.stage,
         planApproved: o.plan != null, planApprovedOn: o.plan != null ? d(o.plan) : "", shootDate: o.shoot != null ? d(o.shoot) : "", format: "9x16", mohamed: !!o.mohamed,
         onboarding: [0, 1, 2, 3, 4, 5, 6].map(function (k) { return si >= 2 ? true : si === 1 ? k < 5 : k < (o.ob || 2); }),

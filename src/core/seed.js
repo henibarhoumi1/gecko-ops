@@ -1,4 +1,4 @@
-/* GECKO Ops · sample data. Lives in this browser only (demo mode); never written to the shared store.
+/* Gecko Ops · sample data. Lives in this browser only (demo mode); never written to the shared store.
    Brands and people are invented. Dates are relative to today so the sample always looks current. */
 (function (GK) {
   "use strict";
@@ -77,7 +77,7 @@
     var prev = new Date(today + "T12:00:00"); prev.setMonth(prev.getMonth() - 1); contract.start = u.month(u.iso(prev));
 
     var y = u.year(today);
-    conf.seedV = 3;
+    conf.seedV = 4;
     var invoices = [
       { id: "i1", no: "GK-" + y + "-001", clientId: "catl", projectId: "patl0", kind: "deposit", label: "GRIP · Drop 02 · deposit", amount: 750, stamp: 1, issued: d(-96), due: d(-89), payments: [pay(d(-94), 728.5, 22.5)], credited: false, log: [] },
       { id: "i2", no: "GK-" + y + "-002", clientId: "catl", projectId: "patl0", kind: "balance", label: "GRIP · Drop 02 · balance", amount: 750, stamp: 1, issued: d(-80), due: d(-73), payments: [pay(d(-75), 728.5, 22.5)], credited: false, log: [] },
@@ -121,6 +121,9 @@
     // other modules add their own sample data: GK.seedExtra.push(function (data, ctx) { data.colls.ideas = [...]; })
     var ctx = { u: u, m: M, today: today, d: d, ym: ym };
     (GK.seedExtra || []).forEach(function (fn) { fn(data, ctx); });
+    // bring the sample (written against the first offers and stages) to this version
+    M.migrateAll(data.colls);
+    data.colls = JSON.parse(M.renamePacks(JSON.stringify(data.colls)).replace(/(\d)(\s|\u00a0)?DT\b/g, "$1 TND"));
     // sequential numbers per year, by issue date (sample history is added after the base invoices)
     var seqByYear = {};
     data.colls.invoices.filter(function (i) { return i.no; }).sort(function (a, b) { return a.issued < b.issued ? -1 : a.issued > b.issued ? 1 : String(a.id) < String(b.id) ? -1 : 1; }).forEach(function (i) {

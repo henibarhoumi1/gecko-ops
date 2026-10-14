@@ -1,6 +1,5 @@
-/* GECKO Ops · words. English first, French toggle.
-   Modules add their own words with GK.i18n.add({key:["English","Français"]}).
-   Trovical (the italic accent face) breaks ç and œ: keep French accent words free of them. */
+/* Gecko Ops · words. English first, French toggle.
+   Modules add their own words with GK.i18n.add({key:["English","Français"]}). */
 (function (GK) {
   "use strict";
   var dict = {};
@@ -25,7 +24,7 @@
 
   /* core words used by the shell, model and shared components */
   I.add({
-    app_name: ["GECKO Ops", "GECKO Ops"],
+    app_name: ["Gecko Ops", "Gecko Ops"],
     nav_today: ["Home", "Accueil"], nav_pipeline: ["Pipeline", "Prospection"], nav_clients: ["Clients", "Clients"],
     nav_projects: ["Projects", "Projets"], nav_production: ["Production", "Production"], nav_deliveries: ["Deliveries", "Livraisons"],
     nav_reports: ["What won", "Ce qui gagne"], nav_finance: ["Money", "Argent"], nav_portal: ["Client pages", "Pages client"],
@@ -55,14 +54,31 @@
     join_body: ["Pick your role once. It decides what you see first.", "Choisissez votre rôle une fois. Il décide de ce que vous voyez en premier."],
     your_name: ["Your name", "Votre nom"], your_role: ["Your role", "Votre rôle"], join: ["Join", "Rejoindre"],
     // roles
-    role_founder: ["Founder · creative director", "Fondateur · directeur créatif"], role_sales: ["Sales & outreach", "Ventes & prospection"],
+    role_founder: ["Founder · creative director", "Fondateur · directeur créatif"], role_sales: ["Client Lead", "Responsable clients"],
     role_editor: ["Freelance editor", "Monteur freelance"], role_assistant: ["Freelance assistant", "Assistant freelance"],
-    // project stages
-    st_onboard: ["Onboarding", "Démarrage"], st_plan: ["Creative plan", "Plan créatif"], st_shoot: ["Shoot", "Tournage"], st_edit: ["Editing", "Montage"],
-    st_delivered: ["Delivered", "Livré"], st_testing: ["Testing", "En test"], st_report: ["Report", "Rapport"], st_done: ["Closed", "Clôturé"],
-    // lead stages
-    ls_dm: ["DM sent", "DM envoyé"], ls_replied: ["Replied", "A répondu"], ls_call: ["Call booked", "Appel prévu"], ls_proposal: ["Proposal sent", "Proposition envoyée"],
-    ls_won: ["Won", "Gagné"], ls_lost: ["Lost", "Perdu"],
+    // project stages (crm-pipeline.md, after won)
+    st_onboarding: ["Onboarding", "Démarrage"], st_scripting: ["Scripting", "Scripts"], st_pre_production: ["Pre-production", "Préproduction"], st_shoot: ["Shoot", "Tournage"],
+    st_editing: ["Editing", "Montage"], st_client_review: ["Client review", "Revue client"], st_revisions: ["Revisions", "Retouches"], st_delivered: ["Delivered", "Livré"],
+    st_paid: ["Paid", "Payé"], st_retention: ["Next offer", "Offre suivante"],
+    // lead stages (crm-pipeline.md)
+    ls_prospect: ["Prospect", "Prospect"], ls_contacted: ["Contacted", "Contacté"], ls_conversation: ["In conversation", "En discussion"], ls_meeting_booked: ["Meeting booked", "Rendez-vous fixé"],
+    ls_qualified: ["Qualified", "Qualifié"], ls_proposal_sent: ["Proposal sent", "Proposition envoyée"], ls_negotiation: ["Negotiation", "Négociation"], ls_accepted: ["Offer accepted", "Offre acceptée"],
+    ls_signed: ["Signed", "Signé"], ls_won: ["Won: deposit paid", "Gagné : acompte payé"], ls_lost: ["Lost", "Perdu"], ls_nurture: ["Later", "Plus tard"],
+    // default next action when a lead enters a stage
+    nx_prospect: ["Send the first message", "Envoyer le premier message"], nx_contacted: ["Follow up", "Relancer"], nx_conversation: ["Book a call or meeting", "Fixer un appel ou un rendez-vous"],
+    nx_meeting_booked: ["Hold the meeting, ask the 4 questions", "Faire le rendez-vous, poser les 4 questions"], nx_qualified: ["Send the proposal", "Envoyer la proposition"],
+    nx_proposal_sent: ["Check they received the proposal", "Vérifier qu'ils ont reçu la proposition"], nx_negotiation: ["Answer the objection with a revised offer", "Répondre à l'objection avec une offre revue"],
+    nx_accepted: ["Get the quote signed", "Faire signer le devis"], nx_signed: ["Collect the deposit", "Encaisser l'acompte"], nx_won: ["", ""], nx_lost: ["Recontact", "Recontacter"], nx_nurture: ["Recontact", "Recontacter"],
+    // qualifier and ideal client score
+    q_need: ["Need: posts weekly (or wants to) and unhappy with results", "Besoin : publie chaque semaine (ou veut) et n'est pas satisfait"],
+    q_budget: ["Budget: 1,000 TND test, 2,500 TND a month after", "Budget : test à 1 000 TND, puis 2 500 TND par mois"],
+    q_decision: ["Decision: the person on the call decides and pays", "Décision : la personne au rendez-vous décide et paie"],
+    q_timing: ["Timing: can shoot within 30 days", "Délai : peut tourner sous 30 jours"],
+    fit_active: ["Posted on Instagram or TikTok in the last 30 days", "A publié sur Instagram ou TikTok ces 30 derniers jours"],
+    fit_weak_content: ["Content looks weak or inconsistent", "Contenu faible ou irrégulier"],
+    fit_spending_power: ["Spending power: runs Meta ads, good location or 5,000+ followers", "Moyens : pubs Meta, bon emplacement ou 5 000+ abonnés"],
+    fit_priority_sector: ["Sector on the priority list", "Secteur prioritaire"],
+    fit_decision_maker: ["Decision maker reachable", "Décideur joignable"],
     // file statuses
     s_todo: ["To do", "À faire"], s_edit: ["Editing", "Montage"], s_review: ["Internal review", "Relecture"], s_approved: ["Approved", "Validé"], s_revise: ["Changes asked", "Retouches"],
     // invoice statuses
@@ -70,15 +86,18 @@
     inv_overdue: ["Overdue", "En retard"], inv_credited: ["Credited", "Annulée par avoir"], inv_credit: ["Credit note", "Avoir"],
     k_deposit: ["Deposit 50%", "Acompte 50 %"], k_balance: ["Balance 50%", "Solde 50 %"], k_month: ["Monthly", "Mensuel"], k_extra: ["Extra", "Extra"], k_credit: ["Credit note", "Avoir"],
     // gates
-    gate_shoot: ["No shoot until the plan is approved and paid.", "Pas de tournage avant validation du plan et paiement."],
-    gate_files: ["No files until the balance is paid.", "Pas de fichiers avant le paiement du solde."],
+    gate_shoot: ["No shoot until the scripts are approved and the deposit is paid.", "Pas de tournage avant validation des scripts et paiement de l'acompte."],
+    gate_files: ["No final files until the balance is paid.", "Pas de fichiers finaux avant le paiement du solde."],
+    gate_paid: ["Not paid in full yet.", "Pas encore payé en entier."],
     gate_mf: ["No matricule fiscal (tax ID) yet: invoices can't be issued.", "Pas encore de matricule fiscal : impossible d'émettre une facture."],
-    blocked: ["Blocked", "Bloqué"], no_discount: ["Discounts become extra reels, never a lower price.", "Les remises deviennent des reels en plus, jamais un prix plus bas."],
+    blocked: ["Blocked", "Bloqué"], no_discount: ["Discounts are extra pieces or the test credit, never a lower price.", "Les remises sont des pièces en plus ou le crédit du test, jamais un prix plus bas."],
+    launch_price: ["Launch price", "Prix de lancement"], standard_price: ["Standard price", "Prix standard"],
     per_month: ["/ month", "/ mois"], sample_tag: ["Sample", "Exemple"],
     orders_week: ["orders / week", "commandes / semaine"],
-    est_shoot_half: ["Heni shoot (half day)", "Tournage Heni (demi-journée)"], est_shoot_day: ["Heni shoot day", "Journée de tournage Heni"],
-    est_gear: ["Gear rental", "Location de matériel"], est_assistant: ["Assistant", "Assistant"], est_transport: ["Transport and small buys", "Transport et petits achats"],
-    est_edits: ["Reel edits ({n} × {r})", "Montage des reels ({n} × {r})"], est_recuts: ["Hook re-cuts ({n} × {r})", "Variantes d'accroche ({n} × {r})"],
-    est_carousels: ["Carousels ({n} × {r})", "Carrousels ({n} × {r})"], est_report: ["Monthly report", "Rapport mensuel"]
+    est_owner_days: ["Heni, director and camera ({n} day × {r})", "Heni, réalisation et image ({n} j × {r})"],
+    est_owner_project: ["Heni, director and camera (project)", "Heni, réalisation et image (projet)"],
+    est_owner_edit: ["Heni, editing ({n} reels)", "Heni, montage ({n} reels)"],
+    est_camera: ["Camera rental ({n} day × {r})", "Location caméra ({n} j × {r})"], est_transport: ["Transport ({n} day × {r})", "Transport ({n} j × {r})"],
+    est_food: ["Food and water on set ({n} day × {r})", "Repas sur le tournage ({n} j × {r})"], est_assistant: ["Assistant ({n} day × {r})", "Assistant ({n} j × {r})"]
   });
 })(window.GK);
