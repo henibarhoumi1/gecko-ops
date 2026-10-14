@@ -71,8 +71,8 @@
   /** Cost rates (TND). Owner pay is what Heni is paid on a project before the partner share is worked out. */
   M.RATES_DEFAULT = {
     camera: 300, transport: 50, food: 30, editReel: 30, assistant: 120, lights: 80,
-    ownerDirect: 350, ownerPer: "project", // Heni as director and DOP: per project or per shoot day (internal/team-pay.md)
-    editSmall: 300, editMid: 500, editLarge: 700 // Heni's editing pay: 6 reels or fewer, 7 to 14, 15 or more
+    ownerDirect: 350, ownerPer: "day", // Heni as director and DOP: per shoot day (confirmed by Heni)
+    editSmall: 300, editMid: 500, editLarge: 700 // Heni's editing pay: 6 reels or fewer, 7 to 14 (confirmed), 15 or more
   };
   /** Client Lead fixed pay levels: recurring monthly clients -> TND a month (internal/team-pay.md). */
   M.LEVELS_DEFAULT = [{ clients: 5, pay: 1500 }, { clients: 8, pay: 2000 }, { clients: 12, pay: 2600 }];
