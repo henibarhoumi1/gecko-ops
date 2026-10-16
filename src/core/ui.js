@@ -75,7 +75,7 @@
     swap: '<path d="M4 8h13l-3.5-3.5M20 16H7l3.5 3.5"/>', edit: '<path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
     dot: '<circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/>'
   };
-  ICONS.today = ICONS.home; ICONS.guide = '<circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>'; ICONS.docs = ICONS.file || ICONS.dot; ICONS.idea = ICONS.studio; ICONS.globe = ICONS.portal; ICONS.money = ICONS.finance; ICONS.chart = ICONS.dashboard;
+  ICONS.today = ICONS.home; ICONS.guide = '<circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>'; ICONS.docs = ICONS.file || ICONS.dot; ICONS.idea = ICONS.studio; ICONS.globe = ICONS.portal; ICONS.money = ICONS.finance; ICONS.chart = ICONS.dashboard; ICONS.shootday = ICONS.camera; ICONS.play = '<path d="M8 5.5v13l10.5-6.5z"/>'; ICONS.mvdown = '<path d="M12 5v14M6 13l6 6 6-6"/>'; ICONS.mvup = '<path d="M12 19V5M6 11l6-6 6 6"/>';
   UI.ICONS = ICONS;
   /** icon(name, extraClass) -> inline SVG (24px grid, 1.6 stroke) that follows currentColor. Unknown names fall back to a dot. */
   UI.icon = function (n, cls) { return '<svg class="ic' + (cls ? " " + cls : "") + '" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + (ICONS[n] || ICONS.dot) + "</svg>"; };
@@ -84,7 +84,7 @@
   UI.GROUPS = [
     { id: "main", views: ["guide", "today", "tasks", "calendar", "inbox"] },
     { id: "sell", views: ["pipeline", "clients"] },
-    { id: "make", views: ["projects", "production", "deliveries", "studio", "boards", "reports"] },
+    { id: "make", views: ["projects", "shootday", "production", "deliveries", "studio", "boards", "reports"] },
     { id: "money", views: ["dashboard", "finance", "portal"] },
     { id: "team", views: ["docs", "team", "activity", "settings"] }
   ];
