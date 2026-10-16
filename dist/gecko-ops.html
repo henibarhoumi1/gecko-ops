@@ -3666,7 +3666,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     td_t_sales: ["Ten a", "Dix par"], td_a_sales: ["day", "jour"],
     td_t_editor: ["In the", "Au"], td_a_editor: ["edit", "montage"],
     td_t_assistant: ["Next", "Prochain"], td_a_assistant: ["shoot", "tournage"],
-    td_hello: ["Hi {name}. Here's what needs you today.", "Bonjour {name}. Voici ce qui vous attend aujourd'hui."],
+    td_hello: ["Hi {name}. Here's what needs you today.", "Bonjour {name}. Voici ce qui vous attend aujourd'hui."], td_hello_anon: ["Here's what needs you today.", "Voici ce qui vous attend aujourd'hui."],
     td_needs: ["Needs you", "Pour vous"],
     td_needs_none: ["Nothing waiting on you. Good day to shoot or to sell.", "Rien ne vous attend. Bonne journée pour tourner ou vendre."],
     td_plan_wait: ["Plan waiting for client approval", "Plan en attente de validation client"],
@@ -3938,7 +3938,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       if (!{ founder: 1, sales: 1, editor: 1, assistant: 1 }[role]) role = "founder";
       var body = role === "sales" ? sales() : role === "editor" ? editor() : role === "assistant" ? assistant() : founder();
       return ui.head({ label: t("nav_today") + " · " + u.fmtDate(today(), { weekday: "short", day: "numeric", month: "short" }), title: t("td_t_" + role), accent: t("td_a_" + role),
-        sub: esc(t("td_hello", { name: who.name || founderName() })), actions: ui.sample() }) + body;
+        sub: esc((who.name || founderName()) ? t("td_hello", { name: who.name || founderName() }) : t("td_hello_anon")), actions: ui.sample() }) + body;
     },
     count: function () {
       var who = GK.me();
