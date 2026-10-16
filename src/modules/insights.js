@@ -124,7 +124,7 @@
   // ---------- pipeline ----------
   GK.insight = {};
   GK.insight.pipeline = function () {
-    var today = td(), pv = X.pipelineAt(today), prev = X.pipelineAt(d(-30)), open = S.all("leads").filter(function (l) { return X.OPEN_LEAD.indexOf(l.stage) > -1; });
+    var today = td(), pv = X.pipelineAt(today), prev = X.pipelineAt(d(-30)), open = S.all("leads").filter(m.isOpen);
     var w90 = X.winRateIn(90), w90p = X.winRateIn(90, d(-90)), cold = X.coldLeads(7);
     var cyc = X.leadCycle(180), cycP = X.leadCycle(180, d(-180)), allTime = false;
     if (cyc.days == null) { cyc = X.leadCycle(0); allTime = true; }
@@ -312,7 +312,7 @@
     ];
     if (founder()) tiles.push({ label: t("ins_tm_comm"), icon: "cash", value: u.money(X.commissionOwed()), hint: t("ins_tm_comm_n", { a: u.money(X.commissionPaid()) }) });
     else if (role === "sales") {
-      var mine = S.all("projects").filter(function (p) { return p.mohamed; }), owed = u.sum(mine, function (p) { return m.commission(p).owed; });
+      var mine = S.all("projects").filter(function (p) { return !!m.commission(p).basis; }), owed = u.sum(mine, function (p) { return m.commission(p).owed; });
       tiles.push({ label: t("ins_tm_comm"), icon: "cash", value: u.money(owed), hint: t("ins_tm_comm_n", { a: u.money(u.sum(mine, function (p) { return m.commission(p).paid; })) }) });
     } else tiles.push(Object.assign({ label: t("ins_tm_done"), icon: "check", value: String(done7), spark: spark }, cmpCount(done7, doneP), done7 || doneP ? { deltaLabel: t("ins_vs_week") } : {}));
     var dec = "";

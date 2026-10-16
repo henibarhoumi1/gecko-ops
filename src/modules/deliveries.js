@@ -27,7 +27,7 @@
     dv_changes_lab: ["What the client wants changed", "Ce que le client veut changer"],
     dv_changes_ph: ["Their words, short. The editor reads this.", "Leurs mots, en bref. Le monteur lit ceci."],
     dv_changes_saved: ["Sent back to editing as changes asked", "Renvoyé au montage en retouches"],
-    dv_no_rights: ["Only Heni or Mohamed record client feedback.", "Seuls Heni ou Mohamed notent les retours client."],
+    dv_no_rights: ["Only the owner or the Client Lead record client feedback.", "Seuls le fondateur ou le responsable clients notent les retours client."],
     dv_only_approved: ["Only approved files go to the client.", "Seuls les fichiers validés partent chez le client."],
     dv_not_ready: ["in progress", "en cours"], dv_no_files: ["No files planned yet.", "Aucun fichier prévu."],
     dv_msg_copied: ["Message copied. Paste it in WhatsApp.", "Message copié. Collez-le dans WhatsApp."],
@@ -44,12 +44,21 @@
     dv_m_next_delivered: ["Next: we launch the ads test and watch which hook wins.", "Ensuite : on lance le test pub et on regarde quelle accroche gagne."],
     dv_m_next_testing: ["Next: we send you the report on what won and what to cut.", "Ensuite : on vous envoie le rapport sur ce qui gagne et ce qu'on coupe."],
     dv_m_next_done: ["Next: we plan the next round with what we learned.", "Ensuite : on prépare la prochaine série avec ce qu'on a appris."],
+    dv_m_next_editing: ["Next: we finish the edit and send approved previews for your review.", "Ensuite : nous terminons le montage et vous envoyons les aperçus validés."],
+    dv_m_next_client_review: ["Next: we collect your feedback on the approved previews.", "Ensuite : nous recueillons vos retours sur les aperçus validés."],
+    dv_m_next_revisions: ["Next: we make the requested changes and send the files back for review.", "Ensuite : nous effectuons les changements demandés et renvoyons les fichiers en relecture."],
+    dv_m_next_paid: ["Next: we review the available campaign results together.", "Ensuite : nous examinons ensemble les résultats disponibles de la campagne."],
+    dv_m_next_retention: ["Next: we plan the next round with what we learned.", "Ensuite : nous préparons la prochaine série à partir des enseignements."],
     dv_m_balance: ["Balance due: {amt} ({nos}).", "Solde dû : {amt} ({nos})."],
     dv_m_balance_late: ["Balance due: {amt} ({nos}), overdue since {d}.", "Solde dû : {amt} ({nos}), en retard depuis le {d}."],
     dv_m_thanks: ["Thanks!", "Merci !"]
   });
 
-  var STAGES = ["edit", "delivered", "testing"];
+  var STAGES = ["editing", "client_review", "revisions", "delivered", "paid"];
+  function stageKey(p) {
+    var stage = String(p && p.stage || "");
+    return m.OLD && m.OLD.stage[stage] || stage;
+  }
 
   function isUrl(s) { return /^https?:\/\/\S+$/i.test(String(s || "").trim()); }
   function fileDrive(f) { return isUrl(f.item.drive) ? f.item.drive : (f.reel && isUrl(f.reel.drive) ? f.reel.drive : ""); }
@@ -64,12 +73,12 @@
     return String(at).slice(0, 10);
   }
   function inScope(p) {
-    if (STAGES.indexOf(p.stage) > -1) return true;
+    if (STAGES.indexOf(stageKey(p)) > -1) return true;
     return p.stage === "done" && m.files(p).length > 0 && lastTouch(p) >= u.addDays(u.today(), -30);
   }
   function projects() {
-    var order = { edit: 0, delivered: 1, testing: 2, done: 3 };
-    return S.all("projects").filter(inScope).sort(function (a, b) { return (order[a.stage] - order[b.stage]) || (m.projectLabel(a) > m.projectLabel(b) ? 1 : -1); });
+    var order = { editing: 0, client_review: 1, revisions: 2, delivered: 3, paid: 4, retention: 5 };
+    return S.all("projects").filter(inScope).sort(function (a, b) { return (order[stageKey(a)] - order[stageKey(b)]) || (m.projectLabel(a) > m.projectLabel(b) ? 1 : -1); });
   }
   function unpaidInvoices(p) {
     return S.all("invoices").filter(function (i) {
@@ -101,7 +110,8 @@
     }
     var left = st.files.length - n;
     if (n && left > 0) L.push(t("dv_m_left", { n: left }));
-    L.push(t("dv_m_next_" + (STAGES.indexOf(p.stage) > -1 ? p.stage : "done")));
+    var nextStage = stageKey(p);
+    L.push(t("dv_m_next_" + (nextStage || "retention")));
     var inv = unpaidInvoices(p);
     if (inv.length) {
       var late = overdueSince(inv), bo = { amt: u.money(u.sum(inv, m.invBalance)), nos: inv.map(function (i) { return i.no; }).join(", "), d: u.fmtDate(late) };
@@ -153,7 +163,7 @@
       (!open ? ui.btn(t("dv_copy_update"), "dv-copy", { cls: "gel", data: { p: p.id, links: "0" } }) : "") +
       ui.btn(t("dv_open_prod"), "dv-prod", { cls: "ghost sm", data: { id: p.id } }) +
       ui.btn(t("dv_open_project"), "dv-proj", { cls: "ghost sm", data: { id: p.id } }) + "</div>";
-    if (p.stage === "edit" && open && st.files.length && st.appr.length === st.files.length) h += '<p class="small muted" style="margin:0">' + esc(t("dv_deliver_hint")) + "</p>";
+    if (stageKey(p) === "editing" && open && st.files.length && st.appr.length === st.files.length) h += '<p class="small muted" style="margin:0">' + esc(t("dv_deliver_hint")) + "</p>";
     return h + "</section>";
   }
 
@@ -165,8 +175,8 @@
       var ready = 0, held = 0, appr = 0, cok = 0;
       list.forEach(function (p) {
         var st = stats(p);
-        if (p.stage === "edit" && st.files.length && st.appr.length === st.files.length) ready++;
-        if (!m.canFiles(p) && STAGES.indexOf(p.stage) > -1) held += st.appr.length;
+        if (stageKey(p) === "editing" && st.files.length && st.appr.length === st.files.length) ready++;
+        if (!m.canFiles(p) && STAGES.indexOf(stageKey(p)) > -1) held += st.appr.length;
         appr += st.appr.length; cok += st.client.length;
       });
       h += GK.insight.deliveries();
@@ -174,7 +184,7 @@
     },
     count: function () {
       var n = S.all("projects").filter(function (p) {
-        if (p.stage !== "edit") return false;
+        if (stageKey(p) !== "editing") return false;
         var st = stats(p); return st.files.length > 0 && st.appr.length === st.files.length;
       }).length;
       return n || "";

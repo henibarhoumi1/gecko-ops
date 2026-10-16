@@ -22,9 +22,9 @@
 
   function paceHTML(year) {
     var r = m.rules(), cap = +r.cap || 0, now = u.today(), thisYear = u.year(now);
-    var issued = F.invoices().filter(function (i) { return i.no && u.year(i.issued) === year && !(i.kind === "extra" && i.passThrough); });
+    var issued = F.invoices().filter(function (i) { return i.no && u.year(i.issued) === year; });
     var curM = year === thisYear ? +now.slice(5, 7) : 12, per = [], cum = [], run = 0;
-    for (var k = 1; k <= 12; k++) { var mk = year + "-" + String(k).padStart(2, "0"); var a = u.sum(issued.filter(function (i) { return u.month(i.issued) === mk; }), function (i) { return +i.amount || 0; }); per.push(a); run += a; cum.push(run); }
+    for (var k = 1; k <= 12; k++) { var mk = year + "-" + String(k).padStart(2, "0"); var a = u.sum(issued.filter(function (i) { return u.month(i.issued) === mk; }), m.invoiceTurnover); per.push(a); run += a; cum.push(run); }
     var used = cum[curM - 1], firstM = issued.length ? Math.min.apply(null, issued.map(function (i) { return +i.issued.slice(5, 7); })) : curM;
     var avg = used / Math.max(1, curM - firstM + 1);
     var crossedAt = 0; for (var j = 0; j < 12; j++) if (cap && cum[j] >= cap && j < curM) { crossedAt = j + 1; break; }
@@ -48,7 +48,7 @@
     for (var k = 1; k <= 12; k++) {
       var mk = year + "-" + String(k).padStart(2, "0");
       var mine = inv.filter(function (i) { return i.no && u.month(i.issued) === mk; });
-      var a = u.sum(mine.filter(function (i) { return !(i.kind === "extra" && i.passThrough); }), function (i) { return +i.amount || 0; });
+      var a = u.sum(mine, m.invoiceTurnover);
       var s = u.sum(mine.filter(function (i) { return i.kind !== "credit"; }), function (i) { return +i.stamp || 0; });
       var w = u.sum(inv, function (i) { return u.sum((i.payments || []).filter(function (p) { return u.month(p.date) === mk; }), function (p) { return +p.withheld || 0; }); });
       if (!a && !s && !w) continue;

@@ -26,7 +26,7 @@
 
     // ---- Maison Jasmin · GRIP · editing, deposit paid, balance issued
     var aJ1 = u.uid("a"), aJ2 = u.uid("a");
-    var pJas = { id: "pjas", clientId: "cjas", contractId: "", month: 0, name: "Eid launch", pack: "GRIP", stage: "edit", planApproved: true, planApprovedOn: d(-18),
+    var pJas = { id: "pjas", clientId: "cjas", contractId: "", month: 0, name: "Eid launch", pack: "test", stage: "edit", planApproved: true, planApprovedOn: d(-18),
       shootDate: d(-8), format: "9x16", mohamed: true, onboarding: [true, true, true, true, true, true, true],
       angles: [{ id: aJ1, name: "Smells like home", why: "Buyers mention their grandmother's jasmine" }, { id: aJ2, name: "Gift without thinking", why: "Eid gifting searches" }],
       reels: [
@@ -35,17 +35,17 @@
         reel(aJ2, "D", "Unboxing on a market table.", [hook("The Eid gift nobody returns", "approved", 1), hook("Wrapped in 10 seconds", "revise", 2)]),
         reel(aJ2, "I", "Three reactions, one jar.", [hook("We filmed their faces", "todo", 1), hook("Mum cried a little", "todo", 1)])
       ],
-      carousels: [], costs: M.estimateCosts("GRIP"), report: { metric: "cpp", now: "", why: {}, more: "", kill: "", next: "" }, payout: null, log: [] };
+      carousels: [], costs: M.estimateCosts("test"), report: { metric: "cpp", now: "", why: {}, more: "", kill: "", next: "" }, payout: null, log: [] };
 
     // ---- Kahwa Lab · SEASON · plan not approved, deposit not issued
     var aK1 = u.uid("a");
-    var pKah = { id: "pkah", clientId: "ckah", contractId: "", month: 0, name: "Winter season", pack: "SEASON", stage: "plan", planApproved: false, planApprovedOn: "",
+    var pKah = { id: "pkah", clientId: "ckah", contractId: "", month: 0, name: "Winter season", pack: "campaign", stage: "plan", planApproved: false, planApprovedOn: "",
       shootDate: "", format: "9x16", mohamed: true, onboarding: [true, true, true, false, false, false, false],
       angles: [{ id: aK1, name: "Morning ritual", why: "Most orders land before 9am" }], reels: [], carousels: [], costs: [], report: { metric: "cpp", now: "", why: {}, more: "", kill: "", next: "" }, payout: null, log: [] };
 
     // ---- Atlas Sneakers · GRIP · testing, fully paid, results coming in
     var aA1 = u.uid("a"), aA2 = u.uid("a");
-    var pAtl = { id: "patl", clientId: "catl", contractId: "", month: 0, name: "Drop 03", pack: "GRIP", stage: "testing", planApproved: true, planApprovedOn: d(-40),
+    var pAtl = { id: "patl", clientId: "catl", contractId: "", month: 0, name: "Drop 03", pack: "test", stage: "testing", planApproved: true, planApprovedOn: d(-40),
       shootDate: d(-30), format: "9x16", mohamed: false, onboarding: [true, true, true, true, true, true, true],
       angles: [{ id: aA1, name: "Built for Tunis streets", why: "Returns mention sizing on cobbles" }, { id: aA2, name: "Under 200 DT", why: "Price is the first DM question" }],
       reels: [
@@ -54,25 +54,25 @@
         reel(aA2, "I", "Three outfits, one pair.", [hook("One pair, three looks", "approved", 1, {}), hook("Your feed needs this", "approved", 1, {})]),
         reel(aA1, "I", "Rain test.", [hook("We poured water on them", "approved", 1, {}), hook("Still dry", "approved", 1, {})])
       ],
-      carousels: [], costs: M.estimateCosts("GRIP"), report: { metric: "cpp", now: "", why: {}, more: "", kill: "", next: "" }, payout: null, log: [] };
+      carousels: [], costs: M.estimateCosts("test"), report: { metric: "cpp", now: "", why: {}, more: "", kill: "", next: "" }, payout: null, log: [] };
 
     // ---- Atlas Sneakers · earlier GRIP · closed, commission paid
-    var pAtlOld = { id: "patl0", clientId: "catl", contractId: "", month: 0, name: "Drop 02", pack: "GRIP", stage: "done", planApproved: true, planApprovedOn: d(-95),
+    var pAtlOld = { id: "patl0", clientId: "catl", contractId: "", month: 0, name: "Drop 02", pack: "test", stage: "done", planApproved: true, planApprovedOn: d(-95),
       shootDate: d(-88), format: "9x16", mohamed: true, onboarding: [true, true, true, true, true, true, true], angles: [], reels: [], carousels: [],
-      costs: M.estimateCosts("GRIP"), report: { metric: "cpp", now: "5.4", why: { a1: "Price angle won" }, more: "Price reveal", kill: "Lifestyle b-roll", next: "Walk test" }, payout: { amount: 237, paidOn: d(-60) }, log: [] };
+      costs: M.estimateCosts("test"), report: { metric: "cpp", now: "5.4", why: { a1: "Price angle won" }, more: "Price reveal", kill: "Lifestyle b-roll", next: "Walk test" }, payout: { amount: 237, paidOn: d(-60) }, log: [] };
 
     // ---- Nour Skin · SKIN 10 contract, month 1 closed, month 2 at shoot
-    var contract = { id: "knour", clientId: "cnour", pack: "SKIN10", start: ym, minMonths: 3, status: "active" };
+    var contract = { id: "knour", clientId: "cnour", pack: "monthly8", start: ym, minMonths: 3, status: "active" };
     var aN1 = u.uid("a"), aN2 = u.uid("a"), aN3 = u.uid("a");
-    var pNour1 = { id: "pnour1", clientId: "cnour", contractId: "knour", month: 1, name: "Month 1", pack: "SKIN10", stage: "done", planApproved: true, planApprovedOn: d(-50),
+    var pNour1 = { id: "pnour1", clientId: "cnour", contractId: "knour", month: 1, name: "Month 1", pack: "monthly8", stage: "done", planApproved: true, planApprovedOn: d(-50),
       shootDate: d(-45), format: "9x16", mohamed: true, onboarding: [true, true, true, true, true, true, true], angles: [{ id: aN1, name: "Glow in 7 days", why: "Reviews" }], reels: [], carousels: [],
-      costs: M.estimateCosts("SKIN10"), report: { metric: "cpp", now: "8.5", why: {}, more: "Before / after", kill: "Studio shots", next: "Derja voiceover" }, payout: { amount: 0, paidOn: "" }, log: [] };
-    var pNour2 = { id: "pnour2", clientId: "cnour", contractId: "knour", month: 2, name: "Month 2", pack: "SKIN10", stage: "shoot", planApproved: true, planApprovedOn: d(-3),
+      costs: M.estimateCosts("monthly8"), report: { metric: "cpp", now: "8.5", why: {}, more: "Before / after", kill: "Studio shots", next: "Derja voiceover" }, payout: { amount: 0, paidOn: "" }, log: [] };
+    var pNour2 = { id: "pnour2", clientId: "cnour", contractId: "knour", month: 2, name: "Month 2", pack: "monthly8", stage: "shoot", planApproved: true, planApprovedOn: d(-3),
       shootDate: d(2), format: "9x16", mohamed: true, onboarding: [true, true, true, true, true, true, true],
       angles: [{ id: aN2, name: "Derja voiceover", why: "Month 1 winner" }, { id: aN3, name: "Pharmacist says", why: "Trust objection" }],
       reels: [reel(aN2, "D", "Rania talks to camera.", [hook("Ma tsadakch", "todo", 1), hook("7 days, no filter", "todo", 1)])],
       carousels: [{ id: u.uid("k"), angleId: aN3, title: "5 things your pharmacist knows", status: "todo", v: 1, clientOk: false, drive: "" }],
-      costs: M.estimateCosts("SKIN10"), report: { metric: "cpp", now: "", why: {}, more: "", kill: "", next: "" }, payout: null, log: [] };
+      costs: M.estimateCosts("monthly8"), report: { metric: "cpp", now: "", why: {}, more: "", kill: "", next: "" }, payout: null, log: [] };
     // contract start is the month before this one
     var prev = new Date(today + "T12:00:00"); prev.setMonth(prev.getMonth() - 1); contract.start = u.month(u.iso(prev));
 
@@ -92,12 +92,12 @@
     ];
 
     var leads = [
-      { id: "l1", brand: "Zitouna Oils", contact: "Karim", handle: "@zitouna.oils", channel: "teardown_dm", stage: "dm", q: [true, false, false, false], pack: "GRIP", next: "Follow up with the teardown", nextDate: d(1), owner: "mmoh", lostReason: "", history: hist([["dm", -2]]), log: [] },
-      { id: "l2", brand: "Bled Bags", contact: "Hela", handle: "@bledbags", channel: "teardown_dm", stage: "replied", q: [true, true, false, false], pack: "GRIP", next: "Book the call", nextDate: d(0), owner: "mmoh", lostReason: "", history: hist([["dm", -6], ["replied", -3]]), log: [] },
-      { id: "l3", brand: "Carthage Candles", contact: "Mehdi", handle: "@carthage.candles", channel: "media_buyer", stage: "call", q: [true, true, true, false], pack: "SEASON", next: "Call Thursday 11:00", nextDate: d(2), owner: "mmoh", lostReason: "", history: hist([["dm", -9], ["replied", -7], ["call", -2]]), log: [] },
-      { id: "l4", brand: "Dar Henna", contact: "Olfa", handle: "@darhenna", channel: "referral", stage: "proposal", q: [true, true, true, true], pack: "SKIN10", next: "Proposal follow-up", nextDate: d(-1), owner: "mmoh", lostReason: "", history: hist([["dm", -14], ["replied", -12], ["call", -8], ["proposal", -4]]), log: [] },
-      { id: "l5", brand: "Sahel Swim", contact: "Nidhal", handle: "@sahelswim", channel: "teardown_dm", stage: "lost", q: [true, false, false, false], pack: "GRIP", next: "", nextDate: "", owner: "mmoh", lostReason: "not_now", history: hist([["dm", -20], ["replied", -18], ["lost", -15]]), log: [] },
-      { id: "l6", brand: "Kahwa Lab", contact: "Amine", handle: "@kahwalab", channel: "warm", stage: "won", q: [true, true, true, true], pack: "SEASON", next: "", nextDate: "", owner: "mmoh", lostReason: "", history: hist([["dm", -25], ["call", -16], ["proposal", -12], ["won", -7]]), log: [] }
+      { id: "l1", brand: "Zitouna Oils", contact: "Karim", handle: "@zitouna.oils", channel: "teardown_dm", stage: "dm", q: [true, false, false, false], pack: "test", next: "Follow up with the teardown", nextDate: d(1), owner: "mmoh", lostReason: "", history: hist([["dm", -2]]), log: [] },
+      { id: "l2", brand: "Bled Bags", contact: "Hela", handle: "@bledbags", channel: "teardown_dm", stage: "replied", q: [true, true, false, false], pack: "test", next: "Book the call", nextDate: d(0), owner: "mmoh", lostReason: "", history: hist([["dm", -6], ["replied", -3]]), log: [] },
+      { id: "l3", brand: "Carthage Candles", contact: "Mehdi", handle: "@carthage.candles", channel: "media_buyer", stage: "call", q: [true, true, true, false], pack: "campaign", next: "Call Thursday 11:00", nextDate: d(2), owner: "mmoh", lostReason: "", history: hist([["dm", -9], ["replied", -7], ["call", -2]]), log: [] },
+      { id: "l4", brand: "Dar Henna", contact: "Olfa", handle: "@darhenna", channel: "referral", stage: "proposal", q: [true, true, true, true], pack: "monthly8", next: "Proposal follow-up", nextDate: d(-1), owner: "mmoh", lostReason: "", history: hist([["dm", -14], ["replied", -12], ["call", -8], ["proposal", -4]]), log: [] },
+      { id: "l5", brand: "Sahel Swim", contact: "Nidhal", handle: "@sahelswim", channel: "teardown_dm", stage: "lost", q: [true, false, false, false], pack: "test", next: "", nextDate: "", owner: "mmoh", lostReason: "not_now", history: hist([["dm", -20], ["replied", -18], ["lost", -15]]), log: [] },
+      { id: "l6", brand: "Kahwa Lab", contact: "Amine", handle: "@kahwalab", channel: "warm", stage: "won", q: [true, true, true, true], pack: "campaign", next: "", nextDate: "", owner: "mmoh", lostReason: "", history: hist([["dm", -25], ["call", -16], ["proposal", -12], ["won", -7]]), log: [] }
     ];
     var outreach = [];
     for (var i = 1; i <= 6; i++) outreach.push({ id: d(-i) + "_mmoh", date: d(-i), owner: "mmoh", dms: [11, 10, 8, 12, 10, 9][i - 1], replies: [2, 1, 1, 3, 1, 0][i - 1], calls: i === 2 ? 1 : 0 });
@@ -114,7 +114,7 @@
       { id: "g1", ch: "general", who: "mheni", text: "Shoot for Nour Skin moved to " + u.fmtDate(d(2)) + ". Salma, can you confirm the location?", at: d(-1) + "T10:12" },
       { id: "g2", ch: "general", who: "masst", text: "Confirmed, 9:30 at the pharmacy.", at: d(-1) + "T10:40" },
       { id: "g3", ch: "pjas", who: "medit", text: "Hook 4 needs the Eid track, the client asked for it.", at: d(0) + "T09:05" },
-      { id: "g4", ch: "general", who: "mmoh", text: "10 DMs done today. Dar Henna wants the proposal in French.", at: d(0) + "T12:30" }
+      { id: "g4", ch: "general", who: "mmoh", text: "Dar Henna wants the proposal in French.", at: d(0) + "T12:30" }
     ];
 
     var data = { config: conf, colls: { team: team, clients: clients, leads: leads, outreach: outreach, contracts: [contract], projects: [pJas, pKah, pAtl, pAtlOld, pNour1, pNour2], invoices: invoices, tasks: tasks, msgs: msgs } };

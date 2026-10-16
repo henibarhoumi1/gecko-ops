@@ -34,7 +34,10 @@
     tm_no_self: ["You can't remove yourself.", "Vous ne pouvez pas vous retirer vous-même."], tm_only_founder: ["Only Heni can change the team.", "Seul Heni peut modifier l'équipe."],
     tm_shared_note: ["People join by opening this page and picking their name. Heni must share the page with them as Contributor so they can edit.", "Chacun rejoint en ouvrant cette page et en choisissant son nom. Heni doit la partager en Contributeur pour qu'ils puissent modifier."],
     tm_add_hint: ["Add someone here first, then they claim their name when they open the page.", "Ajoutez la personne ici, puis elle choisit son nom en ouvrant la page."],
-    tm_member_added: ["Added to the team", "Ajouté à l'équipe"]
+    tm_member_added: ["Added to the team", "Ajouté à l'équipe"],
+    tm_invite_email: ["Email address", "Adresse e-mail"],
+    tm_invite_ready: ["Secure invitation token", "Jeton d'invitation sécurisé"],
+    tm_signout: ["Sign out", "Se déconnecter"]
   });
 
   function me() { return GK.me() || { id: "", name: "", role: "founder" }; }
@@ -147,7 +150,9 @@
     var team = S.all("team").sort(function (a, b) { return m.ROLES.indexOf(a.role) - m.ROLES.indexOf(b.role) || (a.name > b.name ? 1 : -1); });
     var h = "";
     if (S.backend === "shared") h += '<p class="note">' + esc(t("tm_shared_note")) + "</p>";
-    h += '<section class="panel"><div class="panel-h"><h2 class="sec">' + esc(t("tm_people")) + '</h2><span class="small muted">' + team.length + '</span></div><div class="list">' + team.map(function (x) {
+    if (S.backend === "supabase") h += '<p class="note">Team access is granted by email invitation. The token is shown once; send it to the invited person through a trusted channel.</p>';
+    h += '<section class="panel"><div class="panel-h"><h2 class="sec">' + esc(t("tm_people")) + '</h2><span class="small muted">' + team.length + '</span>' +
+      (S.backend === "supabase" ? ui.btn(t("tm_signout"), "auth-signout", { cls: "ghost sm" }) : "") + '</div><div class="list">' + team.map(function (x) {
       var n = openTasksFor(x.id).length, self = x.id === my.id;
       var rm = founder && !self;
       return '<div class="li"><div class="row" style="flex-wrap:nowrap;min-width:0">' + ui.av(x.name, self ? "gel" : "") + '<div class="stack" style="gap:2px;min-width:0"><strong>' + esc(x.name) + (self ? ' <span class="small muted">· ' + esc(t("tm_you")) + "</span>" : "") +
@@ -156,9 +161,9 @@
         (m.isFounder() ? ui.btn(t("tm_remove"), "tm-member-del", { cls: "ghost sm", data: { id: x.id }, disabled: !rm, title: !founder ? t("tm_only_founder") : self ? t("tm_no_self") : t("tm_remove") }) : "") + "</div></div>";
     }).join("") + "</div></section>";
     if (founder) {
-      h += '<section class="panel"><div class="panel-h"><h2 class="sec">' + esc(t("tm_add_member")) + '</h2></div><p class="small muted" style="margin:0">' + esc(t("tm_add_hint")) + '</p><div class="form">' +
-        ui.field({ id: "tm-m-name", label: t("tm_name") }) +
-        ui.field({ id: "tm-m-role", label: t("tm_role"), type: "select", value: "editor", options: m.ROLES.map(function (r) { return [r, t("role_" + r)]; }) }) +
+      h += '<section class="panel"><div class="panel-h"><h2 class="sec">' + esc(t("tm_add_member")) + '</h2></div><p class="small muted" style="margin:0">' + esc(S.backend === "supabase" ? "Invite a verified account by email." : t("tm_add_hint")) + '</p><div class="form">' +
+        ui.field({ id: S.backend === "supabase" ? "tm-m-email" : "tm-m-name", label: S.backend === "supabase" ? t("tm_invite_email") : t("tm_name"), type: S.backend === "supabase" ? "email" : "text" }) +
+        ui.field({ id: "tm-m-role", label: t("tm_role"), type: "select", value: "editor", options: m.ROLES.filter(function (r) { return r !== "founder"; }).map(function (r) { return [r, t("role_" + r)]; }) }) +
         '</div><div class="row" style="justify-content:flex-end">' + ui.btn(t("add"), "tm-member-add", { cls: "primary" }) + "</div></section>";
     }
     return h;
@@ -227,6 +232,18 @@
     ui.confirm(t("tm_del_task_q"), t("tm_del_task_b"), function () { S.remove("tasks", id); });
   });
   GK.act("tm-member-add", function () {
+    if (S.backend === "supabase") {
+      var email = u.val("tm-m-email").trim(), role = u.val("tm-m-role") || "editor";
+      if (!email) { u.focus("tm-m-email"); return ui.toast(t("required")); }
+      S.createInvite(email, role).then(function (token) {
+        ui.modal({
+          title: t("tm_invite_ready"),
+          body: '<p class="small muted">This one-time token expires in seven days. Copy it and share it with the invited person through a trusted channel.</p><code class="code" style="word-break:break-all;user-select:all">' + esc(token) + "</code>",
+          foot: ui.btn(t("close"), "close", { cls: "primary" })
+        });
+      }, function (error) { ui.toast(error.message); });
+      return;
+    }
     var name = u.val("tm-m-name").trim();
     if (!name) { u.focus("tm-m-name"); return ui.toast(t("required")); }
     S.put("team", { id: "m" + u.uid(""), name: name.slice(0, 60), role: u.val("tm-m-role") || "editor" });

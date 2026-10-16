@@ -17,7 +17,7 @@
     fi_xp_yes: ["yes", "oui"], fi_xp_no: ["no", "non"], fi_xp_monthly: ["monthly", "mensuelle"], fi_xp_once: ["once", "unique"],
     fi_xp_s_title: ["{co} · yearly summary {y}", "{co} · résumé annuel {y}"], fi_xp_s_note: ["Estimate from the invoices, payments and expenses in GECKO Ops. Accountant to confirm.", "Estimation à partir des factures, paiements et dépenses de GECKO Ops. À confirmer par le comptable."],
     fi_xp_s_inv: ["Invoiced, counted for the cap", "Facturé, compté pour le plafond"], fi_xp_s_cap: ["Cap", "Plafond"], fi_xp_s_cash: ["Cash received (net)", "Encaissements (net)"], fi_xp_s_wh: ["Tax withheld by clients (credit)", "Retenues à la source des clients (crédit)"],
-    fi_xp_s_stamp: ["Stamp duty on invoices issued", "Timbres sur factures émises"], fi_xp_s_over: ["Overheads", "Charges"], fi_xp_s_costs: ["Direct project costs", "Coûts directs des projets"], fi_xp_s_sal: ["Heni's salary", "Salaire de Heni"],
+    fi_xp_s_stamp: ["Stamp duty on invoices issued", "Timbres sur factures émises"], fi_xp_s_over: ["Overheads", "Charges"], fi_xp_s_costs: ["Direct project costs", "Coûts directs des projets"], fi_xp_s_sal: ["Owner salary", "Salaire du fondateur"],
     fi_xp_s_comm: ["Commissions paid", "Commissions payées"], fi_xp_s_open: ["Still owed by clients today", "Encore dû par les clients aujourd'hui"]
   });
 

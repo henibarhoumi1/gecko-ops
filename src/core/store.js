@@ -1,30 +1,33 @@
 /* GECKO Ops · data store.
-   One in-memory cache, three backends behind it:
-     demo   sample data, kept in this browser only (never written to the shared store)
-     local  live data in this browser (localStorage), when no shared store is reachable
-     shared live data in the page's shared database (claude.ai artifact `db`), seen by the whole team
-   A future website swaps "shared" for a hosted backend (see README: Supabase adapter) without touching modules.
+   One in-memory cache behind three modes:
+     demo     local prototype data persisted only in this browser
+     shared   legacy claude.ai artifact database
+     supabase authenticated website workspace, with server-enforced scope
    Modules only call: all, get, put, patch, remove, config, setConfig, onChange. */
 (function (GK) {
   "use strict";
   var u = GK.u;
   var COLLS = ["team", "clients", "leads", "outreach", "contracts", "projects", "invoices", "tasks", "msgs", "ideas", "boards", "shares", "feedback", "expenses", "quotes"];
-  var KEY = { demo: "gecko-ops-v01-demo", live: "gecko-ops-v01-live", mode: "gecko-ops-v01-mode", as: "gecko-ops-v01-as" };
+  var KEY = { demo: "gecko-ops-v01-demo", mode: "gecko-ops-v01-mode", as: "gecko-ops-v01-as" };
   var LOG_MAX = 30, MSG_WINDOW = 400;
 
-  var cache = {}, cfg = null, listeners = [], db = null, user = null, unsubs = [];
+  var cache = {}, cfg = null, listeners = [], db = null, user = null, unsubs = [], assignmentRows = [];
   var inflight = {}, queued = {};
   COLLS.forEach(function (c) { cache[c] = {}; });
 
   var S = {
     COLLS: COLLS,
-    mode: "demo",          // "demo" | "live"
-    backend: "local",      // "local" | "shared"
+    mode: "demo",          // local prototype ("demo") | remote workspace ("live")
+    backend: "local",      // "local" | "shared" | "supabase"
     readOnly: false,
     sharedAvailable: false,
     sharedLive: false,     // the shared store already holds a live workspace
     viewer: { id: null, isOwner: false, canEdit: false, canWrite: null },
-    ready: false
+    ready: false,
+    authState: "demo",
+    workspaceId: null,
+    workspaceRole: null,
+    publicShare: null
   };
 
   // ---------- change notification (coalesced to one render per frame) ----------
@@ -47,18 +50,88 @@
   var saveKey = null, saveTimer = null;
   function writeLocal() {
     clearTimeout(saveTimer); saveTimer = null;
-    if (!saveKey) return;
+    if (!saveKey) return true;
     var k = saveKey; saveKey = null;
-    try { localStorage.setItem(k, JSON.stringify(snapshotLocal())); }
-    catch (e) { GK.ui && GK.ui.toast(GK.t("write_failed")); }
+    try { localStorage.setItem(k, JSON.stringify(snapshotLocal())); return true; }
+    catch (e) { GK.ui && GK.ui.toast(GK.t("write_failed")); return false; }
   }
   function saveLocal() {
     if (S.backend !== "local") return;
-    var k = S.mode === "demo" ? KEY.demo : KEY.live;
+    var k = KEY.demo;
     if (saveKey && saveKey !== k) writeLocal();
     saveKey = k; clearTimeout(saveTimer); saveTimer = setTimeout(writeLocal, 150);
   }
   S.flush = writeLocal;
+  S.localRecordCount = function () {
+    return COLLS.reduce(function (n, coll) { return n + S.all(coll).length; }, 0);
+  };
+  S.clearLocalRecords = function () {
+    if (S.backend !== "local" || S.readOnly) return null;
+    writeLocal();
+    var previous = snapshotLocal(), count = S.localRecordCount();
+    var next = { config: cfg || GK.m.defaultConfig(), colls: {} };
+    COLLS.forEach(function (coll) { cache[coll] = {}; next.colls[coll] = []; });
+    cfg = next.config;
+    clearTimeout(saveTimer); saveTimer = null; saveKey = null;
+    try {
+      localStorage.setItem(KEY.demo, JSON.stringify(next));
+    } catch (error) {
+      loadInto(previous);
+      return null;
+    }
+    changed();
+    return { count: count, collections: COLLS.slice() };
+  };
+  S.reserveInvoiceNo = function (year) {
+    if (S.backend !== "local") throw new Error("Collision-safe invoice numbering is only available in local prototype mode.");
+    var max = 0, pattern = new RegExp("^GK-" + year + "-(\\d+)$");
+    function scan(rows) {
+      (rows || []).forEach(function (i) {
+        var match = pattern.exec(i && i.no || "");
+        if (match) max = Math.max(max, +match[1]);
+      });
+    }
+    scan(S.all("invoices"));
+    try {
+      var saved = localStorage.getItem(KEY.demo);
+      if (saved) {
+        var data = JSON.parse(saved);
+        scan(data && data.colls && data.colls.invoices);
+      }
+      var key = "gecko-ops-v01-invoice-sequence-" + year;
+      var last = +localStorage.getItem(key) || 0;
+      var next = Math.max(max, last) + 1;
+      localStorage.setItem(key, String(next));
+      return "GK-" + year + "-" + String(next).padStart(3, "0");
+    } catch (e) {
+      throw new Error("Could not reserve an invoice number: " + (e && e.message ? e.message : "local storage is unavailable."));
+    }
+  };
+  S.reserveQuoteNo = function (year) {
+    if (S.backend !== "local") throw new Error("Collision-safe quote numbering is only available in local prototype mode.");
+    var max = 0, pattern = new RegExp("^Q-" + year + "-(\\d+)$");
+    function scan(rows) {
+      (rows || []).forEach(function (q) {
+        var match = pattern.exec(q && q.no || "");
+        if (match) max = Math.max(max, +match[1]);
+      });
+    }
+    scan(S.all("quotes"));
+    try {
+      var saved = localStorage.getItem(KEY.demo);
+      if (saved) {
+        var data = JSON.parse(saved);
+        scan(data && data.colls && data.colls.quotes);
+      }
+      var key = "gecko-ops-v01-quote-sequence-" + year;
+      var last = +localStorage.getItem(key) || 0;
+      var next = Math.max(max, last) + 1;
+      localStorage.setItem(key, String(next));
+      return "Q-" + year + "-" + String(next).padStart(3, "0");
+    } catch (e) {
+      throw new Error("Could not reserve a quote number: " + (e && e.message ? e.message : "local storage is unavailable."));
+    }
+  };
   window.addEventListener("pagehide", writeLocal);
   document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") writeLocal(); });
   function loadInto(data) {
@@ -94,7 +167,44 @@
 
   function persist(coll, id, obj) {
     if (S.backend === "shared") sharedWrite(docPath(coll, id), obj ? u.clone(obj) : null);
+    else if (S.backend === "supabase") remotePersist(coll, id, obj);
     else saveLocal();
+  }
+  function remoteError(error) {
+    var message = error && error.message ? error.message : "Unknown backend error.";
+    if (GK.ui) GK.ui.toast("Save failed: " + message);
+    if (S.workspaceId) loadWorkspace().catch(function (reloadError) {
+      if (GK.ui) GK.ui.toast("Workspace reload failed: " + (reloadError && reloadError.message ? reloadError.message : "Unknown backend error."));
+    });
+  }
+  function rpc(name, args) {
+    if (!GK.supabase || !S.workspaceId) return Promise.reject(new Error("An authenticated workspace is required."));
+    return GK.supabase.rpc(name, Object.assign({ p_workspace_id: S.workspaceId }, args || {}));
+  }
+  function remotePersist(coll, id, obj) {
+    if (coll === "team" || coll === "shares") {
+      remoteError(new Error("Use the dedicated membership or client-share operation."));
+      return;
+    }
+    var operation;
+    if (coll === "feedback") {
+      operation = rpc("add_team_client_feedback", {
+        p_share_id: obj.shareId, p_project_id: obj.projectId || null, p_kind: obj.kind,
+        p_target: obj.target, p_text: obj.text || ""
+      });
+    } else if (obj === null) {
+      operation = rpc("delete_workspace_record", { p_collection: coll, p_id: id });
+    } else {
+      operation = rpc("put_workspace_record", { p_collection: coll, p_id: id, p_data: u.clone(obj) });
+    }
+    operation.then(function (result) {
+      if (coll === "feedback" && result) {
+        delete cache.feedback[id];
+        obj.id = result;
+        cache.feedback[result] = obj;
+      }
+      changed();
+    }, remoteError);
   }
   function guard() {
     if (S.readOnly) { GK.ui && GK.ui.toast(GK.t("read_only")); return false; }
@@ -110,8 +220,20 @@
   /** Insert or replace a whole record. Returns the stored copy. opts.log adds one activity line. */
   S.put = function (coll, obj, opts) {
     if (!guard()) return null;
+    if (S.backend === "supabase" && (coll === "team" || coll === "shares")) {
+      remoteError(new Error("This operation must use the secure membership/share workflow."));
+      return null;
+    }
     var o = u.clone(obj); if (!o.id) o.id = u.uid(coll.slice(0, 1));
     stampLog(o, opts && opts.log);
+    if (S.backend === "supabase" && coll === "feedback") {
+      return rpc("add_team_client_feedback", {
+        p_share_id: o.shareId, p_project_id: o.projectId || null,
+        p_kind: o.kind, p_target: o.target, p_text: o.text || ""
+      }).then(function (id) {
+        o.id = id; cache.feedback[id] = o; changed(); return o;
+      }, function (error) { remoteError(error); throw error; });
+    }
     cache[coll][o.id] = o; persist(coll, o.id, o); changed(); return o;
   };
   /** Merge top-level fields into a record. */
@@ -120,11 +242,31 @@
     var cur = cache[coll][id]; if (!cur) return null;
     var o = u.clone(cur); for (var k in partial) if (Object.prototype.hasOwnProperty.call(partial, k)) o[k] = u.clone(partial[k]);
     stampLog(o, opts && opts.log);
+    if (S.backend === "supabase" && coll === "shares") {
+      if (Object.prototype.hasOwnProperty.call(partial, "enabled")) {
+        if (partial.enabled) return S.enableClientShare(id);
+        S.revokeClientShare(id);
+        return Object.assign({}, cur, { enabled: false });
+      }
+      cache[coll][id] = o; changed();
+      var targets = o.feedbackTargets || {};
+      return rpc("update_client_share", {
+        p_share_id: id, p_snapshot: o.snapshot || null,
+        p_feedback_targets: targets, p_expires_at: o.expiresAt || null,
+        p_publish: Object.prototype.hasOwnProperty.call(partial, "snapshot")
+      }).then(function () { changed(); return o; }, function (error) { remoteError(error); return null; });
+    }
     cache[coll][id] = o; persist(coll, id, o); changed(); return o;
   };
   S.remove = function (coll, id) {
     if (!guard()) return;
     if (!cache[coll][id]) return;
+    if (S.backend === "supabase" && coll === "shares") return S.revokeClientShare(id);
+    if (S.backend === "supabase" && coll === "team") {
+      return rpc("remove_workspace_member", { p_member_id: id }).then(function () {
+        delete cache.team[id]; changed();
+      }).catch(remoteError);
+    }
     delete cache[coll][id]; persist(coll, id, null); changed();
   };
   /** Config is admin-only in the shared store (Settings). */
@@ -133,7 +275,9 @@
     var o = u.clone(cfg || GK.m.defaultConfig());
     for (var k in partial) if (Object.prototype.hasOwnProperty.call(partial, k)) o[k] = u.clone(partial[k]);
     cfg = o;
-    if (S.backend === "shared") sharedWrite("config/app", u.clone(o)); else saveLocal();
+    if (S.backend === "shared") sharedWrite("config/app", u.clone(o));
+    else if (S.backend === "supabase") rpc("set_workspace_config", { p_data: u.clone(o) }).then(changed, remoteError);
+    else saveLocal();
     changed(); return o;
   };
 
@@ -142,7 +286,7 @@
   GK.me = function () {
     var team = S.all("team");
     if (S.mode === "demo") { var as = u.lsGet(KEY.as, null); return S.get("team", as) || team.find(function (m) { return m.role === "founder"; }) || team[0] || null; }
-    if (S.backend === "shared") return S.viewer.id ? team.find(function (m) { return m.userId === S.viewer.id; }) || null : null;
+    if (S.backend === "shared" || S.backend === "supabase") return S.viewer.id ? team.find(function (m) { return m.userId === S.viewer.id; }) || null : null;
     var asL = u.lsGet(KEY.as + "-live", null);
     return S.get("team", asL) || team.find(function (m) { return m.role === "founder"; }) || team[0] || null;
   };
@@ -180,18 +324,172 @@
     });
   }
 
+  function collectionsFor(role) {
+    if (role === "founder") return COLLS.slice();
+    if (role === "sales") return ["team", "clients", "leads", "outreach", "contracts", "projects", "tasks", "msgs", "ideas", "boards", "shares", "feedback", "quotes"];
+    if (role === "editor") return ["team", "clients", "projects", "tasks", "msgs", "ideas", "boards"];
+    if (role === "assistant") return ["team", "clients", "projects", "tasks", "msgs", "boards"];
+    return [];
+  }
+  function emptyCache() { COLLS.forEach(function (c) { cache[c] = {}; }); }
+  function loadWorkspace() {
+    return GK.supabase.session().then(function (session) {
+      if (!session || !session.user) {
+        emptyCache(); cfg = null; assignmentRows = []; S.workspaceId = null; S.workspaceRole = null;
+        S.authState = "login"; S.readOnly = true; changed();
+        throw new Error("Sign-in required.");
+      }
+      S.viewer = { id: session.user.id, isOwner: false, canEdit: true, canWrite: true };
+      return GK.supabase.rpc("get_my_workspaces", {}).then(function (workspaces) {
+        emptyCache(); cfg = null; assignmentRows = [];
+        if (!workspaces || !workspaces.length) {
+          S.workspaceId = null; S.workspaceRole = null; S.authState = "no-workspace";
+          S.mode = "live"; S.backend = "supabase"; S.readOnly = true;
+          changed(); return;
+        }
+        var remembered = sessionStorage.getItem("gecko-ops-workspace");
+        var workspace = workspaces.find(function (w) { return w.id === remembered; }) || workspaces[0];
+        S.workspaceId = workspace.id; S.workspaceRole = workspace.role;
+        sessionStorage.setItem("gecko-ops-workspace", workspace.id);
+        S.mode = "live"; S.backend = "supabase"; S.readOnly = false; S.authState = "loading";
+        var reads = collectionsFor(workspace.role).map(function (coll) {
+          return GK.supabase.rpc("get_workspace_records", { p_workspace_id: workspace.id, p_collection: coll })
+            .then(function (rows) {
+              (rows || []).forEach(function (record) { if (record && record.id) cache[coll][record.id] = record; });
+            });
+        });
+        reads.push(GK.supabase.rpc("get_workspace_config", { p_workspace_id: workspace.id })
+          .then(function (data) { cfg = data || {}; }));
+        if (workspace.role === "founder") reads.push(GK.supabase.rpc("get_workspace_assignments", { p_workspace_id: workspace.id })
+          .then(function (rows) { assignmentRows = rows || []; }));
+        return Promise.all(reads).then(function () { S.authState = "ready"; changed(); });
+      });
+    }).catch(function (error) {
+      emptyCache(); cfg = null; S.workspaceId = null; S.workspaceRole = null;
+      S.authState = "login"; S.readOnly = true;
+      S.authError = error && error.message ? error.message : "Workspace data could not be loaded.";
+      changed();
+      throw error;
+    });
+  }
+  S.loadPublicShare = function (token) {
+    S.publicShare = null;
+    if (!GK.supabase || !GK.supabase.configured()) return Promise.resolve(null);
+    return GK.supabase.rpc("get_public_client_share", { p_token: token }, true).then(function (share) {
+      S.publicShare = share ? Object.assign({ id: token, token: token }, share) : null;
+      changed(); return S.publicShare;
+    });
+  };
+  S.createWorkspace = function (name) {
+    return GK.supabase.rpc("create_workspace", { p_name: name }).then(loadWorkspace);
+  };
+  S.acceptInvite = function (token, name) {
+    return GK.supabase.rpc("accept_workspace_invite", { p_token: token, p_display_name: name }).then(loadWorkspace);
+  };
+  S.createInvite = function (email, role) {
+    return rpc("invite_workspace_member", { p_email: email, p_role: role });
+  };
+  S.assignments = function () { return assignmentRows.slice(); };
+  S.setAssignment = function (type, entityId, memberId, assigned) {
+    if (type !== "client" && type !== "project") return Promise.reject(new Error("Invalid assignment type."));
+    var name = type === "client" ? "assign_client_member" : "assign_project_member";
+    var args = type === "client"
+      ? { p_client_id: entityId, p_member_id: memberId, p_assigned: !!assigned }
+      : { p_project_id: entityId, p_member_id: memberId, p_assigned: !!assigned };
+    return rpc(name, args).then(function () {
+      assignmentRows = assignmentRows.filter(function (row) {
+        return !(row.type === type && row.entityId === entityId && row.memberId === memberId);
+      });
+      if (assigned) assignmentRows.push({ type: type, entityId: entityId, memberId: memberId });
+      changed();
+    });
+  };
+  S.signIn = function (email, password) {
+    return GK.supabase.signIn(email, password).then(loadWorkspace).then(function () { changed(); });
+  };
+  S.signUp = function (email, password, name) {
+    return GK.supabase.signUp(email, password, name).then(function (result) {
+      if (!result || !result.access_token) {
+        S.authMessage = "Check your email to confirm the account, then sign in.";
+        S.authState = "login"; changed(); return result;
+      }
+      return loadWorkspace().then(function () { changed(); return result; });
+    });
+  };
+  S.signOut = function () {
+    function clear() {
+      emptyCache(); cfg = null; assignmentRows = []; S.workspaceId = null; S.workspaceRole = null;
+      sessionStorage.removeItem("gecko-ops-share-tokens");
+      S.viewer = { id: null, isOwner: false, canEdit: false, canWrite: false };
+      S.authState = "login"; S.readOnly = true; changed();
+    }
+    return GK.supabase.signOut().then(clear, function (error) { clear(); throw error; });
+  };
+  function rememberShareToken(id, token) {
+    var tokens;
+    try { tokens = JSON.parse(sessionStorage.getItem("gecko-ops-share-tokens") || "{}"); }
+    catch (e) { tokens = {}; }
+    tokens[id] = token;
+    sessionStorage.setItem("gecko-ops-share-tokens", JSON.stringify(tokens));
+  }
+  S.shareToken = function (id) {
+    var tokens;
+    try { tokens = JSON.parse(sessionStorage.getItem("gecko-ops-share-tokens") || "{}"); }
+    catch (e) { return ""; }
+    return tokens[id] || "";
+  };
+  S.createClientShare = function (share, snapshot, feedbackTargets) {
+    return rpc("create_client_share", {
+      p_client_id: share.clientId, p_project_id: share.projectId || null,
+      p_snapshot: snapshot, p_feedback_targets: feedbackTargets,
+      p_expires_at: share.expiresAt || null
+    }).then(function (created) {
+      var saved = Object.assign({}, share, {
+        id: created.id, token: created.token, snapshot: snapshot,
+        feedbackTargets: feedbackTargets, enabled: true,
+        publishedAt: new Date().toISOString(), created: new Date().toISOString()
+      });
+      cache.shares[saved.id] = saved;
+      rememberShareToken(saved.id, created.token);
+      changed(); return saved;
+    });
+  };
+  S.rotateClientShare = function (id) {
+    return rpc("rotate_client_share_token", { p_share_id: id }).then(function (token) {
+      rememberShareToken(id, token); changed(); return token;
+    });
+  };
+  S.enableClientShare = function (id) {
+    return rpc("enable_client_share", { p_share_id: id }).then(function (token) {
+      rememberShareToken(id, token);
+      if (cache.shares[id]) cache.shares[id].enabled = true;
+      changed(); return cache.shares[id];
+    }).catch(function (error) { remoteError(error); return null; });
+  };
+  S.revokeClientShare = function (id) {
+    return rpc("revoke_client_share", { p_share_id: id }).then(function () {
+      if (cache.shares[id]) cache.shares[id].enabled = false;
+      changed();
+      return true;
+    }).catch(function (error) { remoteError(error); return false; });
+  };
+  S.submitClientFeedback = function (token, kind, target, text, projectId) {
+    return GK.supabase.rpc("submit_client_feedback", {
+      p_token: token, p_kind: kind, p_target: target, p_text: text || "",
+      p_project_id: projectId || null
+    }, true);
+  };
+
   // ---------- modes ----------
   function useDemo() {
     writeLocal();
     S.mode = "demo"; S.backend = "local"; S.readOnly = false;
     var saved = u.lsGet(KEY.demo, null);
-    if (saved && saved.config && saved.config.version === 1 && saved.config.seedV === 3) loadInto(saved);
-    else { loadInto(GK.seed()); saveLocal(); }
-  }
-  function useLocalLive() {
-    writeLocal();
-    S.mode = "live"; S.backend = "local"; S.readOnly = false;
-    loadInto(u.lsGet(KEY.live, null));
+    if (saved && typeof saved === "object" && saved.colls && typeof saved.colls === "object") loadInto(saved);
+    else {
+      loadInto({ config: GK.m.defaultConfig(), colls: {} });
+      saveLocal();
+    }
   }
   function useSharedLive() {
     writeLocal();
@@ -202,48 +500,51 @@
   function stopShared() { unsubs.forEach(function (f) { try { f(); } catch (e) {} }); unsubs = []; }
 
   S.showDemo = function () { stopShared(); u.lsSet(KEY.mode, "demo"); useDemo(); changed(); };
-  S.resetDemo = function () { u.lsDel(KEY.demo); if (S.mode === "demo") { useDemo(); changed(); } };
-  /** Back to live data if a live workspace exists (shared first, then this browser). */
-  S.hasLive = function () { return S.sharedLive || !!u.lsGet(KEY.live, null); };
+  S.resetDemo = function () {
+    if (S.mode !== "demo") return null;
+    return S.clearLocalRecords();
+  };
+  /** Live data is shared remotely or held by the authenticated Supabase workspace, never browser-local. */
+  S.hasLive = function () { return S.sharedLive || (S.backend === "supabase" && S.authState === "ready"); };
   S.showLive = function () {
     u.lsSet(KEY.mode, "live");
-    if (S.sharedLive && db) useSharedLive(); else useLocalLive();
-    changed();
+    if (GK.supabase && GK.supabase.configured()) {
+      S.mode = "live"; S.backend = "supabase"; S.readOnly = true; S.authState = "login";
+      loadWorkspace().catch(function (error) { S.authError = error.message; changed(); });
+    } else if (S.sharedLive && db) { useSharedLive(); changed(); }
+    else if (GK.ui) GK.ui.toast("Live workspace requires a configured Supabase backend. The local workspace remains available.");
   };
-  /** Create an empty live workspace and make this viewer its founder. */
-  S.startLive = function (founderName) {
-    writeLocal();
-    var conf = GK.m.defaultConfig();
-    var name = founderName || "Heni";
-    u.lsSet(KEY.mode, "live");
-    if (db && S.viewer.canWrite !== false) {
-      S.mode = "live"; S.backend = "shared"; S.readOnly = false;
-      cfg = conf; S.sharedLive = true;
-      sharedWrite("config/app", u.clone(conf));
-      var me = { id: "m" + (S.viewer.id || "founder").replace(/[^A-Za-z0-9]/g, "").slice(-16), name: name, role: "founder", userId: S.viewer.id };
-      sharedWrite("team/" + me.id, me);
-      subscribeShared();
-      cache.team[me.id] = me;
-    } else {
-      S.mode = "live"; S.backend = "local"; S.readOnly = false;
-      loadInto({ config: conf, colls: { team: [{ id: "mfounder", name: name, role: "founder" }] } });
-      saveLocal();
-    }
-    changed();
-  };
+  S.startLive = function () { S.showLive(); };
 
   /** Start up: render from what is known at once, then connect the shared store when the page runs on claude.ai. */
   S.boot = function (done) {
     var pref = u.lsGet(KEY.mode, null);
     var finished = false;
     function finish() { if (finished) return; finished = true; S.ready = true; done(); }
+    if (GK.ui && GK.ui.clientToken && GK.supabase && GK.supabase.configured()) {
+      S.mode = "live"; S.backend = "supabase"; S.readOnly = true;
+      S.loadPublicShare(GK.ui.clientToken).then(finish, function (error) {
+        S.publicShare = null; S.authError = error.message; finish();
+      });
+      return;
+    }
+    if (GK.supabase && GK.supabase.configured()) {
+      S.mode = "live"; S.backend = "supabase"; S.readOnly = true; S.authState = "login";
+      GK.supabase.session().then(function (session) {
+        if (!session) { finish(); return; }
+        return loadWorkspace().then(finish);
+      }).catch(function (error) {
+        S.authError = error.message; S.authState = "login"; finish();
+      });
+      return;
+    }
     var claude = window.claude && typeof window.claude.use === "function" ? window.claude : null;
     if (!claude) {
-      if (pref === "live" && u.lsGet(KEY.live, null)) useLocalLive(); else useDemo();
+      useDemo();
       return finish();
     }
     // Show something quickly if the host is slow; the shared store can still switch us to live.
-    var fallback = setTimeout(function () { if (pref === "live" && u.lsGet(KEY.live, null)) useLocalLive(); else useDemo(); finish(); }, 4000);
+    var fallback = setTimeout(function () { useDemo(); finish(); }, 4000);
     Promise.all([claude.use("db").catch(function () { return null; }), claude.use("user").catch(function () { return null; })]).then(function (r) {
       db = r[0]; user = r[1];
       S.sharedAvailable = !!db;
@@ -257,7 +558,7 @@
       clearTimeout(fallback);
       S.sharedLive = !!(shared && shared.live);
       if (S.sharedLive && pref !== "demo") useSharedLive();
-      else if (!finished) { if (pref === "live" && u.lsGet(KEY.live, null)) useLocalLive(); else useDemo(); }
+      else if (!finished) useDemo();
       if (finished) changed(); else finish();
     }, function () {
       clearTimeout(fallback);

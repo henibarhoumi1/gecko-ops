@@ -23,7 +23,7 @@
     // tiles
     db_t_cash: ["Cash in this month", "Encaissé ce mois"], db_t_cash_n: ["goal {g}", "objectif {g}"], db_t_cash_n0: ["net, after withholding", "net, après retenue"],
     db_d_vs: ["{s}{p} vs last month", "{s}{p} vs mois dernier"], db_d_new: ["First money in", "Premiers encaissements"],
-    db_t_mrr: ["MRR · SKIN", "MRR · SKIN"], db_t_mrr_n_1: ["1 active contract", "1 contrat actif"], db_t_mrr_n: ["{n} active contracts", "{n} contrats actifs"], db_t_mrr_0: ["No SKIN contract yet", "Pas encore de contrat SKIN"],
+    db_t_mrr: ["Monthly retainers", "Récurrent mensuel"], db_t_mrr_n_1: ["1 active contract", "1 contrat actif"], db_t_mrr_n: ["{n} active contracts", "{n} contrats actifs"], db_t_mrr_0: ["No monthly contract yet", "Pas encore de contrat mensuel"],
     db_t_owed: ["Clients owe", "Reste à encaisser"], db_t_owed_n: ["{a} overdue", "{a} en retard"], db_t_owed_0: ["Nothing overdue", "Rien en retard"],
     db_t_cap: ["Yearly cap used", "Plafond annuel utilisé"], db_t_cap_s: ["{a} of {b}", "{a} sur {b}"],
     db_t_run: ["Cash runway", "Autonomie de trésorerie"], db_t_run_m: ["{n} months", "{n} mois"], db_t_run_n: ["at {b} a month out", "à {b} de sorties par mois"],
@@ -32,7 +32,7 @@
     db_t_dm: ["DM reply rate", "Taux de réponse DM"], db_t_dm_n: ["{n} a day vs {g} goal, last 4 weeks", "{n} par jour pour {g} visés, 4 dernières semaines"], db_t_dm_n0: ["{n} a day, last 4 weeks", "{n} par jour, 4 dernières semaines"],
     db_t_dm_na: ["No DMs logged yet", "Aucun DM saisi"],
     // charts
-    db_c_money: ["Money in and money out", "Argent entré et sorti"], db_c_money_sub: ["By month, DT. Money out = expenses + salary + project costs + commissions (estimate).", "Par mois, DT. Sorties = dépenses + salaire + coûts projets + commissions (estimation)."],
+    db_c_money: ["Money in and money out", "Argent entré et sorti"], db_c_money_sub: ["By month, TND. Money out = expenses + salary + project costs + commissions (estimate).", "Par mois, TND. Sorties = dépenses + salaire + coûts projets + commissions (estimation)."],
     db_s_in: ["Money in", "Entrées"], db_s_out: ["Money out", "Sorties"], db_goal: ["Goal", "Objectif"],
     db_net_line: ["Net over {n} months: {a}. Best month {b}.", "Net sur {n} mois : {a}. Meilleur mois : {b}."],
     db_c_fc: ["Next 13 weeks of cash", "Trésorerie des 13 prochaines semaines"], db_c_fc_sub: ["Estimate. Booked = invoices due and costs known. With pipeline adds weighted leads.", "Estimation. Acquis = factures dues et coûts connus. Avec pipeline ajoute les prospects pondérés."],
@@ -51,7 +51,7 @@
     db_shoots: ["Next shoots, 14 days", "Prochains tournages, 14 jours"], db_shoots_none: ["No shoot in the next 14 days.", "Aucun tournage dans les 14 prochains jours."], db_today: ["Today", "Aujourd'hui"], db_in_d: ["in {n} days", "dans {n} jours"], db_tomorrow: ["Tomorrow", "Demain"],
     // goals
     db_goals: ["Goals", "Objectifs"], db_goals_sub: ["They feed the goal line and the tiles.", "Ils alimentent la ligne d'objectif et les tuiles."],
-    db_g_rev: ["Monthly revenue goal (DT)", "Objectif de chiffre mensuel (DT)"], db_g_dm: ["DMs per day", "DM par jour"], db_g_margin: ["Margin target (%)", "Marge visée (%)"],
+    db_g_rev: ["Monthly revenue goal (TND)", "Objectif de chiffre mensuel (TND)"], db_g_dm: ["DMs per day", "DM par jour"], db_g_margin: ["Margin target (%)", "Marge visée (%)"],
     db_g_save: ["Save goals", "Enregistrer les objectifs"], db_g_saved: ["Goals saved", "Objectifs enregistrés"]
   });
 

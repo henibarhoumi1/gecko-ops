@@ -20,23 +20,23 @@
     // packs
     se_packs: ["Packs", "Packs"],
     se_packs_hint: ["Prices are what the client pays, excluding stamp duty. Cost estimate is what a pack costs us to make; the rates below give a suggestion.", "Les prix sont ceux payés par le client, hors timbre. L'estimation de coût est ce que le pack nous coûte ; les tarifs ci-dessous donnent une suggestion."],
-    se_c_pack: ["Pack", "Pack"], se_c_name: ["Name", "Nom"], se_c_price: ["Price (DT)", "Prix (DT)"], se_c_monthly: ["Monthly", "Mensuel"],
+    se_c_pack: ["Pack", "Pack"], se_c_name: ["Name", "Nom"], se_c_price: ["Price (TND)", "Prix (TND)"], se_c_monthly: ["Monthly", "Mensuel"],
     se_c_angles: ["Angles", "Angles"], se_c_reels: ["Reels", "Reels"], se_c_var: ["Variations", "Variations"], se_c_car: ["Carousels", "Carrousels"],
-    se_c_cost: ["Cost estimate (DT)", "Coût estimé (DT)"], se_from_rates: ["rates say {v}", "selon les tarifs : {v}"],
+    se_c_cost: ["Cost estimate (TND)", "Coût estimé (TND)"], se_from_rates: ["rates say {v}", "selon les tarifs : {v}"],
     se_save_packs: ["Save packs", "Enregistrer les packs"], se_reset_packs: ["Reset packs to defaults", "Remettre les packs par défaut"],
     se_reset_q: ["Reset to defaults?", "Remettre par défaut ?"],
     se_reset_packs_b: ["Pack names, prices and contents go back to the business model values. Existing projects keep their pack key.", "Les noms, prix et contenus des packs reviennent aux valeurs du business model. Les projets existants gardent leur pack."],
     se_reset_rates_b: ["Cost rates and money rules go back to the business model values.", "Les tarifs et les règles d'argent reviennent aux valeurs du business model."],
     // rates
-    se_rates: ["Cost rates (DT)", "Tarifs de coûts (DT)"],
+    se_rates: ["Cost rates (TND)", "Tarifs de coûts (TND)"],
     se_r_heniDay: ["Heni, shoot day", "Heni, journée de tournage"], se_r_reel: ["Reel edit, each", "Montage d'un reel"], se_r_gear: ["Gear rental, full day", "Location matériel, journée"],
     se_r_assistant: ["Assistant, day", "Assistant, journée"], se_r_transport: ["Transport and small buys, day", "Transport et petits achats, journée"],
     se_r_recut: ["Hook re-cut, each", "Re-montage d'une accroche"], se_r_carousel: ["Carousel design, each", "Design d'un carrousel"], se_r_report: ["Monthly report", "Rapport mensuel"],
     // rules
     se_rules: ["Money rules", "Règles d'argent"],
-    se_u_cap: ["Yearly invoicing cap (DT)", "Plafond annuel de facturation (DT)"], se_u_reserve: ["Reserve (% of revenue)", "Réserve (% du chiffre)"],
-    se_u_commission: ["Mohamed's commission (% of profit)", "Commission de Mohamed (% du bénéfice)"], se_u_salary: ["Heni's salary (DT / month)", "Salaire de Heni (DT / mois)"],
-    se_u_stamp: ["Stamp duty per invoice (DT)", "Droit de timbre par facture (DT)"], se_u_withholding: ["Withholding by company clients (%)", "Retenue à la source des sociétés (%)"],
+    se_u_cap: ["Yearly invoicing cap (TND)", "Plafond annuel de facturation (TND)"], se_u_reserve: ["Reserve (% of revenue)", "Réserve (% du chiffre)"],
+    se_u_commission: ["Partner share (% of profit)", "Part partenaire (% du bénéfice)"], se_u_salary: ["Owner salary (TND / month)", "Salaire du fondateur (TND / mois)"],
+    se_u_stamp: ["Stamp duty per invoice (TND)", "Droit de timbre par facture (TND)"], se_u_withholding: ["Withholding by company clients (%)", "Retenue à la source des sociétés (%)"],
     se_u_dueDays: ["Invoices due after (days)", "Échéance des factures (jours)"],
     se_u_extrasDirect: ["Extras (studio, talent) are invoiced directly by the supplier to the client", "Les extras (studio, talents) sont facturés directement au client par le fournisseur"],
     se_acct: ["Accountant to confirm.", "À confirmer par le comptable."],
@@ -44,16 +44,26 @@
     se_bad: ["Use a number of 0 or more.", "Saisissez un nombre positif ou nul."],
     // data
     se_data: ["Where the data lives", "Où vivent les données"],
-    se_d_demo: ["You're looking at sample data. It lives in this browser only and nothing in it is a real client. Your live data, if you have some, is untouched.", "Vous regardez des données d'exemple. Elles vivent seulement dans ce navigateur et aucun client n'est réel. Vos vraies données, si vous en avez, ne sont pas touchées."],
+    se_d_demo: ["This local workspace is saved in this browser only. New workspaces start empty; no sample business records are loaded.", "Cet espace local est enregistré dans ce navigateur. Un nouvel espace démarre vide ; aucune donnée métier d'exemple n'est chargée."],
     se_d_shared: ["Live data, shared with the team. Everyone who has this page as a Contributor sees the same clients, projects and money, and changes show up for all.", "Données réelles, partagées avec l'équipe. Toute personne qui a cette page en Contributeur voit les mêmes clients, projets et chiffres, et les modifications apparaissent pour tous."],
     se_d_local: ["Live data, saved in this browser only. Nobody else sees it, and clearing the browser deletes it. Copy a backup often.", "Données réelles, enregistrées dans ce navigateur seulement. Personne d'autre ne les voit, et vider le navigateur les efface. Copiez une sauvegarde souvent."],
     se_d_ro: ["You can read this data but not change it.", "Vous pouvez lire ces données mais pas les modifier."],
-    se_reset_demo: ["Reset sample data", "Réinitialiser l'exemple"],
-    se_backup: ["Copy a backup", "Copier une sauvegarde"],
-    se_backup_hint: ["Copies everything (clients, projects, invoices, settings) as text to paste into a file. It can be large.", "Copie tout (clients, projets, factures, réglages) en texte à coller dans un fichier. Ça peut être long."],
+    se_reset_demo: ["Clear workspace records", "Vider les données de l'espace"],
+    se_backup: ["Download a backup", "Télécharger une sauvegarde"],
+    se_backup_hint: ["Downloads a JSON copy of all workspace records and configuration before cleanup.", "Télécharge une copie JSON des données et de la configuration avant le nettoyage."],
     se_backup_ok: ["Backup copied: {n} records", "Sauvegarde copiée : {n} éléments"],
+    se_clear_title: ["Clear local workspace records?", "Effacer les données de l'espace local ?"],
+    se_clear_confirm: ["This permanently removes {n} saved records from {collections}. Company details, packs, rates, financial rules, invoice numbering, language, theme and navigation preferences are preserved. Download a backup first if you may need these records.", "Cette action supprime définitivement {n} éléments enregistrés dans : {collections}. Les informations de société, packs, tarifs, règles financières, numérotation des factures, langue, thème et préférences de navigation sont conservés. Téléchargez une sauvegarde avant si vous pourriez en avoir besoin."],
+    se_clear_done: ["Cleared {n} records. Configuration and preferences were preserved.", "{n} éléments effacés. La configuration et les préférences sont conservées."],
+    se_clear_failed: ["The workspace was not cleared because local storage could not be updated.", "L'espace n'a pas été vidé car le stockage local n'a pas pu être mis à jour."],
+    se_records: ["{n} saved records", "{n} éléments enregistrés"],
+    se_coll_team: ["team members", "membres de l'équipe"], se_coll_clients: ["clients", "clients"], se_coll_leads: ["leads", "prospects"],
+    se_coll_outreach: ["outreach logs", "journaux de prospection"], se_coll_contracts: ["contracts", "contrats"], se_coll_projects: ["projects (including production files and reports)", "projets (avec fichiers de production et rapports)"],
+    se_coll_invoices: ["invoices and payments", "factures et paiements"], se_coll_tasks: ["tasks", "tâches"], se_coll_msgs: ["messages", "messages"],
+    se_coll_ideas: ["creative ideas and revisions", "idées créatives et révisions"], se_coll_boards: ["whiteboards", "tableaux blancs"], se_coll_shares: ["client shares", "partages client"],
+    se_coll_feedback: ["client feedback", "retours client"], se_coll_expenses: ["expenses", "dépenses"], se_coll_quotes: ["quotes", "devis"],
     se_sharing: ["Sharing with the team", "Partager avec l'équipe"],
-    se_share_body: ["To let Mohamed and the freelancers work in GECKO Ops, share this page with them as Contributor. Viewers can only read. The first time they open it, each person picks their name and role.", "Pour que Mohamed et les freelances travaillent dans GECKO Ops, partagez cette page avec eux en Contributeur. Les Lecteurs peuvent seulement consulter. À la première ouverture, chacun choisit son nom et son rôle."],
+    se_share_body: ["To let the team and freelancers work in GECKO Ops, share this page with them as Contributor. Viewers can only read. The first time they open it, each person picks their name and role.", "Pour que l'équipe et les freelances travaillent dans GECKO Ops, partagez cette page avec eux en Contributeur. Les Lecteurs peuvent seulement consulter. À la première ouverture, chacun choisit son nom et son rôle."],
     se_lang_note: ["Language and theme are at the bottom of the menu.", "La langue et le thème sont en bas du menu."]
   });
 
@@ -65,6 +75,12 @@
   function canEdit() { return m.can("settings"); }
   function dis(on) { return on ? "" : " disabled"; }
   function tab() { return ui.p("settings").tab || "company"; }
+  function localRecordSummary() {
+    return S.COLLS.map(function (coll) {
+      var count = S.all(coll).length;
+      return count ? t("se_coll_" + coll) + " (" + count + ")" : "";
+    }).filter(Boolean);
+  }
 
   function companyTab(ed) {
     var co = m.company();
@@ -124,12 +140,17 @@
     if (S.mode === "live") btns += ui.btn(t("view_demo"), "show-demo", { cls: "" });
     if (S.mode === "demo" && S.hasLive()) btns += ui.btn(t("back_live"), "show-live", { cls: "primary" });
     if (S.mode === "demo" && !S.hasLive()) btns += ui.btn(t("start_live"), "start-live", { cls: "primary" });
-    if (S.mode === "demo") btns += ui.btn(t("se_reset_demo"), "reset-demo", { cls: "ghost" });
+    var records = S.localRecordCount ? S.localRecordCount() : S.COLLS.reduce(function (n, coll) { return n + S.all(coll).length; }, 0);
     var h = '<div class="grid2"><section class="panel"><div class="panel-h"><h2 class="sec">' + esc(t("se_data")) + "</h2>" + ui.pill(mode, S.mode === "demo" ? "" : "done") + "</div>" +
       '<p style="margin:0">' + esc(where) + (S.readOnly ? " " + esc(t("se_d_ro")) : "") + "</p>" +
+      (S.backend === "local" ? '<p class="small muted" style="margin:0">' + esc(t("se_records", { n: records })) + "</p>" : "") +
       '<div class="row">' + btns + "</div>" +
       '<hr class="rule"><div class="stack" style="gap:6px"><div class="row">' + ui.btn(t("se_backup"), "se-backup", { cls: "" }) + "</div>" +
-      '<span class="small muted">' + esc(t("se_backup_hint")) + "</span></div></section>";
+      '<span class="small muted">' + esc(t("se_backup_hint")) + "</span></div>" +
+      (S.backend === "local" && canEdit() ? '<hr class="rule"><div class="stack" style="gap:6px">' +
+        ui.btn(t("se_reset_demo"), "se-clear-local", { cls: "ghost" }) +
+        '<span class="small muted">' + esc(t("se_clear_confirm", { n: records, collections: localRecordSummary().join(", ") || t("none") })) + "</span></div>" : "") +
+      "</section>";
     h += '<section class="panel"><h2 class="sec">' + esc(t("se_sharing")) + "</h2>" +
       '<p style="margin:0">' + esc(t("se_share_body")) + "</p>" +
       '<p class="small muted" style="margin:0">' + esc(t("se_lang_note")) + "</p></section></div>";
@@ -208,6 +229,17 @@
   GK.act("se-backup", function () {
     var o = { app: "GECKO Ops", version: 1, exported: u.nowStamp(), mode: S.mode, backend: S.backend, config: S.config(), colls: {} }, n = 0;
     S.COLLS.forEach(function (c) { o.colls[c] = S.all(c); n += o.colls[c].length; });
-    u.copy(JSON.stringify(o, null, 1)).then(function (ok) { ui.toast(ok ? t("se_backup_ok", { n: n }) : t("write_failed")); });
+    ui.download("gecko-ops-backup-" + u.today() + ".json", JSON.stringify(o, null, 1));
+  });
+  GK.act("se-clear-local", function () {
+    if (!canEdit() || S.backend !== "local") return;
+    var count = S.localRecordCount ? S.localRecordCount() : S.COLLS.reduce(function (n, coll) { return n + S.all(coll).length; }, 0);
+    var collections = localRecordSummary().join(", ") || t("none");
+    ui.confirm(t("se_clear_title"), t("se_clear_confirm", { n: count, collections: collections }), function () {
+      var result = S.clearLocalRecords();
+      if (!result) return ui.toast(t("se_clear_failed"));
+      ui.toast(t("se_clear_done", { n: result.count }));
+      if (GK.guide && GK.guide.maybeWelcome) GK.guide.maybeWelcome();
+    }, t("se_reset_demo"));
   });
 })(window.GK);

@@ -13,8 +13,8 @@
     sh_new_idea: ["New idea", "Nouvelle idée"], sh_new_invoice: ["New invoice", "Nouvelle facture"], sh_new_lead: ["New lead", "Nouveau prospect"],
     sh_new_board: ["New whiteboard", "Nouveau tableau blanc"],
     // account menu
-    sh_workspace: ["Workspace", "Espace de travail"], sh_use_sample: ["Sample data", "Données d'exemple"], sh_use_live: ["Live data", "Données réelles"],
-    sh_start_live: ["Start for real", "Démarrer pour de vrai"], sh_sample_strip: ["Sample data", "Données d'exemple"], sh_sample_long: ["no real clients", "aucun vrai client"],
+    sh_workspace: ["Workspace", "Espace de travail"], sh_use_sample: ["Local workspace", "Espace local"], sh_use_live: ["Live data", "Données réelles"],
+    sh_start_live: ["Start for real", "Démarrer pour de vrai"], sh_sample_strip: ["Local workspace", "Espace local"], sh_sample_long: ["this browser only", "ce navigateur uniquement"],
     sh_working_as: ["Working as", "Connecté en tant que"], sh_help: ["Keyboard shortcuts", "Raccourcis clavier"],
     sh_contact: ["Reach GECKO", "Contacter GECKO"], sh_lang: ["Language", "Langue"], sh_theme: ["Theme", "Thème"],
     sh_theme_auto: ["Auto", "Auto"], sh_theme_light: ["Light", "Clair"], sh_theme_dark: ["Dark", "Sombre"],

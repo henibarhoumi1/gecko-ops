@@ -2,7 +2,6 @@
 (function (GK) {
   "use strict";
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
-  var DM_TARGET = 10;
 
   GK.i18n.add({
     td_t_founder: ["On the", "Sur la"], td_a_founder: ["table", "table"],
@@ -17,8 +16,8 @@
     td_overdue: ["Overdue invoice", "Facture en retard"],
     td_draft: ["Draft invoice to issue", "Brouillon de facture à émettre"],
     td_blocked: ["Blocked", "Bloqué"],
-    td_month_due: ["Create the next SKIN month", "Créer le prochain mois SKIN"],
-    td_commission: ["Commission owed to {name}", "Commission due à {name}"],
+    td_month_due: ["Create the next monthly project", "Créer le prochain projet mensuel"],
+    td_commission: ["Partner share owed", "Part partenaire due"],
     td_follow: ["Follow-up due", "Relance à faire"],
     td_late: ["Late", "En retard"], td_today: ["Today", "Aujourd'hui"],
     td_due_on: ["due {d}", "échéance {d}"], td_late_since: ["overdue since {d}", "en retard depuis le {d}"],
@@ -45,7 +44,7 @@
     td_follows: ["Follow-ups due", "Relances à faire"], td_no_follows: ["No follow-up due. Send new DMs.", "Aucune relance due. Envoyez de nouveaux DM."],
     td_props: ["Proposals waiting", "Propositions en attente"], td_no_props: ["No proposal out right now.", "Aucune proposition en cours."],
     td_sent_ago: ["sent {n} days ago", "envoyée il y a {n} jours"],
-    td_comm: ["My commission", "Ma commission"], td_k_c_owed: ["Owed to you", "Dû"], td_k_c_paid: ["Paid so far", "Déjà payé"],
+    td_comm: ["Partner share", "Part partenaire"], td_k_c_owed: ["Owed to you", "Dû"], td_k_c_paid: ["Paid so far", "Déjà payé"],
     td_k_c_wait: ["Waiting on client payment", "En attente du paiement client"], td_k_c_n: ["{n}% of project profit", "{n} % du bénéfice projet"],
     td_no_log: ["Only sales can log DMs.", "Seul le commercial peut saisir les DM."],
     // editor
@@ -74,7 +73,7 @@
     td_a_paid: ["{brand} paid {amt}", "{brand} a payé {amt}"], td_a_fb_approve: ["{brand} approved", "{brand} a validé"], td_a_fb_changes: ["{brand} asked for changes", "{brand} demande des retouches"], td_a_fb_comment: ["{brand} commented", "{brand} a commenté"],
     td_a_task: ["Done: {title}", "Fait : {title}"], td_yday: ["Yesterday", "Hier"], td_days_ago: ["{n} days ago", "il y a {n} jours"],
     td_load: ["Team load", "Charge de l'équipe"], td_c_person: ["Person", "Personne"], td_c_load: ["Open tasks", "Tâches ouvertes"], td_c_late: ["Late", "En retard"], td_c_done7: ["Done, 7 days", "Faites, 7 jours"],
-    td_c_money: ["Invoiced and cash in", "Facturé et encaissé"], td_c_money_sub: ["Last 6 months, DT", "6 derniers mois, DT"], td_c_inv: ["Invoiced", "Facturé"], td_c_cash: ["Cash in", "Encaissé"]
+    td_c_money: ["Invoiced and cash in", "Facturé et encaissé"], td_c_money_sub: ["Last 6 months, TND", "6 derniers mois, TND"], td_c_inv: ["Invoiced", "Facturé"], td_c_cash: ["Cash in", "Encaissé"]
   });
 
   /** key_0 / key_1 / key_n by count (key_0 falls back to key_n). */
@@ -83,7 +82,7 @@
   function today() { return u.today(); }
   function active(p) { return p.stage !== "done"; }
   function founderName() { var f = S.all("team").find(function (x) { return x.role === "founder"; }); return f ? f.name : "Heni"; }
-  function salesName() { var f = S.all("team").find(function (x) { return x.role === "sales"; }); return f ? f.name : "Mohamed"; }
+  function salesName() { var f = S.all("team").find(function (x) { return x.role === "sales"; }); return f ? f.name : t("role_sales"); }
   function dueLabel(d) {
     if (!d) return t("td_no_due");
     var n = u.daysBetween(today(), d);
@@ -172,14 +171,14 @@
   // ---------- founder: decide first (insight strip, hero, decisions), then activity, team load and money ----------
   function monthCash(ym) {
     var c = 0;
-    S.all("invoices").forEach(function (i) { if (i.kind === "credit") return; (i.payments || []).forEach(function (p) { if (u.month(p.date) === ym) c += +p.net || 0; }); });
+    S.all("invoices").forEach(function (i) { if (i.kind === "credit") return; (i.payments || []).forEach(function (p) { if (u.month(p.date) === ym) c += m.toTND(+p.net || 0, i.currency || "TND"); }); });
     return c;
   }
   function pctChange(now, before) { return before ? (now - before) / Math.abs(before) * 100 : null; }
   function recent() {
     var td = today(), from = u.addDays(td, -7), out = [];
     S.all("invoices").forEach(function (i) {
-      (i.payments || []).forEach(function (p) { if (p.date >= from && p.date <= td) out.push({ at: p.date, icon: "cash", tone: "chroma", text: t("td_a_paid", { brand: m.brand(i.clientId), amt: u.money((+p.net || 0) + (+p.withheld || 0)) }), a: "td-go", data: { v: "finance" } }); });
+      (i.payments || []).forEach(function (p) { if (p.date >= from && p.date <= td) out.push({ at: p.date, icon: "cash", tone: "chroma", text: t("td_a_paid", { brand: m.brand(i.clientId), amt: u.money(m.toTND((+p.net || 0) + (+p.withheld || 0), i.currency || "TND")) }), a: "td-go", data: { v: "finance" } }); });
     });
     S.all("feedback").forEach(function (f) {
       var d = (f.at || "").slice(0, 10); if (d < from) return;
@@ -235,7 +234,7 @@
     // hero: the month, against its goal
     var pct = goal ? cash / goal * 100 : 0;
     var hero = '<section class="hero c5"><span class="lbl">' + esc(t("td_h_label", { m: u.fmtMonth(ym) })) + "</span>" +
-      '<div class="hv">' + esc(u.money(cash).replace(/\s?DT$/, "")) + "<small>DT</small></div>" +
+      '<div class="hv">' + esc(u.money(cash).replace(/\s?TND$/, "")) + "<small>TND</small></div>" +
       '<p class="hs">' + esc(goal ? t("td_h_sub_goal", { p: u.pct(pct), g: u.money(goal), o: u.money(owed) }) : t("td_h_sub", { o: u.money(owed) })) + "</p>" +
       (goal ? '<div class="stack" style="gap:8px;margin-top:auto"><div class="meter-lab"><span>' + esc(t("td_h_goal")) + "</span><span>" + esc(u.pct(Math.min(pct, 999))) + "</span></div>" + ui.meter(pct, { segments: 36 }) + "</div>" : "") +
       '<div class="hrow"><span class="small" style="opacity:.8">' + esc(lastCash ? t("td_h_last", { a: u.money(lastCash) }) : "") + '</span><div class="actions">' + ui.btn(t("td_h_open"), "td-go", { cls: "primary sm", data: { v: "finance" } }) + "</div></div></section>";
@@ -278,14 +277,13 @@
     var who = me(), td = today(), id = td + "_" + who.id;
     var rec = S.get("outreach", id) || { dms: 0, replies: 0, calls: 0 };
     var can = m.can("outreach");
-    var pct = (+rec.dms || 0) / DM_TARGET * 100;
     var log = '<section class="panel"><div class="panel-h"><h2 class="sec">' + esc(t("td_log")) + '</h2><span class="small muted">' + esc(u.fmtDate(td, { weekday: "long", day: "numeric", month: "long" })) + "</span></div>" +
       '<div class="form" style="grid-template-columns:repeat(3,minmax(0,1fr))">' +
       ui.field({ id: "td-dms", label: t("td_dms"), type: "number", value: rec.dms || 0, attrs: ' min="0" step="1"' }) +
       ui.field({ id: "td-replies", label: t("td_replies"), type: "number", value: rec.replies || 0, attrs: ' min="0" step="1"' }) +
       ui.field({ id: "td-calls", label: t("td_calls"), type: "number", value: rec.calls || 0, attrs: ' min="0" step="1"' }) +
-      "</div>" + ui.meter(pct, pct >= 100) +
-      '<div class="row between"><span class="small muted">' + esc(pct >= 100 ? t("td_target_hit") : t("td_of_target", { n: rec.dms || 0, t: DM_TARGET })) + "</span>" +
+      "</div>" +
+      '<div class="row between"><span></span>' +
       ui.btn(t("td_log_save"), "td-log-save", { cls: "primary", disabled: !can, title: can ? "" : t("td_no_log") }) + "</div></section>";
 
     var ws = u.weekStart(td), f = m.funnel(ws, who.id);
@@ -310,7 +308,7 @@
       return line("<strong>" + esc(l.brand) + "</strong>", meta, ui.btn(t("td_b_lead"), "td-go", { cls: "sm", data: { v: "pipeline", id: l.id } }));
     }).join("") + "</div>" : ui.empty(t("td_no_props")));
 
-    var mine = S.all("projects").filter(function (p) { return p.mohamed; });
+    var mine = [];
     var owed = 0, paid = 0, wait = 0;
     mine.forEach(function (p) { var c = m.commission(p); owed += c.owed; paid += c.paid; if (!c.payable) wait += c.amount; });
     var comm = '<section class="stack"><h2 class="sec">' + esc(t("td_comm")) + "</h2>" + ui.kpis([
@@ -319,7 +317,7 @@
       { lab: t("td_k_c_wait"), v: u.money(wait) }
     ]) + "</section>";
 
-    return log + week + '<div class="grid2">' + follows + propP + "</div>" + comm + '<div class="grid2">' + tasksPanel() + shootsPanel(7, t("td_shoots7")) + "</div>";
+    return log + week + '<div class="grid2">' + follows + propP + "</div>" + '<div class="grid2">' + tasksPanel() + shootsPanel(7, t("td_shoots7")) + "</div>";
   }
 
   // ---------- editor ----------
@@ -387,7 +385,7 @@
     var v = {};
     ["dms", "replies", "calls"].forEach(function (k) { v[k] = Math.max(0, Math.round(u.numVal("td-" + k))); });
     S.put("outreach", { id: u.today() + "_" + who.id, date: u.today(), owner: who.id, dms: v.dms, replies: v.replies, calls: v.calls });
-    ui.toast(v.dms >= DM_TARGET ? t("td_target_hit") : t("td_log_saved"));
+    ui.toast(t("td_log_saved"));
     ui.render(true);
   });
 })(window.GK);

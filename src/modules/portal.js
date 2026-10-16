@@ -12,7 +12,7 @@
     po_pick: ["Client", "Client"],
     po_none: ["No clients yet. Add one in Clients.", "Aucun client pour l'instant. Ajoutez-en un dans Clients."],
     po_copy: ["Copy WhatsApp update", "Copier le message WhatsApp"],
-    po_no_perm: ["Only Heni and Mohamed send client updates.", "Seuls Heni et Mohamed envoient les messages clients."],
+    po_no_perm: ["Only the owner and the Client Lead send client updates.", "Seuls le fondateur et le responsable clients envoient les messages clients."],
     po_hello: ["Hello {name}, here is your", "Bonjour {name}, voici votre"], po_hello_a: ["update", "point"],
     po_intro: ["Here is where {brand} stands with GECKO today.", "Voici où en est {brand} avec GECKO aujourd'hui."],
     po_kind: ["Client update", "Point client"],

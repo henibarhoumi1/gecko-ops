@@ -1,4 +1,4 @@
-/* GECKO Ops · module: finance (Money). Invoices, Mohamed's commission, month close, the auto-entrepreneur cap.
+/* GECKO Ops · module: finance (Money). Invoices, partner share, month close, the auto-entrepreneur cap.
    All money rules come from GK.m; this file only adds them up for display. */
 (function (GK) {
   "use strict";
@@ -26,7 +26,7 @@
     fi_paid_note: ["Paid counts the money received plus the tax withheld by the client.", "Payé compte l'argent reçu plus la retenue à la source du client."],
     // form
     fi_f_client: ["Client", "Client"], fi_f_project: ["Project", "Projet"], fi_f_noproject: ["No project", "Sans projet"], fi_f_kind: ["Kind", "Type"],
-    fi_f_label: ["Label", "Libellé"], fi_f_amount: ["Amount (DT, before stamp)", "Montant (DT, hors timbre)"], fi_f_stamp: ["Stamp duty (DT)", "Droit de timbre (DT)"],
+    fi_f_label: ["Label", "Libellé"], fi_f_amount: ["Amount (TND, before stamp)", "Montant (TND, hors timbre)"], fi_f_stamp: ["Stamp duty (TND)", "Droit de timbre (TND)"],
     fi_f_stamp_h: ["Droit de timbre, per invoice. Accountant to confirm.", "Droit de timbre, par facture. À confirmer par le comptable."],
     fi_f_extra_h: ["Studio, talent and ad spend: invoice it here only if GECKO really sells it.", "Studio, talent et budget pub : facturez ici seulement si GECKO le vend vraiment."],
     fi_f_extra_direct: ["Your rule: the supplier invoices the client directly, so extras stay out of your cap. Best not to invoice this here. If you must, keep it as a pass-through at cost.", "Votre règle : le fournisseur facture le client directement, pour que les extras restent hors plafond. Mieux vaut ne pas facturer ici. Si vous devez le faire, gardez-le en débours, au prix coûtant."],
@@ -40,26 +40,28 @@
     fi_total: ["Total", "Total"], fi_balance: ["Balance", "Reste à payer"], fi_received_net: ["Received (net)", "Reçu (net)"], fi_withheld: ["Withheld", "Retenue"],
     fi_project: ["Project", "Projet"], fi_locked: ["Issued invoices are locked. To change one, cancel it with a credit note and issue a new one.", "Une facture émise est verrouillée. Pour la changer, annulez-la par un avoir et émettez-en une nouvelle."],
     fi_issue: ["Issue invoice", "Émettre la facture"], fi_issue_q: ["Issue this invoice?", "Émettre cette facture ?"],
-    fi_issue_body: ["It gets number {no}, dated today and due {due}. After this the amount, client and label are locked.", "Elle reçoit le numéro {no}, datée d'aujourd'hui, échéance le {due}. Ensuite montant, client et libellé sont verrouillés."],
+    fi_issue_body: ["It gets the next safely reserved number when confirmed, is dated today and due {due}. After this the amount, client and label are locked.", "Elle reçoit le prochain numéro réservé sans doublon à la confirmation, est datée d'aujourd'hui et payable le {due}. Ensuite montant, client et libellé sont verrouillés."],
     fi_issued_toast: ["Issued {no}", "Facture {no} émise"],
+    fi_number_error: ["Invoice not issued: {e}", "Facture non émise : {e}"],
     fi_no_taxid: ["This client has no tax ID on file. You can still issue, but company clients usually need it on the invoice.", "Ce client n'a pas de matricule fiscal enregistré. Vous pouvez émettre, mais les sociétés en ont en général besoin sur la facture."],
     fi_open_settings: ["Open settings", "Ouvrir les réglages"],
     fi_del_draft: ["Delete draft", "Supprimer le brouillon"], fi_del_q: ["Delete this draft?", "Supprimer ce brouillon ?"], fi_del_body: ["It was never issued, so no number is lost.", "Il n'a jamais été émis, aucun numéro n'est perdu."],
     fi_deleted: ["Draft deleted", "Brouillon supprimé"],
     fi_doc_btn: ["Invoice document", "Document de facture"],
     fi_pay: ["Record payment", "Enregistrer un paiement"], fi_payments: ["Payments", "Paiements"], fi_no_payments: ["No payment yet.", "Aucun paiement pour l'instant."],
-    fi_p_date: ["Date", "Date"], fi_p_net: ["Net received (DT)", "Net reçu (DT)"], fi_p_wh: ["Withheld by client (DT)", "Retenue à la source (DT)"],
+    fi_p_date: ["Date", "Date"], fi_p_net: ["Net received (TND)", "Net reçu (TND)"], fi_p_wh: ["Withheld by client (TND)", "Retenue à la source (TND)"],
     fi_p_wh_h: ["Company clients often keep {p}% of the amount and pay it to the tax office for you. Accountant to confirm.", "Les sociétés gardent souvent {p} % du montant et le versent au fisc pour vous. À confirmer par le comptable."],
     fi_p_wh_none: ["No tax ID on file for this client, so usually nothing is withheld.", "Pas de matricule fiscal pour ce client, donc en général pas de retenue."],
     fi_p_method: ["Method", "Moyen"], fi_p_ref: ["Reference", "Référence"], fi_p_ref_ph: ["Transfer ref, cheque no.", "Réf. virement, n° de chèque"],
     fi_m_transfer: ["Bank transfer", "Virement"], fi_m_cash: ["Cash", "Espèces"], fi_m_cheque: ["Cheque", "Chèque"], fi_m_d17: ["D17 / Flouci", "D17 / Flouci"],
     fi_pay_title: ["Record", "Enregistrer"], fi_pay_accent: ["payment", "paiement"], fi_pay_left: ["Balance left: {b}", "Reste à payer : {b}"],
+    fi_lead_sync_error: ["Payment was saved, but the linked lead status could not be updated. Reopen the project to retry reconciliation.", "Paiement enregistré, mais le statut du prospect lié n'a pas pu être mis à jour. Rouvrez le projet pour réessayer."],
     fi_overpay: ["That's more than the balance ({b}). Check the amounts.", "C'est plus que le reste à payer ({b}). Vérifiez les montants."],
     fi_pay_zero: ["Enter what you received.", "Entrez ce que vous avez reçu."], fi_pay_saved: ["Payment recorded", "Paiement enregistré"],
     fi_pay_rm: ["Remove", "Retirer"], fi_pay_rm_q: ["Remove this payment?", "Retirer ce paiement ?"], fi_pay_rm_body: ["{a} received on {d}. The invoice balance goes back up.", "{a} reçus le {d}. Le reste à payer remonte."],
     fi_pay_removed: ["Payment removed", "Paiement retiré"],
     fi_credit: ["Cancel with a credit note", "Annuler par un avoir"], fi_credit_q: ["Cancel this invoice with a credit note?", "Annuler cette facture par un avoir ?"],
-    fi_credit_body: ["A credit note {no} for {a} is issued today. {orig} stays on record as cancelled. If the client already paid, settle the refund with them.", "Un avoir {no} de {a} est émis aujourd'hui. {orig} reste enregistrée comme annulée. Si le client a déjà payé, réglez le remboursement avec lui."],
+    fi_credit_body: ["A credit note for {a} is issued today with the next safely reserved number. {orig} stays on record as cancelled. If the client already paid, settle the refund with them.", "Un avoir de {a} est émis aujourd'hui avec le prochain numéro réservé sans doublon. {orig} reste enregistrée comme annulée. Si le client a déjà payé, réglez le remboursement avec lui."],
     fi_credit_label: ["Credit note for {no}", "Avoir sur {no}"], fi_credit_done: ["Credit note {no} issued", "Avoir {no} émis"],
     fi_credit_for: ["Cancels {no}", "Annule {no}"], fi_credited_by: ["Cancelled by credit note {no}", "Annulée par l'avoir {no}"],
     fi_history: ["History", "Historique"],
@@ -76,16 +78,16 @@
     fi_cm_amount: ["Commission", "Commission"], fi_cm_payable: ["Payable", "Exigible"], fi_cm_paid: ["Paid", "Payée"], fi_cm_owed: ["Owed", "Dû"],
     fi_cm_yes: ["Ready to pay", "Prête à payer"], fi_cm_wait: ["Waiting on client", "Attente client"], fi_cm_wait_dl: ["Waiting on delivery", "Attente livraison"], fi_cm_nocosts: ["No costs logged", "Aucun coût saisi"],
     fi_cm_nocosts_t: ["Log this project's costs first, or the commission is overstated.", "Saisissez d'abord les coûts du projet, sinon la commission est surestimée."],
-    fi_cm_mark: ["Mark paid", "Marquer payée"], fi_cm_mark_q: ["Pay Mohamed {a}?", "Payer {a} à Mohamed ?"],
+    fi_cm_mark: ["Mark paid", "Marquer payée"], fi_cm_mark_q: ["Pay the partner share of {a}?", "Payer la part partenaire de {a} ?"],
     fi_cm_mark_body: ["For {p}. It's recorded as paid today.", "Pour {p}. Enregistré comme payé aujourd'hui."], fi_cm_done: ["Commission marked paid", "Commission marquée payée"],
     fi_cm_owed_now: ["Owed now", "Dû maintenant"], fi_cm_paid_year: ["Paid this year", "Payé cette année"], fi_cm_pending: ["Not payable yet", "Pas encore exigible"],
-    fi_cm_note: ["{p}% of project profit on projects Mohamed brought or worked. Profit is what the client paid (tax withheld counts as paid, stamp duty left out) minus costs. It becomes payable once the client has paid in full and the work is delivered: before that, costs are only estimates.", "{p} % du bénéfice des projets apportés ou suivis par Mohamed. Bénéfice = ce que le client a payé (la retenue compte comme payée, le timbre est exclu) moins les coûts. Exigible une fois que le client a tout payé et que le travail est livré : avant, les coûts ne sont que des estimations."],
-    fi_cm_none: ["No projects with Mohamed yet.", "Pas encore de projet avec Mohamed."], fi_total_row: ["Total", "Total"],
+    fi_cm_note: ["{p}% of project profit on projects covered by the partner share rules (first clients, or clients the partner brought alone). Profit is what the client paid (tax withheld counts as paid, stamp duty left out) minus costs. It becomes payable once the client has paid in full and the work is delivered: before that, costs are only estimates.", "{p} % du bénéfice des projets couverts par les règles de la part partenaire (premiers clients, ou clients apportés seul par le partenaire). Bénéfice = ce que le client a payé (la retenue compte comme payée, le timbre est exclu) moins les coûts. Exigible une fois que le client a tout payé et que le travail est livré : avant, les coûts ne sont que des estimations."],
+    fi_cm_none: ["No projects with a partner share yet.", "Pas encore de projet avec une part partenaire."], fi_total_row: ["Total", "Total"],
     // month close
     fi_mc_month: ["Month", "Mois"], fi_mc_in: ["Money in", "Entrées"], fi_mc_out: ["Money out", "Sorties"],
     fi_mc_net: ["Payments received (net)", "Paiements reçus (net)"], fi_mc_wh: ["Withheld by clients (tax credit)", "Retenues des clients (crédit d'impôt)"],
     fi_mc_in_total: ["Total in", "Total entrées"], fi_mc_costs: ["Project costs, shoots this month", "Coûts projets, tournages du mois"],
-    fi_mc_salary: ["Heni's salary", "Salaire de Heni"], fi_mc_comm: ["Commissions paid", "Commissions payées"], fi_mc_out_total: ["Total out", "Total sorties"],
+    fi_mc_salary: ["Owner salary", "Salaire du fondateur"], fi_mc_comm: ["Commissions paid", "Commissions payées"], fi_mc_out_total: ["Total out", "Total sorties"],
     fi_mc_reserve: ["Reserve, {p}% of money in", "Réserve, {p} % des entrées"], fi_mc_left: ["Left after reserve", "Reste après réserve"],
     fi_mc_invoiced: ["Invoiced this month (before stamp, credit notes deducted)", "Facturé ce mois (hors timbre, avoirs déduits)"],
     fi_mc_nocosts: ["no costs logged", "aucun coût saisi"],
@@ -118,7 +120,7 @@
   function r3(n) { return Math.round((+n || 0) * 1000) / 1000; }
   /** Money in whole dinars: totals, commission, month close, cap. */
   function fm(n) { return u.money(Math.round(+n || 0)); }
-  /** One invoice or payment amount: whole dinars, or up to 2 decimals only when it has a fraction (728.5 -> "728.5 DT"). */
+  /** One invoice or payment amount: whole dinars, or up to 2 decimals only when it has a fraction (728.5 -> "728.5 TND"). */
   function fmP(n) { var v = Math.round((+n || 0) * 100) / 100; return u.money(v, v % 1 === 0 ? 0 : Math.round(v * 10) === v * 10 ? 1 : 2); }
   /** " : " in French, ": " in English. */
   function colon() { return u.fr() ? "\u00a0: " : ": "; }
@@ -139,6 +141,24 @@
   function kindLabel(k) { return t("k_" + (k || "deposit")); }
   function longDate(s) { return u.fmtDate(s, { day: "numeric", month: "long", year: "numeric" }); }
   function shortDate(s) { return u.fmtDate(s, { day: "numeric", month: "short", year: "numeric" }); }
+  function allocateInvoiceNo(write, stillCurrent) {
+    if (!window.navigator || !window.navigator.locks || typeof window.navigator.locks.request !== "function") {
+      return Promise.reject(new Error("This browser does not support cross-tab invoice numbering. Use a current browser with Web Locks."));
+    }
+    return window.navigator.locks.request("gecko-ops-invoice-number", function () {
+      if (stillCurrent && !stillCurrent()) return null;
+      var no = S.reserveInvoiceNo(u.year(u.today()));
+      var result = write(no);
+      if (!result) throw new Error("The invoice record could not be updated.");
+      if (S.flush() === false) throw new Error("The invoice number was reserved, but the record could not be saved locally.");
+      return { no: no, value: result };
+    });
+  }
+  function syncLeadPayment(invoice) {
+    if (!invoice || !invoice.projectId) return;
+    var result = m.syncLeadPayment(invoice.projectId);
+    if (!result.ok) ui.toast(t("fi_lead_sync_error"));
+  }
 
   // ---------- money per month ----------
   /** First month with any money activity: the salary only counts from then on (same rule as GK.x.monthly). */
@@ -153,19 +173,24 @@
     var r = m.rules();
     var net = 0, wh = 0, invoiced = 0;
     invoices().forEach(function (i) {
-      (i.payments || []).forEach(function (p) { if (u.month(p.date) === ym) { net += +p.net || 0; wh += +p.withheld || 0; } });
-      if (i.no && u.month(i.issued) === ym) invoiced += +i.amount || 0;
+      (i.payments || []).forEach(function (p) {
+        if (u.month(p.date) === ym) {
+          net += m.toTND(+p.net || 0, i.currency || "TND");
+          wh += m.toTND(+p.withheld || 0, i.currency || "TND");
+        }
+      });
+      if (u.month(i.issued) === ym) invoiced += m.invoiceTurnover(i);
     });
-    var shoots = S.all("projects").filter(function (p) { return p.shootDate && u.month(p.shootDate) === ym; })
-      .map(function (p) { return { p: p, cost: m.costOf(p) }; });
-    var costs = u.sum(shoots, function (x) { return x.cost; });
+    var linkedExpenses = GK.x.expensesIn(ym).filter(function (e) { return e.projectId && m.project(e.projectId); });
+    var costs = u.sum(linkedExpenses, function (e) { return +e.amount || 0; });
     var comm = S.all("projects").filter(function (p) { return p.payout && p.payout.paidOn && u.month(p.payout.paidOn) === ym; });
     var commPaid = u.sum(comm, function (p) { return +p.payout.amount || 0; });
-    var over = GK.x.expensesIn(ym), overheads = u.sum(over, function (e) { return +e.amount || 0; });
+    var over = GK.x.expensesIn(ym).filter(function (e) { return !e.projectId || !m.project(e.projectId); });
+    var overheads = u.sum(over, function (e) { return +e.amount || 0; });
     var salary = ym >= firstMonth() ? +r.salary || 0 : 0;
     var inTot = r3(net + wh), outTot = r3(costs + overheads + salary + commPaid);
     var reserve = r3(inTot * r.reserve / 100);
-    return { net: r3(net), wh: r3(wh), invoiced: r3(invoiced), shoots: shoots, costs: r3(costs), over: over, overheads: r3(overheads), salary: salary, comm: comm, commPaid: r3(commPaid),
+    return { net: r3(net), wh: r3(wh), invoiced: r3(invoiced), projectExpenses: linkedExpenses, costs: r3(costs), over: over, overheads: r3(overheads), salary: salary, comm: comm, commPaid: r3(commPaid),
       inTot: inTot, outTot: outTot, reserve: reserve, left: r3(inTot - outTot - reserve) };
   }
 
@@ -379,13 +404,16 @@
   GK.act("fi-issue", function (el) {
     var i = S.get("invoices", el.dataset.id); if (!i || i.no) return;
     if (!m.company().mf) return ui.toast(t("gate_mf"));
-    var no = m.nextInvoiceNo(), due = u.addDays(u.today(), m.rules().dueDays), c = m.client(i.clientId);
-    var body = t("fi_issue_body", { no: no, due: u.fmtDate(due, { day: "numeric", month: "long" }) }) + (c && !c.taxId ? " " + t("fi_no_taxid") : "");
+    var due = u.addDays(u.today(), m.rules().dueDays), c = m.client(i.clientId);
+    var body = t("fi_issue_body", { due: u.fmtDate(due, { day: "numeric", month: "long" }) }) + (c && !c.taxId ? " " + t("fi_no_taxid") : "");
     ui.confirm(t("fi_issue_q"), body, function () {
       var cur = S.get("invoices", i.id); if (!cur || cur.no) return;
-      var n2 = m.nextInvoiceNo(), today = u.today();
-      S.patch("invoices", i.id, { no: n2, issued: today, due: u.addDays(today, m.rules().dueDays) }, { log: t("fi_log_issued", { no: n2 }) });
-      ui.toast(t("fi_issued_toast", { no: n2 }));
+      allocateInvoiceNo(function (no) {
+        var today = u.today();
+        return !!S.patch("invoices", i.id, { no: no, issued: today, due: u.addDays(today, m.rules().dueDays) }, { log: t("fi_log_issued", { no: no }) });
+      }, function () { var latest = S.get("invoices", i.id); return !!latest && !latest.no; })
+        .then(function (result) { if (result) ui.toast(t("fi_issued_toast", { no: result.no })); })
+        .catch(function (error) { ui.toast(t("fi_number_error", { e: error.message })); });
     }, t("fi_issue"));
   });
   GK.act("fi-del", function (el) {
@@ -398,14 +426,24 @@
   GK.act("fi-credit", function (el) {
     var i = S.get("invoices", el.dataset.id); if (!i || !i.no || i.kind === "credit" || i.credited) return;
     if (!m.company().mf) return ui.toast(t("gate_mf"));
-    ui.confirm(t("fi_credit_q"), t("fi_credit_body", { no: m.nextInvoiceNo(), a: fmP(-i.amount), orig: i.no }), function () {
+    ui.confirm(t("fi_credit_q"), t("fi_credit_body", { a: fmP(-i.amount), orig: i.no }), function () {
       var cur = S.get("invoices", i.id); if (!cur || cur.credited) return;
-      var no = m.nextInvoiceNo(), today = u.today();
-      var cn = S.put("invoices", { no: no, clientId: cur.clientId, projectId: cur.projectId || "", kind: "credit", label: t("fi_credit_label", { no: cur.no }),
-        amount: -r3(cur.amount), stamp: 0, issued: today, due: today, payments: [], credited: false, creditFor: cur.id, log: [] }, { log: t("fi_log_credit", { no: no, orig: cur.no }) });
-      S.patch("invoices", cur.id, { credited: true }, { log: t("fi_log_credited", { no: no }) });
-      ui.toast(t("fi_credit_done", { no: no }));
-      if (cn) ui.go("finance", { tab: "invoices", invoiceId: cn.id });
+      allocateInvoiceNo(function (no) {
+        var latest = S.get("invoices", i.id);
+        if (!latest || latest.credited) return null;
+        var today = u.today();
+        var cn = S.put("invoices", { no: no, clientId: latest.clientId, projectId: latest.projectId || "", kind: "credit", label: t("fi_credit_label", { no: latest.no }),
+          amount: -r3(latest.amount), stamp: 0, issued: today, due: today, payments: [], credited: false, creditFor: latest.id, log: [] }, { log: t("fi_log_credit", { no: no, orig: latest.no }) });
+        if (!cn || !S.patch("invoices", latest.id, { credited: true }, { log: t("fi_log_credited", { no: no }) })) throw new Error("The credit note could not be saved.");
+        syncLeadPayment(latest);
+        return cn.id;
+      }, function () { var latest = S.get("invoices", i.id); return !!latest && !latest.credited; })
+        .then(function (result) {
+          if (!result) return;
+          var cn = S.get("invoices", result.value);
+          ui.toast(t("fi_credit_done", { no: cn.no }));
+          ui.go("finance", { tab: "invoices", invoiceId: result.value });
+        }).catch(function (error) { ui.toast(t("fi_number_error", { e: error.message })); });
     }, t("fi_credit"));
   });
 
@@ -434,7 +472,8 @@
     if (net < 0 || wh < 0 || net + wh <= 0) { u.focus("fi-p-net"); return ui.toast(t("fi_pay_zero")); }
     if (r3(net + wh) > bal + 0.0005) { u.focus("fi-p-net"); return ui.toast(t("fi_overpay", { b: fmP(bal) })); }
     var pays = (i.payments || []).concat([{ date: date, net: net, withheld: wh, method: u.val("fi-p-method") || "transfer", ref: u.val("fi-p-ref").trim() }]);
-    S.patch("invoices", i.id, { payments: pays }, { log: t("fi_log_pay", { a: fmP(net + wh), d: u.fmtDate(date) }) });
+    var saved = S.patch("invoices", i.id, { payments: pays }, { log: t("fi_log_pay", { a: fmP(net + wh), d: u.fmtDate(date) }) });
+    if (saved) syncLeadPayment(saved);
     ui.closeModal(true); ui.toast(t("fi_pay_saved"));
   });
   GK.act("fi-pay-rm", function (el) {
@@ -443,7 +482,8 @@
     ui.confirm(t("fi_pay_rm_q"), t("fi_pay_rm_body", { a: fmP((+p.net || 0) + (+p.withheld || 0)), d: u.fmtDate(p.date) }), function () {
       var cur = S.get("invoices", i.id); if (!cur) return;
       var pays = (cur.payments || []).slice(); pays.splice(k, 1);
-      S.patch("invoices", cur.id, { payments: pays }, { log: t("fi_log_pay_rm", { d: u.fmtDate(p.date) }) });
+      var saved = S.patch("invoices", cur.id, { payments: pays }, { log: t("fi_log_pay_rm", { d: u.fmtDate(p.date) }) });
+      if (saved) syncLeadPayment(saved);
       ui.toast(t("fi_pay_removed"));
     }, t("fi_pay_rm"));
   });
@@ -515,7 +555,7 @@
   // ---------- commission ----------
   function commissionHTML() {
     var r = m.rules(), year = u.year(u.today());
-    var ps = S.all("projects").filter(function (p) { return p.mohamed; }).sort(u.by(function (p) { return p.shootDate || p.planApprovedOn || ""; }, "desc"));
+    var ps = S.all("projects").filter(function (p) { return !!m.commission(p).basis; }).sort(u.by(function (p) { return p.shootDate || p.planApprovedOn || ""; }, "desc"));
     var rows = ps.map(function (p) { return { p: p, c: m.commission(p), rec: m.received(p), cost: m.costOf(p), prof: m.profit(p) }; });
     var owedNow = u.sum(rows, function (x) { return x.c.owed; });
     var paidYear = u.sum(S.all("projects").filter(function (p) { return p.payout && p.payout.paidOn && u.year(p.payout.paidOn) === year; }), function (p) { return +p.payout.amount || 0; });
@@ -587,7 +627,7 @@
     var run = 0;
     for (var k = firstM; k <= curM; k++) {
       var mk = year + "-" + String(k).padStart(2, "0");
-      var amt = u.sum(issued.filter(function (i) { return u.month(i.issued) === mk; }), function (i) { return +i.amount || 0; });
+      var amt = u.sum(issued.filter(function (i) { return u.month(i.issued) === mk; }), m.invoiceTurnover);
       run += amt;
       h += "<tr><td>" + esc(u.fmtMonth(mk)) + '</td><td class="r num">' + fm(amt) + '</td><td class="r num small muted">' + fm(run) + (cap ? " · " + esc(u.pct(run / cap * 100)) : "") + "</td></tr>";
     }
@@ -598,7 +638,7 @@
     else {
       h += '<div class="list">' + extras.map(function (i) {
         return '<div class="li click" tabindex="0" data-a="fi-open" data-id="' + esc(i.id) + '"><div class="stack" style="gap:2px"><span>' + esc(m.brand(i.clientId)) + " · " + esc(i.label) + '</span><span class="m code">' + esc(i.no) + '</span></div><span class="num">' + fmP(i.amount) + "</span></div>";
-      }).join("") + '</div><p class="small" style="margin:0"><strong class="num">' + fm(u.sum(extras, function (i) { return i.amount; })) + "</strong> · " + esc(t("fi_cap_extras_note")) + "</p>";
+      }).join("") + '</div><p class="small" style="margin:0"><strong class="num">' + fm(u.sum(extras, m.invoiceTurnover)) + "</strong> · " + esc(t("fi_cap_extras_note")) + "</p>";
     }
     var pass = passOf(year);
     if (pass.length) {

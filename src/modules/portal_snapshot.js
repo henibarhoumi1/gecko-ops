@@ -23,7 +23,8 @@
   };
   P.linkFor = function (token) {
     var base = String(m.company().appUrl || "").replace(/#.*$/, "");
-    return base + "#cl-" + token;
+    var shareToken = S.backend === "supabase" ? S.shareToken(token) : token;
+    return shareToken ? base + "#cl-" + shareToken : "";
   };
 
   /** Projects a share covers: one project, or all of the client's current ones (the latest closed one if none is running). */
@@ -137,7 +138,11 @@
             hooks: (r.hooks || []).map(function (h) { return { text: h.text, status: h.status || "todo" }; })
           };
           if (sec.scripts && shared) { rr.script = txt; if (idea) rr.ideaId = idea.id; }
-          if (sec.files) rr.files = files.map(function (f) { return { code: f.code, status: f.item.status || "todo", drive: unlocked ? link(f.item.drive || r.drive) : "", clientOk: !!f.item.clientOk }; });
+          if (sec.files) rr.files = files.map(function (f) { return {
+            code: f.code, key: f.key, reelId: r.id, version: +f.item.v || 1,
+            revisionId: f.item.sourceRevisionId || r.creativeRevisionId || "",
+            status: f.item.status || "todo", drive: unlocked ? link(f.item.drive || r.drive) : "", clientOk: !!f.item.clientOk
+          }; });
           o.reels.push(rr);
         });
         (p.carousels || []).forEach(function (cr) {
@@ -169,6 +174,21 @@
       });
     }
     return snap;
+  };
+
+  P.feedbackTargets = function (snapshot) {
+    var targets = { other: ["comment", "approve", "changes"] };
+    if (snapshot.sections && snapshot.sections.plan) targets.plan = ["approve", "changes"];
+    if (snapshot.sections && (snapshot.sections.scripts || snapshot.sections.files)) (snapshot.projects || []).forEach(function (project) {
+      (project.reels || []).forEach(function (reel) {
+        if (snapshot.sections.files && reel.id) targets["reel:" + reel.id] = ["approve", "changes"];
+        if (snapshot.sections.scripts && reel.id) targets[(reel.ideaId ? "idea:" + reel.ideaId : "reel:" + reel.id)] = ["approve", "changes"];
+      });
+      if (snapshot.sections.scripts) (project.ideas || []).forEach(function (idea) {
+        if (idea.id) targets["idea:" + idea.id] = ["approve", "changes"];
+      });
+    });
+    return targets;
   };
 
   /** Check a snapshot for anything that must never reach a client. Returns a list of hits (empty = clean). */

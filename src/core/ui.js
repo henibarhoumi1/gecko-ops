@@ -131,12 +131,15 @@
       o: {title, accent, sub (HTML), actions (HTML), label (eyebrow, shown only when it adds something), back:{label, a, data}} */
   UI.head = function (o) {
     var lab = o.label && o.label !== t("nav_" + UI.state.view) ? o.label : "";
+    var help = GK.guide && GK.guide.hasHelp(UI.state.view)
+      ? UI.btn(t("guide_help"), "guide-help", { cls: "ghost icon sm", icon: "help", data: { v: UI.state.view } }) : "";
+    var actions = (o.actions || "") + help;
     return '<header class="head"><div class="t">' +
       (o.back ? '<button type="button" class="back" data-a="' + esc(o.back.a || "") + '"' + UI.attrs(o.back.data) + ">" + UI.icon("back", "sm") + esc(o.back.label || t("back")) + "</button>" : "") +
       (lab ? '<span class="eyebrow">' + esc(lab) + "</span>" : "") +
       '<h1 class="hl">' + esc(o.title || "") + (o.accent ? " <i>" + esc(o.accent) + "</i>" : "") + "</h1>" +
       (o.sub ? '<p class="subline">' + o.sub + "</p>" : "") +
-      "</div>" + (o.actions ? '<div class="actions">' + o.actions + "</div>" : "") + "</header>";
+      "</div>" + (actions ? '<div class="actions">' + actions + "</div>" : "") + "</header>";
   };
   /** pill(text, tone): tones "neutral" | "chroma" | "gel" | "urgent" | "done" | "blue" | "pink" | "yellow" | "green" (status, solid chip). Category dots: "dot-blue" etc. Legacy: "" = neutral, "wip" = chroma, "alert" = urgent. */
   UI.pill = function (text, kind) { return '<span class="pill ' + esc(kind || "") + '">' + esc(text) + "</span>"; };
@@ -495,6 +498,34 @@
     });
     return out;
   }
+  function backendScreen() {
+    var S = GK.store, h = '<div class="page" style="max-width:720px;margin:8vh auto"><section class="panel">';
+    h += '<span class="lab sm muted">GECKO OPS · SECURE WORKSPACE</span>';
+    if (S.authState === "loading") {
+      h += '<h1 class="hl">Connecting</h1><p class="muted">Loading your authorized workspace records…</p>';
+    } else if (S.authState === "no-workspace") {
+      h += '<h1 class="hl">Your workspace</h1><p class="muted">Create a workspace or accept an invitation to continue.</p>';
+      h += UI.field({ id: "auth-workspace", label: "Workspace name", value: "" });
+      h += '<div class="row">' + UI.btn("Create workspace", "auth-create-workspace", { cls: "primary" }) + "</div>";
+      h += '<hr><div class="form">' + UI.field({ id: "auth-invite", label: "Invitation token", value: "" }) +
+        UI.field({ id: "auth-name", label: "Your name", value: "" }) + "</div>";
+      h += '<div class="row">' + UI.btn("Accept invitation", "auth-accept-invite", { cls: "primary" }) +
+        UI.btn("Sign out", "auth-signout", { cls: "ghost" }) + "</div>";
+    } else {
+      h += '<h1 class="hl">Sign in to GECKO</h1><p class="muted">Private workspace data is available only after authentication.</p>';
+      h += '<div class="form">' + UI.field({ id: "auth-email", label: "Email", type: "email", value: "" }) +
+        UI.field({ id: "auth-password", label: "Password", type: "password", value: "" }) + "</div>";
+      h += '<div class="row">' + UI.btn("Sign in", "auth-signin", { cls: "primary" }) +
+        UI.btn("Create account", "auth-signup", { cls: "ghost" }) + "</div>";
+      h += '<hr><p class="small muted">New accounts need an invitation, or may create their own workspace after sign-up.</p>';
+      h += '<div class="form">' + UI.field({ id: "auth-name", label: "Your name", value: "" }) +
+        UI.field({ id: "auth-workspace", label: "Workspace name (optional)", value: "" }) + "</div>";
+    }
+    var message = S.authError || S.authMessage;
+    if (message) h += '<p class="note" role="status">' + esc(message) + "</p>";
+    h += '<div class="row">' + UI.btn("Use local workspace", "show-demo", { cls: "ghost" }) + "</div>";
+    return h + "</section></div>";
+  }
   /** Full render. Store updates arriving while someone types are held until they leave the field. */
   UI.render = function (force) {
     var app = document.getElementById("app");
@@ -508,6 +539,11 @@
       if (cm && cm.after) try { cm.after(app); } catch (e) { console.error(e); }
       window.scrollTo(0, winTop);
       document.title = "GECKO";
+      return;
+    }
+    if (GK.store.backend === "supabase" && GK.store.authState !== "ready") {
+      app.innerHTML = backendScreen();
+      document.title = "Sign in · GECKO Ops";
       return;
     }
     var ae = document.activeElement, sp = document.getElementById("sp");
@@ -583,11 +619,50 @@
   actions["do-start-live"] = function () { var n = u.val("live-name").trim(); if (!n) return u.focus("live-name"); UI.closeModal(true); GK.store.startLive(n); UI.go("today"); };
   actions["show-demo"] = function () { GK.store.showDemo(); UI.go("today"); };
   actions["show-live"] = function () { GK.store.showLive(); UI.go("today"); };
-  actions["reset-demo"] = function () { UI.confirm(t("mode_demo"), t("demo_banner"), function () { GK.store.resetDemo(); UI.toast(t("saved")); }); };
+  actions["reset-demo"] = function () { UI.go("settings", { tab: "data" }); };
   actions["do-join"] = function () {
     var claim = u.val("join-claim"), name = u.val("join-name").trim(), role = u.val("join-role") || "sales";
     if (!claim && !name) return u.focus("join-name");
     UI.closeModal(true); GK.store.join(name, role, claim); UI.render(true);
+  };
+  function authFailure(error) {
+    GK.store.authError = error && error.message ? error.message : "Authentication request failed.";
+    UI.render(true);
+  }
+  actions["auth-signin"] = function () {
+    var email = u.val("auth-email").trim(), password = u.val("auth-password");
+    if (!email) return u.focus("auth-email");
+    if (!password) return u.focus("auth-password");
+    GK.store.authError = "";
+    GK.store.signIn(email, password).then(function () { GK.store.authError = ""; UI.render(true); }, authFailure);
+  };
+  actions["auth-signup"] = function () {
+    var email = u.val("auth-email").trim(), password = u.val("auth-password"), name = u.val("auth-name").trim();
+    if (!email) return u.focus("auth-email");
+    if (!password) return u.focus("auth-password");
+    GK.store.authError = "";
+    GK.store.signUp(email, password, name).then(function () {
+      var workspace = u.val("auth-workspace").trim();
+      if (workspace && GK.store.authState === "no-workspace") {
+        return GK.store.createWorkspace(workspace).then(function () { GK.store.authError = ""; UI.render(true); }, authFailure);
+      }
+      UI.render(true);
+    }, authFailure);
+  };
+  actions["auth-create-workspace"] = function () {
+    var name = u.val("auth-workspace").trim();
+    if (!name) return u.focus("auth-workspace");
+    GK.store.authError = "";
+    GK.store.createWorkspace(name).then(function () { GK.store.authError = ""; UI.render(true); }, authFailure);
+  };
+  actions["auth-accept-invite"] = function () {
+    var token = u.val("auth-invite").trim(), name = u.val("auth-name").trim();
+    if (!token) return u.focus("auth-invite");
+    GK.store.authError = "";
+    GK.store.acceptInvite(token, name).then(function () { GK.store.authError = ""; UI.render(true); }, authFailure);
+  };
+  actions["auth-signout"] = function () {
+    GK.store.signOut().then(function () { UI.render(true); }, authFailure);
   };
   changes.workas = function (el) { GK.store.workAs(el.value); UI.state.view = "today"; };
 
@@ -642,10 +717,23 @@
     UI.state.view = (UI.clientToken ? "" : h) || u.lsGet(VIEW_KEY, "today");
     window.addEventListener("hashchange", function () {
       var tk = GK.clientMode && GK.clientMode.match((location.hash || "").replace("#", ""));
-      if ((tk || null) !== (UI.clientToken || null)) { UI.clientToken = tk; UI.render(true); }
+      if ((tk || null) !== (UI.clientToken || null)) {
+        UI.clientToken = tk; UI.render(true);
+        if (tk && GK.supabase && GK.supabase.configured()) {
+          GK.store.loadPublicShare(tk).then(function () { UI.render(true); }, function (error) {
+            GK.store.authError = error.message; GK.store.publicShare = null; UI.render(true);
+          });
+        } else if (!tk && GK.supabase && GK.supabase.configured()) {
+          GK.store.showLive();
+        }
+      }
     });
     GK.store.onChange(function () { UI.render(); });
-    GK.store.boot(function () { if (!views[UI.state.view]) UI.state.view = "today"; UI.render(true); });
+    GK.store.boot(function () {
+      if (!views[UI.state.view]) UI.state.view = "today";
+      UI.render(true);
+      if (GK.guide && GK.guide.maybeWelcome) GK.guide.maybeWelcome();
+    });
   };
 
   GK.ui = UI;

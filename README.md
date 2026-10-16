@@ -19,7 +19,7 @@ v01/
     core/model.js       business rules: packs, gates, invoices, commission, cap, funnel, roles
     core/store.js       data store (sample / this browser / shared) — the only file that knows where data lives
     core/ui.js          shell, router, components, modal, toast
-    core/seed.js        sample data (invented brands)
+    core/seed.js        retired sample-data generator (not included in builds)
     modules/*.js        one file per screen
   dist/gecko-ops.html   the built page (claude.ai artifact)
   dist/site/index.html  the same page as a full HTML document, for any static host
@@ -30,6 +30,7 @@ v01/
 
 ```
 python3 build.py
+node --test tests/*.test.js
 NODE_PATH=$(npm root -g) node tests/smoke.js
 ```
 
@@ -37,21 +38,39 @@ NODE_PATH=$(npm root -g) node tests/smoke.js
 
 | Mode | When | Who sees it |
 |---|---|---|
-| Sample data | first open, or "View sample data" | only this browser; never written to the shared store |
+| Local prototype | first open | starts empty; records and configuration live in this browser |
+| Live, Supabase | after sign-in to a configured local Supabase workspace | authenticated workspace members; database RPCs enforce role and assignment scope |
 | Live, shared | after "Start for real" on claude.ai | everyone the page is shared with. Contributors edit; Viewers read. Settings (packs, rules, company) are Editor-only |
-| Live, this browser | "Start for real" where no shared store exists (e.g. the static site today) | only this browser |
 
-## Turning it into a website (next step)
+Static hosting without Supabase configuration opens an empty local prototype workspace. It does not load or regenerate demo records. Existing browser records are preserved until explicitly cleared from Settings → Data; clearing removes business collections but preserves configuration and UI preferences. Export a JSON backup first if the records may be needed.
 
-The page is already a static site: upload `dist/site/index.html` to any host (Netlify, Vercel, Cloudflare Pages, GitHub Pages) and it runs. What a real website adds:
+## Local Supabase development (Phase 0)
 
-1. **Hosted data and logins.** Add one adapter in `src/core/store.js` next to the shared one, backed by Supabase (Postgres + auth + row-level security):
-   one table per collection (`team, clients, leads, outreach, contracts, projects, invoices, tasks, msgs`), each row `id text primary key, data jsonb, updated_at`, plus `config`.
-   The adapter implements the same five things the shared backend does today: load all rows, subscribe to changes (Supabase realtime), `set` a row, `delete` a row, and who the viewer is.
-   Modules don't change.
-2. **Client logins for the client view.** A `client` role whose row-level policy only returns their own client, projects (stage, approved files) and invoices, never costs, profit or commission. The Client view screen becomes their home page.
-3. **Invoices as PDFs** generated server-side (numbering stays in the database, in a transaction, so two people can't take the same number).
-4. **Domain.** e.g. `ops.gecko.tn` for the team and `client.gecko.tn` for clients.
+Requires the Supabase CLI and Docker. Use the local stack and synthetic fixtures only:
+
+```sh
+supabase start
+supabase db reset
+supabase test db
+```
+
+Set `GK_SUPABASE_URL` to `http://127.0.0.1:54321` and `GK_SUPABASE_ANON_KEY` to the local **anon/publishable** key printed by the CLI, then build outside the source tree:
+
+```sh
+GK_OUT=/tmp/gecko-local python3 build.py
+python3 -m http.server 8000 --directory /tmp/gecko-local/site
+```
+
+Open `http://127.0.0.1:8000`. Build-time validation refuses remote Supabase URLs and service-role/secret keys in this phase. Never copy a service-role key into the browser build. Do not point this local setup at production.
+
+The migration in `supabase/migrations` defines the workspace, memberships, relational client/project ownership and assignments, secure client shares, feedback, and the temporary constrained JSONB compatibility collection. SQL tests use synthetic identities and records. They must pass in a local Supabase stack before claiming the authorization guarantees are validated.
+
+## Later work
+
+- Private object storage and a scoped upload workflow.
+- More relational operational/finance tables and migration of compatibility records.
+- Client accounts, if needed; current client access is by revocable share link.
+- Production deployment configuration and a separately reviewed production migration process.
 
 ## Rules that need the accountant's word
 
@@ -61,12 +80,14 @@ The auto-entrepreneur cap (75,000 DT), the 1 DT stamp per invoice and the 3% wit
 - **Dashboard** (founder only): cash, runway, 12-month charts, funnel, alerts.
 - **Studio**: ideas to concept to script, with links, owners, review step and a detail page.
 - **Whiteboards**: sticky notes, text, shapes, arrows, pen, tables, undo/redo, SVG export; link a board to an idea or project.
-- **Client pages**: the team publishes a snapshot (plan, scripts, files, timeline, invoices). The client opens `#cl-<token>`. Feedback goes through a prefilled WhatsApp message. Whiteboards are off by default on a new page.
+- **Client pages**: the team publishes a snapshot (plan, scripts, files, timeline, invoices). With Supabase configured, a revocable high-entropy share token retrieves only its approved snapshot, and feedback is saved before WhatsApp opens as an optional route.
 - **Finance**: 10 tabs (overview, invoices, quotes, expenses, forecast, month close, profit, cap, commission, export CSV).
 - Sales no longer sees Finance (salary and profit). Pass-through extras are not revenue, profit or commission.
 
 ### Known limits
-- Client pages are not private against a technical viewer: the artifact loads the shares collection. Real isolation needs the website backend (Supabase row-level security).
+- The legacy claude.ai artifact mode still loads browser-shared records and must not be used for confidential client shares. Isolated client links require the Supabase backend.
 - Forecast leaves out draft invoices from accepted quotes and future SKIN months.
+- Local-prototype invoice issuance uses Web Locks and a persistent per-year counter to avoid duplicate numbers across tabs. It requires a browser that supports Web Locks. Remote workspace issuance still needs a server-side atomic sequence before it can claim cross-user collision safety.
+- Existing contracts are not rewritten: MRR uses their latest saved project/month-invoice price when available, then falls back to the current catalogue if no historical price was recorded.
 - Tax, stamp and cap numbers are for the accountant to confirm; money figures are estimates from the records.
 - QA notes: `tests/QA_CLICK.md`, `tests/QA_REVIEW.md`.

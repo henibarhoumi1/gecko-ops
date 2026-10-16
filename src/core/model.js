@@ -13,7 +13,7 @@
   M.REVIEW_SILENCE_DAYS = 3; // client silence in review counts as approved
 
   // ---------- sales (leads): gecko/plan/crm-pipeline.md ----------
-  /** Open stages in order, then the two exits. Won = deposit (or first monthly payment) received. */
+  /** Open stages in order, then the two exits. Won = the required upfront payment is received. */
   M.LEAD_STAGES = ["prospect", "contacted", "conversation", "meeting_booked", "qualified", "proposal_sent", "negotiation", "accepted", "signed", "won", "lost", "nurture"];
   M.OPEN_STAGES = M.LEAD_STAGES.slice(0, 9);
   M.LEAD_ODDS = { prospect: 2, contacted: 5, conversation: 15, meeting_booked: 25, qualified: 40, proposal_sent: 50, negotiation: 60, accepted: 80, signed: 90, won: 100, lost: 0, nurture: 0 };
@@ -158,21 +158,25 @@
   };
 
   // ---------- leads ----------
-  M.isOpen = function (l) { return M.OPEN_STAGES.indexOf(l.stage) > -1; };
-  M.stageIndex = function (l) { return M.LEAD_STAGES.indexOf(l.stage); };
+  M.leadStage = function (l) {
+    var stage = typeof l === "string" ? l : l && l.stage;
+    return M.OLD && M.OLD.lead[stage] || stage || "";
+  };
+  M.isOpen = function (l) { return M.OPEN_STAGES.indexOf(M.leadStage(l)) > -1; };
+  M.stageIndex = function (l) { return M.LEAD_STAGES.indexOf(M.leadStage(l)); };
   /** When the lead entered its current stage. */
-  M.stageSince = function (l) { var h = (l.history || []).filter(function (x) { return x.stage === l.stage; }); return h.length ? h[h.length - 1].at : (l.created || ""); };
+  M.stageSince = function (l) { var stage = M.leadStage(l), h = (l.history || []).filter(function (x) { return M.leadStage(x.stage) === stage; }); return h.length ? h[h.length - 1].at : (l.created || ""); };
   M.fitScore = function (l) { return (l.fit || []).filter(Boolean).length; };
   M.qualified = function (l) { return (l.q || []).filter(Boolean).length === 4; };
   M.overdue = function (l) { return M.isOpen(l) && !!l.nextDate && l.nextDate < u.today(); };
   M.noNext = function (l) { return M.isOpen(l) && (!l.next || !l.nextDate); };
   /** Days in the current stage, and whether that is past the plan's max. */
-  M.stageAge = function (l) { var since = M.stageSince(l); var n = since ? u.daysBetween(since.slice(0, 10), u.today()) : 0; var max = M.STAGE_MAX_DAYS[l.stage]; return { days: n, max: max || 0, stale: !!max && n > max }; };
+  M.stageAge = function (l) { var since = M.stageSince(l), stage = M.leadStage(l); var n = since ? u.daysBetween(since.slice(0, 10), u.today()) : 0; var max = M.STAGE_MAX_DAYS[stage]; return { days: n, max: max || 0, stale: !!max && n > max }; };
   /** Weighted value of an open lead, in TND. */
   M.leadValue = function (l) { var v = +l.price || (l.pack ? M.priceFor(l.pack).price : 0); return M.toTND(v, l.currency || M.pack(l.pack).currency); };
   /** The cadence step a lead is on: {step, of, due, last, after} or null when the stage has no cadence. */
   M.cadence = function (l) {
-    var c = M.CADENCE[l.stage]; if (!c) return null;
+    var c = M.CADENCE[M.leadStage(l)]; if (!c) return null;
     var since = (M.stageSince(l) || u.today()).slice(0, 10);
     var done = (l.touches || []).filter(function (t) { return t.stage === l.stage; }).length;
     var step = Math.min(done, c.days.length);
@@ -233,6 +237,11 @@
   M.invPaidNet = function (i) { return u.sum(i.payments || [], function (x) { return +x.net || 0; }); };
   M.invWithheld = function (i) { return u.sum(i.payments || [], function (x) { return +x.withheld || 0; }); };
   M.invBalance = function (i) { return Math.max(0, M.invTotal(i) - M.invPaidGross(i)); };
+  /** Issued turnover in TND; credit notes stay negative and pass-through extras are excluded. */
+  M.invoiceTurnover = function (i) {
+    if (!i || !i.no || (i.kind === "extra" && i.passThrough)) return 0;
+    return M.toTND(+i.amount || 0, i.currency || "TND");
+  };
   /** draft | issued | partial | paid | overdue | credited | credit */
   M.invStatus = function (i) {
     if (i.kind === "credit") return "credit";
@@ -254,15 +263,29 @@
   /** Yearly turnover against the auto-entrepreneur cap: issued invoices minus credit notes, by issue date. */
   M.capUsed = function (year) {
     year = year || u.year(u.today());
-    // pass-through extras (débours re-invoiced at cost) stay out of turnover
-    return u.sum(S().all("invoices").filter(function (i) { return i.no && u.year(i.issued) === year && !(i.kind === "extra" && i.passThrough); }), function (i) { return +i.amount || 0; });
+    return u.sum(S().all("invoices").filter(function (i) { return u.year(i.issued) === year; }), M.invoiceTurnover);
   };
 
   // ---------- gates ----------
   /** The agreed price of a project (one-off: the whole offer; monthly: one month), in its currency. */
-  M.projectPrice = function (p) { return p.price != null && p.price !== "" ? +p.price : M.priceFor(p.pack, p.clientId, p.month).price; };
+  M.projectPrice = function (p) {
+    if (p.price != null && p.price !== "") return +p.price;
+    var invoices = M.invoicesOf(p).filter(function (i) {
+      return i.kind === "deposit" || i.kind === "balance" || i.kind === "month";
+    });
+    if (invoices.length) {
+      return ["deposit", "balance", "month"].reduce(function (total, kind) {
+        var sameKind = invoices.filter(function (i) { return i.kind === kind; });
+        var current = sameKind.filter(function (i) { return !i.credited; });
+        return total + u.sum(current.length ? current : sameKind, function (i) { return +i.amount || 0; });
+      }, 0);
+    }
+    return M.priceFor(p.pack, p.clientId, p.month).price;
+  };
   M.upfrontPaid = function (p) {
-    var up = M.pack(p.pack).upfront, kinds = up === "month" ? ["month"] : up === "full" ? ["deposit", "balance", "month"] : ["deposit"];
+    var up = M.pack(p.pack).upfront;
+    if (up === "full") return M.fullyPaid(p);
+    var kinds = up === "month" ? ["month"] : ["deposit"];
     return M.invoicesOf(p).some(function (i) { return kinds.indexOf(i.kind) > -1 && M.invIsPaid(i); });
   };
   /** One-off offers: deposit + balance paid for the full price (a credited invoice doesn't count). Monthly: the month is paid. */
@@ -272,6 +295,56 @@
     var main = inv.filter(function (i) { return i.kind === "deposit" || i.kind === "balance"; });
     var paid = u.sum(main, function (i) { return M.invIsPaid(i) ? +i.amount || 0 : 0; });
     return main.length > 0 && paid >= M.projectPrice(p) - 0.001;
+  };
+  function invoicePaidOn(i) {
+    var paid = 0;
+    var payments = (i.payments || []).filter(function (x) { return x && x.date; }).slice().sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+    for (var n = 0; n < payments.length; n++) {
+      paid += (+payments[n].net || 0) + (+payments[n].withheld || 0);
+      if (paid >= M.invTotal(i) - 0.001) return payments[n].date;
+    }
+    return "";
+  }
+  /** Date the project's required upfront payment became complete, or "" when it is still outstanding. */
+  M.upfrontPaidOn = function (p) {
+    if (!M.upfrontPaid(p)) return "";
+    var up = M.pack(p.pack).upfront;
+    var kinds = up === "month" ? ["month"] : up === "full" ? ["deposit", "balance"] : ["deposit"];
+    var paid = M.invoicesOf(p).filter(function (i) {
+      return kinds.indexOf(i.kind) > -1 && !i.credited && i.kind !== "credit" && M.invIsPaid(i);
+    }).map(invoicePaidOn).filter(Boolean).sort();
+    return paid.length ? paid[paid.length - 1] : "";
+  };
+  /**
+   * Reconcile a linked signed lead with the project's required upfront payment.
+   * Legacy projects/leads without a source relationship are intentionally left alone.
+   */
+  M.syncLeadPayment = function (projectId) {
+    var p = M.project(projectId);
+    if (!p) return { ok: true, linked: false };
+    var client = M.client(p.clientId);
+    var leadId = p.sourceLeadId || (client && client.sourceLeadId) || "";
+    var lead = leadId ? S().get("leads", leadId) : S().all("leads").find(function (x) { return x.clientId === p.clientId; });
+    if (!lead || !client || (lead.clientId && lead.clientId !== client.id)) return { ok: true, linked: false };
+    var stage = M.leadStage(lead);
+    if (stage !== "signed" && stage !== "won") return { ok: true, linked: true };
+
+    var paidOn = M.upfrontPaidOn(p);
+    var nextStage = paidOn ? "won" : stage === "won" ? "signed" : stage;
+    if (nextStage !== stage) {
+      var history = (lead.history || []).slice();
+      history.push({ stage: nextStage, at: u.today() });
+      if (!S().patch("leads", lead.id, { stage: nextStage, history: history }, { log: GK.t("pl_log_moved", { s: GK.t("ls_" + nextStage) }) })) {
+        return { ok: false, linked: true };
+      }
+    }
+
+    if (paidOn && (!client.wonOn || client.wonOnLeadId === lead.id)) {
+      if (!S().patch("clients", client.id, { wonOn: paidOn, wonOnLeadId: lead.id })) return { ok: false, linked: true };
+    } else if (!paidOn && client.wonOnLeadId === lead.id) {
+      if (!S().patch("clients", client.id, { wonOn: "", wonOnLeadId: "" })) return { ok: false, linked: true };
+    }
+    return { ok: true, linked: true, stage: nextStage };
   };
   /** No shoot before the scripts are approved in writing and the deposit (or the month) is paid. */
   M.canShoot = function (p) { return !!p.planApproved && M.upfrontPaid(p); };
@@ -299,14 +372,58 @@
   // ---------- money per project (TND) ----------
   function invTND(i, n) { return M.toTND(n, i.currency || "TND"); }
   /** Revenue received for a project: what the client paid, withheld tax included (it counts as paid), stamps excluded. */
-  M.received = function (p) { return u.sum(M.invoicesOf(p).filter(function (i) { return i.kind !== "credit" && !(i.kind === "extra" && i.passThrough); }), function (i) { return invTND(i, Math.min(M.invPaidGross(i), +i.amount || 0)); }); };
+  M.received = function (p) { return u.sum(M.invoicesOf(p).filter(function (i) { return i.kind !== "credit" && !i.credited && !(i.kind === "extra" && i.passThrough); }), function (i) { return invTND(i, Math.min(M.invPaidGross(i), +i.amount || 0)); }); };
   /** Cash that actually landed (net of withholding, stamps included). */
   M.cashIn = function (p) { return u.sum(M.invoicesOf(p), function (i) { return invTND(i, M.invPaidNet(i)); }); };
   M.withheld = function (p) { return u.sum(M.invoicesOf(p), function (i) { return invTND(i, M.invWithheld(i)); }); };
-  M.costOf = function (p) { return u.sum(p.costs || [], function (c) { return c.amount; }); };
-  /** Owner pay inside a project's costs (cost lines of kind "heni"). */
+  /** Legacy cost lines remain intact and are treated as estimates; only an explicit estimateId reconciles actual spend. */
+  M.estimatedCostOf = function (p) { return u.sum(p.costs || [], function (c) { return c.amount; }); };
+  function monthDate(ym, day) {
+    var parts = ym.split("-"), year = +parts[0], month = +parts[1];
+    var last = new Date(year, month, 0).getDate();
+    return ym + "-" + String(Math.min(+day || 1, last)).padStart(2, "0");
+  }
+  /** Project-tagged ledger expenses, expanded by occurrence month through the current date. */
+  M.projectExpenses = function (p, onlyMonth) {
+    var today = u.today(), endMonth = onlyMonth || u.month(today), out = [];
+    S().all("expenses").forEach(function (e) {
+      if (e.projectId !== p.id || !e.date) return;
+      var startMonth = u.month(e.date);
+      if (e.recurring !== "monthly") {
+        if (onlyMonth ? startMonth === onlyMonth : e.date <= today) out.push(e);
+        return;
+      }
+      var until = e.until && e.until < endMonth ? e.until : endMonth;
+      if (onlyMonth) {
+        if (startMonth <= onlyMonth && onlyMonth <= until) {
+          out.push(Object.assign({}, e, { date: monthDate(onlyMonth, e.date.slice(8, 10)), sourceExpenseId: e.id }));
+        }
+        return;
+      }
+      for (var ym = startMonth; ym <= until; ym = M.monthKey(ym, 2)) {
+        var date = monthDate(ym, e.date.slice(8, 10));
+        if (date <= today) out.push(Object.assign({}, e, { date: date, sourceExpenseId: e.id }));
+      }
+    });
+    return out;
+  };
+  M.actualCostOf = function (p) { return u.sum(M.projectExpenses(p), function (e) { return e.amount; }); };
+  M.unmatchedEstimateOf = function (p, actuals) {
+    var estimates = p.costs || [], replaced = {};
+    actuals = actuals || M.projectExpenses(p);
+    actuals.forEach(function (e) {
+      if (e.estimateId && estimates.some(function (c) { return c.id === e.estimateId; })) replaced[e.estimateId] = true;
+    });
+    return u.sum(estimates.filter(function (c) { return !replaced[c.id]; }), function (c) { return c.amount; });
+  };
+  M.costOf = function (p) {
+    var actuals = M.projectExpenses(p);
+    return M.unmatchedEstimateOf(p, actuals) +
+      u.sum(actuals, function (e) { return e.amount; });
+  };
+  /** Owner pay estimate inside a project's cost lines (kind "heni"). */
   M.ownerPayOf = function (p) { return u.sum((p.costs || []).filter(function (c) { return c.kind === "heni"; }), function (c) { return c.amount; }); };
-  /** Profit after all costs, the owner's pay included. */
+  /** Profit basis: gross cash receipts less unmatched estimates and all recorded project expenses. */
   M.profit = function (p) { return M.received(p) - M.costOf(p); };
   /** Which partner-share rule a project falls under: "first" (one of the first N won clients), "finder" (a client the payee found and closed alone, within the period) or "". */
   M.shareBasis = function (p) {
@@ -353,6 +470,19 @@
   // ---------- contracts (monthly offers) ----------
   M.contractOf = function (p) { return p.contractId ? S().get("contracts", p.contractId) : null; };
   M.contractMonths = function (c) { return S().all("projects").filter(function (p) { return p.contractId === c.id; }).sort(u.by("month")); };
+  /** Snapshot price for MRR and future months; legacy contracts infer it from their newest saved project/invoice before catalog fallback. */
+  M.contractPrice = function (c) {
+    if (c.monthlyPrice != null && c.monthlyPrice !== "") return +c.monthlyPrice || 0;
+    var projects = M.contractMonths(c).slice().sort(function (a, b) { return (+b.month || 0) - (+a.month || 0); });
+    for (var i = 0; i < projects.length; i++) {
+      var p = projects[i];
+      if (p.price != null && p.price !== "") return +p.price || 0;
+      var invoices = M.invoicesOf(p).filter(function (inv) { return inv.kind === "month"; });
+      var current = invoices.filter(function (inv) { return !inv.credited; });
+      if (invoices.length) return u.sum(current.length ? current : invoices, function (inv) { return +inv.amount || 0; });
+    }
+    return M.pack(c.pack).price;
+  };
   /** Monthly contracts whose next month should be created (current month passed its first week or the month is not there yet). */
   M.monthsDue = function () {
     var ym = u.month(u.today());
@@ -371,7 +501,8 @@
   // ---------- weekly sales numbers (crm-pipeline.md) ----------
   /** Leads that entered a stage during [from, to). */
   M.movedIn = function (stage, from, to, owner) {
-    return S().all("leads").filter(function (l) { return (!owner || l.owner === owner) && (l.history || []).some(function (h) { return h.stage === stage && h.at >= from && h.at < to; }); });
+    stage = M.leadStage(stage);
+    return S().all("leads").filter(function (l) { return (!owner || l.owner === owner) && (l.history || []).some(function (h) { return M.leadStage(h.stage) === stage && h.at >= from && h.at < to; }); });
   };
   /** The week's numbers: first touches, replies, meetings booked, proposals (count, value), won (count, value), plus touches from the daily log. */
   M.funnel = function (weekStart, owner) {

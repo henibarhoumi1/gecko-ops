@@ -6,8 +6,8 @@
     var C = data.colls, m = ctx.m, y = ctx.today.slice(0, 4);
     function pay(date, net, wh) { return { date: date, net: net, withheld: wh || 0, method: "transfer", ref: "" }; }
     function closed(id, clientId, name, shoot, mohamed, payout) {
-      return { id: id, clientId: clientId, contractId: "", month: 0, name: name, pack: "GRIP", stage: "done", planApproved: true, planApprovedOn: ctx.u.addDays(shoot, -10), shootDate: shoot, format: "9x16", mohamed: mohamed,
-        onboarding: [true, true, true, true, true, true, true], angles: [], reels: [], carousels: [], costs: m.estimateCosts("GRIP"),
+      return { id: id, clientId: clientId, contractId: "", month: 0, name: name, pack: "test", stage: "done", planApproved: true, planApprovedOn: ctx.u.addDays(shoot, -10), shootDate: shoot, format: "9x16", mohamed: mohamed,
+        onboarding: [true, true, true, true, true, true, true], angles: [], reels: [], carousels: [], costs: m.estimateCosts("test"),
         report: { metric: "cpp", now: "", why: {}, more: "", kill: "", next: "" }, payout: payout, log: [] };
     }
     function inv(id, pid, cid, kind, label, issued, due, payments, amount) {

@@ -18,7 +18,7 @@
       company: { name: "GECKO", phone: "+216 26 191 555", email: "reachoutgecko@gmail.com", instagram: "@geckoagency_" },
       sections: { plan: true, scripts: true, files: true, timeline: true, invoices: true, boards: true },
       projects: [{
-        id: "patl", name: "Drop 03", pack: "GRIP", monthly: false, stage: "testing", stageIdx: 5, shootDate: d(-30),
+        id: "patl", name: "Drop 03", pack: "test", monthly: false, stage: "testing", stageIdx: 5, shootDate: d(-30),
         planApproved: true, planApprovedOn: d(-40), unlocked: true, progress: { done: 8, total: 8 },
         angles: [
           { name: "Built for Tunis streets", why: "Returns mention sizing on cobbles, so we prove the shoe on the street itself." },
