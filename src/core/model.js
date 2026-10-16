@@ -522,10 +522,13 @@
 
   // ---------- roles ----------
   M.ROLE_NAV = {
-    founder: ["guide", "today", "tasks", "calendar", "inbox", "activity", "dashboard", "pipeline", "clients", "projects", "production", "studio", "boards", "deliveries", "reports", "finance", "portal", "docs", "team", "settings"],
-    sales: ["guide", "today", "tasks", "calendar", "inbox", "pipeline", "clients", "projects", "production", "studio", "boards", "deliveries", "reports", "portal", "docs", "team", "settings"],
-    editor: ["guide", "today", "tasks", "calendar", "inbox", "projects", "production", "studio", "boards", "deliveries", "docs", "team"],
-    assistant: ["guide", "today", "tasks", "calendar", "inbox", "projects", "production", "studio", "boards", "docs", "team"]
+    founder: ["guide", "today", "tasks", "calendar", "inbox", "activity", "dashboard", "pipeline", "clients", "projects", "shootday", "production", "studio", "boards", "deliveries", "reports", "finance", "portal", "docs", "team", "settings"],
+    // Client Lead: selling and client follow-up; no money screens
+    sales: ["guide", "today", "tasks", "calendar", "inbox", "pipeline", "clients", "projects", "shootday", "studio", "boards", "deliveries", "reports", "portal", "docs", "team"],
+    // Editors: only what they edit
+    editor: ["guide", "today", "tasks", "calendar", "inbox", "projects", "studio", "deliveries", "docs"],
+    // Production (manager or assistant): shoots, scripts, boards
+    assistant: ["guide", "today", "tasks", "calendar", "inbox", "projects", "shootday", "production", "studio", "boards", "docs", "team"]
   };
   /** Permission check for the current viewer. */
   M.can = function (what) {
@@ -534,9 +537,9 @@
     var P = {
       founder: ["*"],
       // Client Lead: opens and moves deals; drafts proposals (sending one needs the founder's approval); no money, costs or pay
-      sales: ["leads", "leads.import", "clients", "projects.create", "projects.edit", "quotes.draft", "tasks", "msgs", "portal", "outreach", "reports.edit", "ideas", "boards", "docs", "docs.edit"],
+      sales: ["leads", "leads.import", "clients", "projects.create", "projects.edit", "quotes.draft", "tasks", "msgs", "portal", "outreach", "reports.edit", "ideas", "boards", "docs", "docs.edit", "shoot"],
       editor: ["tasks", "msgs", "files.status", "files.edit", "ideas", "boards", "docs"],
-      assistant: ["tasks", "msgs", "ideas", "boards", "docs"]
+      assistant: ["tasks", "msgs", "ideas", "boards", "docs", "shoot"]
     }[role] || [];
     return P.indexOf("*") > -1 || P.indexOf(what) > -1 || what === "view";
   };

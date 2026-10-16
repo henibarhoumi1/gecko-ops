@@ -1303,6 +1303,7 @@ language plpgsql
 security definer
 set search_path = ''
 as $$
+declare
   safe_snapshot jsonb;
 begin
   if public.member_role(p_workspace_id) not in ('founder', 'sales') then raise exception 'forbidden'; end if;

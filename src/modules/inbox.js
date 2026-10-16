@@ -8,7 +8,7 @@
   var SHOWN = 80;
 
   GK.i18n.add({
-    ix_title: ["Talk it", "On en"], ix_accent: ["through", "parle"],
+    ix_title: ["Inbox", "Messages"], ix_accent: ["", ""],
     ix_sub: ["{u} unread in {c} channels · {n} messages this week", "{u} non lus dans {c} canaux · {n} messages cette semaine"],
     ix_general: ["General", "Général"], ix_channels: ["Channels", "Canaux"], ix_find: ["Find a channel", "Trouver un canal"],
     ix_k_unread: ["Unread", "Non lus"], ix_k_unread_n: ["in {n} channels", "dans {n} canaux"], ix_k_unread_0: ["you're up to date", "vous êtes à jour"],

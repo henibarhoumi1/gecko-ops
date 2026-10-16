@@ -12,7 +12,7 @@
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    tk_title: ["Who does", "Qui fait"], tk_accent: ["what", "quoi"],
+    tk_title: ["Tasks", "Tâches"], tk_accent: ["", ""],
     tk_sub: ["{open} open · {late} overdue · {week} due in the next 7 days", "{open} ouvertes · {late} en retard · {week} à faire sous 7 jours"],
     // insight
     tk_k_open: ["Open", "Ouvertes"], tk_k_open_n: ["across {n} people", "pour {n} personnes"], tk_k_open_1: ["for one person", "pour une personne"],
@@ -55,7 +55,7 @@
     tk_p_log: ["History", "Historique"], tk_p_nolog: ["No changes recorded yet.", "Aucune modification enregistrée."],
     tk_p_open_proj: ["Open project", "Ouvrir le projet"], tk_saved: ["Task saved", "Tâche enregistrée"],
     tk_del_q: ["Delete this task?", "Supprimer cette tâche ?"], tk_del_b: ["It goes for everyone.", "Elle disparaît pour tout le monde."],
-    tk_deleted: ["Task deleted", "Tâche supprimée"], tk_no_del: ["Only Heni or the person on the task can delete it.", "Seuls Heni ou la personne concernée peuvent la supprimer."],
+    tk_deleted: ["Task deleted", "Tâche supprimée"], tk_no_del: ["Only the owner or the person on the task can delete it.", "Seuls le fondateur ou la personne concernée peuvent la supprimer."],
     tk_gone: ["This task no longer exists.", "Cette tâche n'existe plus."],
     tk_log_new: ["Created", "Créée"], tk_log_done: ["Marked done", "Marquée faite"], tk_log_reopen: ["Reopened", "Rouverte"],
     tk_log_doing: ["Started", "Commencée"], tk_log_todo: ["Back to do", "Remise à faire"], tk_log_edit: ["Edited: {f}", "Modifiée : {f}"],
@@ -137,7 +137,7 @@
     if (d === u.addDays(td, 1)) return t("tk_tomorrow");
     return u.fmtDate(d, { weekday: "long", day: "numeric", month: "long" });
   };
-  TK.activeProjects = function () { return S.all("projects").filter(function (x) { return x.stage !== "done"; }).sort(u.by(function (x) { return m.projectLabel(x).toLowerCase(); })); };
+  TK.activeProjects = function () { return S.all("projects").filter(function (x) { return x.stage !== "retention"; }).sort(u.by(function (x) { return m.projectLabel(x).toLowerCase(); })); };
 
   TK.css("gk-shared-css", [
     ".gk-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px}",
@@ -276,7 +276,7 @@
   function filters() {
     var st = P(), mine = !!st.mine;
     var clients = S.all("clients").sort(u.by(function (c) { return String(c.brand).toLowerCase(); }));
-    var projects = S.all("projects").filter(function (x) { return x.stage !== "done" || x.id === st.proj; }).sort(u.by(function (x) { return m.projectLabel(x).toLowerCase(); }));
+    var projects = S.all("projects").filter(function (x) { return x.stage !== "retention" || x.id === st.proj; }).sort(u.by(function (x) { return m.projectLabel(x).toLowerCase(); }));
     var any = st.who || st.proj || st.client;
     return '<div class="gk-bar"><div class="gk-bar-l">' + TK.chips("tk-mine", [{ v: "0", label: t("tk_everyone"), on: !mine }, { v: "1", label: t("tk_mine"), on: mine }], t("tk_filters")) +
       (mine ? "" : TK.select("tk-f-who", t("tk_f_who"), st.who || "", [["", t("tk_f_any_who")]].concat(team().map(function (x) { return [x.id, x.name]; })))) +
@@ -364,7 +364,7 @@
   // ---------- side panel (core ui.sidePanel when present; else rendered in the page) ----------
   function panelParts(x) {
     var c = can(), p = proj(x), dis = c ? "" : " disabled";
-    var projects = S.all("projects").filter(function (y) { return y.stage !== "done" || y.id === x.projectId; }).sort(u.by(function (y) { return m.projectLabel(y).toLowerCase(); }));
+    var projects = S.all("projects").filter(function (y) { return y.stage !== "retention" || y.id === x.projectId; }).sort(u.by(function (y) { return m.projectLabel(y).toLowerCase(); }));
     var status = x.done ? "done" : x.status === "doing" ? "doing" : "todo";
     var body = '<div class="form" style="grid-template-columns:minmax(0,1fr)">' +
       ui.field({ id: "tk-e-title", label: t("tk_p_title"), value: x.title, attrs: ' maxlength="200"' + dis }) +

@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(23);
+select extensions.plan(26);
 
 insert into auth.users (
   id, aud, role, email, encrypted_password, email_confirmed_at,
@@ -136,6 +136,18 @@ select extensions.throws_ok(
   $$select * from public.get_workspace_assignments('10000000-0000-4000-8000-000000000001')$$,
   'P0001', 'forbidden', 'assistant cannot enumerate assignments'
 );
+select extensions.lives_ok(
+  $$select public.put_workspace_record('10000000-0000-4000-8000-000000000001', 'ideas', 's1', '{"id":"s1","clientId":"c1","projectId":"p1","takes":{"0":"good"}}'::jsonb)$$,
+  'production can save takes on a script of its assigned project'
+);
+select extensions.throws_ok(
+  $$select public.put_workspace_record('10000000-0000-4000-8000-000000000001', 'ideas', 's2', '{"id":"s2","clientId":"c2","projectId":"p2"}'::jsonb)$$,
+  'P0001', NULL, 'production cannot write a script of a project it is not on'
+);
+select extensions.throws_ok(
+  $$select * from public.get_workspace_records('10000000-0000-4000-8000-000000000001', 'invoices')$$,
+  'P0001', 'forbidden', 'production still cannot read invoices'
+);
 
 select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000004', true);
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000004","role":"authenticated","email":"sales@local.test"}', true);
@@ -164,11 +176,10 @@ select extensions.is(
 select extensions.is(public.get_public_client_share(repeat('z', 64)), null::jsonb, 'unknown token returns no snapshot');
 select extensions.is(public.get_public_client_share(repeat('b', 64)), null::jsonb, 'revoked token returns no snapshot');
 select extensions.is(public.get_public_client_share(repeat('c', 64)), null::jsonb, 'expired token returns no snapshot');
-with saved as materialized (
-  select public.submit_client_feedback(repeat('a', 64), 'approve', 'plan', '', 'Client', 'p1') as id
-)
+-- separate statement: rows a function inserts are not visible to the same statement's snapshot
+select set_config('gecko.test_feedback_id', public.submit_client_feedback(repeat('a', 64), 'approve', 'plan', '', 'Client', 'p1')::text, true);
 select extensions.is(
-  (select f.project_id from saved join public.client_feedback f on f.id = saved.id),
+  (select f.project_id from public.client_feedback f where f.id::text = current_setting('gecko.test_feedback_id')),
   'p1'::text,
   'valid share feedback is saved to its published project'
 );

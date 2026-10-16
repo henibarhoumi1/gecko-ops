@@ -4,12 +4,16 @@
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    st_title: ["Spark to", "De l'idée au"], st_accent: ["script", "script"],
-    st_sub: ["Capture an idea in five seconds, shape it, get Heni's go, send it to the project.", "Notez une idée en cinq secondes, travaillez-la, obtenez le feu vert de Heni, envoyez-la au projet."],
-    st_board: ["Board", "Tableau"], st_bank: ["Hook bank", "Banque d'accroches"], st_new: ["New idea", "Nouvelle idée"],
+    st_title: ["Ideas and scripts", "Idées et scripts"], st_accent: ["", ""],
+    st_sub: ["Capture an idea in five seconds, shape it, get the owner's go, send it to the project.", "Notez une idée en cinq secondes, travaillez-la, obtenez le feu vert du fondateur, envoyez-la au projet."],
+    st_board: ["Board", "Tableau"], st_bank: ["Hook bank", "Banque d'accroches"], st_scripts: ["Script bank", "Banque de scripts"],
+    st_sb_sub: ["Every written script, ready to copy or reuse for a new client.", "Tous les scripts écrits, prêts à copier ou réutiliser pour un nouveau client."],
+    st_sb_none: ["No written scripts yet. Scripts appear here once they have lines.", "Aucun script écrit. Ils apparaissent ici dès qu'ils ont des lignes."],
+    st_sb_copy: ["Copy script", "Copier le script"], st_sb_reuse: ["Reuse", "Réutiliser"], st_sb_won: ["Winning hook", "Accroche gagnante"],
+    st_sb_copied: ["Script copied", "Script copié"], st_sb_reused: ["Copy made. Edit it for the new brand.", "Copie créée. Adaptez-la à la nouvelle marque."], st_sb_copy_of: ["{t} (copy)", "{t} (copie)"], st_new: ["New idea", "Nouvelle idée"],
     st_stage_idea: ["Idea", "Idée"], st_stage_concept: ["Concept", "Concept"], st_stage_script: ["Script", "Script"],
     st_stage_ready: ["Ready", "Prêt"], st_stage_shot: ["Shot", "Tourné"], st_stage_parked: ["Parked", "En pause"],
-    st_k_play: ["In play", "En cours"], st_k_review: ["Waiting for Heni", "Attend Heni"], st_k_ready: ["Ready to send", "Prêtes à envoyer"], st_k_shot: ["Shot", "Tournées"],
+    st_k_play: ["In play", "En cours"], st_k_review: ["Waiting for the owner", "Attend le fondateur"], st_k_ready: ["Ready to send", "Prêtes à envoyer"], st_k_shot: ["Shot", "Tournées"],
     st_k_play_n: ["ideas not parked or shot", "idées ni en pause ni tournées"],
     st_f_client: ["Client", "Client"], st_f_owner: ["Owner", "Responsable"], st_f_angle: ["Angle", "Angle"], st_f_search: ["Search", "Recherche"],
     st_f_all_clients: ["All clients", "Tous les clients"], st_f_all_owners: ["Everyone", "Tout le monde"], st_f_all_angles: ["All angles", "Tous les angles"],
@@ -20,7 +24,7 @@
     st_parked_show: ["Show parked ({n})", "Voir les idées en pause ({n})"], st_parked_hide: ["Hide parked ({n})", "Masquer les idées en pause ({n})"],
     st_p1: ["High", "Haute"], st_p2: ["Medium", "Moyenne"], st_p3: ["Low", "Basse"], st_priority: ["Priority", "Priorité"],
     st_links_n: ["{n} links", "{n} liens"], st_link_1: ["1 link", "1 lien"], st_board_pill: ["Whiteboard", "Tableau blanc"],
-    st_review_wait: ["Waiting for Heni", "En attente de Heni"], st_shared_pill: ["Shown to client", "Visible client"],
+    st_review_wait: ["Waiting for the owner", "En attente du fondateur"], st_shared_pill: ["Shown to client", "Visible client"],
     st_direct: ["Direct", "Direct"], st_indirect: ["Indirect", "Indirect"],
     st_back: ["Back", "Retour"], st_next_to: ["To {s}", "Vers {s}"], st_mark_ready: ["Mark ready", "Marquer prêt"], st_mark_shot: ["Mark shot", "Marquer tourné"],
     st_request: ["Request review", "Demander la relecture"], st_cancel_request: ["Withdraw request", "Retirer la demande"],
@@ -43,12 +47,12 @@
     st_approve_revision: ["Approve new revision", "Valider la nouvelle version"], st_approved_revision: ["Approved revision", "Version validée"],
     st_revision_n: ["Revision {n} · {d}", "Version {n} · {d}"], st_no_revision: ["Approve a complete idea before sending it to production.", "Validez une idée complète avant de l'envoyer en production."],
     st_revision_ready: ["Approved material is ready to send. Draft edits do not change it.", "Le contenu validé est prêt à envoyer. Les modifications du brouillon ne le changent pas."],
-    st_founder_only: ["Only Heni marks an idea ready. Request review instead.", "Seul Heni marque une idée prête. Demandez plutôt la relecture."],
+    st_founder_only: ["Only the owner marks an idea ready. Request review instead.", "Seul le fondateur marque une idée prête. Demandez plutôt la relecture."],
     st_no_rights: ["You can't change ideas here.", "Vous ne pouvez pas modifier les idées ici."],
     st_shot_auto: ["Shot happens by itself once every hook of the reel is approved.", "Tourné se met à jour tout seul quand toutes les accroches du reel sont validées."],
     st_log_add: ["Idea added", "Idée ajoutée"], st_log_move: ["Moved to {s}", "Passée en {s}"], st_log_review: ["Review requested", "Relecture demandée"],
     st_log_park: ["Parked", "Mise en pause"], st_log_unpark: ["Brought back", "Reprise"],
-    st_moved: ["Moved to {s}", "Passée en {s}"], st_added: ["Idea captured", "Idée notée"], st_review_sent: ["Heni will see it", "Heni la verra"],
+    st_moved: ["Moved to {s}", "Passée en {s}"], st_added: ["Idea captured", "Idée notée"], st_review_sent: ["The owner will see it", "Le fondateur la verra"],
     st_col_hook: ["Hook", "Accroche"], st_col_client: ["Client", "Client"], st_col_angle: ["Angle", "Angle"], st_col_stage: ["Stage", "Étape"],
     st_col_prio: ["Priority", "Priorité"], st_col_won: ["Won before", "Déjà gagné"],
     st_copy_hook: ["Copy hook", "Copier l'accroche"], st_won_n: ["{n} won", "{n} gagnées"], st_won_none: ["None yet", "Aucune"],
@@ -352,6 +356,39 @@
       }).join("") + "</tbody></table></div></div>";
   }
 
+  // ---------- script bank ----------
+  function scriptText(i) {
+    var out = [];
+    if (i.hook) out.push(i.hook);
+    (i.scenes || []).forEach(function (s, k) {
+      out.push((k + 1) + ". " + (s.v || "") + (s.x && !s.silent ? "\n   " + s.x : "") + (s.xd ? "\n   " + s.xd : ""));
+    });
+    if (String(i.script || "").trim()) out.push(String(i.script).trim());
+    if (String(i.scriptDarija || "").trim()) out.push(String(i.scriptDarija).trim());
+    return out.join("\n\n");
+  }
+  function scriptsHTML(ideas) {
+    var rows = ideas.filter(hasScript).sort(u.by(function (i) { return ORDER[effStage(i)]; }, "desc"));
+    if (!rows.length) return ui.empty(t("st_sb_none"));
+    var wonCache = {};
+    function isWon(i) {
+      var w = wonCache[i.clientId || ""] || (wonCache[i.clientId || ""] = winners(i.clientId, 0));
+      var hk = String(i.hook || "").trim().toLowerCase();
+      return !!hk && w.slice(0, 5).some(function (h) { return String(h.text || "").trim().toLowerCase() === hk; });
+    }
+    return '<p class="small muted" style="margin:0">' + esc(t("st_sb_sub")) + '</p><div class="st-sbank">' + rows.map(function (i) {
+      var first = (i.scenes || []).map(function (s) { return s.x || s.v; }).filter(Boolean).slice(0, 2);
+      if (!first.length) first = String(i.script || "").split("\n").filter(function (l) { return l.trim(); }).slice(0, 2);
+      return '<article class="panel st-sb-card"><div class="row between" style="gap:var(--sp-2);flex-wrap:wrap"><b>' + esc(i.hook ? "“" + i.hook + "”" : i.title) + "</b>" +
+        (isWon(i) ? ui.pill(t("st_sb_won"), "wip") : "") + "</div>" +
+        '<span class="small muted">' + esc([i.clientId ? m.brand(i.clientId) : "", angleOf(i), stName(effStage(i))].filter(Boolean).join(" · ")) + "</span>" +
+        '<div class="st-sb-lines small">' + first.map(function (l) { return "<p>" + esc(l) + "</p>"; }).join("") + "</div>" +
+        '<div class="row" style="gap:var(--sp-2);flex-wrap:wrap">' + ui.btn(t("open"), "st-open", { cls: "ghost sm", data: { id: i.id } }) +
+        ui.btn(t("st_sb_copy"), "st-sb-copy", { cls: "ghost sm", data: { id: i.id } }) +
+        (can() ? ui.btn(t("st_sb_reuse"), "st-sb-reuse", { cls: "ghost sm", data: { id: i.id } }) : "") + "</div></article>";
+    }).join("") + "</div>";
+  }
+
   function myWaiting() {
     var me = GK.me();
     return S.all("ideas").filter(function (i) {
@@ -364,7 +401,7 @@
   GK.view("studio", {
     render: function (params) {
       if (params.id && S.get("ideas", params.id)) return GK.studio.detail(S.get("ideas", params.id), params);
-      var mode = params.mode === "bank" ? "bank" : "board";
+      var mode = ["bank", "scripts"].indexOf(params.mode) > -1 ? params.mode : "board";
       var all = S.all("ideas"), f = filters(params);
       var ideas = all.filter(function (i) { return pass(i, f); });
       var live = all.filter(function (i) { return i.stage !== "parked" && effStage(i) !== "shot"; });
@@ -373,12 +410,12 @@
         actions: can() ? ui.btn(t("st_new"), "st-new", { cls: "primary" }) : ""
       });
       h += GK.insight.studio();
-      h += '<div class="row between"><div class="tabs" role="tablist">' + ["board", "bank"].map(function (v) {
-        return '<button type="button" role="tab" data-a="st-mode" data-v="' + v + '" aria-selected="' + (mode === v) + '">' + esc(t(v === "board" ? "st_board" : "st_bank")) + "</button>";
+      h += '<div class="row between"><div class="tabs" role="tablist">' + ["board", "scripts", "bank"].map(function (v) {
+        return '<button type="button" role="tab" data-a="st-mode" data-v="' + v + '" aria-selected="' + (mode === v) + '">' + esc(t("st_" + v)) + "</button>";
       }).join("") + "</div>" + ui.sample() + "</div>";
       h += filterRow(params, f);
       if (!all.length && !can()) return h + ui.empty(t("st_nodata"));
-      h += mode === "bank" ? (ideas.length ? bankHTML(ideas, f, params) : winnersPanel(f.c) + ui.empty(t("st_nothing"))) : boardHTML(ideas, f, params);
+      h += mode === "scripts" ? scriptsHTML(ideas) : mode === "bank" ? (ideas.length ? bankHTML(ideas, f, params) : winnersPanel(f.c) + ui.empty(t("st_nothing"))) : boardHTML(ideas, f, params);
       return h;
     },
     count: function () { return myWaiting() || ""; }
@@ -428,6 +465,14 @@
   GK.act("st-move", function (el) { saveFirst(el.dataset.id); moveTo(el.dataset.id, el.dataset.to); });
   GK.act("st-review", function (el) { saveFirst(el.dataset.id); requestReview(el.dataset.id); });
   GK.act("st-park", function (el) { saveFirst(el.dataset.id); park(el.dataset.id); });
+  GK.act("st-sb-copy", function (el) { var i = S.get("ideas", el.dataset.id); if (i) { u.copy(scriptText(i)); ui.toast(t("st_sb_copied")); } });
+  GK.act("st-sb-reuse", function (el) {
+    var i = S.get("ideas", el.dataset.id); if (!i || !can()) return;
+    var rec = newIdea(t("st_sb_copy_of", { t: i.title }), "", i.hook);
+    var sc = u.clone(i.scenes || []).map(function (s) { delete s.img; (s.shots || []).forEach(function (x) { x.done = false; x.id = u.uid("sh"); }); return s; });
+    S.patch("ideas", rec.id, { stage: "script", scenes: sc, script: i.script || "", scriptDarija: i.scriptDarija || "", concept: i.concept || "", angle: angleOf(i), mode: i.mode, format: i.format || "9x16", cta: i.cta || "" }, { log: "" });
+    ui.toast(t("st_sb_reused")); ui.go("studio", { id: rec.id });
+  });
   GK.act("st-mode", function (el) { ui.go("studio", { mode: el.dataset.v, id: "" }); });
   GK.act("st-parked", function () { ui.go("studio", { parkedOpen: !ui.p("studio").parkedOpen }); });
   GK.act("st-clear", function () { ui.go("studio", { fc: "", fo: "", fa: "", fq: "" }); });
@@ -453,4 +498,8 @@
       stepBtns: stepBtns, moveTo: moveTo, waitingOn: waitingOn, angleOf: angleOf, winnersPanel: winnersPanel
     }
   };
+  var css = document.createElement("style"); css.id = "gk-studio-bank-css";
+  css.textContent = ".st-sbank{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--sp-3)}" +
+    ".st-sb-card{display:flex;flex-direction:column;gap:var(--sp-2);min-width:0}.st-sb-lines p{margin:0 0 4px;color:var(--soft,inherit)}";
+  document.head.appendChild(css);
 })(window.GK);

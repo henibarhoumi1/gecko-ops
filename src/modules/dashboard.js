@@ -4,9 +4,9 @@
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, X = GK.x, C = GK.charts, esc = u.esc;
 
   GK.i18n.add({
-    db_title: ["Studio", "Le pouls"], db_accent: ["pulse", "du studio"],
+    db_title: ["Numbers", "Chiffres"], db_accent: ["", ""],
     db_sub: ["Are we okay this month, what is slipping, where the next money comes from.", "On va bien ce mois-ci, ce qui glisse, d'où vient le prochain argent."],
-    db_founder_only: ["The dashboard is for Heni only.", "Le tableau de bord est réservé à Heni."],
+    db_founder_only: ["The dashboard is for the owner only.", "Le tableau de bord est réservé au fondateur."],
     db_range: ["Period", "Période"], db_r3: ["3 months", "3 mois"], db_r6: ["6 months", "6 mois"], db_r12: ["12 months", "12 mois"],
     db_est: ["Estimates built from your records. Accountant to confirm.", "Estimations calculées depuis vos données. À confirmer par le comptable."],
     // look at
@@ -89,7 +89,7 @@
     } else out.push({ w: 10, text: t("db_l_cash"), btn: "db_b_settings", view: "settings", params: {} });
     var quiet = S.all("leads").filter(function (l) { return ["dm", "replied", "call", "proposal"].indexOf(l.stage) > -1 && l.nextDate && u.daysBetween(l.nextDate, today) >= 3; });
     if (quiet.length) out.push({ w: 60, text: t(quiet.length === 1 ? "db_l_quiet_1" : "db_l_quiet_n", { n: quiet.length, b: names(quiet, function (l) { return l.brand; }) }), btn: "db_b_pipeline", view: "pipeline", params: quiet.length === 1 ? { id: quiet[0].id } : {} });
-    var gated = S.all("projects").filter(function (p) { return p.stage !== "done" && m.gates(p).length; });
+    var gated = S.all("projects").filter(function (p) { return p.stage !== "retention" && m.gates(p).length; });
     if (gated.length) out.push({ w: 80, text: t(gated.length === 1 ? "db_l_gate_1" : "db_l_gate_n", { n: gated.length, b: names(gated, function (p) { return m.projectLabel(p); }) }), btn: "db_b_project", view: "projects", params: { id: gated[0].id } });
     var owed = u.sum(S.all("projects"), function (p) { return m.commission(p).owed; });
     if (owed > 0) out.push({ w: 50, text: t("db_l_comm", { a: fm(owed) }), btn: "db_b_comm", view: "finance", params: { tab: "commission", invoiceId: "" } });
@@ -192,7 +192,7 @@
   function ideasPanel() {
     var ideas = S.all("ideas"), today = u.today(), end = u.addDays(today, 14);
     var stages = ["idea", "concept", "script", "ready", "shot", "parked"];
-    var shoots = S.all("projects").filter(function (p) { return p.shootDate && p.shootDate >= today && p.shootDate <= end && p.stage !== "done"; }).sort(u.by("shootDate"));
+    var shoots = S.all("projects").filter(function (p) { return p.shootDate && p.shootDate >= today && p.shootDate <= end && p.stage !== "retention"; }).sort(u.by("shootDate"));
     var chart = ideas.length ? C.hbars({ title: t("db_c_ideas"), sub: t("db_c_ideas_sub"), fmt: function (n) { return String(n); }, items: stages.map(function (s) { return { label: t("db_i_" + s), value: ideas.filter(function (i) { return i.stage === s; }).length }; }) })
       : '<h3 class="sec">' + esc(t("db_c_ideas")) + "</h3>" + ui.empty(t("db_ideas_none"));
     var sh = '<h3 class="sec">' + esc(t("db_shoots")) + "</h3>" + (shoots.length ? '<div class="list">' + shoots.map(function (p) {

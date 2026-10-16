@@ -208,7 +208,7 @@
   function stepper(p) {
     var STG = ["onboard", "plan", "shoot", "edit", "delivered", "testing", "report", "done"];
     return '<div class="stepper" role="list" aria-label="' + esc(t("cm_now")) + '">' + STG.map(function (s, i) {
-      var cls = p.stage === "done" || i < p.stageIdx ? "done" : i === p.stageIdx ? "now" : "";
+      var cls = p.stage === "retention" || i < p.stageIdx ? "done" : i === p.stageIdx ? "now" : "";
       return '<div role="listitem" class="' + cls + '"' + (i === p.stageIdx ? ' aria-current="step"' : "") + ">" + esc(stageWord(s)) + "</div>";
     }).join("") + "</div>";
   }

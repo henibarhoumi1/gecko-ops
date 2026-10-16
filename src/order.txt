@@ -37,6 +37,7 @@ modules/docs*.js
 modules/guide*.js
 modules/dashboard.js
 modules/dashboard_*.js
+modules/shootday.js
 modules/studio.js
 modules/studio_*.js
 modules/boards.js

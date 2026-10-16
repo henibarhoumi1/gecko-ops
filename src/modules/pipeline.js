@@ -4,7 +4,7 @@
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    pl_title: ["Leads in", "Prospects en"], pl_accent: ["play", "jeu"],
+    pl_title: ["Leads", "Prospects"], pl_accent: ["", ""], pl_m_board: ["Leads", "Prospects"], pl_m_results: ["Results", "Résultats"],
     pl_sub: ["{open} open · {due} to follow up today or late", "{open} en cours · {due} à relancer aujourd'hui ou en retard"],
     pl_add: ["Add lead", "Ajouter un prospect"], pl_new: ["New", "Nouveau"], pl_lead: ["lead", "prospect"],
     pl_no_edit: ["Only sales and the founder can change leads.", "Seuls le commercial et le fondateur peuvent modifier les prospects."],
@@ -147,7 +147,7 @@
 
   GK.view("pipeline", {
     render: function (params) {
-      var leads = S.all("leads"), today = u.today(), owner = params.owner || "";
+      var leads = S.all("leads"), today = u.today(), owner = params.owner || "", mode = params.mode === "results" ? "results" : "board";
       var open = leads.filter(m.isOpen);
       var due = open.filter(function (l) { return l.nextDate && l.nextDate <= today; }).length;
       var qual = open.filter(m.qualified).length;
@@ -156,11 +156,11 @@
       var values = t("pl_won_value", { a: u.money(GK.x.wonOpportunityValue()) });
       if (m.isFounder()) values += " " + t("pl_confirmed_revenue", { r: u.money(GK.x.confirmedRevenue(u.year(today))) });
       return ui.head({ label: t("nav_pipeline"), title: t("pl_title"), accent: t("pl_accent"), sub: esc(t("pl_sub", { open: open.length, due: due })) + " " + ui.sample(), actions: add }) +
-        GK.insight.pipeline() +
-        '<p class="small muted">' + esc(values) + "</p>" +
-        board(open) +
-        '<div class="grid3">' + closedList(leads, "won") + closedList(leads, "lost") + reasonsPanel(leads, owner) + "</div>" +
-        funnelPanel(owner);
+        '<div class="row between" style="flex-wrap:wrap"><div class="tabs" role="tablist">' + ["board", "results"].map(function (k) {
+          return '<button type="button" role="tab" data-a="pl-mode" data-v="' + k + '" aria-selected="' + (mode === k) + '">' + esc(t("pl_m_" + k)) + "</button>";
+        }).join("") + "</div></div>" +
+        (mode === "board" ? board(open) : GK.insight.pipeline() + '<p class="small muted">' + esc(values) + "</p>" +
+          '<div class="grid3">' + closedList(leads, "won") + closedList(leads, "lost") + reasonsPanel(leads, owner) + "</div>" + funnelPanel(owner));
     },
     after: function () {
       // Opened from elsewhere (Today's "Open lead"): ui.go("pipeline", {id}) opens that lead once.
@@ -175,6 +175,8 @@
       return S.all("leads").filter(function (l) { return m.isOpen(l) && l.nextDate && l.nextDate <= today; }).length || "";
     }
   });
+
+  GK.act("pl-mode", function (el) { ui.go("pipeline", { mode: el.dataset.v }); });
 
   // ---------- stage moves ----------
   function wonFlow(lead, fields) {

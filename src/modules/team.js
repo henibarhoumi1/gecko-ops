@@ -5,7 +5,7 @@
   var MSG_SHOWN = 60;
 
   GK.i18n.add({
-    tm_title: ["One", "Une"], tm_accent: ["team", "équipe"],
+    tm_title: ["Team", "Équipe"], tm_accent: ["", ""],
     tm_sub: ["Who does what, by when. And the conversation around it.", "Qui fait quoi, pour quand. Et la discussion autour."],
     tm_tab_tasks: ["Tasks", "Tâches"], tm_tab_msgs: ["Messages", "Messages"], tm_tab_people: ["People", "Personnes"],
     tm_everyone: ["Everyone", "Tout le monde"], tm_mine: ["Mine", "Les miennes"],
@@ -16,7 +16,7 @@
     tm_no_open: ["No open tasks. Nice.", "Aucune tâche ouverte. Bien joué."],
     tm_done_recent: ["Done in the last 14 days ({n})", "Faites ces 14 derniers jours ({n})"],
     tm_del_task_q: ["Delete this task?", "Supprimer cette tâche ?"], tm_del_task_b: ["It goes for everyone. This can't be undone.", "Elle disparaît pour tout le monde. Action définitive."],
-    tm_no_del: ["Only Heni or the person on the task can delete it.", "Seuls Heni ou la personne concernée peuvent la supprimer."],
+    tm_no_del: ["Only the owner or the person on the task can delete it.", "Seuls le fondateur ou la personne concernée peuvent la supprimer."],
     tm_no_tasks_right: ["You can view tasks but not change them.", "Vous pouvez voir les tâches mais pas les modifier."],
     tm_task_added: ["Task added", "Tâche ajoutée"], tm_reopen: ["Reopen", "Rouvrir"],
     // messages
@@ -31,8 +31,8 @@
     tm_joined: ["Joined", "A rejoint"], tm_not_joined: ["Not joined yet", "Pas encore rejoint"], tm_you: ["You", "Vous"],
     tm_remove: ["Remove", "Retirer"], tm_remove_q: ["Remove {name} from the team?", "Retirer {name} de l'équipe ?"],
     tm_remove_b: ["Their tasks stay and show as not assigned. They lose access to this workspace.", "Leurs tâches restent, sans personne. Cette personne perd l'accès à l'espace."],
-    tm_no_self: ["You can't remove yourself.", "Vous ne pouvez pas vous retirer vous-même."], tm_only_founder: ["Only Heni can change the team.", "Seul Heni peut modifier l'équipe."],
-    tm_shared_note: ["People join by opening this page and picking their name. Heni must share the page with them as Contributor so they can edit.", "Chacun rejoint en ouvrant cette page et en choisissant son nom. Heni doit la partager en Contributeur pour qu'ils puissent modifier."],
+    tm_no_self: ["You can't remove yourself.", "Vous ne pouvez pas vous retirer vous-même."], tm_only_founder: ["Only the owner can change the team.", "Seul le fondateur peut modifier l'équipe."],
+    tm_shared_note: ["People join by opening this page and picking their name. The owner must share the page with them as Contributor so they can edit.", "Chacun rejoint en ouvrant cette page et en choisissant son nom. Le fondateur doit la partager en Contributeur pour qu'ils puissent modifier."],
     tm_add_hint: ["Add someone here first, then they claim their name when they open the page.", "Ajoutez la personne ici, puis elle choisit son nom en ouvrant la page."],
     tm_member_added: ["Added to the team", "Ajouté à l'équipe"],
     tm_invite_email: ["Email address", "Adresse e-mail"],
@@ -44,7 +44,7 @@
   function p() { return ui.p("team"); }
   function openTasksFor(id) { return S.all("tasks").filter(function (x) { return !x.done && x.who === id; }); }
   function byDue(a, b) { var A = a.due || "9999", B = b.due || "9999"; return A < B ? -1 : A > B ? 1 : 0; }
-  function activeProjects() { return S.all("projects").filter(function (x) { return x.stage !== "done"; }).sort(u.by(function (x) { return m.projectLabel(x).toLowerCase(); })); }
+  function activeProjects() { return S.all("projects").filter(function (x) { return x.stage !== "retention"; }).sort(u.by(function (x) { return m.projectLabel(x).toLowerCase(); })); }
   function canDelTask(x) { return m.can("tasks") && (m.isFounder() || x.who === me().id); }
   function dueTxt(d) {
     if (!d) return t("tm_no_due");

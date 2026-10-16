@@ -4,7 +4,7 @@
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    dv_title: ["Files out the", "Fichiers, au"], dv_accent: ["door", "client"],
+    dv_title: ["Delivery", "Livraison"], dv_accent: ["", ""],
     dv_sub: ["What's approved, what the client signed off, and the message to send. Files only leave once the money is in.", "Ce qui est validé, ce que le client a accepté, et le message à envoyer. Les fichiers partent seulement une fois payés."],
     dv_empty: ["Nothing to deliver right now. Projects show up here once editing starts.", "Rien à livrer pour l'instant. Les projets apparaissent ici dès le montage."],
     dv_k_ready: ["Ready to send", "Prêts à envoyer"], dv_k_ready_n: ["projects with every file approved", "projets avec tous les fichiers validés"],
@@ -74,7 +74,7 @@
   }
   function inScope(p) {
     if (STAGES.indexOf(stageKey(p)) > -1) return true;
-    return p.stage === "done" && m.files(p).length > 0 && lastTouch(p) >= u.addDays(u.today(), -30);
+    return p.stage === "retention" && m.files(p).length > 0 && lastTouch(p) >= u.addDays(u.today(), -30);
   }
   function projects() {
     var order = { editing: 0, client_review: 1, revisions: 2, delivered: 3, paid: 4, retention: 5 };

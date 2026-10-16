@@ -185,7 +185,7 @@
   // ---------- projects and production ----------
   GK.insight.projects = function (mode) {
     var today = td(), money = founder() || me().role === "sales", prod = mode === "production";
-    var active = S.all("projects").filter(function (p) { return p.stage !== "done"; });
+    var active = S.all("projects").filter(function (p) { return p.stage !== "retention"; });
     var late = active.filter(function (p) { return X.projectLate(p); });
     var fc = X.fileCounts(active), blocked = active.filter(function (p) { return m.gates(p).length; });
     var next7 = X.shootsIn(today, d(7)), prev7 = X.shootsIn(d(-7), d(-1));
@@ -225,13 +225,13 @@
 
   // ---------- deliveries ----------
   GK.insight.deliveries = function () {
-    var money = founder(), STAGES = ["edit", "delivered", "testing"];
+    var money = founder(), STAGES = ["editing", "client_review", "revisions", "delivered"];
     var list = S.all("projects").filter(function (p) { return STAGES.indexOf(p.stage) > -1; });
     var wait = 0, appr = 0, lockedN = 0, ready = 0, lockedBy = [], waitBy = [];
     list.forEach(function (p) {
       var fs = m.files(p), ap = fs.filter(function (f) { return f.item.status === "approved"; }), ok = ap.filter(function (f) { return f.item.clientOk; });
       appr += ap.length; wait += ap.length - ok.length;
-      if (p.stage === "edit" && fs.length && ap.length === fs.length) ready++;
+      if (p.stage === "editing" && fs.length && ap.length === fs.length) ready++;
       if (!m.canFiles(p) && ap.length) { lockedN += ap.length; lockedBy.push({ p: p, n: ap.length }); }
       if (ap.length - ok.length > 0 && m.canFiles(p)) waitBy.push({ p: p, n: ap.length - ok.length });
     });

@@ -4,8 +4,8 @@
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    pr_title: ["Cut, check,", "Monter, relire,"], pr_accent: ["approve", "valider"],
-    pr_sub: ["Every hook and carousel is one file. Editors send them to review, Heni approves.", "Chaque accroche et chaque carrousel est un fichier. Les monteurs l'envoient en relecture, Heni valide."],
+    pr_title: ["Edit files", "Fichiers de montage"], pr_accent: ["", ""],
+    pr_sub: ["Every hook and carousel is one file. Editors send them to review, the owner approves them.", "Chaque accroche et chaque carrousel est un fichier. Les monteurs l'envoient en relecture, Heni valide."],
     pr_project: ["Project", "Projet"], pr_all: ["All projects", "Tous les projets"],
     pr_board: ["Board", "Tableau"], pr_reels: ["By reel", "Par reel"],
     pr_empty: ["No project has files in production right now. Files appear once reels are planned.", "Aucun projet n'a de fichiers en production. Les fichiers apparaissent quand les reels sont planifiés."],
@@ -17,7 +17,7 @@
     pr_start: ["Start editing", "Commencer"], pr_to_review: ["Send to review", "Envoyer en relecture"],
     pr_approve: ["Approve", "Valider"], pr_send_back: ["Send back", "Renvoyer"], pr_new_version: ["Start new version", "Nouvelle version"],
     pr_reopen: ["Reopen", "Rouvrir"],
-    pr_wait_founder: ["Waiting for Heni's review", "En attente de la relecture de Heni"],
+    pr_wait_founder: ["Waiting for the owner's review", "En attente de la relecture du fondateur"],
     pr_note: ["Note for the editor", "Note pour le monteur"], pr_note_ph: ["What to change, in one or two lines", "Quoi changer, en une ou deux lignes"],
     pr_back_title: ["Send back to", "Renvoyer au"], pr_back_accent: ["edit", "montage"], pr_reopen_t: ["Reopen for", "Rouvrir pour le"],
     pr_log_drive: ["{code} · Drive link", "{code} · lien Drive"], pr_log_rdrive: ["Reel Drive folder set", "Dossier Drive du reel ajouté"],
@@ -31,9 +31,9 @@
     pr_shot_plan: ["Shot plan", "Plan de tournage"], pr_scene_done: ["Shot complete", "Plan tourné"],
     pr_silent: ["silent / B-roll", "silencieux / plans de coupe"], pr_source_idea: ["Open source idea", "Ouvrir l'idée source"],
     pr_sc_car: ["carousels", "carrousels"], pr_sc_appr: ["approved", "validés"], pr_over: ["above pack", "au-dessus du pack"],
-    pr_no_rights: ["Only editors and Heni change file status.", "Seuls les monteurs et Heni changent le statut."],
-    pr_founder_only: ["Only Heni approves or sends back.", "Seul Heni valide ou renvoie."],
-    pr_no_edit: ["Only editors and Heni set Drive links.", "Seuls les monteurs et Heni ajoutent les liens Drive."]
+    pr_no_rights: ["Only editors and the owner change file status.", "Seuls les monteurs et le fondateur changent le statut."],
+    pr_founder_only: ["Only the owner approves or sends back.", "Seul le fondateur valide ou renvoie."],
+    pr_no_edit: ["Only editors and the owner set Drive links.", "Seuls les monteurs et le fondateur ajoutent les liens Drive."]
   });
 
   var COLS = ["todo", "edit", "review", "revise", "approved"];

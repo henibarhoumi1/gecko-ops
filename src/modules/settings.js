@@ -4,10 +4,10 @@
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    se_title: ["How the studio", "Comment le studio"], se_accent: ["runs", "tourne"],
+    se_title: ["Settings", "Réglages"], se_accent: ["", ""],
     se_sub: ["Company details for invoices, the packs and their prices, the cost rates and money rules, and where the data lives.", "Les infos de la société pour les factures, les packs et leurs prix, les tarifs de coûts, les règles d'argent et l'endroit où vivent les données."],
     se_tab_company: ["Company", "Société"], se_tab_packs: ["Packs & rules", "Packs & règles"], se_tab_data: ["Data & sharing", "Données & partage"],
-    se_read_only: ["Only Heni can change these settings. You can read them.", "Seul Heni peut modifier ces réglages. Vous pouvez les consulter."],
+    se_read_only: ["Only the owner can change these settings. You can read them.", "Seul le fondateur peut modifier ces réglages. Vous pouvez les consulter."],
     // company
     se_company: ["Company", "Société"],
     se_co_name: ["Trading name", "Nom commercial"], se_co_legal: ["Legal name", "Raison sociale / nom légal"], se_co_mf: ["Tax ID (matricule fiscal, MF)", "Matricule fiscal (MF)"],
@@ -29,7 +29,7 @@
     se_reset_rates_b: ["Cost rates and money rules go back to the business model values.", "Les tarifs et les règles d'argent reviennent aux valeurs du business model."],
     // rates
     se_rates: ["Cost rates (TND)", "Tarifs de coûts (TND)"],
-    se_r_heniDay: ["Heni, shoot day", "Heni, journée de tournage"], se_r_reel: ["Reel edit, each", "Montage d'un reel"], se_r_gear: ["Gear rental, full day", "Location matériel, journée"],
+    se_r_heniDay: ["Owner, shoot day", "Fondateur, journée de tournage"], se_r_reel: ["Reel edit, each", "Montage d'un reel"], se_r_gear: ["Gear rental, full day", "Location matériel, journée"],
     se_r_assistant: ["Assistant, day", "Assistant, journée"], se_r_transport: ["Transport and small buys, day", "Transport et petits achats, journée"],
     se_r_recut: ["Hook re-cut, each", "Re-montage d'une accroche"], se_r_carousel: ["Carousel design, each", "Design d'un carrousel"], se_r_report: ["Monthly report", "Rapport mensuel"],
     // rules

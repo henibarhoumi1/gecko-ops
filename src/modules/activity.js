@@ -8,9 +8,9 @@
   var STEP = 30, MAX_ROWS = 400;
 
   GK.i18n.add({
-    ac_title: ["What", "Ce qui a"], ac_accent: ["changed", "bougé"],
+    ac_title: ["Activity", "Activité"], ac_accent: ["", ""],
     ac_sub: ["{n} changes in the last {d} days, newest first.", "{n} changements ces {d} derniers jours, du plus récent au plus ancien."],
-    ac_founder_only: ["The activity timeline is for Heni.", "Le fil d'activité est réservé à Heni."],
+    ac_founder_only: ["The activity timeline is for the owner.", "Le fil d'activité est réservé au fondateur."],
     ac_types: ["Show", "Afficher"], ac_person: ["Person", "Personne"], ac_anyone: ["Everyone", "Tout le monde"], ac_system: ["No one named", "Personne de nommé"],
     ac_t_project: ["Projects", "Projets"], ac_t_lead: ["Leads", "Prospects"], ac_t_client: ["Clients", "Clients"], ac_t_money: ["Money", "Argent"],
     ac_t_task: ["Tasks", "Tâches"], ac_t_message: ["Messages", "Messages"], ac_t_studio: ["Studio", "Studio"],
@@ -120,7 +120,7 @@
   function quiet() {
     var td = u.today(), lim = u.addDays(td, -7), last = {};
     function bump(id, d) { if (id && d && (!last[id] || d > last[id])) last[id] = d; }
-    var act = S.all("projects").filter(function (p) { return p.stage !== "done"; });
+    var act = S.all("projects").filter(function (p) { return p.stage !== "retention"; });
     act.forEach(function (p) { (p.log || []).forEach(function (l) { bump(p.id, day(l.at)); }); bump(p.id, p.planApprovedOn); bump(p.id, p.shootDate && p.shootDate <= td ? p.shootDate : ""); });
     S.all("tasks").forEach(function (x) { bump(x.projectId, x.doneOn); (x.log || []).forEach(function (l) { bump(x.projectId, day(l.at)); }); });
     S.all("msgs").forEach(function (x) { bump(x.ch, day(x.at)); });

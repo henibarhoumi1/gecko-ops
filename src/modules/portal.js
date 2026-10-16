@@ -6,7 +6,7 @@
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    po_title: ["What the client", "Ce que le client"], po_accent: ["sees", "voit"],
+    po_title: ["Client pages", "Pages client"], po_accent: ["", ""],
     po_sub: ["One link per client: their plan, scripts, files, timeline, invoices and boards. Or a quick update to screen-share or send on WhatsApp.", "Un lien par client : son plan, ses scripts, ses fichiers, son calendrier, ses factures et ses tableaux. Ou un point rapide à partager à l'écran ou sur WhatsApp."],
     po_note: ["A quick update is a clean document for a call or a WhatsApp message. For something the client can open and answer, use Client pages.", "Le point rapide est un document clair pour un appel ou un message WhatsApp. Pour quelque chose que le client ouvre et auquel il répond, utilisez les Pages client."],
     po_pick: ["Client", "Client"],
@@ -59,7 +59,7 @@
   function clientsList() { return S.all("clients").sort(function (a, b) { return String(a.brand).localeCompare(String(b.brand)); }); }
   function projectsOf(c) {
     var all = S.all("projects").filter(function (p) { return p.clientId === c.id; });
-    var cur = all.filter(function (p) { return p.stage !== "done"; }).sort(u.by(function (p) { return SI(p.stage); }));
+    var cur = all.filter(function (p) { return p.stage !== "retention"; }).sort(u.by(function (p) { return SI(p.stage); }));
     if (cur.length) return cur;
     var done = all.sort(u.by(function (p) { return p.shootDate || ""; }, "desc"));
     return done.slice(0, 1);
@@ -68,7 +68,7 @@
     var list = clientsList(), id = ui.p("portal").clientId;
     var c = list.find(function (x) { return x.id === id; });
     if (c) return c;
-    return list.find(function (x) { return S.all("projects").some(function (p) { return p.clientId === x.id && p.stage !== "done"; }); }) || list[0] || null;
+    return list.find(function (x) { return S.all("projects").some(function (p) { return p.clientId === x.id && p.stage !== "retention"; }); }) || list[0] || null;
   }
   function invoicesOf(c) {
     return S.all("invoices").filter(function (i) { return i.clientId === c.id && i.no; }).sort(u.by("issued", "desc"));
@@ -89,14 +89,14 @@
         out.push(t(key, { name: p.name, amt: amt, no: i.no }).replace(/\.\./g, "."));
       });
       if (si <= SI("shoot") && p.shootDate && p.shootDate >= u.today()) out.push(t("po_need_product", { date: u.fmtDate(p.shootDate, { weekday: "long", day: "numeric", month: "long" }) }));
-      if (p.stage === "testing" && !hasResults(p)) out.push(t("po_need_results", { name: p.name }));
+      if (p.stage === "delivered" && !hasResults(p)) out.push(t("po_need_results", { name: p.name }));
     });
     return out;
   }
   function stepper(p) {
     var si = SI(p.stage);
     return '<div class="stepper" role="list">' + m.STAGES.map(function (s, i) {
-      var cls = p.stage === "done" || i < si ? "done" : i === si ? "now" : "";
+      var cls = p.stage === "retention" || i < si ? "done" : i === si ? "now" : "";
       return '<div role="listitem" class="' + cls + '"' + (i === si ? ' aria-current="step"' : "") + ">" + esc(stageWord(s)) + "</div>";
     }).join("") + "</div>";
   }
