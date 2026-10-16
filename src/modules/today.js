@@ -9,7 +9,7 @@
     td_t_editor: ["In the", "Au"], td_a_editor: ["edit", "montage"],
     td_t_assistant: ["Next", "Prochain"], td_a_assistant: ["shoot", "tournage"],
     td_hello: ["Hi {name}. Here's what needs you today.", "Bonjour {name}. Voici ce qui vous attend aujourd'hui."],
-    td_needs: ["Needs {name}", "Pour {name}"],
+    td_needs: ["Needs you", "Pour vous"],
     td_needs_none: ["Nothing waiting on you. Good day to shoot or to sell.", "Rien ne vous attend. Bonne journée pour tourner ou vendre."],
     td_plan_wait: ["Plan waiting for client approval", "Plan en attente de validation client"],
     td_review_wait_1: ["1 file in internal review", "1 fichier en relecture"], td_review_wait_n: ["{n} files in internal review", "{n} fichiers en relecture"],
@@ -81,7 +81,7 @@
   function me() { return GK.me() || { id: "", name: "", role: "founder" }; }
   function today() { return u.today(); }
   function active(p) { return p.stage !== "retention"; }
-  function founderName() { var f = S.all("team").find(function (x) { return x.role === "founder"; }); return f ? f.name : "Heni"; }
+  function founderName() { var f = S.all("team").find(function (x) { return x.role === "founder"; }); return f ? f.name : ""; }
   function salesName() { var f = S.all("team").find(function (x) { return x.role === "sales"; }); return f ? f.name : t("role_sales"); }
   function dueLabel(d) {
     if (!d) return t("td_no_due");
@@ -174,80 +174,25 @@
     S.all("invoices").forEach(function (i) { if (i.kind === "credit") return; (i.payments || []).forEach(function (p) { if (u.month(p.date) === ym) c += m.toTND(+p.net || 0, i.currency || "TND"); }); });
     return c;
   }
-  function pctChange(now, before) { return before ? (now - before) / Math.abs(before) * 100 : null; }
-  function recent() {
-    var td = today(), from = u.addDays(td, -7), out = [];
-    S.all("invoices").forEach(function (i) {
-      (i.payments || []).forEach(function (p) { if (p.date >= from && p.date <= td) out.push({ at: p.date, icon: "cash", tone: "chroma", text: t("td_a_paid", { brand: m.brand(i.clientId), amt: u.money(m.toTND((+p.net || 0) + (+p.withheld || 0), i.currency || "TND")) }), a: "td-go", data: { v: "finance" } }); });
-    });
-    S.all("feedback").forEach(function (f) {
-      var d = (f.at || "").slice(0, 10); if (d < from) return;
-      out.push({ at: f.at, icon: "msg", tone: f.kind === "changes" ? "gel" : "", text: t("td_a_fb_" + (f.kind === "approve" || f.kind === "changes" ? f.kind : "comment"), { brand: m.brand(f.clientId) }) + (f.text ? ": " + f.text : ""), a: "td-go", data: { v: "portal" } });
-    });
-    S.all("tasks").forEach(function (x) {
-      if (!x.done || !x.doneOn || x.doneOn < from) return;
-      var w = m.member(x.who);
-      out.push({ at: x.doneOn, icon: "tasks", text: t("td_a_task", { title: x.title }), who: w ? w.name : "", a: "td-go", data: { v: "tasks" } });
-    });
-    S.all("msgs").forEach(function (x) {
-      if ((x.at || "").slice(0, 10) < from) return;
-      var w = m.member(x.who);
-      out.push({ at: x.at, icon: "inbox", text: x.text, who: w ? w.name : "", a: "td-go", data: { v: "inbox" } });
-    });
-    out.sort(function (a, b) { return a.at < b.at ? 1 : a.at > b.at ? -1 : 0; });
-    return out.slice(0, 6);
-  }
-  function when(at) {
-    var n = u.daysBetween(String(at).slice(0, 10), today());
-    return n <= 0 ? (String(at).length > 10 ? String(at).slice(11, 16) : t("td_today")) : n === 1 ? t("td_yday") : t("td_days_ago", { n: n });
-  }
-  function teamLoad() {
-    var td = today(), from = u.addDays(td, -7), tasks = S.all("tasks");
-    var rows = S.all("team").map(function (p) {
-      var mine = tasks.filter(function (x) { return x.who === p.id; });
-      var open = mine.filter(function (x) { return !x.done; });
-      var late = open.filter(function (x) { return x.due && x.due < td; }).length;
-      var done = mine.filter(function (x) { return x.done && x.doneOn && x.doneOn >= from; }).length;
-      return { p: p, name: p.name, open: open.length, late: late, done: done };
-    });
-    rows = rows.sort(function (a, b) { return b.open - a.open || b.late - a.late; }).slice(0, 6);
-    var mx = Math.max.apply(null, rows.map(function (r) { return r.open; }).concat([1]));
-    return ui.table({
-      id: "td-load", sort: { key: "open", dir: "desc" }, rows: rows,
-      cols: [
-        { key: "name", label: t("td_c_person"), html: function (r) { return '<span class="cell-who">' + ui.avatar(r.p) + "<span class=\"stack\" style=\"gap:0\"><b>" + esc(r.name) + '</b><span class="small faint">' + esc(t("role_" + r.p.role).split(" · ")[0]) + "</span></span></span>"; } },
-        { key: "open", label: t("td_c_load"), html: function (r) { return ui.meter(r.open / mx * 100, { segments: 20, sm: true, tone: r.late ? "gel" : "chroma", label: String(r.open) }); } },
-        { key: "late", label: t("td_c_late"), align: "r", html: function (r) { return r.late ? ui.pill(String(r.late), "urgent") : '<span class="faint">0</span>'; } },
-        { key: "done", label: t("td_c_done7"), align: "r" }
-      ]
-    });
-  }
   function founder() {
     var q = needs(), td = today(), ym = u.month(td), X = GK.x;
-    var rows = X.monthly(8), cur = rows[rows.length - 1] || { invoiced: 0, cashIn: 0 }, prev = rows[rows.length - 2] || { invoiced: 0, cashIn: 0 };
-    var cash = monthCash(ym), lastCash = monthCash(u.month(u.addDays(ym + "-01", -1)));
+    var cash = monthCash(ym);
     var invs = S.all("invoices");
     var open = invs.filter(function (i) { return i.no && i.kind !== "credit" && !i.credited && m.invBalance(i) > 0; });
     var owed = u.sum(open, m.invBalance), late = open.filter(function (i) { return m.invStatus(i) === "overdue"; }), lateAmt = u.sum(late, m.invBalance);
-    var goal = +((S.config() || {}).goals || {}).monthlyRevenue || 0, pv = X.pipelineValue(), wr = X.winRate(), rw = X.runway();
+    var goal = +((S.config() || {}).goals || {}).monthlyRevenue || 0, pv = X.pipelineValue(), wr = X.winRate();
 
-    // hero: the month, against its goal
+    // money in one quiet panel: this month's cash, what is owed, the pipeline
     var pct = goal ? cash / goal * 100 : 0;
-    var hero = '<section class="hero c5"><span class="lbl">' + esc(t("td_h_label", { m: u.fmtMonth(ym) })) + "</span>" +
-      '<div class="hv">' + esc(u.money(cash).replace(/\s?TND$/, "")) + "<small>TND</small></div>" +
-      '<p class="hs">' + esc(goal ? t("td_h_sub_goal", { p: u.pct(pct), g: u.money(goal), o: u.money(owed) }) : t("td_h_sub", { o: u.money(owed) })) + "</p>" +
-      (goal ? '<div class="stack" style="gap:8px;margin-top:auto"><div class="meter-lab"><span>' + esc(t("td_h_goal")) + "</span><span>" + esc(u.pct(Math.min(pct, 999))) + "</span></div>" + ui.meter(pct, { segments: 36 }) + "</div>" : "") +
-      '<div class="hrow"><span class="small" style="opacity:.8">' + esc(lastCash ? t("td_h_last", { a: u.money(lastCash) }) : "") + '</span><div class="actions">' + ui.btn(t("td_h_open"), "td-go", { cls: "primary sm", data: { v: "finance" } }) + "</div></div></section>";
-
-    var kpis = '<div class="kpis c7" style="grid-template-columns:repeat(2,minmax(0,1fr))">' +
-      ui.kpi({ tint: 0, label: t("td_k_owed"), icon: "invoice", value: u.money(owed), delta: late.length ? t("td_k_late_amt", { a: u.money(lateAmt) }) : null, deltaTone: "up", good: "down", deltaIcon: "alert", deltaLabel: plural("td_k_owed", open.length), a: "td-go", data: { v: "finance" } }) +
-      ui.kpi({ tint: 1, label: t("td_k_invoiced"), icon: "trend", value: u.money(cur.invoiced), delta: pctChange(cur.invoiced, prev.invoiced), deltaLabel: t("td_vs_last"), spark: rows.map(function (r) { return r.invoiced; }), a: "td-go", data: { v: "dashboard" } }) +
-      ui.kpi({ tint: 2, label: t("td_k_pipe"), icon: "pipeline", value: u.money(pv.weighted), hint: wr == null ? t("td_k_pipe_n", { a: u.money(pv.total) }) : t("td_k_pipe_wr", { a: u.money(pv.total), w: u.pct(wr) }), a: "td-go", data: { v: "pipeline" } }) +
-      ui.kpi({ tint: 3, label: t("td_k_runway"), icon: "clock", value: rw.months == null ? "—" : t("td_k_months", { n: u.dec(rw.months, 1) }), hint: rw.months == null ? t("td_k_runway_none") : t("td_k_burn", { a: u.money(rw.burn) }), a: "td-go", data: { v: rw.months == null ? "settings" : "finance" } }) +
-      "</div>";
-
-    var h = '<div class="g12">' + hero + kpis + "</div>";
-
+    var money = '<section class="card c5"><div class="card-h"><span class="lead">' + ui.icon("cash") + "<h2>" + esc(t("td_h_label", { m: u.fmtMonth(ym) })) + "</h2></span>" +
+      ui.btn(t("td_h_open"), "td-go", { cls: "ghost sm", data: { v: "finance" } }) + "</div>" +
+      '<div class="td-big num">' + esc(u.money(cash)) + "</div>" +
+      (goal ? '<div class="stack" style="gap:6px"><div class="meter-lab"><span>' + esc(t("td_h_goal")) + "</span><span>" + esc(u.pct(Math.min(pct, 999))) + "</span></div>" + ui.meter(pct, { segments: 24, sm: true }) + "</div>" : "") +
+      '<div class="list">' +
+      line(esc(t("td_k_owed")), late.length ? esc(t("td_k_late_amt", { a: u.money(lateAmt) })) : esc(plural("td_k_owed", open.length)), '<span class="num">' + esc(u.money(owed)) + "</span>") +
+      line(esc(t("td_k_pipe")), esc(wr == null ? t("td_k_pipe_n", { a: u.money(pv.total) }) : t("td_k_pipe_wr", { a: u.money(pv.total), w: u.pct(wr) })), '<span class="num">' + esc(u.money(pv.weighted)) + "</span>") +
+      "</div></section>";
+    var h = "";
     // decisions: what is waiting, why, what to do, one button
     var all = !!ui.p("today").all, shown = all ? q : q.slice(0, 6);
     var dec = '<section class="card c7"><div class="card-h"><span class="lead">' + ui.icon("sparkle") + "<h2>" + esc(t("td_needs", { name: me().name || founderName() })) + "</h2>" + (q.length ? '<span class="cnt hot">' + q.length + "</span>" : "") + "</span>" +
@@ -256,18 +201,7 @@
         return ui.decision({ title: x.main, why: x.meta, recommend: x.rec, icon: x.icon, tone: x.alert ? "urgent" : "", action: { label: x.label, a: "td-need", data: { i: i }, cls: x.alert ? "primary sm" : "sm" } });
       }).join("") + "</div>" : ui.empty({ icon: "check", title: t("td_needs_none") })) + "</section>";
 
-    var acts = recent();
-    var act = '<section class="card c5"><div class="card-h"><span class="lead">' + ui.icon("activity") + "<h2>" + esc(t("td_recent")) + "</h2></span>" +
-      (ui.nav().indexOf("activity") > -1 ? ui.btn(t("td_view_all"), "td-go", { cls: "ghost sm", data: { v: "activity" } }) : "") + "</div>" +
-      (acts.length ? '<div class="acts" style="grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr))">' + acts.map(function (a) {
-        return ui.activity({ icon: a.icon, tone: a.tone, text: a.text, who: a.who, when: when(a.at), a: a.a, data: a.data });
-      }).join("") + "</div>" : ui.empty(t("td_recent_none"))) + "</section>";
-    h += '<div class="g12">' + dec + act + "</div>";
-
-    var chart = GK.charts.bars({ title: t("td_c_money"), sub: t("td_c_money_sub"), labels: rows.slice(-6).map(function (r) { return r.label; }),
-      series: [{ name: t("td_c_inv"), values: rows.slice(-6).map(function (r) { return r.invoiced; }) }, { name: t("td_c_cash"), values: rows.slice(-6).map(function (r) { return r.cashIn; }) }], height: 210 });
-    h += '<div class="g12"><section class="card c7"><div class="card-h"><span class="lead">' + ui.icon("team") + "<h2>" + esc(t("td_load")) + "</h2></span>" + ui.btn(t("td_view_all"), "td-go", { cls: "ghost sm", data: { v: "tasks" } }) + "</div>" + teamLoad() + "</section>" +
-      '<section class="card c5">' + chart + "</section></div>";
+    h += '<div class="g12">' + dec + money + "</div>";
     h += '<div class="grid2">' + tasksPanel() + shootsPanel(7, t("td_shoots7")) + "</div>";
     return h;
   }
@@ -308,16 +242,7 @@
       return line("<strong>" + esc(l.brand) + "</strong>", meta, ui.btn(t("td_b_lead"), "td-go", { cls: "sm", data: { v: "pipeline", id: l.id } }));
     }).join("") + "</div>" : ui.empty(t("td_no_props")));
 
-    var mine = [];
-    var owed = 0, paid = 0, wait = 0;
-    mine.forEach(function (p) { var c = m.commission(p); owed += c.owed; paid += c.paid; if (!c.payable) wait += c.amount; });
-    var comm = '<section class="stack"><h2 class="sec">' + esc(t("td_comm")) + "</h2>" + ui.kpis([
-      { lab: t("td_k_c_owed"), v: u.money(owed), n: t("td_k_c_n", { n: m.rules().commission }) },
-      { lab: t("td_k_c_paid"), v: u.money(paid) },
-      { lab: t("td_k_c_wait"), v: u.money(wait) }
-    ]) + "</section>";
-
-    return log + week + '<div class="grid2">' + follows + propP + "</div>" + '<div class="grid2">' + tasksPanel() + shootsPanel(7, t("td_shoots7")) + "</div>";
+    return '<div class="grid2">' + follows + propP + "</div>" + '<div class="grid2">' + tasksPanel() + shootsPanel(7, t("td_shoots7")) + "</div>" + log + week;
   }
 
   // ---------- editor ----------
@@ -363,6 +288,10 @@
       return myTasks(who.id).length || "";
     }
   });
+
+  var css = document.createElement("style"); css.id = "gk-today-css";
+  css.textContent = ".td-big{font-size:clamp(28px,4vw,40px);line-height:1.1;letter-spacing:-.01em}";
+  document.head.appendChild(css);
 
   GK.act("td-need", function (el) {
     var x = needs()[+el.getAttribute("data-i")];
