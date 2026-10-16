@@ -164,11 +164,10 @@ select extensions.is(
 select extensions.is(public.get_public_client_share(repeat('z', 64)), null::jsonb, 'unknown token returns no snapshot');
 select extensions.is(public.get_public_client_share(repeat('b', 64)), null::jsonb, 'revoked token returns no snapshot');
 select extensions.is(public.get_public_client_share(repeat('c', 64)), null::jsonb, 'expired token returns no snapshot');
-with saved as materialized (
-  select public.submit_client_feedback(repeat('a', 64), 'approve', 'plan', '', 'Client', 'p1') as id
-)
+-- separate statement: rows a function inserts are not visible to the same statement's snapshot
+select set_config('gecko.test_feedback_id', public.submit_client_feedback(repeat('a', 64), 'approve', 'plan', '', 'Client', 'p1')::text, true);
 select extensions.is(
-  (select f.project_id from saved join public.client_feedback f on f.id = saved.id),
+  (select f.project_id from public.client_feedback f where f.id::text = current_setting('gecko.test_feedback_id')),
   'p1'::text,
   'valid share feedback is saved to its published project'
 );

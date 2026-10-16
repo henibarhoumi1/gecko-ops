@@ -6,7 +6,8 @@
 - Added founder-created workspaces, email invitations, membership revocation, client/project assignment controls, and authenticated role-scoped reads/writes.
 - Added high-entropy share tokens (hash-only in PostgreSQL), allow-listed snapshot retrieval, share revoke/rotate/expiry behavior, validated saved feedback, and retained WhatsApp as an additional route.
 - Added 23 pgTAP assertions in `supabase/tests/phase0.test.sql` for table/function privileges, roles, assignment isolation, tenant boundaries, share expiry/revocation, snapshot filtering, and feedback validation.
-- Five focused Node tests pass, JavaScript syntax checks pass, and the static build succeeds. Local SQL/RLS tests and browser smoke tests have not run because Supabase CLI, Docker, PostgreSQL, and Playwright are unavailable. Do not deploy or claim the database security tests pass until they run successfully.
+- Five focused Node tests pass, JavaScript syntax checks pass, and the static build succeeds. The browser smoke test passes.
+- The migration and all 23 pgTAP assertions pass on PostgreSQL 16 with a minimal Supabase stand-in (`sh supabase/tests/local/run.sh`). Running them found a missing `declare` in `publish_client_share` (the migration would not apply) and a test that read its own insert in the same statement; both are fixed. Re-run against a real Supabase stack before going live.
 - The only embedded browser credentials are build-provided local URL and anon key. `build.py` blocks remote backend URLs and service-role/secret keys.
 
 ## Safety and baseline
