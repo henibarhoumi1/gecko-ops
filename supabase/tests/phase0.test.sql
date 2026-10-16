@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(23);
+select extensions.plan(26);
 
 insert into auth.users (
   id, aud, role, email, encrypted_password, email_confirmed_at,
@@ -135,6 +135,18 @@ select extensions.throws_ok(
 select extensions.throws_ok(
   $$select * from public.get_workspace_assignments('10000000-0000-4000-8000-000000000001')$$,
   'P0001', 'forbidden', 'assistant cannot enumerate assignments'
+);
+select extensions.lives_ok(
+  $$select public.put_workspace_record('10000000-0000-4000-8000-000000000001', 'ideas', 's1', '{"id":"s1","clientId":"c1","projectId":"p1","takes":{"0":"good"}}'::jsonb)$$,
+  'production can save takes on a script of its assigned project'
+);
+select extensions.throws_ok(
+  $$select public.put_workspace_record('10000000-0000-4000-8000-000000000001', 'ideas', 's2', '{"id":"s2","clientId":"c2","projectId":"p2"}'::jsonb)$$,
+  'P0001', NULL, 'production cannot write a script of a project it is not on'
+);
+select extensions.throws_ok(
+  $$select * from public.get_workspace_records('10000000-0000-4000-8000-000000000001', 'invoices')$$,
+  'P0001', 'forbidden', 'production still cannot read invoices'
 );
 
 select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000004', true);
