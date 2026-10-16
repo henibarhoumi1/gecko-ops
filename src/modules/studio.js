@@ -27,6 +27,22 @@
     st_park: ["Park", "Mettre en pause"], st_unpark: ["Bring back", "Reprendre"],
     st_g_hook: ["Add the hook line first.", "Ajoutez d'abord l'accroche."], st_g_script: ["Add a script first (scenes or text).", "Ajoutez d'abord un script (scènes ou texte)."],
     st_g_client: ["Pick a client first.", "Choisissez d'abord un client."],
+    st_g_angle: ["Add a creative angle.", "Ajoutez un angle créatif."],
+    st_g_objective: ["Add the objective.", "Ajoutez l'objectif."], st_g_audience: ["Describe the audience.", "Décrivez l'audience."],
+    st_g_concept: ["Explain the concept.", "Expliquez le concept."], st_g_format: ["Choose a valid format.", "Choisissez un format valide."],
+    st_g_scene: ["Add a scene with a visual and voice/text, or mark it silent / B-roll.", "Ajoutez une scène avec un visuel et une voix/texte, ou indiquez qu'elle est silencieuse / en plans de coupe."],
+    st_g_offer: ["Add the offer for this offer-led idea.", "Ajoutez l'offre pour cette idée promotionnelle."],
+    st_g_objection: ["Describe the objection this idea answers.", "Décrivez l'objection à laquelle répond cette idée."],
+    st_g_proof: ["Add the proof used by this idea.", "Ajoutez la preuve utilisée par cette idée."],
+    st_g_cta: ["Add a call to action for this idea.", "Ajoutez un appel à l'action pour cette idée."],
+    st_brief: ["Creative brief", "Brief créatif"], st_objective: ["Objective", "Objectif"], st_audience: ["Audience", "Audience"],
+    st_creative_type: ["Creative type", "Type de création"], st_type_offer: ["Offer-led", "Offre"], st_type_objection: ["Objection-led", "Objection"],
+    st_type_proof: ["Proof-led", "Preuve"], st_type_brand: ["Brand / story", "Marque / histoire"],
+    st_offer: ["Offer", "Offre"], st_objection: ["Objection", "Objection"], st_proof: ["Proof points", "Preuves"], st_cta: ["Call to action", "Appel à l'action"],
+    st_silent: ["Silent / B-roll (no dialogue or on-screen text)", "Silencieux / plans de coupe (sans dialogue ni texte à l'écran)"],
+    st_approve_revision: ["Approve new revision", "Valider la nouvelle version"], st_approved_revision: ["Approved revision", "Version validée"],
+    st_revision_n: ["Revision {n} · {d}", "Version {n} · {d}"], st_no_revision: ["Approve a complete idea before sending it to production.", "Validez une idée complète avant de l'envoyer en production."],
+    st_revision_ready: ["Approved material is ready to send. Draft edits do not change it.", "Le contenu validé est prêt à envoyer. Les modifications du brouillon ne le changent pas."],
     st_founder_only: ["Only Heni marks an idea ready. Request review instead.", "Seul Heni marque une idée prête. Demandez plutôt la relecture."],
     st_no_rights: ["You can't change ideas here.", "Vous ne pouvez pas modifier les idées ici."],
     st_shot_auto: ["Shot happens by itself once every hook of the reel is approved.", "Tourné se met à jour tout seul quand toutes les accroches du reel sont validées."],
@@ -73,12 +89,76 @@
   function hasScript(i) {
     return !!(String(i.script || "").trim() || (i.scenes || []).some(function (s) { return String(s.v || "").trim() || String(s.x || "").trim(); }));
   }
+  function angleText(i) {
+    if (String(i.angle || "").trim()) return String(i.angle).trim();
+    var p = i.projectId && m.project(i.projectId);
+    var a = p && (p.angles || []).find(function (x) { return x.id === i.angleId; });
+    return a ? String(a.name || "").trim() : "";
+  }
+  function creativeType(i) {
+    return ["offer", "objection", "proof", "brand"].indexOf(i.creativeType) > -1 ? i.creativeType : "brand";
+  }
+  function usableScene(s) {
+    return !!(s && typeof s === "object" && String(s.v || "").trim() &&
+      (String(s.x || "").trim() || s.silent === true));
+  }
   function readyGaps(i) {
     var g = [];
-    if (!String(i.hook || "").trim()) g.push(t("st_g_hook"));
-    if (!hasScript(i)) g.push(t("st_g_script"));
     if (!i.clientId || !m.client(i.clientId)) g.push(t("st_g_client"));
+    if (!angleText(i)) g.push(t("st_g_angle"));
+    if (!String(i.objective || "").trim()) g.push(t("st_g_objective"));
+    if (!String(i.audience || "").trim()) g.push(t("st_g_audience"));
+    if (!String(i.concept || "").trim()) g.push(t("st_g_concept"));
+    if (!String(i.hook || "").trim()) g.push(t("st_g_hook"));
+    if (m.FORMATS.indexOf(i.format) < 0) g.push(t("st_g_format"));
+    if (!(Array.isArray(i.scenes) && i.scenes.some(usableScene))) g.push(t("st_g_scene"));
+    var kind = creativeType(i);
+    if (kind === "offer" && !String(i.offer || "").trim()) g.push(t("st_g_offer"));
+    if (kind === "objection" && !String(i.objection || "").trim()) g.push(t("st_g_objection"));
+    if ((kind === "proof" || kind === "objection") && !String(i.proof || "").trim()) g.push(t("st_g_proof"));
+    if (kind !== "brand" && !String(i.cta || "").trim()) g.push(t("st_g_cta"));
     return g;
+  }
+  function approvedRevisions(i) {
+    return (Array.isArray(i && i.revisions) ? i.revisions : []).filter(function (r) {
+      return r && typeof r.id === "string" && r.snapshot && typeof r.snapshot === "object";
+    });
+  }
+  function selectedRevision(i, id) {
+    var list = approvedRevisions(i), key = id || i && (i.selectedRevisionId || i.approvedRevisionId);
+    return list.find(function (r) { return r.id === key; }) || list[list.length - 1] || null;
+  }
+  function snapshotIdea(i, revisionId) {
+    var scenes = (Array.isArray(i.scenes) ? i.scenes : []).filter(function (s) { return s && typeof s === "object"; }).map(function (s) {
+      return { id: String(s.id || u.uid("sc")), v: String(s.v || ""), x: String(s.x || ""), s: Math.max(0, +s.s || 0), silent: s.silent === true };
+    });
+    return {
+      id: revisionId, approvedOn: u.today(), title: String(i.title || ""),
+      clientId: String(i.clientId || ""), angle: angleText(i), angleId: String(i.angleId || ""),
+      creativeType: creativeType(i),
+      brief: {
+        objective: String(i.objective || ""), audience: String(i.audience || ""),
+        offer: String(i.offer || ""), objection: String(i.objection || ""),
+        proof: String(i.proof || ""), cta: String(i.cta || "")
+      },
+      concept: String(i.concept || ""), hook: String(i.hook || ""), script: String(i.script || ""),
+      scenes: scenes, mode: i.mode === "I" ? "I" : "D", format: String(i.format || ""),
+      refs: (Array.isArray(i.refs) ? i.refs : []).filter(function (r) { return r && typeof r === "object"; }).map(function (r) {
+        return { label: String(r.label || ""), url: String(r.url || "") };
+      })
+    };
+  }
+  function approveCurrent(id) {
+    var i = S.get("ideas", id); if (!i || !can() || !m.isFounder()) return null;
+    var gaps = readyGaps(i); if (gaps.length) { ui.toast(gaps[0]); return null; }
+    var revisionId = u.uid("cr"), snapshot = snapshotIdea(i, revisionId);
+    var revisions = approvedRevisions(i).slice();
+    revisions.push({ id: revisionId, approvedOn: snapshot.approvedOn, snapshot: snapshot });
+    var scenes = snapshot.scenes.map(function (s) { return { id: s.id, v: s.v, x: s.x, s: s.s, silent: s.silent }; });
+    return S.patch("ideas", id, {
+      stage: "ready", reviewAsked: false, scenes: scenes,
+      revisions: revisions, approvedRevisionId: revisionId, selectedRevisionId: revisionId
+    }, { log: t("st_log_move", { s: stName("ready") }) });
   }
   function words(s) { return (String(s || "").trim().match(/\S+/g) || []).length; }
   /** Spoken time: words of voice lines and free script, 2.5 words a second. */
@@ -111,7 +191,9 @@
       if (to === "ready" || to === "shot" || from === "ready" || from === "shot") { ui.toast(t("st_founder_only")); return false; }
     }
     if (to === "ready") {
-      var g = readyGaps(i); if (g.length) { ui.toast(g[0]); return false; }
+      if (!approveCurrent(id)) return false;
+      ui.toast(t("st_moved", { s: stName(to) }));
+      return true;
     }
     var ch = { stage: to, reviewAsked: false };
     patchIdea(id, ch, t("st_log_move", { s: stName(to) }));
@@ -306,7 +388,8 @@
   function newIdea(title, clientId, hook) {
     var me = GK.me(), c = clientId && m.client(clientId) ? clientId : "";
     return S.put("ideas", {
-      title: title, stage: "idea", clientId: c, projectId: "", angleId: "", angle: "", hook: hook || "", concept: "", script: "", scenes: [], mode: "D", format: "9x16",
+      title: title, stage: "idea", clientId: c, projectId: "", angleId: "", angle: "", objective: "", audience: "", creativeType: "brand",
+      offer: "", objection: "", proof: "", cta: "", hook: hook || "", concept: "", script: "", scenes: [], mode: "D", format: "9x16",
       refs: [], boardId: "", owner: me ? me.id : "", tags: [], priority: 2, reelId: "", created: u.today(), shareOk: false, reviewAsked: false, notes: ""
     }, { log: t("st_log_add") });
   }
@@ -363,7 +446,9 @@
     readyCount: function () { return S.all("ideas").filter(function (i) { return i.stage === "ready" && !i.reelId; }).length; },
     openIdea: function (id) { ui.go("studio", { id: id }); },
     h: {
-      STAGES: STAGES, can: can, isUrl: isUrl, stName: stName, effStage: effStage, linkedReel: linkedReel, hasScript: hasScript, readyGaps: readyGaps, words: words,
+      STAGES: STAGES, can: can, isUrl: isUrl, stName: stName, effStage: effStage, linkedReel: linkedReel, hasScript: hasScript,
+      readyGaps: readyGaps, approvedRevisions: approvedRevisions, selectedRevision: selectedRevision,
+      snapshotIdea: snapshotIdea, approveCurrent: approveCurrent, creativeType: creativeType, angleText: angleText, words: words,
       speakSeconds: speakSeconds, sceneSeconds: sceneSeconds, modeName: modeName, winners: winners, prioPill: prioPill, ownerName: ownerName, patchIdea: patchIdea,
       stepBtns: stepBtns, moveTo: moveTo, waitingOn: waitingOn, angleOf: angleOf, winnersPanel: winnersPanel
     }

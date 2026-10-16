@@ -1,6 +1,7 @@
 /* GECKO Ops · metrics. Read-only numbers computed from the store, shared by the dashboard, finance and reports.
    Everything here is an ESTIMATE built from the records: say so wherever it is shown.
-   Money out = expenses ledger (one-off + recurring) + Heni's salary + project direct costs (booked in the shoot month) + commissions paid. */
+   Money out = actual expenses ledger (one-off + recurring) + Heni's salary + commissions paid.
+   Project cost-line estimates are used for planning and project profitability until explicitly reconciled to actual expenses. */
 (function (GK) {
   "use strict";
   var u = GK.u, m = GK.m, S = GK.store;
@@ -13,7 +14,20 @@
     for (var i = n - 1; i >= 0; i--) { var t = mo - i, yy = y + Math.floor(t / 12), mm = ((t % 12) + 12) % 12; out.push(yy + "-" + String(mm + 1).padStart(2, "0")); }
     return out;
   };
+  X.pipelineValue = function () { return X.pipelineAt(u.today()); };
+  X.wonOpportunityValue = function () {
+    return u.sum(S.all("leads").filter(function (l) { return l.stage === "won"; }), m.leadValue);
+  };
+  X.confirmedRevenue = function (year) {
+    year = year || u.year(u.today());
+    return u.sum(S.all("invoices").filter(function (i) { return u.year(i.issued) === year; }), m.invoiceTurnover);
+  };
   X.monthLabel = function (ym) { return u.fmtDate(ym + "-15", { month: "short" }); };
+  function recurringDate(ym, day) {
+    var parts = ym.split("-"), last = new Date(+parts[0], +parts[1], 0).getDate();
+    return ym + "-" + String(Math.min(+day || 1, last)).padStart(2, "0");
+  }
+  function isProjectExpense(e) { return !!(e.projectId && m.project(e.projectId)); }
   function firstMonth() {
     var ds = [];
     S.all("invoices").forEach(function (i) { if (i.issued) ds.push(i.issued); });
@@ -30,7 +44,7 @@
       if (!e.date || !(+e.amount)) return;
       var start = u.month(e.date);
       if (e.recurring === "monthly") {
-        if (ym >= start && (!e.until || ym <= e.until)) out.push(Object.assign({}, e, { date: ym + "-" + e.date.slice(8, 10) }));
+        if (ym >= start && (!e.until || ym <= e.until)) out.push(Object.assign({}, e, { date: recurringDate(ym, e.date.slice(8, 10)) }));
       } else if (start === ym) out.push(e);
     });
     return out;
@@ -38,10 +52,6 @@
   X.EXPENSE_CATS = ["software", "gear", "rent", "transport", "marketing", "tax", "freelance", "other"];
 
   // ---------- money by month ----------
-  function projectCostMonth(p) {
-    var d = p.shootDate || (m.invoicesOf(p).filter(function (i) { return i.issued; }).map(function (i) { return i.issued; }).sort()[0]) || "";
-    return u.month(d);
-  }
   /** One row per month: invoiced (turnover, credit notes negative, pass-through extras excluded), cashIn (net), withheld,
       expenses, salary, projectCosts, commissions (paid out), out (total), net (cashIn - out). */
   X.monthly = function (n, endYm) {
@@ -49,12 +59,19 @@
     var rows = months.map(function (ym) {
       var invoiced = 0, cashIn = 0, withheld = 0;
       S.all("invoices").forEach(function (i) {
-        if (i.no && u.month(i.issued) === ym && !(i.kind === "extra" && i.passThrough)) invoiced += +i.amount || 0;
-        (i.payments || []).forEach(function (p) { if (u.month(p.date) === ym) { cashIn += +p.net || 0; withheld += +p.withheld || 0; } });
+        if (u.month(i.issued) === ym) invoiced += m.invoiceTurnover(i);
+        (i.payments || []).forEach(function (p) {
+          if (u.month(p.date) === ym) {
+            cashIn += m.toTND(+p.net || 0, i.currency || "TND");
+            withheld += m.toTND(+p.withheld || 0, i.currency || "TND");
+          }
+        });
       });
-      var exp = u.sum(X.expensesIn(ym), function (e) { return e.amount; });
+      var expenseLines = X.expensesIn(ym);
+      var exp = u.sum(expenseLines.filter(function (e) { return !isProjectExpense(e); }), function (e) { return e.amount; });
       var salary = ym >= fm ? +r.salary || 0 : 0;
-      var pc = u.sum(S.all("projects").filter(function (p) { return projectCostMonth(p) === ym; }), function (p) { return m.costOf(p); });
+      var linkedExpenses = u.sum(expenseLines.filter(isProjectExpense), function (e) { return e.amount; });
+      var pc = linkedExpenses;
       var com = u.sum(S.all("projects"), function (p) { return p.payout && p.payout.paidOn && u.month(p.payout.paidOn) === ym ? +p.payout.amount || 0 : 0; });
       var out = exp + salary + pc + com;
       return { ym: ym, label: X.monthLabel(ym), invoiced: invoiced, cashIn: cashIn, withheld: withheld, expenses: exp, salary: salary, projectCosts: pc, commissions: com, out: out, net: cashIn - out };
@@ -93,7 +110,7 @@
     return S.all("clients").map(function (c) {
       var ps = S.all("projects").filter(function (p) { return p.clientId === c.id; });
       var received = u.sum(ps, m.received), costs = u.sum(ps, m.costOf), com = u.sum(ps, function (p) { return m.commission(p).amount; });
-      var invoiced = u.sum(S.all("invoices").filter(function (i) { return i.clientId === c.id && i.no; }), function (i) { return +i.amount || 0; });
+      var invoiced = u.sum(S.all("invoices").filter(function (i) { return i.clientId === c.id; }), m.invoiceTurnover);
       var owed = u.sum(S.all("invoices").filter(function (i) { return i.clientId === c.id && i.no && !i.credited && i.kind !== "credit"; }), m.invBalance);
       var profit = received - costs;
       return { client: c, projects: ps.length, invoiced: invoiced, received: received, costs: costs, commission: com, profit: profit, margin: received ? profit / received * 100 : 0, owed: owed };
@@ -118,17 +135,16 @@
       return { member: mem, tasks: S.all("tasks").filter(function (t) { return t.who === mem.id && !t.done; }).length, late: S.all("tasks").filter(function (t) { return t.who === mem.id && !t.done && t.due && t.due < u.today(); }).length };
     }).concat([{ filesOpen: files.filter(function (s) { return s !== "approved"; }).length, filesTotal: files.length }]);
   };
-  X.pipelineValue = function () {
-    var w = { dm: 0.03, replied: 0.08, call: 0.2, proposal: 0.45 }, total = 0, weighted = 0;
-    S.all("leads").forEach(function (l) { if (w[l.stage] == null) return; var v = m.pack(l.pack).price; total += v; weighted += v * w[l.stage]; });
-    return { total: total, weighted: Math.round(weighted) };
-  };
   X.winRate = function () {
     var won = S.all("leads").filter(function (l) { return l.stage === "won"; }).length, lost = S.all("leads").filter(function (l) { return l.stage === "lost"; }).length;
     return won + lost ? won / (won + lost) * 100 : null;
   };
   /** Monthly recurring revenue from active SKIN contracts. */
-  X.mrr = function () { return u.sum(S.all("contracts").filter(function (c) { return c.status === "active"; }), function (c) { return m.pack(c.pack).price; }); };
+  X.mrr = function () {
+    return u.sum(S.all("contracts").filter(function (c) { return c.status === "active"; }), function (c) {
+      return m.toTND(m.contractPrice(c), m.pack(c.pack).currency);
+    });
+  };
   X.avgMargin = function () {
     var done = S.all("projects").filter(function (p) { return m.received(p) > 0 && m.costOf(p) > 0; });
     var rec = u.sum(done, m.received), pr = u.sum(done, m.profit);
@@ -136,7 +152,9 @@
   };
 
   // ---------- 13-week cash forecast ----------
-  var LEAD_P = { call: 0.2, proposal: 0.45 };
+  X.PIPE_W = {};
+  m.OPEN_STAGES.forEach(function (stage) { X.PIPE_W[stage] = (+m.LEAD_ODDS[stage] || 0) / 100; });
+  X.OPEN_LEAD = m.OPEN_STAGES.slice();
   /** [{wk: "2026-10-05", label, inBooked, inPipeline, out, balance (booked only), balanceWithPipeline}] for `weeks` weeks from this Monday.
       In: unpaid invoices on their due date (overdue lands in week 1) + 50% deposit of weighted leads (call 20%, proposal 45%) two weeks after the lead's next date.
       Out: recurring expenses and salary on their day of month, commissions owed in week 1, project costs in the shoot week of upcoming shoots. */
@@ -147,20 +165,26 @@
       var from = u.addDays(start, w * 7), to = u.addDays(from, 7), row = { wk: from, label: u.fmtDate(from), inBooked: 0, inPipeline: 0, out: 0, items: [] };
       X.receivables().forEach(function (rc) { var due = rc.inv.due || u.today(); if (w === 0 ? due < to : due >= from && due < to) { row.inBooked += rc.balance; row.items.push({ k: "in", t: rc.inv.no, v: rc.balance }); } });
       S.all("leads").forEach(function (l) {
-        var p = LEAD_P[l.stage]; if (!p) return; var when = u.addDays(l.nextDate && l.nextDate > u.today() ? l.nextDate : u.today(), 14);
-        if (w === 0 ? when < to : when >= from && when < to) { var pk = m.pack(l.pack); row.inPipeline += Math.round(pk.price * (pk.monthly ? 1 : 0.5) * p); row.items.push({ k: "lead", t: l.brand, v: Math.round(pk.price * (pk.monthly ? 1 : 0.5) * p) }); }
+        var p = X.PIPE_W[m.leadStage(l)]; if (!p) return; var when = u.addDays(l.nextDate && l.nextDate > u.today() ? l.nextDate : u.today(), 14);
+        if (w === 0 ? when < to : when >= from && when < to) { var value = Math.round(m.leadValue(l) * (m.pack(l.pack).monthly ? 1 : 0.5) * p); row.inPipeline += value; row.items.push({ k: "lead", t: l.brand, v: value }); }
       });
       // day-of-month items
       for (var d = 0; d < 7; d++) {
         var day = u.addDays(from, d); if (w === 0 && day < u.today()) continue; var dd = day.slice(8, 10), ym = day.slice(0, 7);
         if (dd === "01" && +r.salary) { row.out += +r.salary; row.items.push({ k: "out", t: "Salary", v: +r.salary }); }
         S.all("expenses").forEach(function (e) {
-          if (e.recurring === "monthly" && e.date && e.date.slice(8, 10) === dd && ym >= u.month(e.date) && (!e.until || ym <= e.until)) { row.out += +e.amount || 0; row.items.push({ k: "out", t: e.label, v: +e.amount || 0 }); }
+          if (e.recurring === "monthly" && e.date && recurringDate(ym, e.date.slice(8, 10)) === day && ym >= u.month(e.date) && (!e.until || ym <= e.until)) { row.out += +e.amount || 0; row.items.push({ k: "out", t: e.label, v: +e.amount || 0 }); }
           else if (e.recurring !== "monthly" && e.date === day) { row.out += +e.amount || 0; row.items.push({ k: "out", t: e.label, v: +e.amount || 0 }); }
         });
       }
       if (w === 0) S.all("projects").forEach(function (p) { var c = m.commission(p); if (c.owed > 0) { row.out += c.owed; row.items.push({ k: "out", t: "Commission", v: c.owed }); } });
-      S.all("projects").forEach(function (p) { if (p.shootDate && p.shootDate >= from && p.shootDate < to && p.stage !== "done") { var c = m.costOf(p); if (c) { row.out += c; row.items.push({ k: "out", t: m.projectLabel(p), v: c }); } } });
+      S.all("projects").forEach(function (p) {
+        if (p.shootDate && p.shootDate >= from && p.shootDate < to && p.stage !== "done") {
+          var projectExpenses = S.all("expenses").filter(function (e) { return e.projectId === p.id; });
+          var c = m.unmatchedEstimateOf(p, projectExpenses);
+          if (c) { row.out += c; row.items.push({ k: "out", t: m.projectLabel(p), v: c }); }
+        }
+      });
       bal += row.inBooked - row.out; balP += row.inBooked + row.inPipeline - row.out;
       row.balance = bal; row.balanceWithPipeline = balP; out.push(row);
     }
@@ -174,8 +198,6 @@
   };
 
   // ---------- V03 insight helpers (pure, read-only; the insight strips in modules/insights.js are built on these) ----------
-  X.PIPE_W = { dm: 0.03, replied: 0.08, call: 0.2, proposal: 0.45 };
-  X.OPEN_LEAD = ["dm", "replied", "call", "proposal"];
   function histSorted(l) { return (l.history || []).filter(function (h) { return h && h.at; }).slice().sort(function (a, b) { return a.at < b.at ? -1 : a.at > b.at ? 1 : 0; }); }
   /** Stage a lead was in on `date` (from its history), "" when it did not exist yet. */
   X.leadStageAt = function (l, date) { var st = ""; histSorted(l).forEach(function (h) { if (h.at <= date) st = h.stage; }); return st; };
@@ -183,9 +205,9 @@
   X.pipelineAt = function (date) {
     var td = u.today(), total = 0, weighted = 0;
     S.all("leads").forEach(function (l) {
-      var st = date >= td ? l.stage : X.leadStageAt(l, date), w = X.PIPE_W[st];
+      var st = m.leadStage(date >= td ? l : X.leadStageAt(l, date)), w = X.PIPE_W[st];
       if (w == null) return;
-      var v = m.pack(l.pack).price; total += v; weighted += v * w;
+      var v = m.leadValue(l); total += v; weighted += v * w;
     });
     return { total: total, weighted: Math.round(weighted) };
   };
@@ -215,7 +237,7 @@
   X.coldLeads = function (idleDays) {
     var td = u.today(), out = [];
     S.all("leads").forEach(function (l) {
-      if (X.OPEN_LEAD.indexOf(l.stage) < 0) return;
+      if (!m.isOpen(l)) return;
       var h = histSorted(l), last = h.length ? h[h.length - 1].at : td, idle = u.daysBetween(last, td);
       var late = l.nextDate && l.nextDate < td ? u.daysBetween(l.nextDate, td) : 0;
       if (late > 0 || (idle >= idleDays && !(l.nextDate && l.nextDate >= td))) out.push({ lead: l, idle: idle, late: late });
@@ -227,8 +249,8 @@
   X.revenueBy = function (from, to) {
     var by = {}, total = 0;
     S.all("invoices").forEach(function (i) {
-      if (!i.no || !i.issued || i.issued < from || i.issued > to || (i.kind === "extra" && i.passThrough)) return;
-      var a = +i.amount || 0; by[i.clientId] = (by[i.clientId] || 0) + a; total += a;
+      if (!i.issued || i.issued < from || i.issued > to) return;
+      var a = m.invoiceTurnover(i); by[i.clientId] = (by[i.clientId] || 0) + a; total += a;
     });
     return { by: by, total: total };
   };
@@ -246,7 +268,9 @@
     var by = {}; upTo = upTo || u.today();
     S.all("invoices").forEach(function (i) {
       if (i.kind === "credit") return;
-      (i.payments || []).forEach(function (p) { if (p.date && p.date <= upTo) by[i.clientId] = (by[i.clientId] || 0) + (+p.net || 0) + (+p.withheld || 0); });
+      (i.payments || []).forEach(function (p) {
+        if (p.date && p.date <= upTo) by[i.clientId] = (by[i.clientId] || 0) + m.toTND((+p.net || 0) + (+p.withheld || 0), i.currency || "TND");
+      });
     });
     return by;
   };

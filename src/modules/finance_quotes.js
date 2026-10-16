@@ -29,11 +29,13 @@
     fi_q_accept: ["Accepted", "Accepté"], fi_q_decline: ["Declined", "Refusé"], fi_q_decline_q: ["Mark as declined?", "Marquer comme refusé ?"], fi_q_decline_body: ["{no} for {b}. You can still duplicate it later.", "{no} pour {b}. Vous pourrez le dupliquer plus tard."],
     fi_q_decline_done: ["Marked as declined", "Marqué comme refusé"],
     fi_q_acc_t: ["Quote", "Devis"], fi_q_acc_a: ["accepted", "accepté"], fi_q_acc_intro: ["{no} · {b} · {a}. What should happen with the invoices?", "{no} · {b} · {a}. Que faire pour les factures ?"],
-    fi_q_acc_proj: ["Project", "Projet"], fi_q_acc_new: ["New project (opens the New project form)", "Nouveau projet (ouvre le formulaire Nouveau projet)"],
+    fi_q_acc_proj: ["Project", "Projet"],     fi_q_acc_new: ["New project (finish acceptance after saving)", "Nouveau projet (terminer l'acceptation après l'enregistrement)"],
     fi_q_acc_drafts: ["No project yet: just create the draft invoices", "Pas encore de projet : créer seulement les factures brouillons"],
     fi_q_acc_h: ["Invoices follow the packs rules: 50% deposit and 50% balance, or one month for SKIN. They stay drafts until you issue them.", "Les factures suivent les règles des packs : 50 % d'acompte et 50 % de solde, ou un mois pour SKIN. Elles restent des brouillons jusqu'à leur émission."],
     fi_q_acc_go: ["Mark accepted", "Marquer accepté"], fi_q_acc_done_inv: ["Quote accepted, {n} draft invoices linked", "Devis accepté, {n} factures brouillons liées"],
-    fi_q_acc_done_proj: ["Quote accepted. Create the project; its invoices can then be linked from this quote.", "Devis accepté. Créez le projet ; ses factures pourront ensuite être liées depuis ce devis."],
+    fi_q_acc_done_proj: ["Save the project to finish accepting this quote. Cancelling leaves it unchanged.", "Enregistrez le projet pour terminer l'acceptation. Annuler laisse le devis inchangé."],
+    fi_q_number_error: ["Quote not marked as sent: {e}", "Devis non marqué comme envoyé : {e}"],
+    fi_q_handoff_error: ["The quote handoff is incomplete. Its project and invoice links can be recovered by retrying acceptance.", "Le transfert du devis est incomplet. Ses liens au projet et aux factures peuvent être rétablis en réessayant l'acceptation."],
     fi_q_acc_done: ["Quote accepted", "Devis accepté"],
     fi_q_noinv: ["No invoices linked yet.", "Aucune facture liée pour l'instant."], fi_q_make_inv: ["Create the draft invoices", "Créer les factures brouillons"], fi_q_link_inv: ["Link a project's invoices", "Lier les factures d'un projet"],
     fi_q_link_t: ["Link", "Lier"], fi_q_link_a: ["invoices", "factures"], fi_q_link_go: ["Link", "Lier"], fi_q_link_none: ["This client has no project yet.", "Ce client n'a pas encore de projet."], fi_q_linked: ["Invoices linked", "Factures liées"],
@@ -64,9 +66,17 @@
   function lineTotal(l) { return F.r3((+l.qty || 0) * (+l.price || 0)); }
   function totalOf(lines) { return F.r3(u.sum(lines || [], lineTotal)); }
   function nextQuoteNo() {
-    var y = u.year(u.today()), max = 0;
-    quotes().forEach(function (q) { var x = /^Q-(\d{4})-(\d+)$/.exec(q.no || ""); if (x && x[1] === y) max = Math.max(max, +x[2]); });
-    return "Q-" + y + "-" + String(max + 1).padStart(3, "0");
+    return S.reserveQuoteNo(u.year(u.today()));
+  }
+  function allocateQuoteNo() {
+    if (!window.navigator || !window.navigator.locks || typeof window.navigator.locks.request !== "function") {
+      return Promise.reject(new Error("This browser does not support cross-tab quote numbering. Use a current browser with Web Locks."));
+    }
+    return window.navigator.locks.request("gecko-ops-quote-number", function () {
+      var no = nextQuoteNo();
+      if (S.flush() === false) throw new Error("The quote number was reserved, but the sequence could not be saved locally.");
+      return no;
+    });
   }
   function pillOf(q) { var s = qStatus(q); return ui.pill(t("fi_q_st_" + s), { draft: "", sent: "wip", accepted: "done", declined: "", expired: "alert" }[s]); }
   function belowPack(q) { var pk = q.pack ? m.pack(q.pack) : null; return !!pk && pk.price > 0 && (+q.amount || 0) > 0 && (+q.amount || 0) < pk.price - 0.001; }
@@ -267,12 +277,14 @@
   // ---------- send, accept, decline, extend ----------
   GK.act("fi-q-send", function (el) {
     var q = S.get("quotes", el.dataset.id); if (!q || q.no || !canW()) return;
-    var no = nextQuoteNo();
-    ui.confirm(t("fi_q_send_q"), t("fi_q_send_body", { no: no, d: u.fmtDate(q.validUntil, { day: "numeric", month: "long" }) }), function () {
+    ui.confirm(t("fi_q_send_q"), t("fi_q_send_body", { no: "Q-" + u.year(u.today()) + "-…", d: u.fmtDate(q.validUntil, { day: "numeric", month: "long" }) }), function () {
       var cur = S.get("quotes", q.id); if (!cur || cur.no) return;
-      var n2 = nextQuoteNo();
-      S.patch("quotes", cur.id, { no: n2, status: "sent", sentOn: u.today() }, { log: t("fi_log_q_sent", { no: n2 }) });
-      ui.toast(t("fi_q_sent_toast", { no: n2 }));
+      allocateQuoteNo().then(function (reserved) {
+        var latest = S.get("quotes", cur.id); if (!latest || latest.no) return;
+        var saved = S.patch("quotes", latest.id, { no: reserved, status: "sent", sentOn: u.today() }, { log: t("fi_log_q_sent", { no: reserved }) });
+        if (!saved || S.flush() === false) throw new Error("The quote was not saved locally.");
+        ui.toast(t("fi_q_sent_toast", { no: reserved }));
+      }).catch(function (error) { ui.toast(t("fi_q_number_error", { e: error.message })); });
     }, t("fi_q_send"));
   });
   GK.act("fi-q-decline", function (el) {
@@ -288,20 +300,97 @@
     ui.toast(t("fi_q_extended", { d: u.fmtDate(d) }));
   });
 
-  /** Draft invoices for a quote, built like the project flow does: deposit + balance (one-off) or one month (SKIN). Returns the new invoice ids. */
-  function createDrafts(q, p) {
-    var pk = q.pack ? m.pack(q.pack) : null, r = m.rules(), ids = [], amount = F.r3(q.amount);
-    var base = { no: "", clientId: q.clientId, projectId: p ? p.id : "", stamp: r.stamp, issued: "", due: "", payments: [], credited: false, log: [] };
-    var head = (pk ? pk.name + " · " : "") + (p ? p.name : titleOf(q)), log = t("fi_log_q_inv", { no: q.no || "—" });
-    var list = [];
-    if (pk && pk.monthly) list.push(Object.assign({}, base, { kind: "month", label: head, amount: amount }));
-    else {
-      var dep = Math.round(amount / 2);
-      list.push(Object.assign({}, base, { kind: "deposit", label: head + " · " + t("fi_inv_dep"), amount: dep }));
-      list.push(Object.assign({}, base, { kind: "balance", label: head + " · " + t("fi_inv_bal"), amount: F.r3(amount - dep) }));
+  /** Invoice drafts are tied to the quote, not inferred from every invoice on the project. */
+  function expectedDrafts(q, p) {
+    var pk = q.pack ? m.pack(q.pack) : null, amount = F.r3(q.amount);
+    var base = { no: "", clientId: q.clientId, projectId: p ? p.id : "", stamp: m.rules().stamp, issued: "", due: "", payments: [], credited: false, sourceQuoteId: q.id, log: [] };
+    var head = (pk ? pk.name + " · " : "") + (p ? p.name : titleOf(q));
+    if (pk && pk.monthly) return [{ kind: "month", label: head, amount: amount, source: Object.assign({}, base, { kind: "month", label: head, amount: amount }) }];
+    var dep = Math.round(amount / 2);
+    return [
+      { kind: "deposit", label: head + " · " + t("fi_inv_dep"), amount: dep, source: Object.assign({}, base, { kind: "deposit", label: head + " · " + t("fi_inv_dep"), amount: dep }) },
+      { kind: "balance", label: head + " · " + t("fi_inv_bal"), amount: F.r3(amount - dep), source: Object.assign({}, base, { kind: "balance", label: head + " · " + t("fi_inv_bal"), amount: F.r3(amount - dep) }) }
+    ];
+  }
+  function quoteInvoiceId(q, kind) {
+    var safe = String(q.id).replace(/[^A-Za-z0-9_-]/g, "_");
+    return "qinv-" + safe + "-" + kind;
+  }
+  function ensureDrafts(q, p) {
+    if (!q || (p && p.clientId !== q.clientId)) return null;
+    var associated = {};
+    (q.invoiceIds || []).forEach(function (id) {
+      var explicit = S.get("invoices", id);
+      if (explicit && explicit.clientId === q.clientId &&
+          (!explicit.sourceQuoteId || explicit.sourceQuoteId === q.id) &&
+          (!explicit.quoteId || explicit.quoteId === q.id)) associated[id] = explicit;
+    });
+    S.all("invoices").forEach(function (inv) {
+      if ((inv.sourceQuoteId === q.id || inv.quoteId === q.id) && inv.clientId === q.clientId) associated[inv.id] = inv;
+    });
+    var ids = Object.keys(associated), kinds = expectedDrafts(q, p);
+    for (var n = 0; n < kinds.length; n++) {
+      var item = kinds[n], found = Object.keys(associated).map(function (id) { return associated[id]; }).find(function (inv) {
+        return inv.kind === item.kind && inv.clientId === q.clientId;
+      });
+      if (found) {
+        if (p && found.projectId && found.projectId !== p.id) return null;
+        if (p && !found.projectId) {
+          found = S.patch("invoices", found.id, { projectId: p.id });
+          if (!found || S.flush() === false) return null;
+          associated[found.id] = found;
+        }
+        continue;
+      }
+      var id = quoteInvoiceId(q, item.kind), collision = S.get("invoices", id);
+      if (collision) {
+        if (collision.sourceQuoteId !== q.id && collision.quoteId !== q.id) return null;
+        if (p && collision.projectId && collision.projectId !== p.id) return null;
+        if (p && !collision.projectId) {
+          collision = S.patch("invoices", collision.id, { projectId: p.id });
+          if (!collision || S.flush() === false) return null;
+        }
+        associated[collision.id] = collision;
+        if (ids.indexOf(collision.id) < 0) ids.push(collision.id);
+        continue;
+      }
+      var invoice = item.source;
+      invoice.id = id;
+      invoice.projectId = p ? p.id : "";
+      var saved = S.put("invoices", invoice, { log: t("fi_log_q_inv", { no: q.no || "—" }) });
+      if (!saved || S.flush() === false) return null;
+      associated[saved.id] = saved;
+      ids.push(saved.id);
     }
-    list.forEach(function (inv) { var s = S.put("invoices", inv, { log: log }); if (s) ids.push(s.id); });
     return ids;
+  }
+  function completeHandoff(quoteId, projectId) {
+    var q = S.get("quotes", quoteId), p = projectId ? m.project(projectId) : null;
+    if (!q || (q.status !== "sent" && q.status !== "accepted") || (projectId && (!p || p.clientId !== q.clientId))) return false;
+    if (p && p.sourceQuoteId && p.sourceQuoteId !== q.id) return false;
+    if (p && q.projectId && q.projectId !== p.id) {
+      var previouslyLinked = m.project(q.projectId);
+      if (previouslyLinked && previouslyLinked.id !== p.id) return false;
+    }
+    var ids = ensureDrafts(q, p);
+    if (!ids) return false;
+    var patch = { invoiceIds: ids, status: "accepted", acceptedOn: q.acceptedOn || u.today() };
+    if (p) patch.projectId = p.id;
+    var saved = S.patch("quotes", q.id, patch, q.status === "accepted" ? null : { log: t("fi_log_q_acc") });
+    if (!saved) return false;
+    if (S.flush() === false) {
+      var rollback = { status: q.status, acceptedOn: q.acceptedOn || "", invoiceIds: q.invoiceIds || [] };
+      if (Object.prototype.hasOwnProperty.call(patch, "projectId")) rollback.projectId = q.projectId || "";
+      S.patch("quotes", q.id, rollback);
+      S.flush();
+      return false;
+    }
+    return true;
+  }
+  function sourceProject(q) {
+    var byId = q.projectId && m.project(q.projectId);
+    if (byId && byId.clientId === q.clientId) return byId;
+    return S.all("projects").find(function (p) { return p.sourceQuoteId === q.id && p.clientId === q.clientId; }) || null;
   }
   function projectInvoices(p) { return F.invoices().filter(function (i) { return i.projectId === p.id && i.kind !== "credit"; }); }
 
@@ -309,7 +398,8 @@
     var q = S.get("quotes", el.dataset.id); if (!q || !canW()) return;
     var projs = S.all("projects").filter(function (p) { return p.clientId === q.clientId; }).sort(u.by("name"));
     var canNew = !!(GK.pj && typeof GK.pj.openNew === "function") && !!q.pack;
-    var def = q.projectId && m.project(q.projectId) ? q.projectId : canNew ? "__new" : "__drafts";
+    var source = sourceProject(q);
+    var def = source ? source.id : canNew ? "__new" : "__drafts";
     var opts = [];
     if (canNew) opts.push(["__new", t("fi_q_acc_new")]);
     opts.push(["__drafts", t("fi_q_acc_drafts")]);
@@ -321,29 +411,35 @@
   });
   GK.act("fi-q-accept-go", function (el) {
     var q = S.get("quotes", el.dataset.id); if (!q || !canW()) return ui.closeModal();
-    var ch = u.val("fi-q-a-proj"), patch = { status: "accepted", acceptedOn: u.today() }, ids = [], p = null, existing = null;
-    if (ch && ch !== "__new" && ch !== "__drafts") {
-      p = m.project(ch);
-      if (p) { patch.projectId = p.id; var ex = projectInvoices(p); if (ex.length) existing = ex.map(function (i) { return i.id; }); }
-    }
-    ui.closeModal(true);
-    var saved = S.patch("quotes", q.id, patch, { log: t("fi_log_q_acc") });
-    if (!saved) return;
+    var ch = u.val("fi-q-a-proj"), p = null;
     if (ch === "__new") {
+      var alreadyCreated = sourceProject(q);
+      if (alreadyCreated) {
+        if (!completeHandoff(q.id, alreadyCreated.id)) return ui.toast(t("fi_q_handoff_error"));
+        ui.closeModal(true);
+        ui.go("finance", { tab: "quotes", quoteId: q.id });
+        return ui.toast(t("fi_q_acc_done_inv", { n: (S.get("quotes", q.id).invoiceIds || []).length }));
+      }
+      ui.closeModal(true);
       ui.go("finance", { tab: "quotes", quoteId: q.id });
       ui.toast(t("fi_q_acc_done_proj"));
-      GK.pj.openNew({ clientId: q.clientId, pack: q.pack });
+      GK.pj.openNew({ clientId: q.clientId, pack: q.pack, price: q.amount, sourceQuoteId: q.id });
       return;
     }
-    ids = existing || createDrafts(saved, p);
-    S.patch("quotes", q.id, { invoiceIds: ids });
-    ui.toast(t("fi_q_acc_done_inv", { n: ids.length }));
+    if (ch && ch !== "__drafts") p = m.project(ch);
+    if (ch !== "__drafts" && !p) return ui.toast(t("fi_q_handoff_error"));
+    if (!completeHandoff(q.id, p ? p.id : "")) return ui.toast(t("fi_q_handoff_error"));
+    ui.closeModal(true);
+    var completed = S.get("quotes", q.id);
+    ui.toast(t("fi_q_acc_done_inv", { n: (completed.invoiceIds || []).length }));
     ui.go("finance", { tab: "quotes", quoteId: q.id });
   });
   GK.act("fi-q-make", function (el) {
-    var q = S.get("quotes", el.dataset.id); if (!q || !canW() || (q.invoiceIds || []).length) return;
-    var p = q.projectId ? m.project(q.projectId) : null, ids = createDrafts(q, p);
-    S.patch("quotes", q.id, { invoiceIds: ids }); ui.toast(t("fi_q_acc_done_inv", { n: ids.length }));
+    var q = S.get("quotes", el.dataset.id); if (!q || !canW()) return;
+    var p = sourceProject(q);
+    if (!completeHandoff(q.id, p ? p.id : "")) return ui.toast(t("fi_q_handoff_error"));
+    var completed = S.get("quotes", q.id);
+    ui.toast(t("fi_q_acc_done_inv", { n: (completed.invoiceIds || []).length }));
   });
   GK.act("fi-q-link", function (el) {
     var q = S.get("quotes", el.dataset.id); if (!q || !canW()) return;
@@ -357,8 +453,8 @@
   });
   GK.act("fi-q-link-go", function (el) {
     var q = S.get("quotes", el.dataset.id), p = m.project(u.val("fi-q-lk-proj")); if (!q || !p) return ui.closeModal();
+    if (p.clientId !== q.clientId || !completeHandoff(q.id, p.id)) return ui.toast(t("fi_q_handoff_error"));
     ui.closeModal(true);
-    S.patch("quotes", q.id, { projectId: p.id, invoiceIds: projectInvoices(p).map(function (i) { return i.id; }) }, { log: t("fi_log_q_link") });
     ui.toast(t("fi_q_linked"));
   });
 
@@ -418,6 +514,7 @@
   GK.act("fi-q-filter", function (el) { ui.go("finance", { qFilter: el.dataset.f, quoteId: "" }); });
 
   FIN.quotes = { status: qStatus, list: quotes };
+  GK.finQuotes = { completeHandoff: completeHandoff };
   FIN.tabs.quotes = { render: function () {
     var q = P().quoteId && S.get("quotes", P().quoteId);
     return q ? detailHTML(q) : listHTML();

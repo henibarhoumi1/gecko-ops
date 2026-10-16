@@ -6,12 +6,12 @@
   GK.i18n.add({
     fi_cl_invoiced: ["Revenue invoiced (before stamp, credit notes deducted)", "Chiffre d'affaires facturé (hors timbre, avoirs déduits)"],
     fi_cl_cash: ["Cash received (net)", "Encaissements (net)"], fi_cl_wh: ["Tax withheld by clients (tax credit, not cash)", "Retenues à la source des clients (crédit d'impôt, pas de la trésorerie)"],
-    fi_cl_in: ["Money in", "Total entrées"], fi_cl_costs: ["Direct project costs, shoots this month", "Coûts directs des projets, tournages du mois"],
+    fi_cl_in: ["Money in", "Total entrées"], fi_cl_costs: ["Project costs", "Coûts des projets"], fi_cl_project_exp: ["Project-linked expense", "Dépense liée au projet"],
     fi_cl_over: ["Overheads (Expenses tab)", "Charges (onglet Dépenses)"], fi_cl_salary: ["Heni's salary", "Salaire de Heni"], fi_cl_comm: ["Commissions paid", "Commissions payées"],
     fi_cl_out: ["Money out", "Total sorties"], fi_cl_reserve: ["Reserve, {p}% of money in", "Réserve, {p} % des entrées"], fi_cl_left: ["Left after reserve", "Reste après réserve"],
     fi_cl_stmt: ["Profit and loss", "Compte de résultat"], fi_cl_est: ["estimate", "estimation"],
     fi_cl_nocosts: ["no costs logged", "aucun coût saisi"],
-    fi_cl_note: ["Money in includes tax withheld (a tax credit, not cash). Direct costs are the logged costs of this month's shoots. Overheads come from the Expenses tab. Whole dinars. Estimate.", "Les entrées comptent la retenue à la source (un crédit d'impôt, pas de la trésorerie). Les coûts directs sont ceux saisis pour les tournages du mois. Les charges viennent de l'onglet Dépenses. Dinars entiers. Estimation."],
+    fi_cl_note: ["Money in includes tax withheld (a tax credit, not cash). Project costs include actual linked expenses dated this month; project budget estimates are excluded. Overheads come from the Expenses tab. Whole dinars. Estimate.", "Les entrées comptent la retenue à la source (un crédit d'impôt, pas de la trésorerie). Les coûts projets comprennent les dépenses réelles liées datées ce mois ; les estimations de budget des projets sont exclues. Les charges viennent de l'onglet Dépenses. Dinars entiers. Estimation."],
     fi_cl_formula: ["Left = money in − money out − reserve.", "Reste = entrées − sorties − réserve."],
     fi_cl_cmp: ["Against last month and the goal", "Face au mois dernier et à l'objectif"], fi_cl_c_item: ["Line", "Ligne"], fi_cl_c_now: ["This month", "Ce mois"], fi_cl_c_prev: ["Last month", "Mois dernier"], fi_cl_c_diff: ["Change", "Écart"],
     fi_cl_goal: ["Monthly revenue goal: {g}. Invoiced this month: {i}, that is {p} of the goal.", "Objectif de chiffre d'affaires mensuel : {g}. Facturé ce mois : {i}, soit {p} de l'objectif."],
@@ -58,7 +58,7 @@
     h += row(esc(t("fi_cl_in")), F.fm(f.inTot), { strong: true });
     h += '<tr><th colspan="2">' + esc(t("fi_mc_out")) + "</th></tr>";
     h += row(esc(t("fi_cl_costs")), F.fm(f.costs));
-    f.shoots.forEach(function (x) { h += row(esc(m.projectLabel(x.p)) + ((x.p.costs || []).length ? "" : " · " + esc(t("fi_cl_nocosts"))), F.fm(x.cost), { sub: true }); });
+    f.projectExpenses.forEach(function (e) { h += row(esc(t("fi_cl_project_exp")) + " · " + esc(e.label || "—") + " · " + esc(u.fmtDate(e.date)), F.fm(e.amount), { sub: true }); });
     h += row(esc(t("fi_cl_over")), F.fm(f.overheads)) + overheadSubs(f);
     h += row(esc(t("fi_cl_salary")), F.fm(f.salary));
     h += row(esc(t("fi_cl_comm")), F.fm(f.commPaid));

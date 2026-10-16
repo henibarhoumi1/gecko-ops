@@ -14,6 +14,8 @@
     fi_ex_f_date: ["Date (first charge for a monthly one)", "Date (premier prélèvement si mensuelle)"], fi_ex_f_label: ["What was it", "De quoi s'agit-il"], fi_ex_f_cat: ["Category", "Catégorie"], fi_ex_f_amount: ["Amount (DT)", "Montant (DT)"],
     fi_ex_f_rec: ["Repeats", "Récurrence"], fi_ex_f_until: ["Last month (optional)", "Dernier mois (facultatif)"], fi_ex_f_until_h: ["Leave empty while it still runs.", "Laissez vide tant que ça continue."],
     fi_ex_f_vendor: ["Vendor", "Fournisseur"], fi_ex_f_project: ["Project (optional)", "Projet (facultatif)"], fi_ex_f_link: ["Receipt or link (https://...)", "Justificatif ou lien (https://...)"], fi_ex_f_note: ["Note", "Note"],
+    fi_ex_f_estimate: ["Replaces estimate (optional)", "Remplace l'estimation (facultatif)"],
+    fi_ex_f_estimate_h: ["Select the budget line this actual expense replaces. Amounts are never matched automatically.", "Sélectionnez la ligne de budget que cette dépense réelle remplace. Les montants ne sont jamais rapprochés automatiquement."],
     fi_ex_no_project: ["No project", "Sans projet"], fi_ex_f_none: ["Once", "Une fois"], fi_ex_f_monthly: ["Every month", "Chaque mois"],
     fi_ex_need_label: ["Say what the expense is.", "Indiquez de quelle dépense il s'agit."], fi_ex_need_amount: ["Enter an amount above zero.", "Entrez un montant supérieur à zéro."], fi_ex_need_date: ["Pick a date.", "Choisissez une date."],
     fi_ex_bad_link: ["The link must start with http:// or https://.", "Le lien doit commencer par http:// ou https://."], fi_ex_bad_until: ["The last month can't be before the first charge.", "Le dernier mois ne peut pas précéder le premier prélèvement."],
@@ -32,13 +34,27 @@
 
   var CATS = X.EXPENSE_CATS;
   function catLabel(c) { return t("fi_cat_" + (CATS.indexOf(c) > -1 ? c : "other")); }
+  function isOverhead(e) { return !e.projectId || !m.project(e.projectId); }
   function P() { return F.P(); }
   function safeUrl(s) { return /^https?:\/\/\S+$/i.test(String(s || "").trim()); }
   function sumLines(ls) { return u.sum(ls, function (e) { return +e.amount || 0; }); }
+  function estimateOptionPairs(projectId, recurring) {
+    var opts = [["", "—"]];
+    var project = projectId && m.project(projectId);
+    if (project && recurring !== "monthly") (project.costs || []).forEach(function (c) {
+      opts.push([c.id, (c.label || t("pj_k_" + c.kind)) + " · " + F.fmP(c.amount)]);
+    });
+    return opts;
+  }
+  function estimateOptions(projectId, selected, recurring) {
+    return estimateOptionPairs(projectId, recurring).map(function (o) {
+      return '<option value="' + esc(o[0]) + '"' + (String(o[0]) === String(selected || "") ? " selected" : "") + ">" + esc(o[1]) + "</option>";
+    }).join("");
+  }
 
   function scopeLines(ym) {
-    if (ym) return X.expensesIn(ym);
-    var out = []; X.months(12).forEach(function (k) { out = out.concat(X.expensesIn(k)); });
+    if (ym) return X.expensesIn(ym).filter(isOverhead);
+    var out = []; X.months(12).forEach(function (k) { out = out.concat(X.expensesIn(k).filter(isOverhead)); });
     return out;
   }
 
@@ -47,9 +63,9 @@
     var ym = p.exMonth == null ? cur : p.exMonth, cat = p.exCat || "";
     var months = X.months(12).slice().reverse();
     if (ym && months.indexOf(ym) < 0) months.unshift(ym);
-    var recAll = S.all("expenses").filter(function (e) { return e.recurring === "monthly" && e.date && u.month(e.date) <= cur && (!e.until || e.until >= cur); });
-    var thisMonth = X.expensesIn(cur), yearLines = [];
-    X.months(+cur.slice(5, 7), cur).forEach(function (k) { yearLines = yearLines.concat(X.expensesIn(k)); });
+    var recAll = S.all("expenses").filter(function (e) { return isOverhead(e) && e.recurring === "monthly" && e.date && u.month(e.date) <= cur && (!e.until || e.until >= cur); });
+    var thisMonth = X.expensesIn(cur).filter(isOverhead), yearLines = [];
+    X.months(+cur.slice(5, 7), cur).forEach(function (k) { yearLines = yearLines.concat(X.expensesIn(k).filter(isOverhead)); });
     var h = ui.kpis([
       { lab: t("fi_ex_k_month"), v: F.fm(sumLines(thisMonth)), n: t("fi_ex_k_month_n", { n: thisMonth.length }) },
       { lab: t("fi_ex_k_rec"), v: F.fm(sumLines(recAll)), n: t("fi_ex_k_rec_n") },
@@ -64,7 +80,7 @@
     var sc = scopeLines(ym), by = {};
     sc.forEach(function (e) { var c = CATS.indexOf(e.category) > -1 ? e.category : "other"; by[c] = (by[c] || 0) + (+e.amount || 0); });
     var items = CATS.filter(function (c) { return by[c]; }).map(function (c) { return { label: catLabel(c), value: Math.round(by[c]) }; }).sort(u.by("value", "desc"));
-    var mrows = X.months(12).map(function (k) { return { ym: k, v: Math.round(sumLines(X.expensesIn(k))) }; });
+    var mrows = X.months(12).map(function (k) { return { ym: k, v: Math.round(sumLines(X.expensesIn(k).filter(isOverhead))) }; });
     h += '<div class="grid2"><section class="panel">' + GK.charts.hbars({ title: t("fi_ex_by_cat"), sub: ym ? t("fi_ex_by_cat_m", { m: u.fmtMonth(ym) }) : t("fi_ex_by_cat_12"), items: items, fmt: F.fm }) + "</section>" +
       '<section class="panel">' + GK.charts.bars({ title: t("fi_ex_by_month"), sub: t("fi_ex_by_month_sub"), labels: mrows.map(function (r) { return X.monthLabel(r.ym); }),
         series: [{ name: t("fi_ex_series"), values: mrows.map(function (r) { return r.v; }) }], fmt: F.fm }) + "</section></div>";
@@ -103,15 +119,24 @@
       ui.field({ id: "fi-ex-f-amount", label: t("fi_ex_f_amount"), type: "number", value: e.amount, attrs: ' min="0" step="0.01"' }) +
       ui.field({ id: "fi-ex-f-date", label: t("fi_ex_f_date"), type: "date", value: e.date }) +
       ui.field({ id: "fi-ex-f-cat", label: t("fi_ex_f_cat"), type: "select", value: e.category || "other", options: CATS.map(function (c) { return [c, catLabel(c)]; }) }) +
-      ui.field({ id: "fi-ex-f-rec", label: t("fi_ex_f_rec"), type: "select", value: e.recurring === "monthly" ? "monthly" : "none", options: [["none", t("fi_ex_f_none")], ["monthly", t("fi_ex_f_monthly")]] }) +
+      ui.field({ id: "fi-ex-f-rec", label: t("fi_ex_f_rec"), type: "select", value: e.recurring === "monthly" ? "monthly" : "none", options: [["none", t("fi_ex_f_none")], ["monthly", t("fi_ex_f_monthly")]], attrs: ' data-c="fi-ex-rec"' }) +
       ui.field({ id: "fi-ex-f-until", label: t("fi_ex_f_until"), type: "month", value: e.until || "", hint: t("fi_ex_f_until_h") }) +
       ui.field({ id: "fi-ex-f-vendor", label: t("fi_ex_f_vendor"), value: e.vendor || "" }) +
-      ui.field({ id: "fi-ex-f-project", label: t("fi_ex_f_project"), type: "select", value: e.projectId || "", options: [["", t("fi_ex_no_project")]].concat(projs.map(function (p) { return [p.id, m.projectLabel(p)]; })) }) +
+      ui.field({ id: "fi-ex-f-project", label: t("fi_ex_f_project"), type: "select", value: e.projectId || "", options: [["", t("fi_ex_no_project")]].concat(projs.map(function (p) { return [p.id, m.projectLabel(p)]; })), attrs: ' data-c="fi-ex-project"' }) +
+      ui.field({ id: "fi-ex-f-estimate", label: t("fi_ex_f_estimate"), type: "select", value: e.estimateId || "", options: estimateOptionPairs(e.projectId, e.recurring), hint: t("fi_ex_f_estimate_h") }) +
       ui.field({ id: "fi-ex-f-link", label: t("fi_ex_f_link"), value: e.link || "", span: true, placeholder: "https://" }) +
       ui.field({ id: "fi-ex-f-note", label: t("fi_ex_f_note"), value: e.note || "", span: true }) + "</div>";
     ui.modal({ title: t(editing ? "fi_ex_edit_t" : "fi_ex_new_t"), accent: t(editing ? "fi_ex_edit_a" : "fi_ex_new_a"), body: body,
       foot: ui.btn(t("cancel"), "close", { cls: "ghost" }) + ui.btn(t("save"), "fi-ex-save", { cls: "primary", data: { id: editing ? e.id : "" } }) });
   }
+  GK.change("fi-ex-project", function () {
+    var select = document.getElementById("fi-ex-f-estimate");
+    if (select) select.innerHTML = estimateOptions(u.val("fi-ex-f-project"), "", u.val("fi-ex-f-rec"));
+  });
+  GK.change("fi-ex-rec", function () {
+    var select = document.getElementById("fi-ex-f-estimate");
+    if (select) select.innerHTML = estimateOptions(u.val("fi-ex-f-project"), select.value, u.val("fi-ex-f-rec"));
+  });
   GK.act("fi-ex-new", function () { if (!F.canW()) return ui.toast(t("fi_ex_founder")); form(null); });
   GK.act("fi-ex-edit", function (el) { var e = S.get("expenses", el.dataset.id); if (e && F.canW()) form(e); });
   GK.act("fi-ex-save", function (el) {
@@ -124,7 +149,12 @@
     if (link && !safeUrl(link)) { u.focus("fi-ex-f-link"); return ui.toast(t("fi_ex_bad_link")); }
     if (rec !== "monthly") until = "";
     if (until && until < u.month(date)) { u.focus("fi-ex-f-until"); return ui.toast(t("fi_ex_bad_until")); }
-    var fields = { date: date, label: label, category: u.val("fi-ex-f-cat"), amount: amount, recurring: rec, until: until, vendor: u.val("fi-ex-f-vendor").trim(), projectId: u.val("fi-ex-f-project"), link: link, note: u.val("fi-ex-f-note").trim() };
+    var projectId = u.val("fi-ex-f-project"), estimateId = rec === "monthly" ? "" : u.val("fi-ex-f-estimate");
+    var project = projectId ? m.project(projectId) : null;
+    if (estimateId && (!project || !(project.costs || []).some(function (c) { return c.id === estimateId; }))) {
+      u.focus("fi-ex-f-estimate"); return ui.toast(t("required"));
+    }
+    var fields = { date: date, label: label, category: u.val("fi-ex-f-cat"), amount: amount, recurring: rec, until: until, vendor: u.val("fi-ex-f-vendor").trim(), projectId: projectId, estimateId: estimateId, link: link, note: u.val("fi-ex-f-note").trim() };
     var id = el.dataset.id, saved;
     if (id) { if (!S.get("expenses", id)) return ui.closeModal(); saved = S.patch("expenses", id, fields, { log: t("fi_log_ex_edited") }); }
     else saved = S.put("expenses", Object.assign({ log: [] }, fields), { log: t("fi_log_ex_created") });

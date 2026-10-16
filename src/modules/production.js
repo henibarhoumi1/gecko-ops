@@ -28,6 +28,8 @@
     pr_file: ["File", "Fichier"], pr_file_accent: ["details", "fiche"],
     pr_moved: ["Moved to {s}", "Passé en {s}"], pr_new_v: ["now v{v}", "maintenant v{v}"],
     pr_scope: ["Scope vs {pack}", "Volume vs {pack}"], pr_sc_reels: ["reels", "reels"], pr_sc_var: ["hook variations", "variations d'accroche"],
+    pr_shot_plan: ["Shot plan", "Plan de tournage"], pr_scene_done: ["Shot complete", "Plan tourné"],
+    pr_silent: ["silent / B-roll", "silencieux / plans de coupe"], pr_source_idea: ["Open source idea", "Ouvrir l'idée source"],
     pr_sc_car: ["carousels", "carrousels"], pr_sc_appr: ["approved", "validés"], pr_over: ["above pack", "au-dessus du pack"],
     pr_no_rights: ["Only editors and Heni change file status.", "Seuls les monteurs et Heni changent le statut."],
     pr_founder_only: ["Only Heni approves or sends back.", "Seul Heni valide ou renvoie."],
@@ -36,7 +38,7 @@
 
   var COLS = ["todo", "edit", "review", "revise", "approved"];
   var FILE_DOT = { todo: "", edit: "dot-blue", review: "dot-yellow", revise: "dot-pink", approved: "dot-green" };
-  var LIVE = ["shoot", "edit", "delivered", "testing"];
+  var LIVE = m.STAGES.concat(["onboard", "plan", "edit", "testing", "done"]);
 
   function activeProjects() {
     return S.all("projects").filter(function (p) { return LIVE.indexOf(p.stage) > -1 && m.files(p).length; })
@@ -152,12 +154,24 @@
       (p.reels || []).forEach(function (r) {
         var a = (p.angles || []).find(function (x) { return x.id === r.angleId; }) || { name: "—" };
         var rf = files.filter(function (f) { return f.reel && f.reel.id === r.id; });
+        var scenes = Array.isArray(r.scenes) ? r.scenes.filter(function (s) { return s && typeof s === "object"; }) : [];
+        var sceneChecks = Array.isArray(r.productionScenes) ? r.productionScenes : [];
         var done = rf.filter(function (f) { return f.item.status === "approved"; }).length;
         h += '<div class="panel"><div class="panel-h"><div class="stack" style="gap:4px"><span class="row" style="gap:6px"><span class="lab sm muted">' + esc(a.name) + " · " + esc(r.mode === "I" ? t("pr_indirect") : t("pr_direct")) + '</span><span class="code">' + esc(r.format || p.format || "9x16") + "</span></span>" +
           "<strong>" + esc(r.script || "—") + "</strong></div>" +
-          '<div class="row">' + (linkHTML(r.drive, t("pr_drive_folder")) || '<span class="small faint">' + esc(t("pr_no_drive")) + "</span>") +
+          '<div class="row">' + (r.sourceIdeaId && S.get("ideas", r.sourceIdeaId) ? ui.btn(t("pr_source_idea"), "pr-source-idea", { cls: "ghost sm", data: { id: r.sourceIdeaId } }) : "") +
+          (linkHTML(r.drive, t("pr_drive_folder")) || '<span class="small faint">' + esc(t("pr_no_drive")) + "</span>") +
           (m.can("files.edit") ? ui.btn(t("pr_set_drive"), "pr-rdrive", { cls: "ghost sm", data: { p: p.id, r: r.id } }) : "") +
           '<span class="small muted num">' + done + " / " + rf.length + "</span></div></div>" +
+          (scenes.length ? '<div class="stack" style="gap:4px"><h3 class="sec">' + esc(t("pr_shot_plan")) + '</h3><div class="list">' + scenes.map(function (s, si) {
+            var sid = String(s.id || "legacy-" + si), chk = sceneChecks.find(function (x) { return x && x.id === sid; });
+            var sceneText = String(s.v || "").trim() || "—";
+            if (s.x) sceneText += " · " + String(s.x);
+            if (s.s) sceneText += " · " + s.s + " s";
+            if (s.silent === true) sceneText += " · " + t("pr_silent");
+            return '<label class="check"><input type="checkbox" data-c="pr-scene-check"' + ui.attrs({ p: p.id, r: r.id, id: sid, i: si }) +
+              (chk && chk.done ? " checked" : "") + (m.can("files.edit") ? "" : " disabled") + "><span>" + esc(sceneText) + "</span></label>";
+          }).join("") + "</div></div>" : "") +
           '<div class="list">' + rf.map(function (f) { return liHTML(p, f); }).join("") + "</div></div>";
       });
       var cars = files.filter(function (f) { return f.kind === "carousel"; });
@@ -239,8 +253,23 @@
   GK.act("pr-open", function (el) { openFile(el.dataset.p, el.dataset.k); });
   GK.act("pr-link", function () { /* the browser opens the link */ });
   GK.act("pr-pick", function (el) { ui.go("production", { projectId: el.dataset.id }); });
+  GK.act("pr-source-idea", function (el) { if (S.get("ideas", el.dataset.id)) ui.go("studio", { id: el.dataset.id }); });
   GK.act("pr-mode", function (el) { ui.go("production", { mode: el.dataset.v }); });
   GK.change("pr-proj", function (el) { ui.go("production", { projectId: el.value }); });
+  GK.change("pr-scene-check", function (el) {
+    if (!m.can("files.edit")) return ui.toast(t("pr_no_edit"));
+    var p = m.project(el.dataset.p); if (!p) return;
+    var reels = u.clone(Array.isArray(p.reels) ? p.reels : []);
+    var r = reels.find(function (x) { return x && x.id === el.dataset.r; }); if (!r) return;
+    var scenes = Array.isArray(r.scenes) ? r.scenes : [], index = +el.dataset.i;
+    if (!scenes[index] || (scenes[index].id && scenes[index].id !== el.dataset.id)) return;
+    var checks = Array.isArray(r.productionScenes) ? u.clone(r.productionScenes) : [];
+    var item = checks.find(function (x) { return x && x.id === el.dataset.id; });
+    if (item) item.done = !!el.checked;
+    else checks.push({ id: el.dataset.id, done: !!el.checked });
+    r.productionScenes = checks;
+    S.patch("projects", p.id, { reels: reels });
+  });
   GK.act("pr-move", function (el) { if (ui.modalOpen()) ui.closeModal(true); move(el.dataset.p, el.dataset.k, el.dataset.to); });
   GK.act("pr-back", function (el) {
     var p = m.project(el.dataset.p), f = p && m.findFile(p, el.dataset.k); if (!f) return;

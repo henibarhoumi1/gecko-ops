@@ -32,6 +32,7 @@
     cm_st_todo: ["Planned", "Prévu"], cm_st_edit: ["In editing", "En montage"], cm_st_review: ["Ready for you", "À valider"], cm_st_approved: ["Approved", "Validé"], cm_st_revise: ["Being revised", "En retouche"],
     cm_files_h: ["Files", "Fichiers"], cm_files_sub: ["Your finished files. Approved files open as soon as they are unlocked.", "Vos fichiers finis. Les fichiers validés s'ouvrent dès qu'ils sont débloqués."],
     cm_open: ["Open file", "Ouvrir le fichier"], cm_file_soon: ["Link coming", "Lien à venir"], cm_locked: ["Locked", "Verrouillé"], cm_no_files: ["Files appear here as they are approved.", "Les fichiers apparaissent ici au fil des validations."],
+    cm_client_approved: ["You approved this file", "Vous avez validé ce fichier"],
     cm_locked_bal: ["Your files unlock when the balance is paid. We message you the moment they are ready.", "Vos fichiers sont débloqués une fois le solde réglé. On vous écrit dès qu'ils sont prêts."],
     cm_locked_m: ["Your files unlock when this month is paid. We message you the moment they are ready.", "Vos fichiers sont débloqués une fois le mois réglé. On vous écrit dès qu'ils sont prêts."],
     cm_tl_h: ["Timeline", "Calendrier"], cm_tl_sub: ["Where your project has been and what comes next.", "Ce qui est fait et ce qui vient ensuite."],
@@ -191,11 +192,12 @@
       '<div class="cl-cp" id="cl-p-' + esc(id) + '"' + (open ? "" : " hidden") + ">" + bodyHtml + "</div></div>";
   }
   /** Note box + buttons. kinds: [[kind, labelKey, primary]] */
-  function feedback(target, project, what, kinds, ideaProject) {
-    var id = "cl-n" + (uid++);
-    return '<div class="cl-fb"><label class="lab sm muted" for="' + id + '">' + esc(t("cm_note")) + '</label><textarea class="cl-ta" id="' + id + '" rows="2" data-note="' + esc(target) + '">' + esc(ST.notes[target] || "") + "</textarea><div class=\"row\">" +
+  function feedback(target, project, what, kinds, ideaProject, fileMeta) {
+    var id = "cl-n" + (uid++), noteKey = fileMeta ? "file:" + fileMeta.fileKey + ":v" + fileMeta.version : target;
+    return '<div class="cl-fb"><label class="lab sm muted" for="' + id + '">' + esc(t("cm_note")) + '</label><textarea class="cl-ta" id="' + id + '" rows="2" data-note="' + esc(noteKey) + '">' + esc(ST.notes[noteKey] || "") + "</textarea><div class=\"row\">" +
       kinds.map(function (k) {
-        return '<button type="button" class="btn ' + (k[2] ? "primary" : "") + ' sm" data-a="cm-fb" data-kind="' + esc(k[0]) + '" data-target="' + esc(target) + '" data-project="' + esc(project.name) + '" data-pid="' + esc(project.id || "") + '" data-what="' + esc(what || "") + '">' + esc(t(k[1])) + "</button>";
+        return '<button type="button" class="btn ' + (k[2] ? "primary" : "") + ' sm" data-a="cm-fb" data-kind="' + esc(k[0]) + '" data-target="' + esc(target) + '" data-project="' + esc(project.name) + '" data-pid="' + esc(project.id || "") + '" data-what="' + esc(what || "") + '"' +
+          (fileMeta ? ' data-filemeta="' + esc(JSON.stringify(fileMeta)) + '"' : "") + ">" + esc(t(k[1])) + "</button>";
       }).join("") + "</div></div>";
   }
   function projHead(p, multi) {
@@ -293,17 +295,23 @@
     var multi = snap.projects.length > 1, h = sectionHead(t("cm_files_h"), t("cm_files_sub")), any = false;
     snap.projects.forEach(function (p) {
       var rows = "";
-      function row(code, label, status, drive) {
+      function row(code, label, status, drive, clientOk, target, fileMeta) {
         any = true;
         var act = "";
         if (status === "approved") {
           var l = safeLink(drive);
           act = p.unlocked ? (l ? '<a class="btn sm" href="' + esc(l) + '" target="_blank" rel="noopener noreferrer">' + esc(t("cm_open")) + "</a>" : '<span class="small muted">' + esc(t("cm_file_soon")) + "</span>") : '<span class="small muted">' + esc(t("cm_locked")) + "</span>";
         }
-        rows += '<div class="li"><div class="stack" style="gap:3px"><span>' + esc(label) + '</span><span class="code muted">' + esc(code) + '</span></div><div class="row" style="justify-content:flex-end;flex-wrap:wrap">' + stPill(status) + act + "</div></div>";
+        rows += '<div class="li"><div class="stack" style="gap:3px"><span>' + esc(label) + '</span><span class="code muted">' + esc(code) + '</span></div><div class="row" style="justify-content:flex-end;flex-wrap:wrap">' + stPill(status) +
+          (clientOk ? ui.pill(t("cm_client_approved"), "done") : "") + act + "</div></div>" +
+          (target && fileMeta && fileMeta.fileKey && fileMeta.version && fileMeta.reelId && status === "approved" ?
+            feedback(target, p, code + " · v" + fileMeta.version, [["approve", "cm_love", true], ["changes", "cm_change", false]], null, fileMeta) : "");
       }
-      (p.reels || []).forEach(function (r) { (r.files || []).forEach(function (f, i) { row(f.code, (r.angle ? r.angle + " · " : "") + "H" + (i + 1) + " " + ((r.hooks[i] || {}).text || ""), f.status, f.drive); }); });
-      (p.carousels || []).forEach(function (c) { if (c.code) row(c.code, c.title || t("cm_carousels"), c.status, c.drive); });
+      (p.reels || []).forEach(function (r) { (r.files || []).forEach(function (f, i) {
+        var meta = { projectId: p.id, reelId: r.id, fileKey: f.key, version: f.version, revisionId: f.revisionId || "" };
+        row(f.code, (r.angle ? r.angle + " · " : "") + "H" + (i + 1) + " " + ((r.hooks[i] || {}).text || ""), f.status, f.drive, f.clientOk, "reel:" + r.id, meta);
+      }); });
+      (p.carousels || []).forEach(function (c) { if (c.code) row(c.code, c.title || t("cm_carousels"), c.status, c.drive, c.clientOk); });
       var anyApproved = (p.progress && p.progress.done > 0) || p.stageIdx >= 3;
       h += '<div class="cl-proj">' + projHead(p, multi);
       if (!p.unlocked && anyApproved) h += '<div class="cl-box cl-gel"><p style="margin:0"><strong>' + esc(t(p.monthly ? "cm_locked_m" : "cm_locked_bal")) + "</strong></p></div>";
@@ -378,7 +386,7 @@
     match: function (h) { return /^cl-[A-Za-z0-9]+$/.test(h || "") ? h.slice(3) : null; },
     render: function (token, opts) {
       css(); resetState(token); opts = opts || {};
-      var share = opts.share || S.get("shares", token);
+      var share = opts.share || (S.publicShare && S.publicShare.id === token ? S.publicShare : null);
       if (!share || (!share.enabled && !opts.force) || !share.snapshot) return unavailable();
       if (!opts.preview && !ST.langInit) {   // first visit: open in the language the team published in, unless the visitor already chose one
         ST.langInit = true;
@@ -388,7 +396,7 @@
     },
     after: function (appEl) {
       try {
-        var share = S.get("shares", ST.token);
+        var share = S.publicShare && S.publicShare.id === ST.token ? S.publicShare : null;
         document.title = (share && share.snapshot ? share.snapshot.brand.name + " · " : "") + "GECKO";
         if (!document.querySelector('meta[name="robots"]')) { var mt = document.createElement("meta"); mt.name = "robots"; mt.content = "noindex"; document.head.appendChild(mt); }
       } catch (e) {}
@@ -448,19 +456,27 @@
     var kind = el.getAttribute("data-kind"), target = el.getAttribute("data-target"), project = el.getAttribute("data-project"), what = el.getAttribute("data-what"), pid = el.getAttribute("data-pid");
     var box = el.closest(".cl-fb"), ta = box && box.querySelector("textarea"), note = ta ? ta.value.trim() : "";
     if (page.getAttribute("data-preview")) return ui.toast(t("cm_prev_nothing"));
-    var share = S.get("shares", page.getAttribute("data-token")); if (!share || !share.snapshot) return;
+    var token = page.getAttribute("data-token"), share = S.publicShare;
+    if (!share || share.id !== token || !share.snapshot) return ui.toast("This page is unavailable. Refresh the link and try again.");
     var who = (share.snapshot.contact && share.snapshot.contact.name) || share.snapshot.brand.name, brand = share.snapshot.brand.name;
+    var meta = null;
+    if (el.hasAttribute("data-filemeta")) {
+      try { meta = JSON.parse(el.getAttribute("data-filemeta")); } catch (e) { return ui.toast("This file reference is invalid. Refresh the page and try again."); }
+      if (!meta || meta.projectId !== pid || !meta.reelId || !meta.fileKey || !meta.version || target !== "reel:" + meta.reelId) return ui.toast("This file reference is invalid. Refresh the page and try again.");
+    }
     var key = target === "plan" ? (kind === "approve" ? "cm_wa_approve" : "cm_wa_changes") : (kind === "approve" ? "cm_wa_love" : "cm_wa_chg");
     var msg = t("cm_wa_hi", { who: who, brand: brand }) + "\n" + t(key, { project: project, what: what });
     if (note) msg += "\n" + t("cm_wa_note", { note: note });
-    // keep the record on this side when the viewer can write; a failed write is never shown
-    try {
-      if (!S.readOnly && S.ready) S.put("feedback", { id: u.uid("f"), shareId: share.id, clientId: share.clientId || "", projectId: pid || share.projectId || "", kind: kind, target: target, text: note || (target === "plan" ? t(key, { project: project, what: what }) : what), who: "client", at: u.nowStamp() });
-    } catch (e) {}
-    delete ST.notes[target]; if (ta) ta.value = "";
-    ui.toast(t("cm_wa_open"));
-    var a = document.createElement("a"); a.href = WA + encodeURIComponent(msg); a.target = "_blank"; a.rel = "noopener noreferrer"; a.className = "cl-wa-open";
-    a.style.display = "none"; document.body.appendChild(a); a.click(); a.remove();
+    var feedbackText = note || (target === "plan" ? t(key, { project: project, what: what }) : what);
+    if (meta) feedbackText += "\n\n[[gecko-file:v1:" + encodeURIComponent(JSON.stringify(meta)) + "]]";
+    S.submitClientFeedback(token, kind, target, feedbackText, pid).then(function () {
+      delete ST.notes[ta ? ta.getAttribute("data-note") : target]; if (ta) ta.value = "";
+      ui.toast(t("cm_wa_open"));
+      var a = document.createElement("a"); a.href = WA + encodeURIComponent(msg); a.target = "_blank"; a.rel = "noopener noreferrer"; a.className = "cl-wa-open";
+      a.style.display = "none"; document.body.appendChild(a); a.click(); a.remove();
+    }, function (error) {
+      ui.toast("Feedback was not saved: " + (error && error.message ? error.message : "backend error"));
+    });
   });
   CM._waUrl = function (msg) { return WA + encodeURIComponent(msg); };
 })(window.GK);

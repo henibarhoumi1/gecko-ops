@@ -4,11 +4,11 @@ core/i18n.js
 assets/logo.js
 assets/photos.js
 core/model.js
+core/supabase.js
 core/store.js
 core/charts.js
 core/metrics.js
 core/ui.js
-core/seed.js
 modules/today.js
 modules/today_*.js
 modules/insights.js
@@ -45,12 +45,4 @@ modules/clientmode.js
 modules/clientmode_*.js
 modules/shell.js
 modules/shell_*.js
-modules/dashboard.seed.js
-modules/studio.seed.js
-modules/boards.seed.js
-modules/finance.seed.js
-modules/clientmode.seed.js
-modules/history.seed.js
-modules/demo.seed.js
-modules/*.v2seed.js
 core/main.js

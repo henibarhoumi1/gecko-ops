@@ -124,7 +124,7 @@
   // ---------- pipeline ----------
   GK.insight = {};
   GK.insight.pipeline = function () {
-    var today = td(), pv = X.pipelineAt(today), prev = X.pipelineAt(d(-30)), open = S.all("leads").filter(function (l) { return X.OPEN_LEAD.indexOf(l.stage) > -1; });
+    var today = td(), pv = X.pipelineAt(today), prev = X.pipelineAt(d(-30)), open = S.all("leads").filter(m.isOpen);
     var w90 = X.winRateIn(90), w90p = X.winRateIn(90, d(-90)), cold = X.coldLeads(7);
     var cyc = X.leadCycle(180), cycP = X.leadCycle(180, d(-180)), allTime = false;
     if (cyc.days == null) { cyc = X.leadCycle(0); allTime = true; }

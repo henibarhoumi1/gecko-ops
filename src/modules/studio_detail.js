@@ -44,6 +44,9 @@
     st_d_notes: ["Notes", "Notes"], st_d_notes_ph: ["Anything the team should know", "Tout ce que l'équipe doit savoir"],
     st_d_delete: ["Delete idea", "Supprimer l'idée"], st_d_delete_q: ["Delete this idea?", "Supprimer cette idée ?"], st_d_delete_b: ["The idea and its script are removed. The whiteboard stays.", "L'idée et son script sont supprimés. Le tableau blanc reste."],
     st_d_history: ["History", "Historique"], st_d_stage: ["Stage", "Étape"],
+    st_d_rev_send: ["Send approved revision", "Envoyer la version validée"],
+    st_d_source: ["Production source", "Source de production"],
+    st_d_existing_send: ["This approved revision is already linked to the project.", "Cette version validée est déjà liée au projet."],
     st_d_review_by: ["{who} asked Heni to review this script.", "{who} demande à Heni de relire ce script."],
     st_d_review_hint: ["Add a hook, a script and a client, then request review. Only Heni marks it ready.", "Ajoutez accroche, script et client, puis demandez la relecture. Seul Heni la marque prête."],
     st_d_missing: ["Still needed before ready:", "Il manque avant « prêt » :"],
@@ -80,6 +83,12 @@
     var pid = u.val("st-f-project"), pr = pid ? m.project(pid) : null;
     ch.projectId = pr && pr.clientId === ch.clientId ? pid : "";
     ch.angle = u.val("st-f-angle").trim();
+    ch.objective = u.val("st-f-objective").trim();
+    ch.audience = u.val("st-f-audience").trim();
+    ch.creativeType = ["offer", "objection", "proof", "brand"].indexOf(u.val("st-f-type")) > -1 ? u.val("st-f-type") : "brand";
+    ["offer", "objection", "proof", "cta"].forEach(function (k) {
+      var field = el("st-f-" + k); if (field) ch[k] = field.value.trim();
+    });
     var proj = ch.projectId ? m.project(ch.projectId) : null;
     var a = proj && (proj.angles || []).find(function (x) { return String(x.name).toLowerCase() === ch.angle.toLowerCase(); });
     ch.angleId = a ? a.id : "";
@@ -93,8 +102,16 @@
     ch.concept = u.val("st-f-concept").trim();
     ch.script = u.val("st-f-script");
     ch.notes = u.val("st-f-notes");
-    var scenes = [], n = 0;
-    while (el("st-sv-" + n)) { scenes.push({ v: u.val("st-sv-" + n), x: u.val("st-sx-" + n), s: Math.max(0, Math.round(u.numVal("st-ss-" + n))) }); n++; }
+    var scenes = [], n = 0, oldScenes = Array.isArray(i.scenes) ? i.scenes : [];
+    while (el("st-sv-" + n)) {
+      scenes.push({
+        id: oldScenes[n] && oldScenes[n].id || u.uid("sc"),
+        v: u.val("st-sv-" + n), x: u.val("st-sx-" + n),
+        s: Math.max(0, Math.round(u.numVal("st-ss-" + n))),
+        silent: u.checked("st-ssilent-" + n)
+      });
+      n++;
+    }
     ch.scenes = scenes;
     var diff = {}, any = false;
     Object.keys(ch).forEach(function (k) { if (!same(ch[k], i[k] == null ? (k === "tags" || k === "scenes" ? [] : "") : i[k])) { diff[k] = ch[k]; any = true; } });
@@ -146,7 +163,10 @@
     return S.all("projects").filter(function (p) { return p.clientId === clientId; }).sort(u.by(function (p) { return m.STAGES.indexOf(p.stage); }));
   }
   function sendableProjects(clientId) {
-    return projectsOf(clientId).filter(function (p) { var k = m.STAGES.indexOf(p.stage); return k >= 0 && k <= m.STAGES.indexOf("edit"); });
+    return projectsOf(clientId).filter(function (p) {
+      var k = m.STAGES.indexOf(p.stage);
+      return (k >= 0 && k <= m.STAGES.indexOf("editing")) || p.stage === "onboard" || p.stage === "edit";
+    });
   }
 
   function stagePanel(i) {
@@ -164,8 +184,14 @@
     } else h += '<p class="small muted" style="margin:0">' + esc(t("st_d_readonly")) + "</p>";
     if (H.waitingOn(i) && f) h += '<p class="note strong" style="margin:0">' + esc(t("st_d_review_by", { who: H.ownerName(i) })) + "</p>";
     if (!f && i.stage === "script" && !i.reviewAsked) h += '<p class="small muted" style="margin:0">' + esc(t("st_d_review_hint")) + "</p>";
-    if ((i.stage === "script" || i.stage === "concept") && gaps.length && H.can()) {
+    if (gaps.length && H.can()) {
       h += '<div class="stack" style="gap:4px"><span class="lab sm">' + esc(t("st_d_missing")) + "</span>" + gaps.map(function (g) { return '<p class="gate" style="margin:0">' + esc(g) + "</p>"; }).join("") + "</div>";
+    }
+    if (f) {
+      var haveRevisions = H.approvedRevisions(i).length > 0;
+      h += '<div class="row">' + ui.btn(t(haveRevisions ? "st_approve_revision" : "st_mark_ready"), "st-reapprove", {
+        cls: "ghost", data: { id: i.id }, disabled: !!gaps.length, title: gaps[0] || ""
+      }) + "</div>";
     }
     return h + "</section>";
   }
@@ -186,10 +212,24 @@
       Object.keys(angleNames).map(function (a) { return '<option value="' + esc(a) + '">'; }).join("") + '</datalist><span class="hint">' + esc(t("st_d_angle_hint")) + "</span></div>" +
       ui.field({ id: "st-f-mode", label: t("st_d_mode"), type: "select", value: i.mode === "I" ? "I" : "D", options: [["D", t("st_d_mode_d")], ["I", t("st_d_mode_i")]], attrs: D }) +
       ui.field({ id: "st-f-format", label: t("st_d_format"), type: "select", value: i.format || "9x16", options: m.FORMATS.map(function (x) { return [x, x]; }), attrs: D }) +
+      ui.field({ id: "st-f-objective", label: t("st_objective"), value: i.objective || "", attrs: D }) +
+      ui.field({ id: "st-f-audience", label: t("st_audience"), value: i.audience || "", attrs: D }) +
+      ui.field({ id: "st-f-type", label: t("st_creative_type"), type: "select", value: H.creativeType(i), options: [
+        ["offer", t("st_type_offer")], ["objection", t("st_type_objection")], ["proof", t("st_type_proof")], ["brand", t("st_type_brand")]
+      ], attrs: ' data-c="st-fchg"' + D }) +
       ui.field({ id: "st-f-owner", label: t("st_d_owner"), type: "select", value: i.owner || "", options: [["", "—"]].concat(team.map(function (x) { return [x.id, x.name]; })), attrs: D }) +
       ui.field({ id: "st-f-prio", label: t("st_d_prio"), type: "select", value: String(i.priority || 2), options: [["1", t("st_p1")], ["2", t("st_p2")], ["3", t("st_p3")]], attrs: D }) +
       ui.field({ id: "st-f-tags", label: t("st_d_tags"), value: (i.tags || []).join(", "), hint: t("st_d_tags_hint"), attrs: D }) +
       "</div></section>";
+  }
+  function conditionalBrief(i) {
+    var D = dis(), type = H.creativeType(i), fields = "";
+    if (type === "offer") fields += ui.field({ id: "st-f-offer", label: t("st_offer"), value: i.offer || "", attrs: D });
+    if (type === "objection") fields += ui.field({ id: "st-f-objection", label: t("st_objection"), value: i.objection || "", attrs: D });
+    if (type === "proof" || type === "objection") fields += ui.field({ id: "st-f-proof", label: t("st_proof"), type: "textarea", value: i.proof || "", attrs: D });
+    if (type !== "brand") fields += ui.field({ id: "st-f-cta", label: t("st_cta"), value: i.cta || "", attrs: D });
+    return '<section class="panel"><h2 class="sec">' + esc(t("st_brief")) + "</h2>" +
+      (fields ? '<div class="form">' + fields + "</div>" : '<p class="small muted" style="margin:0">' + esc(t("st_type_brand")) + "</p>") + "</section>";
   }
 
   function hookPanel(i) {
@@ -211,6 +251,7 @@
         '<textarea class="in" id="st-sv-' + k + '" rows="2" aria-label="' + esc(t("st_d_visual")) + '" placeholder="' + esc(t("st_d_visual")) + '"' + D + ">" + esc(s.v || "") + "</textarea>" +
         '<textarea class="in" id="st-sx-' + k + '" rows="2" aria-label="' + esc(t("st_d_voice")) + '" placeholder="' + esc(t("st_d_voice")) + '"' + D + ">" + esc(s.x || "") + "</textarea>" +
         '<input class="in num" id="st-ss-' + k + '" type="number" min="0" inputmode="numeric" aria-label="' + esc(t("st_d_secs")) + '" value="' + esc(s.s == null ? "" : s.s) + '" placeholder="s"' + D + ">" +
+        ui.field({ id: "st-ssilent-" + k, label: t("st_silent"), type: "checkbox", value: s.silent === true, attrs: D }) +
         "</div>";
     }).join("");
   }
@@ -244,20 +285,27 @@
   }
 
   function sendPanel(i) {
-    var lr = H.linkedReel(i), es = H.effStage(i);
+    var lr = H.linkedReel(i), revisions = H.approvedRevisions(i), selected = H.selectedRevision(i), founder = m.isFounder();
     var h = '<section class="panel"><h2 class="sec">' + esc(t("st_d_send")) + "</h2>";
-    if (i.reelId && lr) {
+    if (revisions.length) {
+      h += ui.field({ id: "st-d-revision", label: t("st_d_rev_send"), type: "select", value: selected && selected.id || "",
+        options: revisions.map(function (r, n) { return [r.id, t("st_revision_n", { n: n + 1, d: u.fmtDate(r.approvedOn || r.snapshot.approvedOn) })]; }),
+        attrs: ' data-c="st-pick-revision" data-id="' + esc(i.id) + '"' });
+      h += '<p class="small muted" style="margin:0">' + esc(t("st_revision_ready")) + "</p>";
+    } else {
+      h += '<p class="note" style="margin:0">' + esc(t("st_no_revision")) + "</p>";
+    }
+    if (lr) {
       var hooks = lr.r.hooks || [], ok = hooks.filter(function (x) { return x.status === "approved"; }).length;
       var code = m.hookCode(lr.p, lr.r, 0);
       h += '<p class="small muted" style="margin:0">' + esc(t("st_d_reel_in", { p: m.projectLabel(lr.p) })) + " · " + esc(t("st_d_hooks_ok", { a: ok, n: hooks.length })) + "</p>" +
         '<div class="stack" style="gap:4px"><span class="lab sm">' + esc(t("st_d_file")) + '</span><span class="code">' + esc(code) + "</span></div>" +
-        '<div class="row">' + ui.btn(t("st_d_open_prod"), "st-open-prod", { cls: "primary", data: { p: lr.p.id } }) + ui.btn(t("st_d_copy_code"), "st-copy-text", { cls: "ghost", data: { text: code } }) + "</div>";
-    } else {
-      if (i.reelId) h += '<p class="note" style="margin:0">' + esc(t("st_d_reel_gone")) + "</p>";
-      var why = es !== "ready" ? t("st_d_send_need_ready") : !m.can("projects.edit") ? t("st_d_send_need_rights") : "";
-      h += '<p class="small muted" style="margin:0">' + esc(t("st_d_send_note")) + "</p><div>" +
-        ui.btn(t("st_d_send_btn"), "st-send", { cls: "primary", data: { id: i.id }, disabled: !!why, title: why }) + "</div>";
+        '<div class="row">' + ui.btn(t("st_d_open_prod"), "st-open-prod", { cls: "ghost", data: { p: lr.p.id } }) + ui.btn(t("st_d_copy_code"), "st-copy-text", { cls: "ghost", data: { text: code } }) + "</div>";
     }
+    if (i.reelId && !lr) h += '<p class="note" style="margin:0">' + esc(t("st_d_reel_gone")) + "</p>";
+    var gaps = H.readyGaps(i), why = !revisions.length ? (gaps[0] || t("st_no_revision")) : !m.can("projects.edit") ? t("st_d_send_need_rights") : "";
+    h += '<p class="small muted" style="margin:0">' + esc(t("st_d_send_note")) + "</p><div>" +
+      ui.btn(t("st_d_send_btn"), "st-send", { cls: "primary", data: { id: i.id }, disabled: !!why, title: why }) + "</div>";
     return h + "</section>";
   }
 
@@ -285,7 +333,7 @@
       actions: ui.btn(t("st_d_back"), "st-back", { cls: "ghost" }) + (H.can() ? ui.btn(t("st_save"), "st-save", { cls: "primary", data: { id: i.id } }) : "")
     });
     return h + '<div class="st-detail">' + stagePanel(i) +
-      '<div class="grid2" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));align-items:start"><div class="stack" style="gap:18px">' + basicsPanel(i) + hookPanel(i) + "</div>" +
+      '<div class="grid2" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));align-items:start"><div class="stack" style="gap:18px">' + basicsPanel(i) + conditionalBrief(i) + hookPanel(i) + "</div>" +
       '<div class="stack" style="gap:18px">' + scriptPanel(i) + linksPanel(i) + "</div></div>" +
       '<div class="grid2" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));align-items:start">' + boardPanel(i) + sendPanel(i) + sharePanel(i) + notesPanel(i) + "</div></div>";
   };
@@ -306,6 +354,11 @@
     var p = ui.p("studio"); if (ui.state.view === "studio" && p.id) collect(p.id);
   });
   GK.change("st-fchg", function () { var p = ui.p("studio"); if (p.id) collect(p.id); });
+  GK.change("st-pick-revision", function (e) {
+    var i = S.get("ideas", e.dataset.id);
+    if (!i || !H.approvedRevisions(i).some(function (r) { return r.id === e.value; })) return;
+    S.patch("ideas", i.id, { selectedRevisionId: e.value });
+  });
   GK.act("st-scene-add", function (e) { mutateScenes(idOf(e), function (sc) { sc.push({ v: "", x: "", s: 3 }); }); });
   GK.act("st-scene-rm", function (e) { var n = +e.dataset.n; mutateScenes(idOf(e), function (sc) { sc.splice(n, 1); }); });
   GK.act("st-scene-up", function (e) { var n = +e.dataset.n; mutateScenes(idOf(e), function (sc) { if (n > 0) sc.splice(n - 1, 0, sc.splice(n, 1)[0]); }); });
@@ -352,6 +405,10 @@
   });
 
   GK.act("st-open-prod", function (e) { if (ui.modalOpen()) ui.closeModal(true); ui.go("production", { projectId: e.dataset.p }); });
+  GK.act("st-reapprove", function (e) {
+    collect(idOf(e));
+    if (H.approveCurrent(idOf(e))) ui.toast(t("st_moved", { s: H.stName("ready") }));
+  });
 
   GK.act("st-delete", function (e) {
     var id = idOf(e);
@@ -364,47 +421,194 @@
     var a = (p.angles || []).find(function (x) { return String(x.name).toLowerCase() === name.toLowerCase(); });
     return { name: name, existing: a || null };
   }
-  function sendBody(i, pid) {
-    var ps = sendableProjects(i.clientId), p = ps.find(function (x) { return x.id === pid; }) || ps[0];
-    var af = angleFor(p, i);
-    return ui.field({ id: "st-s-proj", label: t("st_d_send_pick"), type: "select", value: p.id, options: ps.map(function (x) { return [x.id, x.name + " · " + t("st_" + x.stage)]; }), attrs: ' data-c="st-s-proj" data-id="' + esc(i.id) + '"' }) +
+  var sendRevisionId = "";
+  function sendBody(i, pid, revisionId) {
+    var entry = H.selectedRevision(i, revisionId), revision = entry && entry.snapshot;
+    if (!revision) return "";
+    var ps = sendableProjects(revision.clientId), p = ps.find(function (x) { return x.id === pid; }) || ps[0];
+    if (!p) return '<p class="note">' + esc(t("st_d_send_no_proj")) + "</p>";
+    var af = angleFor(p, revision);
+    return ui.field({ id: "st-s-rev", label: t("st_d_rev_send"), type: "select", value: entry.id,
+      options: H.approvedRevisions(i).map(function (r, n) { return [r.id, t("st_revision_n", { n: n + 1, d: u.fmtDate(r.approvedOn || r.snapshot.approvedOn) })]; }),
+      attrs: ' data-c="st-s-rev" data-id="' + esc(i.id) + '"' }) +
+      ui.field({ id: "st-s-proj", label: t("st_d_send_pick"), type: "select", value: p.id, options: ps.map(function (x) { return [x.id, x.name + " · " + t("st_" + x.stage)]; }), attrs: ' data-c="st-s-proj" data-id="' + esc(i.id) + '"' }) +
       '<p class="small" style="margin:0">' + esc(t(af.existing ? "st_d_send_angle" : "st_d_send_new_angle", { a: af.name })) + "</p>" +
-      '<p class="small muted" style="margin:0">“' + esc(i.hook) + "” · " + esc(H.modeName(i.mode)) + " · " + esc(i.format || "9x16") + "</p>";
+      '<p class="small muted" style="margin:0">“' + esc(revision.hook) + "” · " + esc(H.modeName(revision.mode)) + " · " + esc(revision.format || "9x16") + "</p>";
   }
+  function snapshotScript(revision) {
+    var out = [];
+    (Array.isArray(revision.scenes) ? revision.scenes : []).forEach(function (s, k) {
+      if (!s || typeof s !== "object") return;
+      if (String(s.v || "").trim() || String(s.x || "").trim()) out.push(sceneLine(s, k + 1));
+    });
+    if (String(revision.script || "").trim()) out.push(String(revision.script).trim());
+    return out.join("\n");
+  }
+  function validHandoffProject(revision, p) {
+    return !!(revision && p && p.clientId === revision.clientId &&
+      sendableProjects(revision.clientId).some(function (x) { return x.id === p.id; }));
+  }
+  function handoff(i, p, entry) {
+    if (!i || !p || !entry || !entry.id || !entry.snapshot || !validHandoffProject(entry.snapshot, p)) return null;
+    var revision = entry.snapshot, revId = entry.id;
+    var reels = u.clone(Array.isArray(p.reels) ? p.reels : []);
+    var historyMatch = reels.find(function (r) {
+      return r && r.sourceIdeaId === i.id && Array.isArray(r.creativeHistory) &&
+        r.creativeHistory.some(function (x) { return x && x.revisionId === revId; });
+    });
+    var directMatch = reels.find(function (r) { return r && r.sourceIdeaId === i.id && r.creativeRevisionId === revId; });
+    var already = directMatch || historyMatch;
+    if (already) {
+      var existingEntry = (Array.isArray(i.handoffs) ? i.handoffs : []).find(function (x) {
+        return x && x.projectId === p.id && x.revisionId === revId && x.reelId === already.id;
+      });
+      var patchExisting = {};
+      if (!existingEntry) patchExisting.handoffs = (Array.isArray(i.handoffs) ? i.handoffs : []).concat([{ projectId: p.id, reelId: already.id, revisionId: revId }]);
+      if (i.projectId !== p.id || i.reelId !== already.id) {
+        patchExisting.projectId = p.id;
+        patchExisting.reelId = already.id;
+      }
+      if (Object.keys(patchExisting).length) S.patch("ideas", i.id, patchExisting);
+      return { project: p, reel: already, existing: true, hookIndex: 0 };
+    }
+
+    var angleName = String(revision.angle || "").trim();
+    var angle = (Array.isArray(p.angles) ? p.angles : []).find(function (a) {
+      return a && String(a.name || "").toLowerCase() === angleName.toLowerCase();
+    });
+    var sourceProject = i.projectId && m.project(i.projectId);
+    var reel = reels.find(function (r) {
+      return r && r.sourceIdeaId === i.id && r.angleId === (angle && angle.id || "");
+    });
+    if (!reel && sourceProject && sourceProject.id === p.id && i.reelId) {
+      var legacyReel = reels.find(function (r) { return r && r.id === i.reelId; }) || null;
+      if (legacyReel && !legacyReel.sourceIdeaId) reel = legacyReel;
+    }
+    if (!angle) {
+      angle = { id: u.uid("a"), name: angleName, why: String(revision.concept || "").replace(/\s+/g, " ").slice(0, 140) };
+      p = S.patch("projects", p.id, { angles: (Array.isArray(p.angles) ? p.angles : []).concat([angle]) });
+      if (!p) return null;
+      reels = u.clone(Array.isArray(p.reels) ? p.reels : []);
+    }
+
+    var created = !reel;
+    if (created) {
+      reel = {
+        id: u.uid("r"), angleId: angle.id, mode: revision.mode === "I" ? "I" : "D",
+        format: revision.format || "9x16", script: snapshotScript(revision),
+        scenes: u.clone(Array.isArray(revision.scenes) ? revision.scenes : []), drive: "",
+        sourceIdeaId: i.id, creativeRevisionId: revId, creativeSnapshot: u.clone(revision),
+        creativeHistory: [], productionScenes: [], hooks: []
+      };
+      reel.hooks.push({
+        id: u.uid("h"), text: String(revision.hook || ""), status: "todo", v: 1, clientOk: false,
+        drive: "", note: "", results: {}, sourceIdeaId: i.id, sourceRevisionId: revId
+      });
+      reel.currentHookId = reel.hooks[0].id;
+      reel.productionScenes = reel.scenes.map(function (s) { return { id: s.id, done: false }; });
+      reels.push(reel);
+    } else {
+      var previousRevisionId = reel.creativeRevisionId || "";
+      var previousSnapshot = reel.creativeSnapshot && typeof reel.creativeSnapshot === "object" ?
+        u.clone(reel.creativeSnapshot) : {
+          title: String(i.title || ""), hook: String(((reel.hooks || [])[0] || {}).text || ""),
+          script: String(reel.script || ""), scenes: u.clone(Array.isArray(reel.scenes) ? reel.scenes : [])
+        };
+      var creativeHistory = Array.isArray(reel.creativeHistory) ? u.clone(reel.creativeHistory) : [];
+      creativeHistory.push({
+        revisionId: previousRevisionId, snapshot: previousSnapshot,
+        productionScenes: u.clone(Array.isArray(reel.productionScenes) ? reel.productionScenes : []),
+        handedOffAt: u.today(), legacy: !reel.creativeSnapshot
+      });
+      var oldScenes = Array.isArray(reel.scenes) ? reel.scenes : [];
+      var oldChecklist = Array.isArray(reel.productionScenes) ? reel.productionScenes : [];
+      var nextScenes = Array.isArray(revision.scenes) ? u.clone(revision.scenes) : [];
+      var nextChecklist = nextScenes.map(function (s) {
+        var oldScene = oldScenes.find(function (x) { return x && x.id === s.id; });
+        var check = oldChecklist.find(function (x) { return x && x.id === s.id; });
+        var unchanged = oldScene && oldScene.v === s.v && oldScene.x === s.x && oldScene.s === s.s && oldScene.silent === s.silent;
+        return { id: s.id, done: !!(unchanged && check && check.done) };
+      });
+      var hooks = Array.isArray(reel.hooks) ? u.clone(reel.hooks) : [];
+      var currentHook = hooks.find(function (x) { return x && x.id === reel.currentHookId; }) || hooks[0];
+      if (!currentHook || String(currentHook.text || "") !== String(revision.hook || "")) {
+        currentHook = {
+          id: u.uid("h"), text: String(revision.hook || ""), status: "todo", v: 1, clientOk: false,
+          drive: "", note: "", results: {}, sourceIdeaId: i.id, sourceRevisionId: revId
+        };
+        hooks.push(currentHook);
+      } else if (!currentHook.sourceIdeaId) {
+        currentHook.sourceIdeaId = i.id;
+        currentHook.sourceRevisionId = revId;
+      }
+      Object.assign(reel, {
+        sourceIdeaId: i.id, creativeRevisionId: revId, creativeSnapshot: u.clone(revision),
+        creativeHistory: creativeHistory, angleId: angle.id,
+        mode: revision.mode === "I" ? "I" : "D", format: revision.format || "9x16",
+        script: snapshotScript(revision), scenes: nextScenes,
+        productionScenes: nextChecklist, hooks: hooks, currentHookId: currentHook.id
+      });
+    }
+
+    var projectUpdate = S.patch("projects", p.id, { reels: reels }, { log: t("st_log_sent") + " · " + revision.title });
+    if (!projectUpdate) return null;
+    var board = i.boardId && S.get("boards", i.boardId);
+    if (board) {
+      var previousProjectId = String(i.projectId || "");
+      var boardChanges = {};
+      if (!board.projectId || board.projectId === previousProjectId) boardChanges.projectId = p.id;
+      if (!board.clientId || board.clientId === revision.clientId) boardChanges.clientId = revision.clientId;
+      if (Object.keys(boardChanges).length) S.patch("boards", board.id, boardChanges);
+    }
+    var handoffs = Array.isArray(i.handoffs) ? i.handoffs.slice() : [];
+    handoffs.push({ projectId: p.id, reelId: reel.id, revisionId: revId });
+    S.patch("ideas", i.id, {
+      projectId: p.id, angleId: angle.id, angle: angle.name, reelId: reel.id,
+      handoffs: handoffs
+    }, { log: t("st_log_sent") });
+    var updatedProject = m.project(p.id) || projectUpdate;
+    var updatedReel = (updatedProject.reels || []).find(function (x) { return x.id === reel.id; }) || reel;
+    var currentHookIndex = (updatedReel.hooks || []).findIndex(function (x) { return x.id === updatedReel.currentHookId; });
+    return { project: updatedProject, reel: updatedReel, existing: false, hookIndex: Math.max(0, currentHookIndex) };
+  }
+  H.handoff = handoff;
   GK.act("st-send", function (e) {
     var i = collect(idOf(e)); if (!i) return;
     if (!m.can("projects.edit")) return ui.toast(t("st_d_send_need_rights"));
-    if (H.effStage(i) !== "ready") return ui.toast(t("st_d_send_need_ready"));
-    var g = H.readyGaps(i); if (g.length) return ui.toast(g[0]);
-    var ps = sendableProjects(i.clientId);
+    var revision = H.selectedRevision(i); if (!revision) return ui.toast(t("st_no_revision"));
+    var ps = sendableProjects(revision.snapshot.clientId);
     if (!ps.length) return ui.toast(t("st_d_send_no_proj"));
     var pre = ps.find(function (x) { return x.id === i.projectId; }) || ps[0];
+    sendRevisionId = revision.id;
     ui.modal({
       title: t("st_d_send"), accent: "", label: m.brand(i.clientId),
-      body: '<div id="st-send-body" class="stack">' + sendBody(i, pre.id) + "</div>",
+      body: '<div id="st-send-body" class="stack">' + sendBody(i, pre.id, sendRevisionId) + "</div>",
       foot: ui.btn(t("cancel"), "close", { cls: "ghost" }) + ui.btn(t("st_d_send_go"), "st-do-send", { cls: "primary", data: { id: i.id } })
     });
   });
   GK.change("st-s-proj", function (e) {
     var i = S.get("ideas", e.dataset.id), box = el("st-send-body"); if (!i || !box) return;
-    box.innerHTML = sendBody(i, e.value);
+    box.innerHTML = sendBody(i, e.value, sendRevisionId);
+  });
+  GK.change("st-s-rev", function (e) {
+    var i = S.get("ideas", e.dataset.id), box = el("st-send-body"); if (!i || !box) return;
+    sendRevisionId = e.value;
+    box.innerHTML = sendBody(i, u.val("st-s-proj"), sendRevisionId);
   });
   GK.act("st-do-send", function (e) {
     var i = S.get("ideas", idOf(e)), p = m.project(u.val("st-s-proj"));
     if (!i || !p) return;
     if (!m.can("projects.edit")) return ui.toast(t("st_d_send_need_rights"));
-    if (H.effStage(i) !== "ready" || i.reelId) return;
-    if (p.clientId !== i.clientId) return;
-    var angles = u.clone(p.angles || []), af = angleFor(p, i), a = af.existing ? angles.find(function (x) { return x.id === af.existing.id; }) : null;
-    if (!a) { a = { id: u.uid("a"), name: af.name, why: String(i.concept || "").replace(/\s+/g, " ").slice(0, 140) }; angles.push(a); }
-    var reel = {
-      id: u.uid("r"), angleId: a.id, mode: i.mode === "I" ? "I" : "D", format: i.format || p.format || "9x16", script: scriptText(i), drive: "",
-      hooks: [{ id: u.uid("h"), text: i.hook, status: "todo", v: 1, clientOk: false, drive: "" }]
-    };
-    var np = S.patch("projects", p.id, { angles: angles, reels: u.clone(p.reels || []).concat([reel]) }, { log: t("st_log_sent") + " · " + i.title });
-    if (!np) return;
-    S.patch("ideas", i.id, { projectId: p.id, angleId: a.id, angle: i.angle || a.name, reelId: reel.id }, { log: t("st_log_sent") });
-    var code = m.hookCode(np, reel, 0);
+    var entry = H.selectedRevision(i, sendRevisionId), revision = entry && entry.snapshot;
+    if (!revision || !validHandoffProject(revision, p)) return;
+    var result = H.handoff(i, p, entry);
+    if (!result || !result.project || !result.reel) return;
+    var np = result.project, reel = result.reel, code = m.hookCode(np, reel, result.hookIndex || 0);
+    if (result.existing) {
+      ui.closeModal(true);
+      ui.toast(t("st_d_existing_send"));
+      return;
+    }
     ui.modal({
       title: t("st_d_sent_t"), accent: t("st_d_sent_a"), label: m.projectLabel(np),
       body: '<div class="stack" style="gap:4px"><span class="lab sm">' + esc(t("st_d_file")) + '</span><span class="code">' + esc(code) + "</span></div>",

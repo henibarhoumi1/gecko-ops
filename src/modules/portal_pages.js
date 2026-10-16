@@ -4,6 +4,7 @@
   "use strict";
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
   var P = GK.portal = GK.portal || {};
+  var pendingNewPage = null;
 
   GK.i18n.add({
     po_tab_pages: ["Client pages", "Pages client"], po_tab_quick: ["Quick update", "Point rapide"],
@@ -21,6 +22,9 @@
     po_published_ok: ["Update published.", "Mise à jour publiée."],
     po_copy_link: ["Copy link", "Copier le lien"], po_preview: ["Preview as client", "Voir comme le client"],
     po_copy_msg: ["Copy WhatsApp message", "Copier le message WhatsApp"], po_delete: ["Delete page", "Supprimer la page"],
+    po_secure_link_missing: ["The one-time secure link is not in this browser session.", "Le lien sécurisé temporaire n'est pas dans cette session."],
+    po_secure_link_create: ["Generate a new secure link", "Générer un nouveau lien sécurisé"],
+    po_secure_link_created: ["A new secure link is ready.", "Un nouveau lien sécurisé est prêt."],
     po_link_note: ["On the hosted website this will be the client's own address. For now the client opens this link, and it works in the same app.", "Sur le site hébergé, ce sera l'adresse propre du client. Pour l'instant le client ouvre ce lien, et il fonctionne dans la même appli."],
     po_boards: ["Boards to show", "Tableaux à montrer"], po_no_boards: ["No whiteboards for this client yet.", "Aucun tableau pour ce client pour l'instant."],
     po_boards_na: ["Boards need the whiteboard module.", "Les tableaux demandent le module de tableaux blancs."],
@@ -38,12 +42,19 @@
     po_fb_h: ["What clients said", "Ce que disent les clients"], po_fb_sub: ["Replies from the page and from WhatsApp, in one place.", "Les retours de la page et de WhatsApp, au même endroit."],
     po_fb_add: ["Client said (WhatsApp)", "Le client a dit (WhatsApp)"], po_fb_none: ["No feedback yet.", "Pas encore de retour."],
     po_fb_kind: ["Kind", "Type"], po_fb_target: ["About", "À propos de"], po_fb_text: ["What they said", "Ce qu'il a dit"],
+    po_fb_file_target: ["{code} · version {version}", "{code} · version {version}"],
     po_k_comment: ["Comment", "Commentaire"], po_k_approve: ["Approved", "Validé"], po_k_changes: ["Wants changes", "Veut des changements"],
     po_t_plan: ["The plan", "Le plan"], po_t_other: ["Something else", "Autre chose"],
     po_fb_page: ["Which page", "Quelle page"], po_fb_proj: ["Project", "Projet"],
     po_fb_saved: ["Feedback saved.", "Retour enregistré."], po_fb_who_client: ["Client", "Client"],
     po_mark_ok: ["Mark plan approved", "Marquer le plan validé"], po_mark_q: ["Mark the plan as approved?", "Marquer le plan comme validé ?"], po_mark_b: ["This sets {project} as plan approved today. You can undo it in Projects.", "Le plan de {project} sera marqué validé aujourd'hui. Vous pouvez l'annuler dans Projets."],
     po_mark_done: ["Plan marked approved.", "Plan marqué validé."], po_plan_is_ok: ["Plan approved", "Plan validé"],
+    po_apply_file: ["Apply to file", "Appliquer au fichier"], po_apply_changes: ["Apply requested changes", "Appliquer les retouches"],
+    po_apply_file_q: ["Update this file's client approval?", "Mettre à jour la validation client de ce fichier ?"],
+    po_apply_file_b: ["This changes {code}, version {version} only. It does not change its immutable creative revision.", "Cela modifie uniquement {code}, version {version}. La révision créative reste inchangée."],
+    po_file_applied: ["Client feedback applied to {code} · v{version}.", "Retour client appliqué à {code} · v{version}."],
+    po_file_snapshot_failed: ["The file state changed, but this client page could not be refreshed. Publish an update before relying on its displayed status.", "L'état du fichier a changé, mais cette page client n'a pas pu être actualisée. Publiez une mise à jour avant de vous fier à son statut affiché."],
+    po_file_stale: ["This feedback does not match the current published file version. Publish the current file and ask the client to confirm again.", "Ce retour ne correspond pas à la version publiée actuelle. Publiez le fichier actuel et demandez une nouvelle confirmation au client."],
     po_no_perm2: ["Only Heni and Mohamed manage client pages.", "Seuls Heni et Mohamed gèrent les pages client."],
     po_no_perm3: ["Only Heni and Mohamed can approve a plan.", "Seuls Heni et Mohamed peuvent valider un plan."]
   });
@@ -68,6 +79,77 @@
     return found || target || t("po_t_other");
   }
 
+  function feedbackMeta(f) {
+    var match = /\n\n\[\[gecko-file:v1:([^\]]+)\]\]$/.exec(String(f && f.text || ""));
+    if (!match) return null;
+    try { return JSON.parse(decodeURIComponent(match[1])); } catch (e) { return null; }
+  }
+  function feedbackText(f) {
+    return String(f && f.text || "").replace(/\n\n\[\[gecko-file:v1:[^\]]+\]\]$/, "").trim();
+  }
+  function versionOf(item) { return +item.v || 1; }
+  function sourceRevisionOf(file) { return file.item.sourceRevisionId || (file.reel && file.reel.creativeRevisionId) || ""; }
+  function resolveFileFeedback(f) {
+    var meta = feedbackMeta(f);
+    if (!meta || !f || (f.kind !== "approve" && f.kind !== "changes") || f.target !== "reel:" + meta.reelId ||
+        f.projectId !== meta.projectId || !meta.fileKey || !meta.version) return null;
+    var share = S.get("shares", f.shareId), project = m.project(meta.projectId);
+    if (!share || share.clientId !== f.clientId || !project || project.clientId !== f.clientId) return null;
+    var publishedProject = (share.snapshot && share.snapshot.projects || []).find(function (p) { return p.id === meta.projectId; });
+    var publishedReel = publishedProject && (publishedProject.reels || []).find(function (r) { return r.id === meta.reelId; });
+    var publishedFile = publishedReel && (publishedReel.files || []).find(function (file) { return file.key === meta.fileKey; });
+    var file = m.findFile(project, meta.fileKey);
+    if (!publishedFile || !file || file.kind !== "hook" || file.reel.id !== meta.reelId ||
+        publishedFile.status !== "approved" || publishedFile.version !== meta.version ||
+        (publishedFile.revisionId || "") !== (meta.revisionId || "") ||
+        file.item.status !== "approved" || versionOf(file.item) !== meta.version ||
+        sourceRevisionOf(file) !== (meta.revisionId || "")) return null;
+    return { project: project, file: file, meta: meta, share: share };
+  }
+  function updatePublishedFile(resolved, changes) {
+    var snapshot = u.clone(resolved.share.snapshot);
+    var project = (snapshot.projects || []).find(function (p) { return p.id === resolved.meta.projectId; });
+    var reel = project && (project.reels || []).find(function (r) { return r.id === resolved.meta.reelId; });
+    var file = reel && (reel.files || []).find(function (f) { return f.key === resolved.meta.fileKey; });
+    if (!file) return false;
+    if (Object.prototype.hasOwnProperty.call(changes, "status")) file.status = changes.status;
+    if (Object.prototype.hasOwnProperty.call(changes, "clientOk")) file.clientOk = changes.clientOk;
+    return S.patch("shares", resolved.share.id, { snapshot: snapshot });
+  }
+  function applyFileFeedback(f) {
+    var resolved = resolveFileFeedback(f);
+    if (!resolved) return { ok: false };
+    var p = resolved.project, file = resolved.file, meta = resolved.meta;
+    var changes = f.kind === "approve" ? { clientOk: true } : { status: "revise", clientOk: false, note: feedbackText(f) };
+    if (f.kind === "changes" && !changes.note) return { ok: false };
+    if ((f.kind === "approve" && file.item.clientOk) ||
+        (f.kind === "changes" && file.item.status === "revise" && !file.item.clientOk && file.item.note === changes.note)) {
+      return { ok: true, unchanged: true, code: file.code, version: meta.version };
+    }
+    var reels = u.clone(p.reels || []), reel = reels.find(function (r) { return r.id === meta.reelId; });
+    var hook = reel && (reel.hooks || []).find(function (h) { return h.id === file.item.id; });
+    if (!hook) return { ok: false };
+    Object.assign(hook, changes);
+    var saved = S.patch("projects", p.id, { reels: reels }, { log: f.kind === "approve" ? "client approved " + file.code + " v" + meta.version : "client requested changes to " + file.code + " v" + meta.version });
+    if (!saved) return { ok: false };
+    var applied = { ok: true, code: file.code, version: meta.version };
+    var snapshotSave = updatePublishedFile(resolved, changes);
+    if (snapshotSave && typeof snapshotSave.then === "function") {
+      return snapshotSave.then(function (result) {
+        applied.snapshotOk = !!result;
+        return applied;
+      }, function (error) {
+        applied.snapshotOk = false;
+        applied.snapshotError = error;
+        return applied;
+      });
+    }
+    applied.snapshotOk = !!snapshotSave;
+    return applied;
+  }
+  P.resolveFileFeedback = resolveFileFeedback;
+  P.applyFileFeedback = applyFileFeedback;
+
   // ---------- one page panel ----------
   function pagePanel(s, c) {
     var sec = secs(s), ed = can(), dis = ed ? "" : " disabled";
@@ -76,10 +158,14 @@
     h += '<label class="check"><input type="checkbox" data-c="po-on" data-id="' + esc(s.id) + '"' + (s.enabled ? " checked" : "") + dis + "><span>" + esc(t("po_enabled")) + "</span></label>";
     // link
     var link = P.linkFor(s.id);
-    h += '<div class="stack" style="gap:6px"><span class="lab sm">' + esc(t("po_copy_link")) + '</span><code class="code" style="word-break:break-all;user-select:all">' + esc(link) + '</code><span class="small muted">' + esc(t("po_link_note")) + "</span></div>";
+    h += '<div class="stack" style="gap:6px"><span class="lab sm">' + esc(t("po_copy_link")) + '</span>';
+    if (link) h += '<code class="code" style="word-break:break-all;user-select:all">' + esc(link) + "</code>";
+    else h += '<span class="small muted">' + esc(t("po_secure_link_missing")) + "</span>";
+    h += '<span class="small muted">' + esc(t("po_link_note")) + "</span></div>";
     h += '<div class="row">' + ui.btn(t("po_publish"), "po-publish", { cls: "primary", data: { id: s.id }, disabled: !ed, title: ed ? "" : t("po_no_perm2") }) +
       ui.btn(t("po_copy_link"), "po-copylink", { data: { id: s.id } }) + ui.btn(t("po_preview"), "po-preview", { data: { id: s.id } }) +
-      ui.btn(t("po_copy_msg"), "po-wamsg", { data: { id: s.id } }) + "</div>";
+      ui.btn(t("po_copy_msg"), "po-wamsg", { data: { id: s.id } }) +
+      (S.backend === "supabase" && !link && s.enabled ? ui.btn(t("po_secure_link_create"), "po-regenerate", { data: { id: s.id } }) : "") + "</div>";
     h += '<span class="small muted">' + esc(t("po_publish_hint")) + "</span>";
     if (dirty(s)) h += '<p class="note" style="margin:0">' + esc(t("po_unpub")) + "</p>";
     // sections
@@ -120,11 +206,16 @@
     if (!list.length) return h + ui.empty(t("po_fb_none")) + "</section>";
     h += '<div class="list">' + list.map(function (f) {
       var sh = S.get("shares", f.shareId), p = m.project(f.projectId || (sh && sh.projectId));
+      var fileFeedback = resolveFileFeedback(f);
       var canOk = f.kind === "approve" && f.target === "plan" && p && !p.planApproved;
       var okBtn = canOk ? ui.btn(t("po_mark_ok"), "po-mark-ok", { cls: "sm", data: { id: f.id }, disabled: !m.can("projects.edit"), title: m.can("projects.edit") ? "" : t("po_no_perm3") }) : "";
+      if (fileFeedback && m.can("projects.edit")) {
+        okBtn = ui.btn(f.kind === "approve" ? t("po_apply_file") : t("po_apply_changes"), "po-apply-file", { cls: "sm", data: { id: f.id } });
+      }
+      var target = fileFeedback ? fileFeedback.file.code + " · v" + fileFeedback.meta.version : targetLabel(sh, f.target);
       return '<div class="li" style="align-items:flex-start"><div class="stack" style="gap:4px"><div class="row" style="gap:6px">' + ui.pill(t("po_k_" + f.kind), f.kind === "changes" ? "alert" : f.kind === "approve" ? "done" : "") +
-        "<strong>" + esc(targetLabel(sh, f.target)) + "</strong>" + (p ? '<span class="small muted">· ' + esc(p.name) + "</span>" : "") + "</div>" +
-        (f.text ? '<span style="white-space:pre-wrap">' + esc(f.text) + "</span>" : "") +
+        "<strong>" + esc(target) + "</strong>" + (p ? '<span class="small muted">· ' + esc(p.name) + "</span>" : "") + "</div>" +
+        (feedbackText(f) ? '<span style="white-space:pre-wrap">' + esc(feedbackText(f)) + "</span>" : "") +
         '<span class="small muted">' + esc(f.who === "client" ? t("po_fb_who_client") : m.member(f.who).name) + " · " + esc(when(f.at)) + (f.kind === "approve" && f.target === "plan" && p && p.planApproved ? " · " + esc(t("po_plan_is_ok")) : "") + "</span></div>" + okBtn + "</div>";
     }).join("") + "</div></section>";
     return h;
@@ -172,8 +263,9 @@
     var hits = P.check(snap);
     function go() {
       var me = GK.me();
-      S.patch("shares", s.id, { snapshot: snap, publishedAt: stampS(), publishedBy: me ? me.id : "", editedAt: "" }, { log: "published" });
-      ui.toast(t("po_published_ok"));
+      var saved = S.patch("shares", s.id, { snapshot: snap, feedbackTargets: P.feedbackTargets(snap), publishedAt: stampS(), publishedBy: me ? me.id : "", editedAt: "" }, { log: "published" });
+      if (saved && typeof saved.then === "function") saved.then(function (result) { if (result) ui.toast(t("po_published_ok")); });
+      else if (saved) ui.toast(t("po_published_ok"));
     }
     if (hits.length && !force) {
       ui.modal({ title: t("po_publish"), body: '<p style="margin:0">' + esc(t("po_unsafe", { hits: hits.slice(0, 3).join("; ") })) + "</p>", foot: ui.btn(t("cancel"), "close", { cls: "ghost" }) + ui.btn(t("po_unsafe_ok"), "po-publish-force", { data: { id: s.id } }) });
@@ -183,11 +275,21 @@
   }
   GK.act("po-publish", function (el) { if (!guard()) return; var s = S.get("shares", el.getAttribute("data-id")); if (s) publish(s); });
   GK.act("po-publish-force", function (el) { var s = S.get("shares", el.getAttribute("data-id")); ui.closeModal(true); if (s && guard()) publish(s, true); });
-  GK.act("po-copylink", function (el) { u.copy(P.linkFor(el.getAttribute("data-id"))).then(function (ok) { ui.toast(ok ? t("copied") : t("write_failed")); }); });
+  GK.act("po-copylink", function (el) {
+    var link = P.linkFor(el.getAttribute("data-id"));
+    if (!link) return ui.toast(t("po_secure_link_missing"));
+    u.copy(link).then(function (ok) { ui.toast(ok ? t("copied") : t("write_failed")); });
+  });
+  GK.act("po-regenerate", function (el) {
+    var id = el.getAttribute("data-id");
+    if (S.backend !== "supabase") return;
+    S.rotateClientShare(id).then(function () { render(); ui.toast(t("po_secure_link_created")); }, function (error) { ui.toast(error.message); });
+  });
   GK.act("po-wamsg", function (el) {
     var s = S.get("shares", el.getAttribute("data-id")); if (!s) return;
     var c = m.client(s.clientId); if (!c) return;
-    var msg = [t("po_wa_pg1", { name: c.contact || c.brand }), t("po_wa_pg2", { brand: c.brand }), P.linkFor(s.id), t("po_wa_pg4"), t("po_wa_pg5")].join("\n");
+    var link = P.linkFor(s.id); if (!link) return ui.toast(t("po_secure_link_missing"));
+    var msg = [t("po_wa_pg1", { name: c.contact || c.brand }), t("po_wa_pg2", { brand: c.brand }), link, t("po_wa_pg4"), t("po_wa_pg5")].join("\n");
     u.copy(msg).then(function (ok) { ui.toast(ok ? t("copied") : t("write_failed")); });
   });
   GK.act("po-preview", function (el) {
@@ -199,7 +301,11 @@
   GK.act("po-del", function (el) {
     if (!guard()) return;
     var id = el.getAttribute("data-id");
-    ui.confirm(t("po_del_q"), t("po_del_b"), function () { S.remove("shares", id); ui.toast(t("saved")); }, t("po_delete"));
+    ui.confirm(t("po_del_q"), t("po_del_b"), function () {
+      var result = S.remove("shares", id);
+      if (result && typeof result.then === "function") result.then(function (ok) { if (ok) ui.toast(t("saved")); });
+      else ui.toast(t("saved"));
+    }, t("po_delete"));
   });
 
   // new page
@@ -223,8 +329,31 @@
     var boards = [];
     var share = { id: P.newToken(), clientId: c.id, projectId: u.val("po-n-proj"), title: title, enabled: true, sections: sec, boardIds: boards, snapshot: null, publishedAt: "", publishedBy: "", note: "", created: stampS(), editedAt: "" };
     ui.closeModal(true);
+    if (S.backend === "supabase") {
+      var snapshot = P.buildSnapshot(share), hits = snapshot ? P.check(snapshot) : [];
+      function createSecurePage() {
+        if (!snapshot) return ui.toast(t("po_no_pages", { brand: c.brand }));
+        S.createClientShare(share, snapshot, P.feedbackTargets(snapshot)).then(function () {
+          ui.toast(t("po_published_ok")); ui.render(true);
+        }, function (error) { ui.toast("Could not create the secure page: " + error.message); });
+      }
+      if (hits.length) {
+        ui.modal({
+          title: t("po_publish"),
+          body: '<p style="margin:0">' + esc(t("po_unsafe", { hits: hits.slice(0, 3).join("; ") })) + "</p>",
+          foot: ui.btn(t("cancel"), "close", { cls: "ghost" }) + ui.btn(t("po_unsafe_ok"), "po-new-force", { cls: "primary" })
+        });
+        pendingNewPage = createSecurePage;
+      } else createSecurePage();
+      return;
+    }
     var saved = S.put("shares", share, { log: "created" });
     if (saved) publish(saved);
+  });
+  GK.act("po-new-force", function () {
+    ui.closeModal(true);
+    var create = pendingNewPage; pendingNewPage = null;
+    if (create) create();
   });
 
   // feedback by hand
@@ -236,6 +365,20 @@
     var ps = S.all("projects").filter(function (p) { return p.clientId === c.id; });
     var tg = [["plan", t("po_t_plan")]];
     shares.forEach(function (s) { (P.scriptCandidates(s)).forEach(function (x) { if (!tg.some(function (y) { return y[0] === x.key; })) tg.push([x.key, x.label]); }); });
+    shares.forEach(function (s) {
+      var targets = s.feedbackTargets || {};
+      (s.snapshot && s.snapshot.projects || []).forEach(function (p) {
+        (p.reels || []).forEach(function (r) {
+          var key = "reel:" + r.id;
+          if (!(targets[key] || []).some(function (kind) { return kind === "approve" || kind === "changes"; })) return;
+          (r.files || []).forEach(function (file) {
+            if (file.status !== "approved" || !file.key || !file.version) return;
+            var meta = { shareId: s.id, projectId: p.id, reelId: r.id, fileKey: file.key, version: file.version, revisionId: file.revisionId || "" };
+            tg.push(["file:" + encodeURIComponent(JSON.stringify(meta)), t("po_fb_file_target", { code: file.code, version: file.version }) + " · " + p.name]);
+          });
+        });
+      });
+    });
     tg.push(["other", t("po_t_other")]);
     ui.modal({
       title: t("po_fb_add"), label: c.brand,
@@ -249,12 +392,20 @@
   });
   GK.act("po-fb-save", function (el) {
     var c = m.client(el.getAttribute("data-id")); if (!c) return;
-    var kind = u.val("po-f-kind"), target = u.val("po-f-target"), text = u.val("po-f-text").trim();
+    var kind = u.val("po-f-kind"), target = u.val("po-f-target"), shareId = u.val("po-f-share"), projectId = u.val("po-f-proj"), text = u.val("po-f-text").trim(), meta = null;
     if (kind !== "approve" && !text) { u.focus("po-f-text"); return ui.toast(t("required")); }
+    if (target.indexOf("file:") === 0) {
+      try { meta = JSON.parse(decodeURIComponent(target.slice(5))); } catch (e) { return ui.toast(t("po_file_stale")); }
+      if (!meta || meta.shareId !== shareId || meta.projectId !== projectId || !meta.reelId || !meta.fileKey || !meta.version) return ui.toast(t("po_file_stale"));
+      target = "reel:" + meta.reelId;
+      delete meta.shareId;
+      if (kind !== "comment") text += "\n\n[[gecko-file:v1:" + encodeURIComponent(JSON.stringify(meta)) + "]]";
+    }
     ui.closeModal(true);
     var me = GK.me();
-    S.put("feedback", { id: u.uid("f"), shareId: u.val("po-f-share"), clientId: c.id, projectId: u.val("po-f-proj"), kind: kind, target: target === "other" ? "" : target, text: text, who: "client", at: u.nowStamp(), by: me ? me.id : "" });
-    ui.toast(t("po_fb_saved"));
+    var saved = S.put("feedback", { id: u.uid("f"), shareId: shareId, clientId: c.id, projectId: projectId, kind: kind, target: target, text: text, who: "client", at: u.nowStamp(), by: me ? me.id : "" });
+    if (saved && typeof saved.then === "function") saved.then(function () { ui.toast(t("po_fb_saved")); }, function (error) { ui.toast("Feedback was not saved: " + error.message); });
+    else if (saved) ui.toast(t("po_fb_saved"));
   });
   GK.act("po-mark-ok", function (el) {
     if (!m.can("projects.edit")) return ui.toast(t("po_no_perm3"));
@@ -264,5 +415,21 @@
       S.patch("projects", p.id, { planApproved: true, planApprovedOn: u.today() }, { log: "plan approved" });
       ui.toast(t("po_mark_done"));
     }, t("po_mark_ok"));
+  });
+  GK.act("po-apply-file", function (el) {
+    if (!m.can("projects.edit")) return ui.toast(t("po_no_perm3"));
+    var f = S.get("feedback", el.getAttribute("data-id")), resolved = f && resolveFileFeedback(f);
+    if (!resolved) return ui.toast(t("po_file_stale"));
+    var meta = resolved.meta;
+    ui.confirm(t("po_apply_file_q"), t("po_apply_file_b", { code: resolved.file.code, version: meta.version }), function () {
+      function done(result) {
+        if (!result.ok) return ui.toast(t("po_file_stale"));
+        ui.toast(result.snapshotOk ? t("po_file_applied", { code: result.code, version: result.version }) : t("po_file_snapshot_failed"));
+        render();
+      }
+      var result = applyFileFeedback(f);
+      if (result && typeof result.then === "function") result.then(done, function (error) { ui.toast("Client approval update failed: " + (error && error.message || "unknown error")); });
+      else done(result);
+    }, f.kind === "approve" ? t("po_apply_file") : t("po_apply_changes"));
   });
 })(window.GK);

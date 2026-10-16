@@ -93,9 +93,14 @@
     pj_hook_text: ["Hook text", "Texte de l'accroche"],
     // money
     pj_money: ["Money", "Argent"], pj_price: ["Price", "Prix"], pj_received: ["Received", "Reçu"], pj_costs: ["Costs", "Coûts"],
+    pj_cost_basis: ["Cost basis (estimate + actual)", "Base de coûts (estimations + réel)"],
+    pj_cost_basis_h: ["Un actual expense replaces only the estimate explicitly selected in Expenses. Other estimates and actual expenses remain separate.", "Une dépense réelle remplace uniquement l'estimation explicitement sélectionnée dans Dépenses. Les autres estimations et dépenses réelles restent distinctes."],
+    pj_estimate: ["Estimate", "Estimation"], pj_estimate_replaced: ["replaced by linked actual spend", "remplacée par une dépense réelle liée"],
+    pj_actual_cost: ["Actual spend", "Dépenses réelles"], pj_estimated_total: ["Budget estimates", "Estimations budgétaires"],
     pj_profit: ["Profit", "Bénéfice"], pj_comm: ["Mohamed {p}", "Mohamed {p}"],
     pj_net_note: ["tax withheld included, stamps excluded", "retenue incluse, hors timbre"],
     pj_cost_founder: ["Only Heni changes cost lines: they set the commission.", "Seul Heni modifie les coûts : ils fixent la commission."],
+    pj_lead_link_error: ["Project created, but its lead link could not be saved. The source lead is retained on the project for recovery.", "Projet créé, mais le lien au prospect n'a pas été enregistré. Le prospect source est conservé sur le projet pour récupération."],
     pj_log_kv: ["{k}: {v}", "{k} : {v}"],
     pj_comm_paid: ["paid {d}", "payée le {d}"], pj_comm_owed: ["{x} owed now", "{x} dus maintenant"], pj_comm_wait: ["due once the client paid in full", "due quand le client a tout payé"],
     pj_kind: ["Kind", "Type"], pj_label: ["Line", "Ligne"], pj_amount: ["Amount", "Montant"],
@@ -106,7 +111,7 @@
     pj_draft_no: ["draft", "brouillon"], pj_open_fin: ["Open in Money", "Ouvrir dans Argent"],
     pj_gates: ["The two gates", "Les deux verrous"], pj_gate_ok: ["clear", "levé"], pj_gate_no: ["closed", "fermé"],
     pj_gate_files_m: ["No files until this month is paid.", "Pas de fichiers avant le paiement du mois."],
-    pj_per_month: ["per month", "par mois"],
+    pj_per_month: ["per month", "par mois"], pj_linked_exp: ["Project-linked expense", "Dépense liée au projet"],
     // tasks / log
     pj_tasks: ["Tasks", "Tâches"], pj_task_ph: ["What needs doing", "Ce qu'il faut faire"], pj_who: ["Who", "Qui"], pj_due: ["Due", "Échéance"],
     pj_add_task: ["Add task", "Ajouter la tâche"], pj_no_tasks: ["No tasks on this project.", "Aucune tâche sur ce projet."],
@@ -149,28 +154,28 @@
 
   /** Invoice drafts for a fresh project: deposit + balance (one-off) or one month (SKIN). */
   function draftInvoices(p) {
-    var pk = m.pack(p.pack), r = m.rules(), base = { no: "", clientId: p.clientId, projectId: p.id, stamp: r.stamp, issued: "", due: "", payments: [], credited: false, log: [] };
+    var pk = m.pack(p.pack), r = m.rules(), price = m.projectPrice(p), base = { no: "", clientId: p.clientId, projectId: p.id, stamp: r.stamp, issued: "", due: "", payments: [], credited: false, log: [] };
     if (pk.monthly) {
-      return [Object.assign({}, base, { kind: "month", label: pk.name + " · " + p.name, amount: pk.price })];
+      return [Object.assign({}, base, { kind: "month", label: pk.name + " · " + p.name, amount: price })];
     }
-    var dep = Math.round(pk.price / 2);
+    var dep = Math.round(price / 2);
     return [
       Object.assign({}, base, { kind: "deposit", label: pk.name + " · " + p.name + " · " + t("pj_inv_deposit"), amount: dep }),
-      Object.assign({}, base, { kind: "balance", label: pk.name + " · " + p.name + " · " + t("pj_inv_balance"), amount: pk.price - dep })
+      Object.assign({}, base, { kind: "balance", label: pk.name + " · " + p.name + " · " + t("pj_inv_balance"), amount: price - dep })
     ];
   }
   function baseProject(o) {
     return {
-      clientId: o.clientId, contractId: o.contractId || "", month: o.month || 0, name: o.name, pack: o.pack, stage: "onboard",
+      clientId: o.clientId, sourceLeadId: o.sourceLeadId || "", sourceQuoteId: o.sourceQuoteId || "", contractId: o.contractId || "", month: o.month || 0, name: o.name, pack: o.pack, price: o.price, stage: "onboarding",
       planApproved: false, planApprovedOn: "", shootDate: o.shootDate || "", format: "9x16", mohamed: !!o.mohamed,
       onboarding: o.onboarding || [false, false, false, false, false, false, false],
       angles: [], reels: [], carousels: [], costs: m.estimateCosts(o.pack), report: emptyReport(), payout: null, log: []
     };
   }
-  function createWithInvoices(proj, log) {
+  function createWithInvoices(proj, log, skipDrafts) {
     var p = S.put("projects", proj, { log: log });
     if (!p) return null;
-    draftInvoices(p).forEach(function (inv) { S.put("invoices", inv, { log: log }); });
+    if (!skipDrafts) draftInvoices(p).forEach(function (inv) { S.put("invoices", inv, { log: log }); });
     return p;
   }
   /** Next SKIN month of a contract. Onboarding carries over except the plan and shoot steps. */
@@ -178,6 +183,7 @@
     var ms = m.contractMonths(c), last = ms[ms.length - 1], n = (last ? last.month : 0) + 1;
     var p = createWithInvoices(baseProject({
       clientId: c.clientId, contractId: c.id, month: n, name: t("pj_month_n", { n: n }), pack: c.pack,
+      price: m.contractPrice(c),
       mohamed: last ? !!last.mohamed : false, onboarding: [true, true, true, true, true, false, false]
     }), t("pj_month_n", { n: n }));
     return p ? { p: p, n: n } : null;
@@ -361,29 +367,36 @@
     return h + "</section>";
   }
   function moneyPanel(p) {
-    var ed = canCost(), pk = m.pack(p.pack), costs = p.costs || [], com = m.commission(p);
+    var ed = canCost(), pk = m.pack(p.pack), costs = p.costs || [], expenses = m.projectExpenses(p), com = m.commission(p);
     var h = '<section class="panel"><div class="panel-h"><h2 class="sec">' + esc(t("pj_money")) + "</h2></div>";
     var k = [
-      { lab: t("pj_price"), v: u.money(pk.price), n: pk.monthly ? t("pj_per_month") : "" },
+      { lab: t("pj_price"), v: u.money(m.toTND(m.projectPrice(p), pk.currency)), n: pk.monthly ? t("pj_per_month") : "" },
       { lab: t("pj_received"), v: u.money(m.received(p)), n: t("pj_net_note") },
-      { lab: t("pj_costs"), v: u.money(m.costOf(p)) },
+      { lab: t("pj_cost_basis"), v: u.money(m.costOf(p)) },
       { lab: t("pj_profit"), v: u.money(m.profit(p)) }
     ];
     if (p.mohamed) k.push({ lab: t("pj_comm", { p: commPct() }), v: u.money(com.amount), n: com.paidOn ? t("pj_comm_paid", { d: u.fmtDate(com.paidOn) }) : com.owed ? t("pj_comm_owed", { x: u.money(com.owed) }) : t("pj_comm_wait") });
     h += ui.kpis(k);
     // cost lines
     h += '<h3 class="sec">' + esc(t("pj_costs")) + "</h3>";
-    if (!costs.length) h += ui.empty(t("pj_no_costs"));
+    h += '<p class="small muted" style="margin:0">' + esc(t("pj_cost_basis_h")) + "</p>";
+    h += '<div class="row small muted"><span>' + esc(t("pj_estimated_total")) + ": " + esc(u.money(m.estimatedCostOf(p))) + "</span><span>" + esc(t("pj_actual_cost")) + ": " + esc(u.money(m.actualCostOf(p))) + "</span></div>";
+    if (!costs.length && !expenses.length) h += ui.empty(t("pj_no_costs"));
     else {
       h += '<div class="tbl"><table><thead><tr><th>' + esc(t("pj_kind")) + "</th><th>" + esc(t("pj_label")) + '</th><th class="r">' + esc(t("pj_amount")) + "</th>" + (ed ? "<th></th>" : "") + "</tr></thead><tbody>" +
         costs.map(function (c) {
-          if (!ed) return "<tr><td>" + esc(t("pj_k_" + c.kind)) + "</td><td>" + esc(c.label) + '</td><td class="r num">' + esc(u.money(c.amount)) + "</td></tr>";
+          var replaced = expenses.some(function (e) { return e.estimateId === c.id; });
+          if (!ed) return "<tr><td>" + esc(t("pj_k_" + c.kind)) + "</td><td>" + esc(c.label) + ' <span class="small muted">· ' + esc(t(replaced ? "pj_estimate_replaced" : "pj_estimate")) + '</span></td><td class="r num">' + esc(u.money(c.amount)) + "</td></tr>";
           return '<tr><td><select class="in" style="min-width:104px" aria-label="' + esc(t("pj_kind")) + '" data-c="pj-cost" data-id="' + esc(c.id) + '" data-f="kind">' +
             KINDS.map(function (kd) { return '<option value="' + kd + '"' + (c.kind === kd ? " selected" : "") + ">" + esc(t("pj_k_" + kd)) + "</option>"; }).join("") + "</select></td>" +
             '<td><input class="in" style="min-width:160px" aria-label="' + esc(t("pj_label")) + '" value="' + esc(c.label) + '" data-c="pj-cost" data-id="' + esc(c.id) + '" data-f="label"></td>' +
             '<td class="r"><input class="in num" type="number" inputmode="decimal" aria-label="' + esc(t("pj_amount")) + '" value="' + esc(c.amount) + '" data-c="pj-cost" data-id="' + esc(c.id) + '" data-f="amount"></td>' +
             '<td class="r">' + ui.btn(t("pj_remove"), "pj-cost-del", { cls: "ghost sm", data: { id: c.id } }) + "</td></tr>";
-        }).join("") + '</tbody><tfoot><tr><td colspan="2">' + esc(t("pj_total")) + '</td><td class="r num">' + esc(u.money(m.costOf(p))) + "</td>" + (ed ? "<td></td>" : "") + "</tr></tfoot></table></div>";
+        }).join("") +
+        expenses.map(function (e) {
+          return "<tr><td>" + esc(t("pj_actual_cost")) + "</td><td>" + esc(e.label || "—") + ' <span class="small muted">' + esc(u.fmtDate(e.date)) + "</span></td><td class=\"r num\">" + esc(u.money(e.amount)) + "</td>" + (ed ? "<td></td>" : "") + "</tr>";
+        }).join("") +
+        '</tbody><tfoot><tr><td colspan="2">' + esc(t("pj_total")) + '</td><td class="r num">' + esc(u.money(m.costOf(p))) + "</td>" + (ed ? "<td></td>" : "") + "</tr></tfoot></table></div>";
     }
     var cd = dis(!ed, t("pj_cost_founder"));
     h += '<div class="row">' + ui.btn(t("pj_add_cost"), "pj-cost-add", opts({ cls: "sm" }, cd)) + (!costs.length ? ui.btn(t("pj_fill_est"), "pj-cost-est", opts({ cls: "ghost sm" }, cd)) : "") + "</div>";
@@ -460,7 +473,7 @@
   function openNew(o) {
     o = o || {};
     if (!canCreate()) { ui.toast(t("pj_no_perm")); return; }
-    newCtx = { contractId: o.contractId || "", month: o.month || 0 };
+    newCtx = { contractId: o.contractId || "", month: o.month || 0, price: o.price, sourceLeadId: o.sourceLeadId || "", sourceQuoteId: o.sourceQuoteId || "" };
     var clients = S.all("clients").sort(u.by("brand"));
     var me = GK.me(), ctr = o.contractId ? S.get("contracts", o.contractId) : null;
     var pk = o.pack || (ctr && ctr.pack) || "GRIP";
@@ -492,6 +505,31 @@
     var clientId = u.val("pj-n-client"), pack = u.val("pj-n-pack"), name = u.val("pj-n-name").trim();
     if (!clientId) { u.focus("pj-n-client"); return ui.toast(t("required")); }
     var pk = m.pack(pack), contractId = newCtx.contractId, month = newCtx.month;
+    if (newCtx.sourceQuoteId) {
+      var sourceQuote = S.get("quotes", newCtx.sourceQuoteId);
+      if (!sourceQuote || sourceQuote.clientId !== clientId || sourceQuote.pack !== pack) return ui.toast(t("pj_lead_link_error"));
+      var quoteProject = S.all("projects").find(function (project) { return project.sourceQuoteId === newCtx.sourceQuoteId; });
+      if (quoteProject) {
+        if (quoteProject.clientId !== clientId) return ui.toast(t("pj_lead_link_error"));
+        var recovered = GK.finQuotes && GK.finQuotes.completeHandoff(newCtx.sourceQuoteId, quoteProject.id);
+        if (!recovered) return ui.toast(t("fi_q_handoff_error"));
+        ui.closeModal(true);
+        ui.go("projects", { id: quoteProject.id });
+        ui.toast(t("pj_created"));
+        return;
+      }
+    }
+    if (newCtx.sourceLeadId) {
+      var leadProject = S.get("leads", newCtx.sourceLeadId), existingProject = leadProject && leadProject.projectId ? m.project(leadProject.projectId) : null;
+      existingProject = existingProject || S.all("projects").find(function (project) { return project.sourceLeadId === newCtx.sourceLeadId; });
+      if (existingProject) {
+        if (existingProject.clientId !== clientId) return ui.toast(t("pj_lead_link_error"));
+        if (leadProject && leadProject.projectId !== existingProject.id && !S.patch("leads", leadProject.id, { projectId: existingProject.id })) return ui.toast(t("pj_lead_link_error"));
+        ui.closeModal(true);
+        ui.go("projects", { id: existingProject.id });
+        return;
+      }
+    }
     if (pk.monthly) {
       // A SKIN project belongs to a contract: reuse the client's active one for this pack, or open one.
       var c = contractId ? S.get("contracts", contractId) : null;
@@ -500,7 +538,7 @@
       // One active SKIN contract per client: a different SKIN pack can't open a second one.
       if (!c && S.all("contracts").some(function (x) { return x.clientId === clientId && x.status === "active"; })) { u.focus("pj-n-pack"); return ui.toast(t("pj_skin_has")); }
       if (!c) {
-        c = S.put("contracts", { clientId: clientId, pack: pack, start: u.month(u.today()), minMonths: 3, status: "active" });
+        c = S.put("contracts", { clientId: clientId, pack: pack, monthlyPrice: newCtx.price != null ? +newCtx.price : m.priceFor(pack, clientId, 1).price, start: u.month(u.today()), minMonths: 3, status: "active" });
         if (!c) return;
       }
       contractId = c.id;
@@ -508,10 +546,22 @@
       if (!name) name = t("pj_month_n", { n: month });
     } else { contractId = ""; month = 0; }
     if (!name) { u.focus("pj-n-name"); return ui.toast(t("required")); }
-    var p = createWithInvoices(baseProject({ clientId: clientId, contractId: contractId, month: month, name: name, pack: pack, mohamed: u.checked("pj-n-moh") }), t("pj_created"));
+    var price = pk.monthly
+      ? m.contractPrice(c)
+      : (newCtx.price != null ? newCtx.price : m.priceFor(pack, clientId, month).price);
+    var p = createWithInvoices(baseProject({ clientId: clientId, sourceLeadId: newCtx.sourceLeadId, sourceQuoteId: newCtx.sourceQuoteId, contractId: contractId, month: month, name: name, pack: pack, price: price, mohamed: u.checked("pj-n-moh") }), t("pj_created"), !!newCtx.sourceQuoteId);
     if (!p) return;
+    var leadLinkFailed = false;
+    if (newCtx.sourceLeadId) {
+      var sourceLead = S.get("leads", newCtx.sourceLeadId);
+      if (sourceLead && !S.patch("leads", sourceLead.id, { projectId: p.id })) leadLinkFailed = true;
+    }
+    var quoteHandoffFailed = false;
+    if (newCtx.sourceQuoteId) {
+      quoteHandoffFailed = !(GK.finQuotes && GK.finQuotes.completeHandoff(newCtx.sourceQuoteId, p.id));
+    }
     ui.closeModal(true);
-    ui.toast(t("pj_created"));
+    ui.toast(t(leadLinkFailed ? "pj_lead_link_error" : quoteHandoffFailed ? "fi_q_handoff_error" : "pj_created"));
     ui.go("projects", { id: p.id });
   });
   GK.act("pj-month", function (el) {

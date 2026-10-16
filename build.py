@@ -8,7 +8,7 @@ The same file runs as a claude.ai artifact (shared team data through the artifac
 and as a plain static website (data kept in the browser until a hosted backend is plugged in).
 The brand fonts (Geist, Instrument Serif; woff2 from gecko/brand/fonts) are inlined, so nothing loads from a font CDN.
 """
-import base64, os, pathlib, re, sys
+import base64, json, os, pathlib, re, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent
 SRC = ROOT / "src"
@@ -26,12 +26,33 @@ def order():
     return out
 
 def build():
+    backend_url = os.environ.get("GK_SUPABASE_URL", "").strip().rstrip("/")
+    backend_key = os.environ.get("GK_SUPABASE_ANON_KEY", "").strip()
+    if bool(backend_url) != bool(backend_key):
+        sys.exit("Set both GK_SUPABASE_URL and GK_SUPABASE_ANON_KEY, or neither.")
+    if backend_url:
+        if not re.match(r"^https?://(localhost|127\.0\.0\.1|\[::1\])(?::[0-9]+)?$", backend_url):
+            sys.exit("For Phase 0, only a local Supabase URL may be embedded in the build.")
+        if backend_key.lower().startswith(("sb_secret_", "service_role")):
+            sys.exit("A service-role/secret key must never be embedded in the browser build.")
+        try:
+            payload = backend_key.split(".")[1]
+            claims = json.loads(base64.urlsafe_b64decode(payload + "=" * (-len(payload) % 4)))
+            if claims.get("role") == "service_role":
+                sys.exit("A service-role key must never be embedded in the browser build.")
+        except (IndexError, ValueError, json.JSONDecodeError):
+            pass
     css = (SRC / "styles" / "tokens.css").read_text() + "\n" + (SRC / "styles" / "app.css").read_text()
     def font(m):
         f = SRC / "assets" / "fonts" / (m.group(1) + ".woff2")
         return "data:font/woff2;base64," + base64.b64encode(f.read_bytes()).decode()
     css = re.sub(r"__FONT_([a-z0-9-]+)__", font, css)
-    js = []
+    js = [
+        "window.GK_BACKEND_CONFIG = " + json.dumps(
+            {"url": backend_url, "anonKey": backend_key},
+            separators=(",", ":")
+        ) + ";"
+    ]
     for rel in order():
         code = (SRC / rel).read_text()
         if "</script" in code.lower():

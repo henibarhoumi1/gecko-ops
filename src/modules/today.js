@@ -172,14 +172,14 @@
   // ---------- founder: decide first (insight strip, hero, decisions), then activity, team load and money ----------
   function monthCash(ym) {
     var c = 0;
-    S.all("invoices").forEach(function (i) { if (i.kind === "credit") return; (i.payments || []).forEach(function (p) { if (u.month(p.date) === ym) c += +p.net || 0; }); });
+    S.all("invoices").forEach(function (i) { if (i.kind === "credit") return; (i.payments || []).forEach(function (p) { if (u.month(p.date) === ym) c += m.toTND(+p.net || 0, i.currency || "TND"); }); });
     return c;
   }
   function pctChange(now, before) { return before ? (now - before) / Math.abs(before) * 100 : null; }
   function recent() {
     var td = today(), from = u.addDays(td, -7), out = [];
     S.all("invoices").forEach(function (i) {
-      (i.payments || []).forEach(function (p) { if (p.date >= from && p.date <= td) out.push({ at: p.date, icon: "cash", tone: "chroma", text: t("td_a_paid", { brand: m.brand(i.clientId), amt: u.money((+p.net || 0) + (+p.withheld || 0)) }), a: "td-go", data: { v: "finance" } }); });
+      (i.payments || []).forEach(function (p) { if (p.date >= from && p.date <= td) out.push({ at: p.date, icon: "cash", tone: "chroma", text: t("td_a_paid", { brand: m.brand(i.clientId), amt: u.money(m.toTND((+p.net || 0) + (+p.withheld || 0), i.currency || "TND")) }), a: "td-go", data: { v: "finance" } }); });
     });
     S.all("feedback").forEach(function (f) {
       var d = (f.at || "").slice(0, 10); if (d < from) return;

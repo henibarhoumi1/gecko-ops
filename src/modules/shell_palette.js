@@ -14,7 +14,7 @@
     sh_p_nav: ["navigate", "naviguer"], sh_p_open: ["open", "ouvrir"], sh_p_close: ["close", "fermer"],
     sh_p_lang: ["Switch to French", "Passer en anglais"], sh_p_dark: ["Dark theme", "Thème sombre"], sh_p_light: ["Light theme", "Thème clair"], sh_p_auto: ["Theme follows the system", "Thème selon le système"],
     sh_p_rail: ["Collapse or expand the sidebar", "Replier ou déplier le menu"], sh_p_help: ["Keyboard shortcuts", "Raccourcis clavier"],
-    sh_p_sample: ["Show sample data", "Voir les données d'exemple"], sh_p_live: ["Show live data", "Voir les vraies données"],
+    sh_p_sample: ["Use local workspace", "Utiliser l'espace local"], sh_p_live: ["Show live data", "Voir les vraies données"],
     sh_p_due: ["due {d}", "pour le {d}"], sh_p_done: ["done", "faite"],
     // help sheet
     sh_k_title: ["Keyboard shortcuts", "Raccourcis clavier"], sh_k_general: ["General", "Général"], sh_k_go: ["Go to", "Aller à"],
@@ -65,7 +65,7 @@
     if (th !== "auto") add("sh_p_prefs", "theme", t("sh_p_auto"), "", function () { ui.trigger("theme", { m: "auto" }); }, "theme auto system systeme");
     add("sh_p_prefs", "sidebar", t("sh_p_rail"), "", function () { ui.trigger("rail-mini"); }, "sidebar menu rail");
     if (S.mode === "demo" && S.hasLive()) add("sh_p_prefs", "swap", t("sh_p_live"), "", function () { ui.trigger("show-live"); }, "live");
-    if (S.mode !== "demo") add("sh_p_prefs", "swap", t("sh_p_sample"), "", function () { ui.trigger("show-demo"); }, "sample demo exemple");
+    if (S.mode !== "demo") add("sh_p_prefs", "swap", t("sh_p_sample"), "", function () { ui.trigger("show-demo"); }, "local workspace");
     add("sh_p_prefs", "keyboard", t("sh_p_help"), "", function () { SH.help(); }, "help aide shortcuts raccourcis keyboard clavier");
     return out;
   }

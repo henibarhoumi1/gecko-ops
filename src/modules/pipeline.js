@@ -36,15 +36,25 @@
     pl_everyone: ["Everyone", "Tout le monde"],
     pl_k_open: ["Open leads", "Prospects en cours"], pl_k_due: ["Follow up now", "À relancer"], pl_k_qual: ["Fully qualified", "Qualifiés 4/4"],
     pl_k_dms: ["DMs this week", "DM cette semaine"], pl_k_dms_n: ["target 50 to 70", "objectif 50 à 70"],
-    pl_saved_won: ["Won. {b} is now a client.", "Gagné. {b} est maintenant client."], pl_won_existing: ["Won. Opening a project for {b}.", "Gagné. Ouverture d'un projet pour {b}."],
+    pl_won_value: ["Won opportunity estimate: {a}. It is not invoiced revenue.", "Estimation des opportunités gagnées : {a}. Ce n'est pas du chiffre d'affaires facturé."],
+    pl_confirmed_revenue: ["Confirmed invoiced revenue this year: {r}.", "Chiffre d'affaires facturé confirmé cette année : {r}."],
+    pl_convert_title: ["Convert signed lead", "Convertir le prospect signé"], pl_convert_hint: ["Signing creates or links a client, but the lead stays signed until the required upfront payment is recorded.", "La signature crée ou relie un client, mais le prospect reste signé jusqu'à l'enregistrement du paiement initial requis."],
+    pl_convert_choose: ["Choose an existing client", "Choisir un client existant"], pl_convert_use: ["Use selected client", "Utiliser ce client"], pl_convert_create: ["Create a new client", "Créer un nouveau client"],
+    pl_convert_need: ["Choose a client first.", "Choisissez d'abord un client."],
+    pl_duplicate_client_q: ["A client with this brand name already exists. Create a separate record anyway?", "Un client portant déjà ce nom existe. Créer tout de même une fiche distincte ?"],
+    pl_duplicate_client_body: ["Creating a new record will not merge it with the existing client. Check the list carefully before continuing.", "La nouvelle fiche ne sera pas fusionnée avec le client existant. Vérifiez bien la liste avant de continuer."],
+    pl_saved_won: ["Signed. {b} is now linked to this lead.", "Signé. {b} est maintenant lié à ce prospect."], pl_won_existing: ["Signed. Opening the project for {b}.", "Signé. Ouverture du projet de {b}."],
+    pl_signed_unpaid: ["A signed deal stays open until its required upfront payment is recorded.", "Un contrat signé reste en cours jusqu'à l'enregistrement du paiement initial requis."],
+    pl_conversion_error: ["The conversion could not be saved. No project was opened; retry to recover any client created from this lead.", "La conversion n'a pas été enregistrée. Aucun projet n'a été ouvert ; réessayez pour retrouver tout client créé depuis ce prospect."],
+    pl_won_payment_error: ["The lead was not marked won because its payment status could not be reconciled.", "Le prospect n'a pas été marqué gagné car le statut de paiement n'a pas pu être vérifié."],
     pl_moved: ["Moved to {s}", "Passé à {s}"], pl_del_q: ["Delete this lead?", "Supprimer ce prospect ?"],
     pl_del_body: ["It disappears from the board and the funnel. Clients and projects stay.", "Il disparaît du tableau et de l'entonnoir. Les clients et projets restent."],
     pl_deleted: ["Lead deleted", "Prospect supprimé"], pl_history: ["History", "Historique"],
     pl_client_note: ["From the pipeline · {h}", "Depuis la prospection · {h}"], pl_read: ["Read only", "Lecture seule"]
   });
 
-  var OPEN = ["dm", "replied", "call", "proposal"];
-  var LEAD_DOT = { dm: "dot-blue", replied: "dot-yellow", call: "dot-pink", proposal: "dot-chroma" };
+  var OPEN = m.OPEN_STAGES.slice();
+  var LEAD_DOT = { prospect: "dot-blue", contacted: "dot-blue", conversation: "dot-yellow", meeting_booked: "dot-pink", qualified: "dot-chroma", proposal_sent: "dot-chroma", negotiation: "dot-pink", accepted: "dot-chroma", signed: "dot-chroma" };
   var QN = 4;
 
   function canEdit() { return m.can("leads"); }
@@ -72,7 +82,7 @@
   function stageSelect(l) {
     if (!canEdit()) return "";
     return '<select class="in inline small" data-c="pl-move" data-id="' + esc(l.id) + '" aria-label="' + esc(t("pl_move") + " · " + l.brand) + '">' +
-      m.LEAD_STAGES.map(function (s) { return '<option value="' + s + '"' + (s === l.stage ? " selected" : "") + ">" + esc(t("ls_" + s)) + "</option>"; }).join("") + "</select>";
+      m.LEAD_STAGES.map(function (s) { return '<option value="' + s + '"' + (s === m.leadStage(l) ? " selected" : "") + ">" + esc(t("ls_" + s)) + "</option>"; }).join("") + "</select>";
   }
   function card(l) {
     var n = qn(l), owner = m.member(l.owner);
@@ -87,7 +97,7 @@
 
   function board(leads) {
     return '<div class="board">' + OPEN.map(function (s) {
-      var list = leads.filter(function (l) { return l.stage === s; }).sort(byNext);
+      var list = leads.filter(function (l) { return m.leadStage(l) === s; }).sort(byNext);
       return '<section class="col" aria-label="' + esc(t("ls_" + s)) + '"><div class="col-h"><span class="lab">' + ui.dot(LEAD_DOT[s]) + esc(t("ls_" + s)) + '</span><span class="small muted num">' + list.length + "</span></div>" +
         (list.length ? list.map(card).join("") : '<p class="small faint" style="margin:0">—</p>') + "</section>";
     }).join("") + "</div>";
@@ -140,13 +150,16 @@
   GK.view("pipeline", {
     render: function (params) {
       var leads = S.all("leads"), today = u.today(), owner = params.owner || "";
-      var open = leads.filter(function (l) { return OPEN.indexOf(l.stage) > -1; });
+      var open = leads.filter(m.isOpen);
       var due = open.filter(function (l) { return l.nextDate && l.nextDate <= today; }).length;
       var qual = open.filter(m.qualified).length;
       var week = m.funnel(u.weekStart(today), owner);
       var add = ui.btn(t("pl_add"), "pl-new", { cls: "primary", disabled: !canEdit(), title: canEdit() ? "" : t("pl_no_edit") });
+      var values = t("pl_won_value", { a: u.money(GK.x.wonOpportunityValue()) });
+      if (m.isFounder()) values += " " + t("pl_confirmed_revenue", { r: u.money(GK.x.confirmedRevenue(u.year(today))) });
       return ui.head({ label: t("nav_pipeline"), title: t("pl_title"), accent: t("pl_accent"), sub: esc(t("pl_sub", { open: open.length, due: due })) + " " + ui.sample(), actions: add }) +
         GK.insight.pipeline() +
+        '<p class="small muted">' + esc(values) + "</p>" +
         board(open) +
         '<div class="grid3">' + closedList(leads, "won") + closedList(leads, "lost") + reasonsPanel(leads, owner) + "</div>" +
         funnelPanel(owner);
@@ -161,24 +174,98 @@
     },
     count: function () {
       var today = u.today();
-      return S.all("leads").filter(function (l) { return l.nextDate && l.nextDate <= today && l.stage !== "won" && l.stage !== "lost"; }).length || "";
+      return S.all("leads").filter(function (l) { return m.isOpen(l) && l.nextDate && l.nextDate <= today; }).length || "";
     }
   });
 
   // ---------- stage moves ----------
-  function wonFlow(lead) {
-    var c = S.all("clients").find(function (x) { return norm(x.brand) === norm(lead.brand); });
-    if (!c) {
-      c = S.put("clients", { brand: (lead.brand || "").trim(), code: codeOf(lead.brand), contact: lead.contact || "", phone: "", whatsapp: "", email: "", sector: "", taxId: "", buyer: "",
-        baseline: { v: 0, date: "" }, notes: lead.handle ? t("pl_client_note", { h: lead.handle }) : "" }, { log: t("pl_log_client") });
-      ui.toast(t("pl_saved_won", { b: c.brand }));
-    } else ui.toast(t("pl_won_existing", { b: c.brand }));
-    if (GK.pj && typeof GK.pj.openNew === "function") GK.pj.openNew({ clientId: c.id, pack: lead.pack || "", mohamed: m.member(lead.owner).role === "sales" });
+  function wonFlow(lead, fields) {
+    var related = relatedClient(lead);
+    if (related) return finishConversion(lead, related, fields, false);
+    var clients = S.all("clients").sort(u.by("brand"));
+    ui.modal({
+      title: t("pl_convert_title"), accent: t("pl_lead"), label: lead.brand || "",
+      body: '<p class="small muted">' + esc(t("pl_convert_hint")) + "</p>" +
+        ui.field({ id: "pl-convert-client", label: t("pl_convert_choose"), type: "select", value: "", options: [["", "—"]].concat(clients.map(function (c) { return [c.id, [c.brand, c.code, c.contact].filter(Boolean).join(" · ")]; })) }),
+      foot: ui.btn(t("cancel"), "pl-convert-cancel", { cls: "ghost" }) +
+        ui.btn(t("pl_convert_use"), "pl-convert-existing", { cls: "primary", data: { id: lead.id, fields: JSON.stringify(fields || {}) } }) +
+        ui.btn(t("pl_convert_create"), "pl-convert-new", { cls: "ghost", data: { id: lead.id, fields: JSON.stringify(fields || {}) } })
+    });
+  }
+  function fieldsFrom(el) {
+    try { return JSON.parse(el.dataset.fields || "{}"); }
+    catch (error) { ui.toast(t("pl_conversion_error")); return null; }
+  }
+  function relatedClient(lead) {
+    var byLead = lead.clientId && S.get("clients", lead.clientId);
+    if (byLead) return byLead;
+    return S.all("clients").find(function (client) { return client.sourceLeadId === lead.id; }) || null;
+  }
+  function linkedProject(lead, client) {
+    var byId = lead.projectId && S.get("projects", lead.projectId);
+    if (byId && byId.clientId === client.id) return byId;
+    return S.all("projects").find(function (project) { return project.sourceLeadId === lead.id && project.clientId === client.id; }) || null;
+  }
+  function openWonProject(lead, client, created) {
+    ui.toast(t(created ? "pl_saved_won" : "pl_won_existing", { b: client.brand }));
+    var project = linkedProject(lead, client);
+    if (project) {
+      if (lead.projectId !== project.id) S.patch("leads", lead.id, { projectId: project.id });
+      ui.go("projects", { id: project.id });
+    } else if (GK.pj && typeof GK.pj.openNew === "function") {
+      GK.pj.openNew({ clientId: client.id, pack: lead.pack || "", mohamed: m.member(lead.owner).role === "sales", sourceLeadId: lead.id });
+    }
     else ui.go("projects");
   }
+  function finishConversion(lead, client, fields, created) {
+    var current = S.get("leads", lead.id);
+    if (!current || !S.get("clients", client.id)) return ui.toast(t("pl_conversion_error"));
+    var stage = m.leadStage(current), history = (current.history || []).slice();
+    if (stage !== "signed") history.push({ stage: "signed", at: u.today() });
+    var patch = Object.assign({}, fields || {}, { clientId: client.id, stage: "signed", lostReason: "", history: history });
+    var saved = S.patch("leads", current.id, patch, { log: t("pl_log_moved", { s: t("ls_signed") }) });
+    if (!saved) return ui.toast(t("pl_conversion_error"));
+    ui.closeModal(true);
+    var project = linkedProject(saved, client);
+    if (project) {
+      var payment = m.syncLeadPayment(project.id);
+      if (!payment.ok) return ui.toast(t("pl_won_payment_error"));
+      saved = S.get("leads", saved.id) || saved;
+    }
+    openWonProject(saved, client, created);
+  }
+  function saveNewWonClient(lead, fields) {
+    var related = relatedClient(lead);
+    if (related) return finishConversion(lead, related, fields, false);
+    var client = S.put("clients", { brand: (lead.brand || "").trim(), code: codeOf(lead.brand), sourceLeadId: lead.id, contact: lead.contact || "", phone: "", whatsapp: "", email: "", sector: "", taxId: "", buyer: "",
+      baseline: { v: 0, date: "" }, notes: lead.handle ? t("pl_client_note", { h: lead.handle }) : "" }, { log: t("pl_log_client") });
+    if (!client) return ui.toast(t("pl_conversion_error"));
+    finishConversion(lead, client, fields, true);
+  }
+  GK.act("pl-convert-existing", function (el) {
+    var lead = S.get("leads", el.dataset.id), client = S.get("clients", u.val("pl-convert-client"));
+    if (!lead) return;
+    if (!client) return ui.toast(t("pl_convert_need"));
+    var fields = fieldsFrom(el); if (!fields) return;
+    finishConversion(lead, client, fields, false);
+  });
+  GK.act("pl-convert-new", function (el) {
+    var lead = S.get("leads", el.dataset.id); if (!lead) return;
+    var fields = fieldsFrom(el); if (!fields) return;
+    var related = relatedClient(lead);
+    if (related) return finishConversion(lead, related, fields, false);
+    if (S.all("clients").some(function (client) { return norm(client.brand) === norm(lead.brand); })) {
+      return ui.confirm(t("pl_duplicate_client_q"), t("pl_duplicate_client_body"), function () { saveNewWonClient(lead, fields); }, t("pl_convert_create"));
+    }
+    saveNewWonClient(lead, fields);
+  });
+  GK.act("pl-convert-cancel", function () { ui.closeModal(true); });
   /** Move a lead to a stage. extra = other fields saved at the same time. */
   function moveTo(id, stage, extra) {
     var l = S.get("leads", id); if (!l) return;
+    if (stage === "won") {
+      return wonFlow(Object.assign({}, l, extra || {}), extra);
+    }
     var patch = Object.assign({}, extra || {}), moved = stage !== l.stage;
     if (moved) {
       patch.stage = stage;
@@ -186,8 +273,7 @@
       if (stage !== "lost") patch.lostReason = "";
     }
     var saved = S.patch("leads", id, patch, { log: moved ? t("pl_log_moved", { s: t("ls_" + stage) }) : t("pl_log_edited") });
-    if (moved && stage === "won") wonFlow(saved || Object.assign({}, l, patch));
-    else ui.toast(moved ? t("pl_moved", { s: t("ls_" + stage) }) : t("saved"));
+    ui.toast(moved ? t("pl_moved", { s: t("ls_" + stage) }) : t("saved"));
   }
   function lostModal(id) {
     var l = S.get("leads", id) || {};
@@ -203,6 +289,7 @@
     var id = el.dataset.id, stage = el.value;
     if (!canEdit()) return ui.toast(t("pl_no_edit"));
     if (stage === "lost") { ui.render(true); return lostModal(id); }
+    if (stage === "won") ui.render(true);
     moveTo(id, stage);
   });
   GK.act("pl-lost-save", function (el) {
@@ -216,7 +303,7 @@
   // ---------- add / edit ----------
   function leadModal(l) {
     var isNew = !l, ro = !canEdit(), dis = ro ? " disabled" : "";
-    l = l || { brand: "", contact: "", handle: "", channel: "teardown_dm", stage: "dm", q: [false, false, false, false], pack: m.packKeys()[0] || "", next: "", nextDate: u.addDays(u.today(), 2), owner: defaultOwner(), lostReason: "" };
+    l = l || { brand: "", contact: "", handle: "", channel: "outbound_dm", stage: "prospect", q: [false, false, false, false], pack: m.packKeys()[0] || "", next: "", nextDate: u.addDays(u.today(), 2), owner: defaultOwner(), lostReason: "" };
     var owners = sellers(); if (l.owner && !owners.some(function (p) { return p.id === l.owner; })) owners.push(m.member(l.owner));
     var q = l.q || [];
     var hist = (l.history || []).slice().reverse().map(function (h) { return esc(t("ls_" + h.stage)) + " · " + esc(u.fmtDate(h.at)); }).join("<br>");
@@ -233,8 +320,8 @@
       '<div class="form">' +
       ui.field({ id: "pl-next", label: t("pl_next"), value: l.next, placeholder: t("pl_next_ph"), attrs: dis }) +
       ui.field({ id: "pl-nextdate", label: t("pl_next_date"), type: "date", value: l.nextDate, attrs: dis }) +
-      ui.field({ id: "pl-stage", label: t("pl_stage"), type: "select", value: l.stage, options: m.LEAD_STAGES.map(function (s) { return [s, t("ls_" + s)]; }), attrs: dis + ' data-c="pl-mstage"' }) +
-      '<div id="pl-lostwrap"' + (l.stage === "lost" ? "" : " hidden") + ">" +
+      ui.field({ id: "pl-stage", label: t("pl_stage"), type: "select", value: m.leadStage(l), options: m.LEAD_STAGES.map(function (s) { return [s, t("ls_" + s)]; }), attrs: dis + ' data-c="pl-mstage"' }) +
+      '<div id="pl-lostwrap"' + (m.leadStage(l) === "lost" ? "" : " hidden") + ">" +
       ui.field({ id: "pl-lostr", label: t("pl_lost_reason"), type: "select", value: l.lostReason || "", options: [["", "—"]].concat(m.LOST_REASONS.map(function (r) { return [r, t("pl_lr_" + r)]; })), attrs: dis }) + "</div>" +
       "</div>" +
       (hist ? '<div class="stack" style="gap:4px"><span class="lab sm muted">' + esc(t("pl_history")) + '</span><p class="small muted" style="margin:0">' + hist + "</p></div>" : "");
@@ -255,6 +342,7 @@
     if (!brand) { u.focus("pl-brand"); return ui.toast(t("required")); }
     var stage = u.val("pl-stage"), lr = u.val("pl-lostr");
     if (stage === "lost" && !lr) { u.focus("pl-lostr"); return ui.toast(t("required")); }
+    if (!id && stage === "won") return ui.toast(t("pl_signed_unpaid"));
     var data = { brand: brand, contact: u.val("pl-contact").trim(), handle: u.val("pl-handle").trim(), channel: u.val("pl-channel"), pack: u.val("pl-pack"),
       owner: u.val("pl-owner-f"), q: [1, 2, 3, 4].map(function (i) { return u.checked("pl-q" + i); }), next: u.val("pl-next").trim(), nextDate: u.val("pl-nextdate"),
       lostReason: stage === "lost" ? lr : "" };
@@ -262,7 +350,7 @@
     ui.closeModal(true);
     if (!id) {
       var saved = S.put("leads", Object.assign(data, { stage: stage, history: [{ stage: stage, at: u.today() }] }), { log: t("pl_log_added") });
-      if (stage === "won") wonFlow(saved); else ui.toast(t("saved"));
+      ui.toast(t("saved"));
     } else moveTo(id, stage, data);
   });
   GK.act("pl-del", function (el) {
