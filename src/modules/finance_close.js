@@ -16,7 +16,7 @@
     fi_cl_cmp: ["Against last month and the goal", "Face au mois dernier et à l'objectif"], fi_cl_c_item: ["Line", "Ligne"], fi_cl_c_now: ["This month", "Ce mois"], fi_cl_c_prev: ["Last month", "Mois dernier"], fi_cl_c_diff: ["Change", "Écart"],
     fi_cl_goal: ["Monthly revenue goal: {g}. Invoiced this month: {i}, that is {p} of the goal.", "Objectif de chiffre d'affaires mensuel : {g}. Facturé ce mois : {i}, soit {p} de l'objectif."],
     fi_cl_goal_none: ["No monthly revenue goal set yet. Set one in Settings to compare.", "Pas encore d'objectif mensuel. Définissez-en un dans Réglages pour comparer."],
-    fi_cl_pay: ["Heni's real pay", "Le vrai revenu de Heni"],
+    fi_cl_pay: ["Owner's real pay", "Le vrai revenu du fondateur"],
     fi_cl_pay_ok: ["Salary this month: {s}. After project costs, overheads and the reserve, {l} is left in the studio. If you take it all, your real pay is {r}.", "Salaire ce mois : {s}. Après les coûts projets, les charges et la réserve, il reste {l} dans le studio. Si vous le prenez en entier, votre vrai revenu est de {r}."],
     fi_cl_pay_short: ["Salary this month: {s}. The month did not cover it: it is short by {l}. In real terms the studio only earned {r} for you, and the rest of the salary came from savings.", "Salaire ce mois : {s}. Le mois ne l'a pas couvert : il manque {l}. En réalité le studio n'a gagné que {r} pour vous, le reste du salaire est venu de l'épargne."],
     fi_cl_pay_loss: ["Salary this month: {s}. The month was short by {l}, more than the salary itself: the studio earned nothing for you and spent savings.", "Salaire ce mois : {s}. Le mois est déficitaire de {l}, plus que le salaire lui-même : le studio n'a rien gagné pour vous et a puisé dans l'épargne."],

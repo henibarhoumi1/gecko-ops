@@ -19,7 +19,7 @@
     fi_ex_no_project: ["No project", "Sans projet"], fi_ex_f_none: ["Once", "Une fois"], fi_ex_f_monthly: ["Every month", "Chaque mois"],
     fi_ex_need_label: ["Say what the expense is.", "Indiquez de quelle dépense il s'agit."], fi_ex_need_amount: ["Enter an amount above zero.", "Entrez un montant supérieur à zéro."], fi_ex_need_date: ["Pick a date.", "Choisissez une date."],
     fi_ex_bad_link: ["The link must start with http:// or https://.", "Le lien doit commencer par http:// ou https://."], fi_ex_bad_until: ["The last month can't be before the first charge.", "Le dernier mois ne peut pas précéder le premier prélèvement."],
-    fi_ex_founder: ["Only Heni can change expenses.", "Seul Heni peut modifier les dépenses."],
+    fi_ex_founder: ["Only the owner can change expenses.", "Seul le fondateur peut modifier les dépenses."],
     fi_ex_del_q: ["Delete this expense?", "Supprimer cette dépense ?"], fi_ex_del_body: ["{l} · {a}. A monthly expense disappears from every month, including past closes.", "{l} · {a}. Une dépense mensuelle disparaît de tous les mois, y compris des clôtures passées."], fi_ex_deleted: ["Expense deleted", "Dépense supprimée"],
     fi_ex_k_month: ["Overheads this month", "Charges ce mois"], fi_ex_k_month_n: ["{n} lines", "{n} lignes"], fi_ex_k_rec: ["Monthly commitments", "Engagements mensuels"], fi_ex_k_rec_n: ["repeat every month", "reviennent chaque mois"],
     fi_ex_k_year: ["Overheads this year", "Charges cette année"], fi_ex_k_year_n: ["up to this month", "jusqu'à ce mois"],

@@ -10,7 +10,7 @@
   GK.i18n.add({
     ac_title: ["What", "Ce qui a"], ac_accent: ["changed", "bougé"],
     ac_sub: ["{n} changes in the last {d} days, newest first.", "{n} changements ces {d} derniers jours, du plus récent au plus ancien."],
-    ac_founder_only: ["The activity timeline is for Heni.", "Le fil d'activité est réservé à Heni."],
+    ac_founder_only: ["The activity timeline is for the owner.", "Le fil d'activité est réservé au fondateur."],
     ac_types: ["Show", "Afficher"], ac_person: ["Person", "Personne"], ac_anyone: ["Everyone", "Tout le monde"], ac_system: ["No one named", "Personne de nommé"],
     ac_t_project: ["Projects", "Projets"], ac_t_lead: ["Leads", "Prospects"], ac_t_client: ["Clients", "Clients"], ac_t_money: ["Money", "Argent"],
     ac_t_task: ["Tasks", "Tâches"], ac_t_message: ["Messages", "Messages"], ac_t_studio: ["Studio", "Studio"],

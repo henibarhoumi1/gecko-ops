@@ -6,7 +6,7 @@
   GK.i18n.add({
     fi_fc_open: ["Cash in the bank today (TND)", "Trésorerie en banque aujourd'hui (TND)"], fi_fc_open_h: ["The forecast starts from this number. Check it against your bank balance once a week.", "La prévision part de ce chiffre. Comparez-le chaque semaine au solde de la banque."],
     fi_fc_open_save: ["Save opening cash", "Enregistrer la trésorerie"], fi_fc_open_saved: ["Opening cash saved", "Trésorerie de départ enregistrée"], fi_fc_open_zero: ["Opening cash is 0, so the balances below show only the change from today. Enter your real balance to make them true.", "La trésorerie de départ est à 0 : les soldes ci-dessous montrent seulement la variation depuis aujourd'hui. Entrez votre solde réel."],
-    fi_fc_founder: ["Only Heni can change the opening cash.", "Seul Heni peut modifier la trésorerie de départ."],
+    fi_fc_founder: ["Only the owner can change the opening cash.", "Seul le fondateur peut modifier la trésorerie de départ."],
     fi_fc_chart: ["Cash balance, next 13 weeks", "Solde de trésorerie, 13 prochaines semaines"], fi_fc_chart_sub: ["Two lines: what is booked, and booked plus the leads you keep switched on. Estimate.", "Deux lignes : ce qui est acquis, et acquis plus les prospects que vous laissez activés. Estimation."],
     fi_fc_booked: ["Booked only", "Acquis seulement"], fi_fc_pipe: ["With pipeline", "Avec le pipeline"],
     fi_fc_neg_booked: ["Booked money only: the balance goes below zero in the week of {d} ({a}).", "Argent acquis seulement : le solde passe sous zéro la semaine du {d} ({a})."],
@@ -20,7 +20,7 @@
     fi_fc_nothing: ["Nothing this week.", "Rien cette semaine."], fi_fc_salary: ["Owner salary", "Salaire du fondateur"], fi_fc_comm: ["Partner share owed", "Part partenaire due"],
     fi_fc_if: ["What if", "Et si"], fi_fc_if_h: ["Switch leads off to see the line without them. Each lead counts as its chance times 50% of the pack (a month for monthly offers), two weeks after its next step.", "Désactivez des prospects pour voir la ligne sans eux. Chaque prospect compte à hauteur de sa probabilité × 50 % du pack (un mois pour les offres mensuelles), deux semaines après sa prochaine étape."],
     fi_fc_if_none: ["No lead at the call or proposal stage right now.", "Aucun prospect au stade appel ou proposition pour l'instant."], fi_fc_if_row: ["{b} · {s} · {a}", "{b} · {s} · {a}"],
-    fi_fc_note: ["Booked: unpaid invoices on their due date (late ones land in week 1). Out: overheads from the Expenses tab, Owner salary on the 1st, commission owed in week 1 and project costs in the week of the shoot. Estimate.", "Acquis : factures impayées à leur échéance (les retards tombent la semaine 1). Sorties : charges de l'onglet Dépenses, salaire de Heni le 1er, commission due la semaine 1 et coûts projets la semaine du tournage. Estimation."],
+    fi_fc_note: ["Booked: unpaid invoices on their due date (late ones land in week 1). Out: overheads from the Expenses tab, Owner salary on the 1st, commission owed in week 1 and project costs in the week of the shoot. Estimate.", "Acquis : factures impayées à leur échéance (les retards tombent la semaine 1). Sorties : charges de l'onglet Dépenses, salaire du fondateur le 1er, commission due la semaine 1 et coûts projets la semaine du tournage. Estimation."],
     fi_fc_prob: ["{p} chance", "{p} de chances"]
   });
 

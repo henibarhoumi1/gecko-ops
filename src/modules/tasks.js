@@ -55,7 +55,7 @@
     tk_p_log: ["History", "Historique"], tk_p_nolog: ["No changes recorded yet.", "Aucune modification enregistrée."],
     tk_p_open_proj: ["Open project", "Ouvrir le projet"], tk_saved: ["Task saved", "Tâche enregistrée"],
     tk_del_q: ["Delete this task?", "Supprimer cette tâche ?"], tk_del_b: ["It goes for everyone.", "Elle disparaît pour tout le monde."],
-    tk_deleted: ["Task deleted", "Tâche supprimée"], tk_no_del: ["Only Heni or the person on the task can delete it.", "Seuls Heni ou la personne concernée peuvent la supprimer."],
+    tk_deleted: ["Task deleted", "Tâche supprimée"], tk_no_del: ["Only the owner or the person on the task can delete it.", "Seuls le fondateur ou la personne concernée peuvent la supprimer."],
     tk_gone: ["This task no longer exists.", "Cette tâche n'existe plus."],
     tk_log_new: ["Created", "Créée"], tk_log_done: ["Marked done", "Marquée faite"], tk_log_reopen: ["Reopened", "Rouverte"],
     tk_log_doing: ["Started", "Commencée"], tk_log_todo: ["Back to do", "Remise à faire"], tk_log_edit: ["Edited: {f}", "Modifiée : {f}"],

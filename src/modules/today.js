@@ -48,7 +48,7 @@
     td_k_c_wait: ["Waiting on client payment", "En attente du paiement client"], td_k_c_n: ["{n}% of project profit", "{n} % du bénéfice projet"],
     td_no_log: ["Only sales can log DMs.", "Seul le commercial peut saisir les DM."],
     // editor
-    td_files: ["Files to work on", "Fichiers à travailler"], td_no_files: ["Nothing to edit. Check with Heni.", "Rien à monter. Voyez avec Heni."],
+    td_files: ["Files to work on", "Fichiers à travailler"], td_no_files: ["Nothing to edit. Check with the owner.", "Rien à monter. Voyez avec le fondateur."],
     td_open_prod: ["Open production", "Ouvrir la production"], td_drive: ["Drive", "Drive"],
     td_c_file: ["File", "Fichier"], td_c_project: ["Project", "Projet"], td_c_status: ["Status", "Statut"],
     td_more_files: ["{n} more in Production.", "{n} de plus dans Production."],

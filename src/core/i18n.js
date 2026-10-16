@@ -47,7 +47,7 @@
     start_live_shared: ["You'll get an empty workspace shared with everyone you give access to this page. Existing local records remain in this browser.", "Vous obtenez un espace vide, partagé avec toutes les personnes qui ont accès à cette page. Les données locales existantes restent dans ce navigateur."],
     start_live_local: ["You'll get an empty workspace saved in this browser only. Sharing with the team comes when this page is shared or hosted.", "Vous obtenez un espace vide, enregistré dans ce navigateur seulement. Le partage avec l'équipe vient quand la page est partagée ou hébergée."],
     shared_note: ["Shared with the team", "Partagé avec l'équipe"], local_note: ["Saved in this browser", "Enregistré dans ce navigateur"],
-    read_only: ["You can view this page but not change it. Ask Heni for Contributor access.", "Vous pouvez consulter cette page mais pas la modifier. Demandez à Heni un accès Contributeur."],
+    read_only: ["You can view this page but not change it. Ask the owner for Contributor access.", "Vous pouvez consulter cette page mais pas la modifier. Demandez au fondateur un accès Contributeur."],
     write_failed: ["That change wasn't saved. Check your connection and try again.", "Cette modification n'a pas été enregistrée. Vérifiez la connexion et réessayez."],
     quota_full: ["The shared database is full. Delete old messages or tasks, then try again.", "La base partagée est pleine. Supprimez d'anciens messages ou tâches, puis réessayez."],
     join_title: ["Who are you on the team?", "Qui êtes-vous dans l'équipe ?"],
@@ -94,9 +94,9 @@
     launch_price: ["Launch price", "Prix de lancement"], standard_price: ["Standard price", "Prix standard"],
     per_month: ["/ month", "/ mois"], sample_tag: ["Local", "Local"],
     orders_week: ["orders / week", "commandes / semaine"],
-    est_owner_days: ["Heni, director and camera ({n} day × {r})", "Heni, réalisation et image ({n} j × {r})"],
-    est_owner_project: ["Heni, director and camera (project)", "Heni, réalisation et image (projet)"],
-    est_owner_edit: ["Heni, editing ({n} reels)", "Heni, montage ({n} reels)"],
+    est_owner_days: ["Owner, director and camera ({n} day × {r})", "Fondateur, réalisation et image ({n} j × {r})"],
+    est_owner_project: ["Owner, director and camera (project)", "Fondateur, réalisation et image (projet)"],
+    est_owner_edit: ["Owner, editing ({n} reels)", "Fondateur, montage ({n} reels)"],
     est_camera: ["Camera rental ({n} day × {r})", "Location caméra ({n} j × {r})"], est_transport: ["Transport ({n} day × {r})", "Transport ({n} j × {r})"],
     est_food: ["Food and water on set ({n} day × {r})", "Repas sur le tournage ({n} j × {r})"], est_assistant: ["Assistant ({n} day × {r})", "Assistant ({n} j × {r})"]
   });

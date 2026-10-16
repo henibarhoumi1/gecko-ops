@@ -6,7 +6,7 @@
   GK.i18n.add({
     db_title: ["Studio", "Le pouls"], db_accent: ["pulse", "du studio"],
     db_sub: ["Are we okay this month, what is slipping, where the next money comes from.", "On va bien ce mois-ci, ce qui glisse, d'où vient le prochain argent."],
-    db_founder_only: ["The dashboard is for Heni only.", "Le tableau de bord est réservé à Heni."],
+    db_founder_only: ["The dashboard is for the owner only.", "Le tableau de bord est réservé au fondateur."],
     db_range: ["Period", "Période"], db_r3: ["3 months", "3 mois"], db_r6: ["6 months", "6 mois"], db_r12: ["12 months", "12 mois"],
     db_est: ["Estimates built from your records. Accountant to confirm.", "Estimations calculées depuis vos données. À confirmer par le comptable."],
     // look at

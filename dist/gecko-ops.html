@@ -983,7 +983,7 @@ window.GK = window.GK || {};
     start_live_shared: ["You'll get an empty workspace shared with everyone you give access to this page. Existing local records remain in this browser.", "Vous obtenez un espace vide, partagé avec toutes les personnes qui ont accès à cette page. Les données locales existantes restent dans ce navigateur."],
     start_live_local: ["You'll get an empty workspace saved in this browser only. Sharing with the team comes when this page is shared or hosted.", "Vous obtenez un espace vide, enregistré dans ce navigateur seulement. Le partage avec l'équipe vient quand la page est partagée ou hébergée."],
     shared_note: ["Shared with the team", "Partagé avec l'équipe"], local_note: ["Saved in this browser", "Enregistré dans ce navigateur"],
-    read_only: ["You can view this page but not change it. Ask Heni for Contributor access.", "Vous pouvez consulter cette page mais pas la modifier. Demandez à Heni un accès Contributeur."],
+    read_only: ["You can view this page but not change it. Ask the owner for Contributor access.", "Vous pouvez consulter cette page mais pas la modifier. Demandez au fondateur un accès Contributeur."],
     write_failed: ["That change wasn't saved. Check your connection and try again.", "Cette modification n'a pas été enregistrée. Vérifiez la connexion et réessayez."],
     quota_full: ["The shared database is full. Delete old messages or tasks, then try again.", "La base partagée est pleine. Supprimez d'anciens messages ou tâches, puis réessayez."],
     join_title: ["Who are you on the team?", "Qui êtes-vous dans l'équipe ?"],
@@ -1030,9 +1030,9 @@ window.GK = window.GK || {};
     launch_price: ["Launch price", "Prix de lancement"], standard_price: ["Standard price", "Prix standard"],
     per_month: ["/ month", "/ mois"], sample_tag: ["Local", "Local"],
     orders_week: ["orders / week", "commandes / semaine"],
-    est_owner_days: ["Heni, director and camera ({n} day × {r})", "Heni, réalisation et image ({n} j × {r})"],
-    est_owner_project: ["Heni, director and camera (project)", "Heni, réalisation et image (projet)"],
-    est_owner_edit: ["Heni, editing ({n} reels)", "Heni, montage ({n} reels)"],
+    est_owner_days: ["Owner, director and camera ({n} day × {r})", "Fondateur, réalisation et image ({n} j × {r})"],
+    est_owner_project: ["Owner, director and camera (project)", "Fondateur, réalisation et image (projet)"],
+    est_owner_edit: ["Owner, editing ({n} reels)", "Fondateur, montage ({n} reels)"],
     est_camera: ["Camera rental ({n} day × {r})", "Location caméra ({n} j × {r})"], est_transport: ["Transport ({n} day × {r})", "Transport ({n} j × {r})"],
     est_food: ["Food and water on set ({n} day × {r})", "Repas sur le tournage ({n} j × {r})"], est_assistant: ["Assistant ({n} day × {r})", "Assistant ({n} j × {r})"]
   });
@@ -3704,7 +3704,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     td_k_c_wait: ["Waiting on client payment", "En attente du paiement client"], td_k_c_n: ["{n}% of project profit", "{n} % du bénéfice projet"],
     td_no_log: ["Only sales can log DMs.", "Seul le commercial peut saisir les DM."],
     // editor
-    td_files: ["Files to work on", "Fichiers à travailler"], td_no_files: ["Nothing to edit. Check with Heni.", "Rien à monter. Voyez avec Heni."],
+    td_files: ["Files to work on", "Fichiers à travailler"], td_no_files: ["Nothing to edit. Check with the owner.", "Rien à monter. Voyez avec le fondateur."],
     td_open_prod: ["Open production", "Ouvrir la production"], td_drive: ["Drive", "Drive"],
     td_c_file: ["File", "Fichier"], td_c_project: ["Project", "Projet"], td_c_status: ["Status", "Statut"],
     td_more_files: ["{n} more in Production.", "{n} de plus dans Production."],
@@ -5112,7 +5112,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     pj_due_line: ["{pack} · month {n} · {month}", "{pack} · mois {n} · {month}"],
     pj_create_month: ["Create month {n}", "Créer le mois {n}"],
     pj_month_made: ["Month {n} created with its invoice draft.", "Mois {n} créé avec son brouillon de facture."],
-    pj_no_perm: ["Your role can't change this. Ask Heni.", "Votre rôle ne permet pas ce changement. Demandez à Heni."],
+    pj_no_perm: ["Your role can't change this. Ask the owner.", "Votre rôle ne permet pas ce changement. Demandez au fondateur."],
     pj_founder_only: ["Only the owner can do this.", "Seul le fondateur peut faire ça."],
     // new project
     pj_client: ["Client", "Client"], pj_pack: ["Pack", "Pack"], pj_name: ["Project name", "Nom du projet"],
@@ -5189,12 +5189,12 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     pj_actual_cost: ["Actual spend", "Dépenses réelles"], pj_estimated_total: ["Budget estimates", "Estimations budgétaires"],
     pj_profit: ["Profit", "Bénéfice"], pj_comm: ["Partner share {p}", "Part partenaire {p}"],
     pj_net_note: ["tax withheld included, stamps excluded", "retenue incluse, hors timbre"],
-    pj_cost_founder: ["Only Heni changes cost lines: they set the commission.", "Seul Heni modifie les coûts : ils fixent la commission."],
+    pj_cost_founder: ["Only the owner changes cost lines: they set the commission.", "Seul le fondateur modifie les coûts : ils fixent la commission."],
     pj_lead_link_error: ["Project created, but its lead link could not be saved. The source lead is retained on the project for recovery.", "Projet créé, mais le lien au prospect n'a pas été enregistré. Le prospect source est conservé sur le projet pour récupération."],
     pj_log_kv: ["{k}: {v}", "{k} : {v}"],
     pj_comm_paid: ["paid {d}", "payée le {d}"], pj_comm_owed: ["{x} owed now", "{x} dus maintenant"], pj_comm_wait: ["due once the client paid in full", "due quand le client a tout payé"],
     pj_kind: ["Kind", "Type"], pj_label: ["Line", "Ligne"], pj_amount: ["Amount", "Montant"],
-    pj_k_heni: ["Heni", "Heni"], pj_k_freelance: ["Freelance", "Freelance"], pj_k_gear: ["Gear", "Matériel"], pj_k_other: ["Other", "Autre"],
+    pj_k_heni: ["Owner", "Fondateur"], pj_k_freelance: ["Freelance", "Freelance"], pj_k_gear: ["Gear", "Matériel"], pj_k_other: ["Other", "Autre"],
     pj_add_cost: ["Add cost line", "Ajouter une ligne"], pj_fill_est: ["Fill from the pack estimate", "Remplir avec l'estimation du pack"],
     pj_no_costs: ["No cost lines yet.", "Aucune ligne de coût."], pj_total: ["Total", "Total"],
     pj_invoices: ["Invoices", "Factures"], pj_no_inv: ["No invoices for this project.", "Aucune facture pour ce projet."],
@@ -5887,7 +5887,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
 
   GK.i18n.add({
     pr_title: ["Cut, check,", "Monter, relire,"], pr_accent: ["approve", "valider"],
-    pr_sub: ["Every hook and carousel is one file. Editors send them to review, Heni approves.", "Chaque accroche et chaque carrousel est un fichier. Les monteurs l'envoient en relecture, Heni valide."],
+    pr_sub: ["Every hook and carousel is one file. Editors send them to review, the owner approves them.", "Chaque accroche et chaque carrousel est un fichier. Les monteurs l'envoient en relecture, Heni valide."],
     pr_project: ["Project", "Projet"], pr_all: ["All projects", "Tous les projets"],
     pr_board: ["Board", "Tableau"], pr_reels: ["By reel", "Par reel"],
     pr_empty: ["No project has files in production right now. Files appear once reels are planned.", "Aucun projet n'a de fichiers en production. Les fichiers apparaissent quand les reels sont planifiés."],
@@ -5899,7 +5899,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     pr_start: ["Start editing", "Commencer"], pr_to_review: ["Send to review", "Envoyer en relecture"],
     pr_approve: ["Approve", "Valider"], pr_send_back: ["Send back", "Renvoyer"], pr_new_version: ["Start new version", "Nouvelle version"],
     pr_reopen: ["Reopen", "Rouvrir"],
-    pr_wait_founder: ["Waiting for Heni's review", "En attente de la relecture de Heni"],
+    pr_wait_founder: ["Waiting for the owner's review", "En attente de la relecture du fondateur"],
     pr_note: ["Note for the editor", "Note pour le monteur"], pr_note_ph: ["What to change, in one or two lines", "Quoi changer, en une ou deux lignes"],
     pr_back_title: ["Send back to", "Renvoyer au"], pr_back_accent: ["edit", "montage"], pr_reopen_t: ["Reopen for", "Rouvrir pour le"],
     pr_log_drive: ["{code} · Drive link", "{code} · lien Drive"], pr_log_rdrive: ["Reel Drive folder set", "Dossier Drive du reel ajouté"],
@@ -5913,9 +5913,9 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     pr_shot_plan: ["Shot plan", "Plan de tournage"], pr_scene_done: ["Shot complete", "Plan tourné"],
     pr_silent: ["silent / B-roll", "silencieux / plans de coupe"], pr_source_idea: ["Open source idea", "Ouvrir l'idée source"],
     pr_sc_car: ["carousels", "carrousels"], pr_sc_appr: ["approved", "validés"], pr_over: ["above pack", "au-dessus du pack"],
-    pr_no_rights: ["Only editors and Heni change file status.", "Seuls les monteurs et Heni changent le statut."],
-    pr_founder_only: ["Only Heni approves or sends back.", "Seul Heni valide ou renvoie."],
-    pr_no_edit: ["Only editors and Heni set Drive links.", "Seuls les monteurs et Heni ajoutent les liens Drive."]
+    pr_no_rights: ["Only editors and the owner change file status.", "Seuls les monteurs et le fondateur changent le statut."],
+    pr_founder_only: ["Only the owner approves or sends back.", "Seul le fondateur valide ou renvoie."],
+    pr_no_edit: ["Only editors and the owner set Drive links.", "Seuls les monteurs et le fondateur ajoutent les liens Drive."]
   });
 
   var COLS = ["todo", "edit", "review", "revise", "approved"];
@@ -6793,7 +6793,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     fi_tab_overview: ["Overview", "Vue d'ensemble"], fi_tab_invoices: ["Invoices", "Factures"], fi_tab_quotes: ["Quotes", "Devis"], fi_tab_expenses: ["Expenses", "Dépenses"],
     fi_tab_forecast: ["Cash forecast", "Prévision"], fi_tab_close: ["Month close", "Clôture du mois"], fi_tab_profit: ["Profitability", "Rentabilité"],
     fi_tab_cap: ["Tax and cap", "Taxes et plafond"], fi_tab_commission: ["Commission", "Commission"], fi_tab_export: ["Export", "Export"],
-    fi_founder_only: ["Only Heni can change invoices and payments.", "Seul Heni peut modifier les factures et les paiements."],
+    fi_founder_only: ["Only the owner can change invoices and payments.", "Seul le fondateur peut modifier les factures et les paiements."],
     fi_acct: ["Accountant to confirm.", "À confirmer par le comptable."],
     fi_estimate: ["estimate", "estimation"],
     // kpis
@@ -7473,7 +7473,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     fi_cl_cmp: ["Against last month and the goal", "Face au mois dernier et à l'objectif"], fi_cl_c_item: ["Line", "Ligne"], fi_cl_c_now: ["This month", "Ce mois"], fi_cl_c_prev: ["Last month", "Mois dernier"], fi_cl_c_diff: ["Change", "Écart"],
     fi_cl_goal: ["Monthly revenue goal: {g}. Invoiced this month: {i}, that is {p} of the goal.", "Objectif de chiffre d'affaires mensuel : {g}. Facturé ce mois : {i}, soit {p} de l'objectif."],
     fi_cl_goal_none: ["No monthly revenue goal set yet. Set one in Settings to compare.", "Pas encore d'objectif mensuel. Définissez-en un dans Réglages pour comparer."],
-    fi_cl_pay: ["Heni's real pay", "Le vrai revenu de Heni"],
+    fi_cl_pay: ["Owner's real pay", "Le vrai revenu du fondateur"],
     fi_cl_pay_ok: ["Salary this month: {s}. After project costs, overheads and the reserve, {l} is left in the studio. If you take it all, your real pay is {r}.", "Salaire ce mois : {s}. Après les coûts projets, les charges et la réserve, il reste {l} dans le studio. Si vous le prenez en entier, votre vrai revenu est de {r}."],
     fi_cl_pay_short: ["Salary this month: {s}. The month did not cover it: it is short by {l}. In real terms the studio only earned {r} for you, and the rest of the salary came from savings.", "Salaire ce mois : {s}. Le mois ne l'a pas couvert : il manque {l}. En réalité le studio n'a gagné que {r} pour vous, le reste du salaire est venu de l'épargne."],
     fi_cl_pay_loss: ["Salary this month: {s}. The month was short by {l}, more than the salary itself: the studio earned nothing for you and spent savings.", "Salaire ce mois : {s}. Le mois est déficitaire de {l}, plus que le salaire lui-même : le studio n'a rien gagné pour vous et a puisé dans l'épargne."],
@@ -7571,7 +7571,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     fi_ex_no_project: ["No project", "Sans projet"], fi_ex_f_none: ["Once", "Une fois"], fi_ex_f_monthly: ["Every month", "Chaque mois"],
     fi_ex_need_label: ["Say what the expense is.", "Indiquez de quelle dépense il s'agit."], fi_ex_need_amount: ["Enter an amount above zero.", "Entrez un montant supérieur à zéro."], fi_ex_need_date: ["Pick a date.", "Choisissez une date."],
     fi_ex_bad_link: ["The link must start with http:// or https://.", "Le lien doit commencer par http:// ou https://."], fi_ex_bad_until: ["The last month can't be before the first charge.", "Le dernier mois ne peut pas précéder le premier prélèvement."],
-    fi_ex_founder: ["Only Heni can change expenses.", "Seul Heni peut modifier les dépenses."],
+    fi_ex_founder: ["Only the owner can change expenses.", "Seul le fondateur peut modifier les dépenses."],
     fi_ex_del_q: ["Delete this expense?", "Supprimer cette dépense ?"], fi_ex_del_body: ["{l} · {a}. A monthly expense disappears from every month, including past closes.", "{l} · {a}. Une dépense mensuelle disparaît de tous les mois, y compris des clôtures passées."], fi_ex_deleted: ["Expense deleted", "Dépense supprimée"],
     fi_ex_k_month: ["Overheads this month", "Charges ce mois"], fi_ex_k_month_n: ["{n} lines", "{n} lignes"], fi_ex_k_rec: ["Monthly commitments", "Engagements mensuels"], fi_ex_k_rec_n: ["repeat every month", "reviennent chaque mois"],
     fi_ex_k_year: ["Overheads this year", "Charges cette année"], fi_ex_k_year_n: ["up to this month", "jusqu'à ce mois"],
@@ -7849,7 +7849,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   GK.i18n.add({
     fi_fc_open: ["Cash in the bank today (TND)", "Trésorerie en banque aujourd'hui (TND)"], fi_fc_open_h: ["The forecast starts from this number. Check it against your bank balance once a week.", "La prévision part de ce chiffre. Comparez-le chaque semaine au solde de la banque."],
     fi_fc_open_save: ["Save opening cash", "Enregistrer la trésorerie"], fi_fc_open_saved: ["Opening cash saved", "Trésorerie de départ enregistrée"], fi_fc_open_zero: ["Opening cash is 0, so the balances below show only the change from today. Enter your real balance to make them true.", "La trésorerie de départ est à 0 : les soldes ci-dessous montrent seulement la variation depuis aujourd'hui. Entrez votre solde réel."],
-    fi_fc_founder: ["Only Heni can change the opening cash.", "Seul Heni peut modifier la trésorerie de départ."],
+    fi_fc_founder: ["Only the owner can change the opening cash.", "Seul le fondateur peut modifier la trésorerie de départ."],
     fi_fc_chart: ["Cash balance, next 13 weeks", "Solde de trésorerie, 13 prochaines semaines"], fi_fc_chart_sub: ["Two lines: what is booked, and booked plus the leads you keep switched on. Estimate.", "Deux lignes : ce qui est acquis, et acquis plus les prospects que vous laissez activés. Estimation."],
     fi_fc_booked: ["Booked only", "Acquis seulement"], fi_fc_pipe: ["With pipeline", "Avec le pipeline"],
     fi_fc_neg_booked: ["Booked money only: the balance goes below zero in the week of {d} ({a}).", "Argent acquis seulement : le solde passe sous zéro la semaine du {d} ({a})."],
@@ -7863,7 +7863,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     fi_fc_nothing: ["Nothing this week.", "Rien cette semaine."], fi_fc_salary: ["Owner salary", "Salaire du fondateur"], fi_fc_comm: ["Partner share owed", "Part partenaire due"],
     fi_fc_if: ["What if", "Et si"], fi_fc_if_h: ["Switch leads off to see the line without them. Each lead counts as its chance times 50% of the pack (a month for monthly offers), two weeks after its next step.", "Désactivez des prospects pour voir la ligne sans eux. Chaque prospect compte à hauteur de sa probabilité × 50 % du pack (un mois pour les offres mensuelles), deux semaines après sa prochaine étape."],
     fi_fc_if_none: ["No lead at the call or proposal stage right now.", "Aucun prospect au stade appel ou proposition pour l'instant."], fi_fc_if_row: ["{b} · {s} · {a}", "{b} · {s} · {a}"],
-    fi_fc_note: ["Booked: unpaid invoices on their due date (late ones land in week 1). Out: overheads from the Expenses tab, Owner salary on the 1st, commission owed in week 1 and project costs in the week of the shoot. Estimate.", "Acquis : factures impayées à leur échéance (les retards tombent la semaine 1). Sorties : charges de l'onglet Dépenses, salaire de Heni le 1er, commission due la semaine 1 et coûts projets la semaine du tournage. Estimation."],
+    fi_fc_note: ["Booked: unpaid invoices on their due date (late ones land in week 1). Out: overheads from the Expenses tab, Owner salary on the 1st, commission owed in week 1 and project costs in the week of the shoot. Estimate.", "Acquis : factures impayées à leur échéance (les retards tombent la semaine 1). Sorties : charges de l'onglet Dépenses, salaire du fondateur le 1er, commission due la semaine 1 et coûts projets la semaine du tournage. Estimation."],
     fi_fc_prob: ["{p} chance", "{p} de chances"]
   });
 
@@ -8144,7 +8144,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     fi_q_total: ["Total", "Total"], fi_q_pack_line: ["pack", "pack"], fi_q_included: ["Included", "Inclus"],
     fi_q_need_line: ["Add at least one line with a description.", "Ajoutez au moins une ligne avec une désignation."], fi_q_need_total: ["The total must be above zero.", "Le total doit être supérieur à zéro."],
     fi_q_need_valid: ["Pick a validity date.", "Choisissez une date de validité."], fi_q_no_clients: ["Add a client first.", "Ajoutez d'abord un client."],
-    fi_q_founder: ["Only Heni can change quotes.", "Seul Heni peut modifier les devis."],
+    fi_q_founder: ["Only the owner can change quotes.", "Seul le fondateur peut modifier les devis."],
     fi_q_facts_pack: ["Pack", "Pack"], fi_q_facts_sent: ["Sent", "Envoyé le"], fi_q_facts_acc: ["Accepted", "Accepté le"], fi_q_facts_project: ["Project", "Projet"], fi_q_facts_inv: ["Invoices", "Factures"],
     fi_q_send: ["Send", "Envoyer"], fi_q_send_q: ["Send this quote?", "Envoyer ce devis ?"], fi_q_send_body: ["It gets number {no} and is valid until {d}. After this the lines and the total are locked.", "Il reçoit le numéro {no} et reste valable jusqu'au {d}. Ensuite les lignes et le total sont verrouillés."],
     fi_q_sent_toast: ["Quote {no} marked as sent. Copy the WhatsApp message to send it.", "Devis {no} marqué comme envoyé. Copiez le message WhatsApp pour l'envoyer."],
@@ -9625,7 +9625,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     tm_no_open: ["No open tasks. Nice.", "Aucune tâche ouverte. Bien joué."],
     tm_done_recent: ["Done in the last 14 days ({n})", "Faites ces 14 derniers jours ({n})"],
     tm_del_task_q: ["Delete this task?", "Supprimer cette tâche ?"], tm_del_task_b: ["It goes for everyone. This can't be undone.", "Elle disparaît pour tout le monde. Action définitive."],
-    tm_no_del: ["Only Heni or the person on the task can delete it.", "Seuls Heni ou la personne concernée peuvent la supprimer."],
+    tm_no_del: ["Only the owner or the person on the task can delete it.", "Seuls le fondateur ou la personne concernée peuvent la supprimer."],
     tm_no_tasks_right: ["You can view tasks but not change them.", "Vous pouvez voir les tâches mais pas les modifier."],
     tm_task_added: ["Task added", "Tâche ajoutée"], tm_reopen: ["Reopen", "Rouvrir"],
     // messages
@@ -9640,8 +9640,8 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     tm_joined: ["Joined", "A rejoint"], tm_not_joined: ["Not joined yet", "Pas encore rejoint"], tm_you: ["You", "Vous"],
     tm_remove: ["Remove", "Retirer"], tm_remove_q: ["Remove {name} from the team?", "Retirer {name} de l'équipe ?"],
     tm_remove_b: ["Their tasks stay and show as not assigned. They lose access to this workspace.", "Leurs tâches restent, sans personne. Cette personne perd l'accès à l'espace."],
-    tm_no_self: ["You can't remove yourself.", "Vous ne pouvez pas vous retirer vous-même."], tm_only_founder: ["Only Heni can change the team.", "Seul Heni peut modifier l'équipe."],
-    tm_shared_note: ["People join by opening this page and picking their name. Heni must share the page with them as Contributor so they can edit.", "Chacun rejoint en ouvrant cette page et en choisissant son nom. Heni doit la partager en Contributeur pour qu'ils puissent modifier."],
+    tm_no_self: ["You can't remove yourself.", "Vous ne pouvez pas vous retirer vous-même."], tm_only_founder: ["Only the owner can change the team.", "Seul le fondateur peut modifier l'équipe."],
+    tm_shared_note: ["People join by opening this page and picking their name. The owner must share the page with them as Contributor so they can edit.", "Chacun rejoint en ouvrant cette page et en choisissant son nom. Le fondateur doit la partager en Contributeur pour qu'ils puissent modifier."],
     tm_add_hint: ["Add someone here first, then they claim their name when they open the page.", "Ajoutez la personne ici, puis elle choisit son nom en ouvrant la page."],
     tm_member_added: ["Added to the team", "Ajouté à l'équipe"],
     tm_invite_email: ["Email address", "Adresse e-mail"],
@@ -9924,7 +9924,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     tk_p_log: ["History", "Historique"], tk_p_nolog: ["No changes recorded yet.", "Aucune modification enregistrée."],
     tk_p_open_proj: ["Open project", "Ouvrir le projet"], tk_saved: ["Task saved", "Tâche enregistrée"],
     tk_del_q: ["Delete this task?", "Supprimer cette tâche ?"], tk_del_b: ["It goes for everyone.", "Elle disparaît pour tout le monde."],
-    tk_deleted: ["Task deleted", "Tâche supprimée"], tk_no_del: ["Only Heni or the person on the task can delete it.", "Seuls Heni ou la personne concernée peuvent la supprimer."],
+    tk_deleted: ["Task deleted", "Tâche supprimée"], tk_no_del: ["Only the owner or the person on the task can delete it.", "Seuls le fondateur ou la personne concernée peuvent la supprimer."],
     tk_gone: ["This task no longer exists.", "Cette tâche n'existe plus."],
     tk_log_new: ["Created", "Créée"], tk_log_done: ["Marked done", "Marquée faite"], tk_log_reopen: ["Reopened", "Rouverte"],
     tk_log_doing: ["Started", "Commencée"], tk_log_todo: ["Back to do", "Remise à faire"], tk_log_edit: ["Edited: {f}", "Modifiée : {f}"],
@@ -10952,7 +10952,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   GK.i18n.add({
     ac_title: ["What", "Ce qui a"], ac_accent: ["changed", "bougé"],
     ac_sub: ["{n} changes in the last {d} days, newest first.", "{n} changements ces {d} derniers jours, du plus récent au plus ancien."],
-    ac_founder_only: ["The activity timeline is for Heni.", "Le fil d'activité est réservé à Heni."],
+    ac_founder_only: ["The activity timeline is for the owner.", "Le fil d'activité est réservé au fondateur."],
     ac_types: ["Show", "Afficher"], ac_person: ["Person", "Personne"], ac_anyone: ["Everyone", "Tout le monde"], ac_system: ["No one named", "Personne de nommé"],
     ac_t_project: ["Projects", "Projets"], ac_t_lead: ["Leads", "Prospects"], ac_t_client: ["Clients", "Clients"], ac_t_money: ["Money", "Argent"],
     ac_t_task: ["Tasks", "Tâches"], ac_t_message: ["Messages", "Messages"], ac_t_studio: ["Studio", "Studio"],
@@ -11163,7 +11163,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     se_title: ["How the studio", "Comment le studio"], se_accent: ["runs", "tourne"],
     se_sub: ["Company details for invoices, the packs and their prices, the cost rates and money rules, and where the data lives.", "Les infos de la société pour les factures, les packs et leurs prix, les tarifs de coûts, les règles d'argent et l'endroit où vivent les données."],
     se_tab_company: ["Company", "Société"], se_tab_packs: ["Packs & rules", "Packs & règles"], se_tab_data: ["Data & sharing", "Données & partage"],
-    se_read_only: ["Only Heni can change these settings. You can read them.", "Seul Heni peut modifier ces réglages. Vous pouvez les consulter."],
+    se_read_only: ["Only the owner can change these settings. You can read them.", "Seul le fondateur peut modifier ces réglages. Vous pouvez les consulter."],
     // company
     se_company: ["Company", "Société"],
     se_co_name: ["Trading name", "Nom commercial"], se_co_legal: ["Legal name", "Raison sociale / nom légal"], se_co_mf: ["Tax ID (matricule fiscal, MF)", "Matricule fiscal (MF)"],
@@ -11185,7 +11185,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     se_reset_rates_b: ["Cost rates and money rules go back to the business model values.", "Les tarifs et les règles d'argent reviennent aux valeurs du business model."],
     // rates
     se_rates: ["Cost rates (TND)", "Tarifs de coûts (TND)"],
-    se_r_heniDay: ["Heni, shoot day", "Heni, journée de tournage"], se_r_reel: ["Reel edit, each", "Montage d'un reel"], se_r_gear: ["Gear rental, full day", "Location matériel, journée"],
+    se_r_heniDay: ["Owner, shoot day", "Fondateur, journée de tournage"], se_r_reel: ["Reel edit, each", "Montage d'un reel"], se_r_gear: ["Gear rental, full day", "Location matériel, journée"],
     se_r_assistant: ["Assistant, day", "Assistant, journée"], se_r_transport: ["Transport and small buys, day", "Transport et petits achats, journée"],
     se_r_recut: ["Hook re-cut, each", "Re-montage d'une accroche"], se_r_carousel: ["Carousel design, each", "Design d'un carrousel"], se_r_report: ["Monthly report", "Rapport mensuel"],
     // rules
@@ -11594,7 +11594,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   GK.i18n.add({
     db_title: ["Studio", "Le pouls"], db_accent: ["pulse", "du studio"],
     db_sub: ["Are we okay this month, what is slipping, where the next money comes from.", "On va bien ce mois-ci, ce qui glisse, d'où vient le prochain argent."],
-    db_founder_only: ["The dashboard is for Heni only.", "Le tableau de bord est réservé à Heni."],
+    db_founder_only: ["The dashboard is for the owner only.", "Le tableau de bord est réservé au fondateur."],
     db_range: ["Period", "Période"], db_r3: ["3 months", "3 mois"], db_r6: ["6 months", "6 mois"], db_r12: ["12 months", "12 mois"],
     db_est: ["Estimates built from your records. Accountant to confirm.", "Estimations calculées depuis vos données. À confirmer par le comptable."],
     // look at
@@ -12078,12 +12078,16 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    st_title: ["Spark to", "De l'idée au"], st_accent: ["script", "script"],
-    st_sub: ["Capture an idea in five seconds, shape it, get Heni's go, send it to the project.", "Notez une idée en cinq secondes, travaillez-la, obtenez le feu vert de Heni, envoyez-la au projet."],
-    st_board: ["Board", "Tableau"], st_bank: ["Hook bank", "Banque d'accroches"], st_new: ["New idea", "Nouvelle idée"],
+    st_title: ["Ideas and", "Idées et"], st_accent: ["scripts", "scripts"],
+    st_sub: ["Capture an idea in five seconds, shape it, get the owner's go, send it to the project.", "Notez une idée en cinq secondes, travaillez-la, obtenez le feu vert du fondateur, envoyez-la au projet."],
+    st_board: ["Board", "Tableau"], st_bank: ["Hook bank", "Banque d'accroches"], st_scripts: ["Script bank", "Banque de scripts"],
+    st_sb_sub: ["Every written script, ready to copy or reuse for a new client.", "Tous les scripts écrits, prêts à copier ou réutiliser pour un nouveau client."],
+    st_sb_none: ["No written scripts yet. Scripts appear here once they have lines.", "Aucun script écrit. Ils apparaissent ici dès qu'ils ont des lignes."],
+    st_sb_copy: ["Copy script", "Copier le script"], st_sb_reuse: ["Reuse", "Réutiliser"], st_sb_won: ["Winning hook", "Accroche gagnante"],
+    st_sb_copied: ["Script copied", "Script copié"], st_sb_reused: ["Copy made. Edit it for the new brand.", "Copie créée. Adaptez-la à la nouvelle marque."], st_sb_copy_of: ["{t} (copy)", "{t} (copie)"], st_new: ["New idea", "Nouvelle idée"],
     st_stage_idea: ["Idea", "Idée"], st_stage_concept: ["Concept", "Concept"], st_stage_script: ["Script", "Script"],
     st_stage_ready: ["Ready", "Prêt"], st_stage_shot: ["Shot", "Tourné"], st_stage_parked: ["Parked", "En pause"],
-    st_k_play: ["In play", "En cours"], st_k_review: ["Waiting for Heni", "Attend Heni"], st_k_ready: ["Ready to send", "Prêtes à envoyer"], st_k_shot: ["Shot", "Tournées"],
+    st_k_play: ["In play", "En cours"], st_k_review: ["Waiting for the owner", "Attend le fondateur"], st_k_ready: ["Ready to send", "Prêtes à envoyer"], st_k_shot: ["Shot", "Tournées"],
     st_k_play_n: ["ideas not parked or shot", "idées ni en pause ni tournées"],
     st_f_client: ["Client", "Client"], st_f_owner: ["Owner", "Responsable"], st_f_angle: ["Angle", "Angle"], st_f_search: ["Search", "Recherche"],
     st_f_all_clients: ["All clients", "Tous les clients"], st_f_all_owners: ["Everyone", "Tout le monde"], st_f_all_angles: ["All angles", "Tous les angles"],
@@ -12094,7 +12098,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     st_parked_show: ["Show parked ({n})", "Voir les idées en pause ({n})"], st_parked_hide: ["Hide parked ({n})", "Masquer les idées en pause ({n})"],
     st_p1: ["High", "Haute"], st_p2: ["Medium", "Moyenne"], st_p3: ["Low", "Basse"], st_priority: ["Priority", "Priorité"],
     st_links_n: ["{n} links", "{n} liens"], st_link_1: ["1 link", "1 lien"], st_board_pill: ["Whiteboard", "Tableau blanc"],
-    st_review_wait: ["Waiting for Heni", "En attente de Heni"], st_shared_pill: ["Shown to client", "Visible client"],
+    st_review_wait: ["Waiting for the owner", "En attente du fondateur"], st_shared_pill: ["Shown to client", "Visible client"],
     st_direct: ["Direct", "Direct"], st_indirect: ["Indirect", "Indirect"],
     st_back: ["Back", "Retour"], st_next_to: ["To {s}", "Vers {s}"], st_mark_ready: ["Mark ready", "Marquer prêt"], st_mark_shot: ["Mark shot", "Marquer tourné"],
     st_request: ["Request review", "Demander la relecture"], st_cancel_request: ["Withdraw request", "Retirer la demande"],
@@ -12117,12 +12121,12 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     st_approve_revision: ["Approve new revision", "Valider la nouvelle version"], st_approved_revision: ["Approved revision", "Version validée"],
     st_revision_n: ["Revision {n} · {d}", "Version {n} · {d}"], st_no_revision: ["Approve a complete idea before sending it to production.", "Validez une idée complète avant de l'envoyer en production."],
     st_revision_ready: ["Approved material is ready to send. Draft edits do not change it.", "Le contenu validé est prêt à envoyer. Les modifications du brouillon ne le changent pas."],
-    st_founder_only: ["Only Heni marks an idea ready. Request review instead.", "Seul Heni marque une idée prête. Demandez plutôt la relecture."],
+    st_founder_only: ["Only the owner marks an idea ready. Request review instead.", "Seul le fondateur marque une idée prête. Demandez plutôt la relecture."],
     st_no_rights: ["You can't change ideas here.", "Vous ne pouvez pas modifier les idées ici."],
     st_shot_auto: ["Shot happens by itself once every hook of the reel is approved.", "Tourné se met à jour tout seul quand toutes les accroches du reel sont validées."],
     st_log_add: ["Idea added", "Idée ajoutée"], st_log_move: ["Moved to {s}", "Passée en {s}"], st_log_review: ["Review requested", "Relecture demandée"],
     st_log_park: ["Parked", "Mise en pause"], st_log_unpark: ["Brought back", "Reprise"],
-    st_moved: ["Moved to {s}", "Passée en {s}"], st_added: ["Idea captured", "Idée notée"], st_review_sent: ["Heni will see it", "Heni la verra"],
+    st_moved: ["Moved to {s}", "Passée en {s}"], st_added: ["Idea captured", "Idée notée"], st_review_sent: ["The owner will see it", "Le fondateur la verra"],
     st_col_hook: ["Hook", "Accroche"], st_col_client: ["Client", "Client"], st_col_angle: ["Angle", "Angle"], st_col_stage: ["Stage", "Étape"],
     st_col_prio: ["Priority", "Priorité"], st_col_won: ["Won before", "Déjà gagné"],
     st_copy_hook: ["Copy hook", "Copier l'accroche"], st_won_n: ["{n} won", "{n} gagnées"], st_won_none: ["None yet", "Aucune"],
@@ -12426,6 +12430,39 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       }).join("") + "</tbody></table></div></div>";
   }
 
+  // ---------- script bank ----------
+  function scriptText(i) {
+    var out = [];
+    if (i.hook) out.push(i.hook);
+    (i.scenes || []).forEach(function (s, k) {
+      out.push((k + 1) + ". " + (s.v || "") + (s.x && !s.silent ? "\n   " + s.x : "") + (s.xd ? "\n   " + s.xd : ""));
+    });
+    if (String(i.script || "").trim()) out.push(String(i.script).trim());
+    if (String(i.scriptDarija || "").trim()) out.push(String(i.scriptDarija).trim());
+    return out.join("\n\n");
+  }
+  function scriptsHTML(ideas) {
+    var rows = ideas.filter(hasScript).sort(u.by(function (i) { return ORDER[effStage(i)]; }, "desc"));
+    if (!rows.length) return ui.empty(t("st_sb_none"));
+    var wonCache = {};
+    function isWon(i) {
+      var w = wonCache[i.clientId || ""] || (wonCache[i.clientId || ""] = winners(i.clientId, 0));
+      var hk = String(i.hook || "").trim().toLowerCase();
+      return !!hk && w.slice(0, 5).some(function (h) { return String(h.text || "").trim().toLowerCase() === hk; });
+    }
+    return '<p class="small muted" style="margin:0">' + esc(t("st_sb_sub")) + '</p><div class="st-sbank">' + rows.map(function (i) {
+      var first = (i.scenes || []).map(function (s) { return s.x || s.v; }).filter(Boolean).slice(0, 2);
+      if (!first.length) first = String(i.script || "").split("\n").filter(function (l) { return l.trim(); }).slice(0, 2);
+      return '<article class="panel st-sb-card"><div class="row between" style="gap:var(--sp-2);flex-wrap:wrap"><b>' + esc(i.hook ? "“" + i.hook + "”" : i.title) + "</b>" +
+        (isWon(i) ? ui.pill(t("st_sb_won"), "wip") : "") + "</div>" +
+        '<span class="small muted">' + esc([i.clientId ? m.brand(i.clientId) : "", angleOf(i), stName(effStage(i))].filter(Boolean).join(" · ")) + "</span>" +
+        '<div class="st-sb-lines small">' + first.map(function (l) { return "<p>" + esc(l) + "</p>"; }).join("") + "</div>" +
+        '<div class="row" style="gap:var(--sp-2);flex-wrap:wrap">' + ui.btn(t("open"), "st-open", { cls: "ghost sm", data: { id: i.id } }) +
+        ui.btn(t("st_sb_copy"), "st-sb-copy", { cls: "ghost sm", data: { id: i.id } }) +
+        (can() ? ui.btn(t("st_sb_reuse"), "st-sb-reuse", { cls: "ghost sm", data: { id: i.id } }) : "") + "</div></article>";
+    }).join("") + "</div>";
+  }
+
   function myWaiting() {
     var me = GK.me();
     return S.all("ideas").filter(function (i) {
@@ -12438,7 +12475,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   GK.view("studio", {
     render: function (params) {
       if (params.id && S.get("ideas", params.id)) return GK.studio.detail(S.get("ideas", params.id), params);
-      var mode = params.mode === "bank" ? "bank" : "board";
+      var mode = ["bank", "scripts"].indexOf(params.mode) > -1 ? params.mode : "board";
       var all = S.all("ideas"), f = filters(params);
       var ideas = all.filter(function (i) { return pass(i, f); });
       var live = all.filter(function (i) { return i.stage !== "parked" && effStage(i) !== "shot"; });
@@ -12447,12 +12484,12 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
         actions: can() ? ui.btn(t("st_new"), "st-new", { cls: "primary" }) : ""
       });
       h += GK.insight.studio();
-      h += '<div class="row between"><div class="tabs" role="tablist">' + ["board", "bank"].map(function (v) {
-        return '<button type="button" role="tab" data-a="st-mode" data-v="' + v + '" aria-selected="' + (mode === v) + '">' + esc(t(v === "board" ? "st_board" : "st_bank")) + "</button>";
+      h += '<div class="row between"><div class="tabs" role="tablist">' + ["board", "scripts", "bank"].map(function (v) {
+        return '<button type="button" role="tab" data-a="st-mode" data-v="' + v + '" aria-selected="' + (mode === v) + '">' + esc(t("st_" + v)) + "</button>";
       }).join("") + "</div>" + ui.sample() + "</div>";
       h += filterRow(params, f);
       if (!all.length && !can()) return h + ui.empty(t("st_nodata"));
-      h += mode === "bank" ? (ideas.length ? bankHTML(ideas, f, params) : winnersPanel(f.c) + ui.empty(t("st_nothing"))) : boardHTML(ideas, f, params);
+      h += mode === "scripts" ? scriptsHTML(ideas) : mode === "bank" ? (ideas.length ? bankHTML(ideas, f, params) : winnersPanel(f.c) + ui.empty(t("st_nothing"))) : boardHTML(ideas, f, params);
       return h;
     },
     count: function () { return myWaiting() || ""; }
@@ -12502,6 +12539,14 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   GK.act("st-move", function (el) { saveFirst(el.dataset.id); moveTo(el.dataset.id, el.dataset.to); });
   GK.act("st-review", function (el) { saveFirst(el.dataset.id); requestReview(el.dataset.id); });
   GK.act("st-park", function (el) { saveFirst(el.dataset.id); park(el.dataset.id); });
+  GK.act("st-sb-copy", function (el) { var i = S.get("ideas", el.dataset.id); if (i) { u.copy(scriptText(i)); ui.toast(t("st_sb_copied")); } });
+  GK.act("st-sb-reuse", function (el) {
+    var i = S.get("ideas", el.dataset.id); if (!i || !can()) return;
+    var rec = newIdea(t("st_sb_copy_of", { t: i.title }), "", i.hook);
+    var sc = u.clone(i.scenes || []).map(function (s) { delete s.img; (s.shots || []).forEach(function (x) { x.done = false; x.id = u.uid("sh"); }); return s; });
+    S.patch("ideas", rec.id, { stage: "script", scenes: sc, script: i.script || "", scriptDarija: i.scriptDarija || "", concept: i.concept || "", angle: angleOf(i), mode: i.mode, format: i.format || "9x16", cta: i.cta || "" }, { log: "" });
+    ui.toast(t("st_sb_reused")); ui.go("studio", { id: rec.id });
+  });
   GK.act("st-mode", function (el) { ui.go("studio", { mode: el.dataset.v, id: "" }); });
   GK.act("st-parked", function () { ui.go("studio", { parkedOpen: !ui.p("studio").parkedOpen }); });
   GK.act("st-clear", function () { ui.go("studio", { fc: "", fo: "", fa: "", fq: "" }); });
@@ -12527,6 +12572,10 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       stepBtns: stepBtns, moveTo: moveTo, waitingOn: waitingOn, angleOf: angleOf, winnersPanel: winnersPanel
     }
   };
+  var css = document.createElement("style"); css.id = "gk-studio-bank-css";
+  css.textContent = ".st-sbank{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--sp-3)}" +
+    ".st-sb-card{display:flex;flex-direction:column;gap:var(--sp-2);min-width:0}.st-sb-lines p{margin:0 0 4px;color:var(--soft,inherit)}";
+  document.head.appendChild(css);
 })(window.GK);
 
 /* ---- modules/studio_ai.js ---- */
@@ -12914,8 +12963,8 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     st_d_rev_send: ["Send approved revision", "Envoyer la version validée"],
     st_d_source: ["Production source", "Source de production"],
     st_d_existing_send: ["This approved revision is already linked to the project.", "Cette version validée est déjà liée au projet."],
-    st_d_review_by: ["{who} asked Heni to review this script.", "{who} demande à Heni de relire ce script."],
-    st_d_review_hint: ["Add a hook, a script and a client, then request review. Only Heni marks it ready.", "Ajoutez accroche, script et client, puis demandez la relecture. Seul Heni la marque prête."],
+    st_d_review_by: ["{who} asked the owner to review this script.", "{who} demande au fondateur de relire ce script."],
+    st_d_review_hint: ["Add a hook, a script and a client, then request review. Only the owner marks it ready.", "Ajoutez accroche, script et client, puis demandez la relecture. Seul le fondateur la marque prête."],
     st_d_missing: ["Still needed before ready:", "Il manque avant « prêt » :"],
     st_d_readonly: ["You can look but not change this idea.", "Vous pouvez consulter cette idée sans la modifier."],
     st_x_title: ["SHOOT SHEET", "FEUILLE DE TOURNAGE"], st_x_hook: ["Hook (first 3 seconds)", "Accroche (3 premières secondes)"], st_x_concept: ["Concept", "Concept"],

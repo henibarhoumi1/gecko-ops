@@ -10,7 +10,7 @@
     fi_tab_overview: ["Overview", "Vue d'ensemble"], fi_tab_invoices: ["Invoices", "Factures"], fi_tab_quotes: ["Quotes", "Devis"], fi_tab_expenses: ["Expenses", "Dépenses"],
     fi_tab_forecast: ["Cash forecast", "Prévision"], fi_tab_close: ["Month close", "Clôture du mois"], fi_tab_profit: ["Profitability", "Rentabilité"],
     fi_tab_cap: ["Tax and cap", "Taxes et plafond"], fi_tab_commission: ["Commission", "Commission"], fi_tab_export: ["Export", "Export"],
-    fi_founder_only: ["Only Heni can change invoices and payments.", "Seul Heni peut modifier les factures et les paiements."],
+    fi_founder_only: ["Only the owner can change invoices and payments.", "Seul le fondateur peut modifier les factures et les paiements."],
     fi_acct: ["Accountant to confirm.", "À confirmer par le comptable."],
     fi_estimate: ["estimate", "estimation"],
     // kpis
