@@ -189,7 +189,7 @@
   var css = document.createElement("style"); css.id = "gk-shootday-css";
   css.textContent =
     ".sd-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:var(--sp-3)}" +
-    ".sd-item{display:flex;align-items:center;gap:var(--sp-4);flex-wrap:wrap}.sd-meta{flex:1;min-width:180px;display:flex;flex-direction:column;gap:2px}" +
+    ".card.sd-item{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;text-align:left;gap:var(--sp-4);flex-wrap:wrap;padding:var(--sp-4) var(--sp-5)}.sd-meta{flex:1;min-width:180px;display:flex;flex-direction:column;gap:2px}" +
     ".sd-n{width:32px;height:32px;border-radius:var(--r-pill);display:grid;place-items:center;background:var(--s3);font-weight:600}" +
     "html.sd-lock,html.sd-lock body{overflow:hidden}" +
     ".sd-reader{position:fixed;inset:0;z-index:10000;background:var(--bg);color:var(--tx);display:flex;flex-direction:column;padding:var(--sp-4) var(--sp-6);gap:var(--sp-4)}" +

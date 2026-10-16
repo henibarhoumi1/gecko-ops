@@ -14,6 +14,7 @@
     st_d_tags_hint: ["Separate with commas.", "Séparez par des virgules."], st_d_none: ["None", "Aucun"],
     st_d_hook: ["Hook line (first 3 seconds)", "Accroche (3 premières secondes)"], st_d_concept: ["Concept: why it works", "Concept : pourquoi ça marche"],
     st_d_concept_ph: ["Two to four lines. What does the viewer feel, and why do they stay?", "Deux à quatre lignes. Que ressent le spectateur, pourquoi reste-t-il ?"],
+    st_d_voice_dj: ["Darija version of this line", "Version darija de cette ligne"], st_d_text_dj: ["Darija version (one line per line above)", "Version darija (une ligne par ligne ci-dessus)"], st_d_text_dj_ph: ["Written or generated. The shoot day reader shows it under each line.", "Écrite ou générée. Le lecteur du tournage l'affiche sous chaque ligne."],
     st_d_script: ["Script", "Script"], st_d_scenes: ["Scenes", "Scènes"], st_d_scene_n: ["Scene {n}", "Scène {n}"],
     st_d_visual: ["Visual", "Image"], st_d_voice: ["Voice or on-screen text", "Voix ou texte à l'écran"], st_d_secs: ["Seconds", "Secondes"],
     st_d_add_scene: ["Add scene", "Ajouter une scène"], st_d_rm: ["Remove", "Retirer"], st_d_up: ["Move up", "Monter"], st_d_down: ["Move down", "Descendre"],
@@ -63,7 +64,7 @@
     var st = document.createElement("style"); st.id = "st-css";
     st.textContent = ".st-scene{display:grid;grid-template-columns:1fr 1fr 84px auto;gap:8px;align-items:start;padding:10px 0;border-bottom:1px solid var(--line)}" +
       ".st-scene:last-of-type{border-bottom:0}.st-scene textarea{min-height:56px}" +
-      ".st-sc-n{grid-column:1/-1;display:flex;gap:6px;align-items:center;justify-content:space-between}" +
+      ".st-scene [id^=st-sxd-]{grid-column:1/-1}.st-sc-n{grid-column:1/-1;display:flex;gap:6px;align-items:center;justify-content:space-between}" +
       ".st-detail{display:grid;grid-template-columns:minmax(0,1fr);gap:18px}" +
       "@media (max-width:640px){.st-scene{grid-template-columns:1fr 84px}.st-scene .st-sc-a{grid-column:1/-1}}";
     document.head.appendChild(st);
@@ -101,12 +102,13 @@
     ch.hook = u.val("st-f-hook").trim();
     ch.concept = u.val("st-f-concept").trim();
     ch.script = u.val("st-f-script");
+    if (el("st-f-scriptd")) ch.scriptDarija = u.val("st-f-scriptd");
     ch.notes = u.val("st-f-notes");
     var scenes = [], n = 0, oldScenes = Array.isArray(i.scenes) ? i.scenes : [];
     while (el("st-sv-" + n)) {
       scenes.push({
         id: oldScenes[n] && oldScenes[n].id || u.uid("sc"),
-        v: u.val("st-sv-" + n), x: u.val("st-sx-" + n),
+        v: u.val("st-sv-" + n), x: u.val("st-sx-" + n), xd: el("st-sxd-" + n) ? u.val("st-sxd-" + n) : (oldScenes[n] && oldScenes[n].xd || ""),
         s: Math.max(0, Math.round(u.numVal("st-ss-" + n))),
         silent: u.checked("st-ssilent-" + n)
       });
@@ -252,6 +254,7 @@
         '<textarea class="in" id="st-sx-' + k + '" rows="2" aria-label="' + esc(t("st_d_voice")) + '" placeholder="' + esc(t("st_d_voice")) + '"' + D + ">" + esc(s.x || "") + "</textarea>" +
         '<input class="in num" id="st-ss-' + k + '" type="number" min="0" inputmode="numeric" aria-label="' + esc(t("st_d_secs")) + '" value="' + esc(s.s == null ? "" : s.s) + '" placeholder="s"' + D + ">" +
         ui.field({ id: "st-ssilent-" + k, label: t("st_silent"), type: "checkbox", value: s.silent === true, attrs: D }) +
+        '<textarea class="in" id="st-sxd-' + k + '" rows="2" dir="auto" aria-label="' + esc(t("st_d_voice_dj")) + '" placeholder="' + esc(t("st_d_voice_dj")) + '"' + D + ">" + esc(s.xd || "") + "</textarea>" +
         "</div>";
     }).join("");
   }
@@ -261,7 +264,8 @@
       '<span class="small muted num">' + esc(t("st_d_time", { a: H.speakSeconds(i), b: H.sceneSeconds(i) })) + "</span></div>" +
       '<h3 class="sec">' + esc(t("st_d_scenes")) + "</h3>" + scenesHTML(i) +
       (H.can() ? "<div>" + ui.btn(t("st_d_add_scene"), "st-scene-add", { cls: "ghost sm", data: { id: i.id } }) + "</div>" : "") +
-      ui.field({ id: "st-f-script", label: t("st_d_text"), type: "textarea", rows: 6, value: i.script || "", placeholder: t("st_d_text_ph"), attrs: D }) + "</section>";
+      ui.field({ id: "st-f-script", label: t("st_d_text"), type: "textarea", rows: 6, value: i.script || "", placeholder: t("st_d_text_ph"), attrs: D }) +
+      ui.field({ id: "st-f-scriptd", label: t("st_d_text_dj"), type: "textarea", rows: 6, value: i.scriptDarija || "", placeholder: t("st_d_text_dj_ph"), attrs: D + ' dir="auto"' }) + "</section>";
   }
 
   function linksPanel(i) {
@@ -334,7 +338,7 @@
     });
     return h + '<div class="st-detail">' + stagePanel(i) +
       '<div class="grid2" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));align-items:start"><div class="stack" style="gap:18px">' + basicsPanel(i) + conditionalBrief(i) + hookPanel(i) + "</div>" +
-      '<div class="stack" style="gap:18px">' + scriptPanel(i) + linksPanel(i) + "</div></div>" +
+      '<div class="stack" style="gap:18px">' + (SH.aiPanel ? SH.aiPanel(i) : "") + scriptPanel(i) + linksPanel(i) + "</div></div>" +
       '<div class="grid2" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));align-items:start">' + boardPanel(i) + sendPanel(i) + sharePanel(i) + notesPanel(i) + "</div></div>";
   };
 
