@@ -88,6 +88,8 @@
     { id: "money", views: ["dashboard", "finance", "portal"] },
     { id: "team", views: ["docs", "team", "activity", "settings"] }
   ];
+  /** Views reached from inside another page rather than the sidebar (the menu stays short). */
+  UI.NAV_PARENT = { production: "projects", deliveries: "projects", reports: "projects", boards: "projects", activity: "dashboard", guide: "today" };
   UI.groupOf = function (v) { for (var i = 0; i < UI.GROUPS.length; i++) if (UI.GROUPS[i].views.indexOf(v) > -1) return UI.GROUPS[i].id; return "main"; };
   /** Remembered sidebar state: {mini: icon rail} */
   UI.navPref = function () { var p = u.lsGet(NAV_KEY, null); return p && typeof p === "object" ? { mini: !!p.mini } : { mini: false }; };
@@ -438,7 +440,7 @@
 
   // ---------- shell ----------
   function navItem(v) {
-    var c = UI.viewCount(v), on = UI.state.view === v, label = t("nav_" + v), gid = UI.groupOf(v), gi = 0;
+    var c = UI.viewCount(v), on = UI.state.view === v || UI.NAV_PARENT[UI.state.view] === v, label = t("nav_" + v), gid = UI.groupOf(v), gi = 0;
     UI.GROUPS.forEach(function (g, i) { if (g.id === gid) gi = i; });
     return '<button type="button" class="nv" data-a="nav" data-v="' + v + '"' + (on ? ' aria-current="page"' : "") + ' title="' + esc(label) + '">' +
       UI.icon(v) + '<span class="nl">' + esc(label) + "</span>" + (c !== "" && c != null && c !== 0 ? '<span class="cnt"' + tintStyle(UI.tint(gi)) + ">" + esc(c) + "</span>" : "") + "</button>";
@@ -458,9 +460,9 @@
     if (creates.length) h += '<div class="side-new"><button type="button" class="btn primary" data-a="sh-menu" data-m="quick" aria-haspopup="menu" aria-expanded="false" title="' + esc(t("ui_new")) + ' (N)">' + UI.icon("plus") + "<span>" + esc(t("ui_new")) + "</span></button></div>";
     h += '<nav class="side-nav" aria-label="GECKO Ops">';
     UI.GROUPS.forEach(function (g, gi) {
-      var vs = g.views.filter(function (v) { return nav.indexOf(v) > -1; });
+      var vs = g.views.filter(function (v) { return nav.indexOf(v) > -1 && !UI.NAV_PARENT[v]; });
       vs.forEach(function (v) { seen[v] = 1; });
-      if (gi === 0) nav.forEach(function (v) { if (!seen[v] && !UI.GROUPS.some(function (x) { return x.views.indexOf(v) > -1; })) { vs.push(v); seen[v] = 1; } });
+      if (gi === 0) nav.forEach(function (v) { if (!seen[v] && !UI.NAV_PARENT[v] && !UI.GROUPS.some(function (x) { return x.views.indexOf(v) > -1; })) { vs.push(v); seen[v] = 1; } });
       if (!vs.length) return;
       h += '<div class="grp" role="group" aria-label="' + esc(t("grp_" + g.id)) + '"><span class="grp-h" aria-hidden="true">' + esc(t("grp_" + g.id)) + "</span>" + vs.map(navItem).join("") + "</div>";
     });
@@ -472,7 +474,7 @@
   /** Phone bottom bar: 5 items + More (opens the full sidebar as a drawer). */
   function bottomHTML(nav) {
     var pick = ["today", "tasks", "inbox", "calendar", "projects"].filter(function (v) { return nav.indexOf(v) > -1; });
-    nav.forEach(function (v) { if (pick.length < 5 && pick.indexOf(v) < 0) pick.push(v); });
+    nav.forEach(function (v) { if (pick.length < 5 && pick.indexOf(v) < 0 && !UI.NAV_PARENT[v]) pick.push(v); });
     var inMore = pick.indexOf(UI.state.view) < 0;
     return '<nav class="bnav" aria-label="GECKO Ops">' + pick.map(function (v) {
       var c = UI.viewCount(v);

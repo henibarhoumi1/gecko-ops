@@ -36,7 +36,13 @@
     pj_new_hint_month: ["Creates the month at onboarding (inside the client's monthly contract) and its invoice draft, full price, paid before the shoot.", "Crée le mois au démarrage (dans le contrat mensuel du client) et son brouillon de facture, prix complet, payé avant le tournage."],
     pj_create: ["Create project", "Créer le projet"], pj_created: ["Project created. Invoice drafts are in Money.", "Projet créé. Les brouillons de facture sont dans Argent."],
     // detail
-    pj_back: ["All projects", "Tous les projets"], pj_to_prod: ["Open in production", "Ouvrir en production"],
+    pj_back: ["All projects", "Tous les projets"], pj_to_prod: ["Edit files", "Fichiers de montage"],
+    pj_t_overview: ["Overview", "Vue d'ensemble"], pj_t_brief: ["Brief", "Brief"], pj_t_scripts: ["Scripts", "Scripts"], pj_t_board: ["Storyboard", "Storyboard"],
+    pj_t_shoot: ["Shoot day", "Tournage"], pj_t_edits: ["Edits", "Montage"], pj_t_money: ["Money", "Argent"],
+    pj_new_script: ["New script", "Nouveau script"], pj_no_scripts: ["No scripts for this project yet.", "Aucun script pour ce projet."], pj_script_n: ["Script {n}", "Script {n}"],
+    pj_scenes_n: ["{n} scenes", "{n} scènes"], pj_no_board: ["Write scenes in a script first. Each scene becomes a frame.", "Écrivez d'abord des scènes dans un script. Chaque scène devient une image."],
+    pj_shots: ["Shots done", "Plans faits"], pj_open_shootday: ["Open shoot day", "Ouvrir le tournage"], pj_set_date: ["Set a shoot date below.", "Fixez une date de tournage ci-dessous."],
+    pj_to_deliv: ["Delivery", "Livraison"], pj_to_results: ["Ad results", "Résultats pub"], pj_to_boards: ["Whiteboards", "Tableaux blancs"],
     pj_move_to: ["Move to {s}", "Passer à : {s}"], pj_back_to: ["Back to {s}", "Revenir à : {s}"],
     pj_log_moved: ["Stage: {a} → {b}", "Étape : {a} → {b}"],
     pj_last_stage: ["Last stage. This project is closed.", "Dernière étape. Ce projet est clôturé."],
@@ -232,7 +238,7 @@
     h += '<div class="board">' + m.STAGES.map(function (s) {
       var ps = list.filter(function (p) { return p.stage === s; });
       var shown = ps, more = 0;
-      if (s === "done") {
+      if (s === "retention") {
         ps.sort(u.by(function (p) { return p.shootDate || ""; }, "desc"));
         shown = ps.slice(0, 5); more = ps.length - shown.length;
       } else ps.sort(u.by(function (p) { return p.shootDate || "9999"; }));
@@ -442,27 +448,71 @@
     }).join("") + "</div>";
     return h + "</section>";
   }
-  function detail(p) {
-    var pk = m.pack(p.pack);
+  // ---------- detail: one page per project, in tabs ----------
+  var TABS = ["overview", "brief", "scripts", "board", "shoot", "edits", "money"];
+  function ideasOf(p) { return S.all("ideas").filter(function (i) { return i.projectId === p.id && i.stage !== "parked"; }).sort(u.by(function (i) { return i.shootOrder != null ? i.shootOrder : 999; })); }
+  function tabsFor() { return TABS.filter(function (k) { return k !== "money" || m.isFounder(); }).filter(function (k) { return k !== "scripts" && k !== "board" || m.can("ideas") || GK.ui.nav().indexOf("studio") > -1; }); }
+  function scriptsTab(p) {
+    var list = ideasOf(p), ok = m.can("ideas");
+    var h = '<section class="panel"><div class="panel-h"><h2 class="sec">' + esc(t("pj_t_scripts")) + "</h2>" +
+      (ok ? ui.btn(t("pj_new_script"), "pj-script-new", { cls: "primary sm", icon: "plus" }) : "") + "</div>";
+    if (!list.length) return h + ui.empty(t("pj_no_scripts")) + "</section>";
+    return h + '<div class="list">' + list.map(function (i) {
+      var n = (i.scenes || []).length;
+      return '<div class="li click" tabindex="0" role="button" data-a="pj-script" data-id="' + esc(i.id) + '"><div class="stack" style="gap:2px;min-width:0"><strong>' + esc(i.hook ? "“" + i.hook + "”" : i.title) + "</strong>" +
+        '<span class="m">' + esc(i.title) + (n ? " · " + esc(t("pj_scenes_n", { n: n })) : "") + "</span></div>" + (function (es) { return ui.chip(GK.studio.h.stName(es), es); })(GK.studio.h.effStage(i)) + "</div>";
+    }).join("") + "</div></section>";
+  }
+  function boardTab(p) {
+    var list = ideasOf(p).filter(function (i) { return (i.scenes || []).length; });
+    if (!list.length) return ui.empty(t("pj_no_board"));
+    return list.map(function (i) {
+      return '<div class="stack" style="gap:var(--sp-2)"><h3 class="sec" style="margin:0">' + esc(i.title) + "</h3>" + GK.studio.boardPanel(i) + "</div>";
+    }).join("");
+  }
+  function shootTab(p) {
+    var list = ideasOf(p), shots = GK.studio.shotsOf ? GK.studio.shotsOf(list) : [];
+    var h = '<section class="panel"><div class="panel-h"><h2 class="sec">' + esc(t("pj_t_shoot")) + "</h2></div>";
+    h += ui.kpis([
+      { lab: t("pj_shoot"), v: p.shootDate ? u.fmtDate(p.shootDate) : "—" },
+      { lab: t("pj_t_scripts"), v: String(list.length) },
+      { lab: t("pj_shots"), v: shots.length ? shots.filter(function (x) { return x.shot.done; }).length + " / " + shots.length : "0" }
+    ]);
+    h += '<div class="row">' + (p.shootDate ? ui.btn(t("pj_open_shootday"), "pj-shootday", { cls: "primary", icon: "camera" }) : '<span class="small muted">' + esc(t("pj_set_date")) + "</span>") + "</div>";
+    return h + "</section>" + detailsPanel(p);
+  }
+  function editsTab(p) {
+    var links = [["pj_to_prod", "pj-prod"], ["pj_to_deliv", "pj-deliv"]];
+    if (GK.ui.nav().indexOf("reports") > -1) links.push(["pj_to_results", "pj-results"]);
+    if (GK.ui.nav().indexOf("boards") > -1) links.push(["pj_to_boards", "pj-boards"]);
+    return '<div class="row">' + links.map(function (x) { return ui.btn(t(x[0]), x[1], { cls: "ghost sm" }); }).join("") + "</div>" + delivPanel(p);
+  }
+  function detail(p, params) {
+    var pk = m.pack(p.pack), tabs = tabsFor(), tab = tabs.indexOf(params.tab) > -1 ? params.tab : "overview";
     var sub = '<span class="row">' + ui.stagePill(p) + ui.chip(pk.name, p.pack) + (p.month ? '<span class="small">' + esc(monthLabel(p)) + "</span>" : "") +
       (m.isFounder() && hasShare(p) ? ui.pill(t("pj_f_moh")) : "") + ui.sample() + "</span>";
     var h = ui.head({
       label: t("nav_projects"), title: m.brand(p.clientId) + " · " + p.name, accent: t("pj_d_accent"), sub: sub,
-      actions: ui.btn(t("pj_back"), "pj-back", { cls: "ghost" }) + ui.btn(t("pj_to_prod"), "pj-prod")
+      actions: ui.btn(t("pj_back"), "pj-back", { cls: "ghost" })
     });
     if (!canEdit()) h += '<p class="note">' + esc(t("pj_readonly")) + "</p>";
-    h += stepperPanel(p);
-    h += '<div class="grid2">' + onboardingPanel(p) + detailsPanel(p) + "</div>";
-    h += planPanel(p);
-    h += delivPanel(p);
-    h += '<div class="grid2">' + (canEdit() ? moneyPanel(p) : "") + tasksPanel(p) + "</div>";
+    h += '<div class="tabs pj-tabs" role="tablist">' + tabs.map(function (k) {
+      return '<button type="button" role="tab" data-a="pj-tab" data-v="' + k + '" aria-selected="' + (tab === k) + '">' + esc(t("pj_t_" + k)) + "</button>";
+    }).join("") + "</div>";
+    if (tab === "overview") h += stepperPanel(p) + '<div class="grid2">' + onboardingPanel(p) + tasksPanel(p) + "</div>";
+    else if (tab === "brief") h += planPanel(p);
+    else if (tab === "scripts") h += scriptsTab(p);
+    else if (tab === "board") h += boardTab(p);
+    else if (tab === "shoot") h += shootTab(p);
+    else if (tab === "edits") h += editsTab(p);
+    else if (tab === "money") h += moneyPanel(p);
     return h;
   }
 
   GK.view("projects", {
     render: function (params) {
       var p = params.id ? m.project(params.id) : null;
-      return p ? detail(p) : board(params);
+      return p ? detail(p, params) : board(params);
     },
     count: function () { return S.all("projects").filter(function (p) { return p.stage !== "retention"; }).length || ""; }
   });
@@ -574,6 +624,22 @@
   GK.act("pj-open", function (el) { ui.go("projects", { id: el.dataset.id }); });
   GK.act("pj-back", function () { ui.go("projects", { id: null }); });
   GK.act("pj-filter", function (el) { ui.go("projects", { filter: el.dataset.v }); });
+  GK.act("pj-tab", function (el) { ui.go("projects", { tab: el.dataset.v }); });
+  GK.act("pj-script", function (el) { ui.go("studio", { id: el.dataset.id }); });
+  GK.act("pj-script-new", function () {
+    var p = cur(); if (!p || !m.can("ideas")) return;
+    var me = GK.me(), n = ideasOf(p).length + 1;
+    var rec = S.put("ideas", {
+      title: t("pj_script_n", { n: n }), stage: "script", clientId: p.clientId, projectId: p.id, angleId: "", angle: "", objective: "", audience: "", creativeType: "brand",
+      offer: "", objection: "", proof: "", cta: "", hook: "", concept: "", script: "", scenes: [], mode: "D", format: p.format || "9x16",
+      refs: [], boardId: "", owner: me ? me.id : "", tags: [], priority: 2, reelId: "", created: u.today(), shareOk: false, reviewAsked: false, notes: "", shootDate: p.shootDate || ""
+    }, { log: "" });
+    ui.go("studio", { id: rec.id });
+  });
+  GK.act("pj-shootday", function () { var p = cur(); if (p) { ui.p("shootday").day = p.shootDate; ui.go("shootday"); } });
+  GK.act("pj-deliv", function () { ui.go("deliveries"); });
+  GK.act("pj-results", function () { var p = cur(); ui.go("reports", { projectId: p ? p.id : null }); });
+  GK.act("pj-boards", function () { ui.go("boards"); });
   GK.act("pj-prod", function () { var p = cur(); ui.go("production", { projectId: p ? p.id : null }); });
   GK.act("pj-client", function (el) { ui.go("clients", { id: el.dataset.id }); });
   GK.act("pj-inv", function (el) { ui.go("finance", { invoiceId: el.dataset.id, tab: "invoices" }); });
