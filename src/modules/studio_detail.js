@@ -106,12 +106,12 @@
     ch.notes = u.val("st-f-notes");
     var scenes = [], n = 0, oldScenes = Array.isArray(i.scenes) ? i.scenes : [];
     while (el("st-sv-" + n)) {
-      scenes.push({
+      scenes.push(Object.assign({}, oldScenes[n] || {}, {
         id: oldScenes[n] && oldScenes[n].id || u.uid("sc"),
         v: u.val("st-sv-" + n), x: u.val("st-sx-" + n), xd: el("st-sxd-" + n) ? u.val("st-sxd-" + n) : (oldScenes[n] && oldScenes[n].xd || ""),
         s: Math.max(0, Math.round(u.numVal("st-ss-" + n))),
         silent: u.checked("st-ssilent-" + n)
-      });
+      }));
       n++;
     }
     ch.scenes = scenes;
@@ -338,7 +338,7 @@
     });
     return h + '<div class="st-detail">' + stagePanel(i) +
       '<div class="grid2" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));align-items:start"><div class="stack" style="gap:18px">' + basicsPanel(i) + conditionalBrief(i) + hookPanel(i) + "</div>" +
-      '<div class="stack" style="gap:18px">' + (SH.aiPanel ? SH.aiPanel(i) : "") + scriptPanel(i) + linksPanel(i) + "</div></div>" +
+      '<div class="stack" style="gap:18px">' + (SH.aiPanel ? SH.aiPanel(i) : "") + scriptPanel(i) + (SH.boardPanel ? SH.boardPanel(i) : "") + linksPanel(i) + "</div></div>" +
       '<div class="grid2" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));align-items:start">' + boardPanel(i) + sendPanel(i) + sharePanel(i) + notesPanel(i) + "</div></div>";
   };
 

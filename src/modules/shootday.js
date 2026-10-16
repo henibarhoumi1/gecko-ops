@@ -27,6 +27,10 @@
     sd_keys: ["Tap the right side or press → for the next line, the left side or ← to go back.", "Touchez à droite ou appuyez sur → pour la ligne suivante, à gauche ou ← pour revenir."],
     sd_reset: ["Clear takes", "Effacer les prises"], sd_reset_q: ["Clear the takes of this video?", "Effacer les prises de cette vidéo ?"],
     sd_reset_body: ["The script stays. Only the good and again marks are removed.", "Le script reste. Seules les marques bonne prise et à refaire sont retirées."],
+    sd_tab_order: ["Run order", "Ordre de passage"], sd_tab_shots: ["Shot list", "Liste des plans"],
+    sd_shots_none: ["No shots planned yet. Add them under Storyboard and shots on each script.", "Aucun plan prévu. Ajoutez-les dans Storyboard et plans sur chaque script."],
+    sd_no_loc: ["No location set", "Lieu non précisé"], sd_shots_done: ["{a} of {b} shots done", "{a} plans sur {b} faits"],
+    sd_scene: ["Scene {n}", "Scène {n}"],
     sd_no_rights: ["Only the owner, the Client Lead and production can mark takes.", "Seuls le fondateur, le responsable clients et la production peuvent marquer les prises."]
   });
 
@@ -75,6 +79,11 @@
       if (up.length) h += '<div class="row" style="gap:6px;flex-wrap:wrap"><span class="small muted">' + esc(t("sd_next_days")) + "</span>" +
         up.map(function (d) { return ui.btn(u.fmtDate(d, { weekday: "short", day: "numeric", month: "short" }), "sd-goday", { cls: "ghost sm", data: { d: d } }); }).join("") + "</div>";
       if (!list.length) return h + ui.empty({ icon: "calendar", title: t("sd_none"), text: t("sd_none_how") });
+      var mode = p.mode || "order";
+      h += '<div class="tabs" role="tablist">' + [["order", "sd_tab_order"], ["shots", "sd_tab_shots"]].map(function (x) {
+        return '<button type="button" role="tab" class="tab' + (mode === x[0] ? " on" : "") + '" aria-selected="' + (mode === x[0]) + '" data-a="sd-mode" data-v="' + x[0] + '">' + esc(t(x[1])) + "</button>";
+      }).join("") + "</div>";
+      if (mode === "shots") return h + shotList(list);
       h += '<ol class="sd-list">' + list.map(function (i, k) {
         var n = lines(i).length, done = doneCount(i, n), pr = i.projectId && m.project(i.projectId);
         return '<li class="card sd-item"><span class="sd-n num">' + (k + 1) + '</span><div class="sd-meta"><strong>' + esc(i.title || "—") + "</strong>" +
@@ -86,6 +95,29 @@
       }).join("") + "</ol>";
       return h;
     }
+  });
+  function shotList(list) {
+    var all = GK.studio && GK.studio.shotsOf ? GK.studio.shotsOf(list) : [];
+    if (!all.length) return ui.empty({ icon: "camera", title: t("sd_shots_none") });
+    var groups = {}, order = [];
+    all.forEach(function (r) { var l = String(r.shot.loc || "").trim() || t("sd_no_loc"); if (!groups[l]) { groups[l] = []; order.push(l); } groups[l].push(r); });
+    var done = all.filter(function (r) { return r.shot.done; }).length, D = canMark() ? "" : " disabled";
+    return '<p class="small muted">' + esc(t("sd_shots_done", { a: done, b: all.length })) + "</p>" + order.map(function (l) {
+      return '<section class="panel"><h2 class="sec">' + esc(l) + '</h2><div class="list">' + groups[l].map(function (r) {
+        var x = r.shot, name = GK.studio.shotTypeName(x.type || "medium");
+        return '<label class="li sd-shot' + (x.done ? " sd-shot-done" : "") + '"><input type="checkbox" data-c="sd-shot" data-id="' + esc(r.idea.id) + '" data-k="' + r.k + '" data-j="' + r.j + '"' + (x.done ? " checked" : "") + D + ">" +
+          '<span class="stack" style="gap:2px;flex:1;min-width:0"><b>' + esc(name) + " · " + esc(x.roll === "B" ? "B-roll" : "A-roll") + "</b>" +
+          '<span class="small muted">' + esc(r.idea.title || "") + " · " + esc(t("sd_scene", { n: r.k + 1 })) + (r.scene.v ? " · " + esc(r.scene.v) : "") + "</span>" +
+          (x.props || x.note ? '<span class="small">' + esc([x.props, x.note].filter(Boolean).join(" · ")) + "</span>" : "") + "</span></label>";
+      }).join("") + "</div></section>";
+    }).join("");
+  }
+  GK.act("sd-mode", function (el) { ui.p("shootday").mode = el.dataset.v; ui.render(true); });
+  GK.change("sd-shot", function (el) {
+    if (!canMark()) { el.checked = !el.checked; return ui.toast(t("sd_no_rights")); }
+    var i = S.get("ideas", el.dataset.id); if (!i) return;
+    var sc = u.clone(i.scenes || []), s = sc[+el.dataset.k], x = s && (s.shots || [])[+el.dataset.j]; if (!x) return;
+    x.done = el.checked; S.patch("ideas", i.id, { scenes: sc }, { log: "" }); ui.render(true);
   });
   GK.change("sd-day", function (el) { if (el.value) { ui.p("shootday").day = el.value; ui.render(true); } });
   GK.act("sd-goday", function (el) { ui.p("shootday").day = el.dataset.d; ui.render(true); });
@@ -205,7 +237,7 @@
     ".sd-shot{margin:0;color:var(--tx-2);font-size:15px}.sd-shot span{font-weight:600;color:var(--tx)}" +
     ".sd-bar{display:flex;justify-content:space-between;align-items:center;gap:var(--sp-3);flex-wrap:wrap}" +
     ".sd-on-good{background:var(--chroma);color:var(--on-chroma)}.sd-on-again{background:var(--gel-soft);color:var(--tx)}" +
-    ".sd-keys{text-align:center;margin:0}" +
+    ".sd-keys{text-align:center;margin:0}.sd-shot{cursor:pointer;gap:12px;align-items:flex-start}.sd-shot input{margin-top:3px}.sd-shot-done b{text-decoration:line-through;color:var(--tx-3)}" +
     "@media (max-width:600px){.sd-reader{padding:var(--sp-3)}.sd-keys{display:none}.sd-bar .btn{flex:1}}";
   document.head.appendChild(css);
 })(window.GK);
