@@ -584,7 +584,7 @@
   function flush() { if (deferred) UI.render(); }
 
   /** Theme: "dark" (default, total black), "light" or "auto" (follows the system). */
-  UI.theme = function () { var m = u.lsGet(THEME_KEY, "dark"); return m === "light" || m === "auto" ? m : "dark"; };
+  UI.theme = function () { var m = u.lsGet(THEME_KEY, "light"); return m === "dark" || m === "auto" ? m : "light"; };
   function applyTheme() { document.documentElement.setAttribute("data-theme", UI.theme()); }
 
   // ---------- built-in flows ----------
