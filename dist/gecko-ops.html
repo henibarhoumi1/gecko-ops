@@ -2531,7 +2531,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
 /* ---- core/metrics.js ---- */
 /* GECKO Ops · metrics. Read-only numbers computed from the store, shared by the dashboard, finance and reports.
    Everything here is an ESTIMATE built from the records: say so wherever it is shown.
-   Money out = actual expenses ledger (one-off + recurring) + Heni's salary + commissions paid.
+   Money out = actual expenses ledger (one-off + recurring) + Owner salary + commissions paid.
    Project cost-line estimates are used for planning and project profitability until explicitly reconciled to actual expenses. */
 (function (GK) {
   "use strict";
@@ -2670,7 +2670,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     var won = S.all("leads").filter(function (l) { return l.stage === "won"; }).length, lost = S.all("leads").filter(function (l) { return l.stage === "lost"; }).length;
     return won + lost ? won / (won + lost) * 100 : null;
   };
-  /** Monthly recurring revenue from active SKIN contracts. */
+  /** Monthly recurring revenue from active monthly contracts. */
   X.mrr = function () {
     return u.sum(S.all("contracts").filter(function (c) { return c.status === "active"; }), function (c) {
       return m.toTND(m.contractPrice(c), m.pack(c.pack).currency);
@@ -3655,7 +3655,6 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
 (function (GK) {
   "use strict";
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
-  var DM_TARGET = 10;
 
   GK.i18n.add({
     td_t_founder: ["On the", "Sur la"], td_a_founder: ["table", "table"],
@@ -3670,8 +3669,8 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     td_overdue: ["Overdue invoice", "Facture en retard"],
     td_draft: ["Draft invoice to issue", "Brouillon de facture à émettre"],
     td_blocked: ["Blocked", "Bloqué"],
-    td_month_due: ["Create the next SKIN month", "Créer le prochain mois SKIN"],
-    td_commission: ["Commission owed to {name}", "Commission due à {name}"],
+    td_month_due: ["Create the next monthly project", "Créer le prochain projet mensuel"],
+    td_commission: ["Partner share owed", "Part partenaire due"],
     td_follow: ["Follow-up due", "Relance à faire"],
     td_late: ["Late", "En retard"], td_today: ["Today", "Aujourd'hui"],
     td_due_on: ["due {d}", "échéance {d}"], td_late_since: ["overdue since {d}", "en retard depuis le {d}"],
@@ -3698,7 +3697,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     td_follows: ["Follow-ups due", "Relances à faire"], td_no_follows: ["No follow-up due. Send new DMs.", "Aucune relance due. Envoyez de nouveaux DM."],
     td_props: ["Proposals waiting", "Propositions en attente"], td_no_props: ["No proposal out right now.", "Aucune proposition en cours."],
     td_sent_ago: ["sent {n} days ago", "envoyée il y a {n} jours"],
-    td_comm: ["My commission", "Ma commission"], td_k_c_owed: ["Owed to you", "Dû"], td_k_c_paid: ["Paid so far", "Déjà payé"],
+    td_comm: ["Partner share", "Part partenaire"], td_k_c_owed: ["Owed to you", "Dû"], td_k_c_paid: ["Paid so far", "Déjà payé"],
     td_k_c_wait: ["Waiting on client payment", "En attente du paiement client"], td_k_c_n: ["{n}% of project profit", "{n} % du bénéfice projet"],
     td_no_log: ["Only sales can log DMs.", "Seul le commercial peut saisir les DM."],
     // editor
@@ -3727,7 +3726,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     td_a_paid: ["{brand} paid {amt}", "{brand} a payé {amt}"], td_a_fb_approve: ["{brand} approved", "{brand} a validé"], td_a_fb_changes: ["{brand} asked for changes", "{brand} demande des retouches"], td_a_fb_comment: ["{brand} commented", "{brand} a commenté"],
     td_a_task: ["Done: {title}", "Fait : {title}"], td_yday: ["Yesterday", "Hier"], td_days_ago: ["{n} days ago", "il y a {n} jours"],
     td_load: ["Team load", "Charge de l'équipe"], td_c_person: ["Person", "Personne"], td_c_load: ["Open tasks", "Tâches ouvertes"], td_c_late: ["Late", "En retard"], td_c_done7: ["Done, 7 days", "Faites, 7 jours"],
-    td_c_money: ["Invoiced and cash in", "Facturé et encaissé"], td_c_money_sub: ["Last 6 months, DT", "6 derniers mois, DT"], td_c_inv: ["Invoiced", "Facturé"], td_c_cash: ["Cash in", "Encaissé"]
+    td_c_money: ["Invoiced and cash in", "Facturé et encaissé"], td_c_money_sub: ["Last 6 months, TND", "6 derniers mois, TND"], td_c_inv: ["Invoiced", "Facturé"], td_c_cash: ["Cash in", "Encaissé"]
   });
 
   /** key_0 / key_1 / key_n by count (key_0 falls back to key_n). */
@@ -3736,7 +3735,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   function today() { return u.today(); }
   function active(p) { return p.stage !== "done"; }
   function founderName() { var f = S.all("team").find(function (x) { return x.role === "founder"; }); return f ? f.name : "Heni"; }
-  function salesName() { var f = S.all("team").find(function (x) { return x.role === "sales"; }); return f ? f.name : "Mohamed"; }
+  function salesName() { var f = S.all("team").find(function (x) { return x.role === "sales"; }); return f ? f.name : t("role_sales"); }
   function dueLabel(d) {
     if (!d) return t("td_no_due");
     var n = u.daysBetween(today(), d);
@@ -3888,7 +3887,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     // hero: the month, against its goal
     var pct = goal ? cash / goal * 100 : 0;
     var hero = '<section class="hero c5"><span class="lbl">' + esc(t("td_h_label", { m: u.fmtMonth(ym) })) + "</span>" +
-      '<div class="hv">' + esc(u.money(cash).replace(/\s?DT$/, "")) + "<small>DT</small></div>" +
+      '<div class="hv">' + esc(u.money(cash).replace(/\s?TND$/, "")) + "<small>TND</small></div>" +
       '<p class="hs">' + esc(goal ? t("td_h_sub_goal", { p: u.pct(pct), g: u.money(goal), o: u.money(owed) }) : t("td_h_sub", { o: u.money(owed) })) + "</p>" +
       (goal ? '<div class="stack" style="gap:8px;margin-top:auto"><div class="meter-lab"><span>' + esc(t("td_h_goal")) + "</span><span>" + esc(u.pct(Math.min(pct, 999))) + "</span></div>" + ui.meter(pct, { segments: 36 }) + "</div>" : "") +
       '<div class="hrow"><span class="small" style="opacity:.8">' + esc(lastCash ? t("td_h_last", { a: u.money(lastCash) }) : "") + '</span><div class="actions">' + ui.btn(t("td_h_open"), "td-go", { cls: "primary sm", data: { v: "finance" } }) + "</div></div></section>";
@@ -3931,14 +3930,13 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     var who = me(), td = today(), id = td + "_" + who.id;
     var rec = S.get("outreach", id) || { dms: 0, replies: 0, calls: 0 };
     var can = m.can("outreach");
-    var pct = (+rec.dms || 0) / DM_TARGET * 100;
     var log = '<section class="panel"><div class="panel-h"><h2 class="sec">' + esc(t("td_log")) + '</h2><span class="small muted">' + esc(u.fmtDate(td, { weekday: "long", day: "numeric", month: "long" })) + "</span></div>" +
       '<div class="form" style="grid-template-columns:repeat(3,minmax(0,1fr))">' +
       ui.field({ id: "td-dms", label: t("td_dms"), type: "number", value: rec.dms || 0, attrs: ' min="0" step="1"' }) +
       ui.field({ id: "td-replies", label: t("td_replies"), type: "number", value: rec.replies || 0, attrs: ' min="0" step="1"' }) +
       ui.field({ id: "td-calls", label: t("td_calls"), type: "number", value: rec.calls || 0, attrs: ' min="0" step="1"' }) +
-      "</div>" + ui.meter(pct, pct >= 100) +
-      '<div class="row between"><span class="small muted">' + esc(pct >= 100 ? t("td_target_hit") : t("td_of_target", { n: rec.dms || 0, t: DM_TARGET })) + "</span>" +
+      "</div>" +
+      '<div class="row between"><span></span>' +
       ui.btn(t("td_log_save"), "td-log-save", { cls: "primary", disabled: !can, title: can ? "" : t("td_no_log") }) + "</div></section>";
 
     var ws = u.weekStart(td), f = m.funnel(ws, who.id);
@@ -3963,7 +3961,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       return line("<strong>" + esc(l.brand) + "</strong>", meta, ui.btn(t("td_b_lead"), "td-go", { cls: "sm", data: { v: "pipeline", id: l.id } }));
     }).join("") + "</div>" : ui.empty(t("td_no_props")));
 
-    var mine = S.all("projects").filter(function (p) { return p.mohamed; });
+    var mine = [];
     var owed = 0, paid = 0, wait = 0;
     mine.forEach(function (p) { var c = m.commission(p); owed += c.owed; paid += c.paid; if (!c.payable) wait += c.amount; });
     var comm = '<section class="stack"><h2 class="sec">' + esc(t("td_comm")) + "</h2>" + ui.kpis([
@@ -3972,7 +3970,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       { lab: t("td_k_c_wait"), v: u.money(wait) }
     ]) + "</section>";
 
-    return log + week + '<div class="grid2">' + follows + propP + "</div>" + comm + '<div class="grid2">' + tasksPanel() + shootsPanel(7, t("td_shoots7")) + "</div>";
+    return log + week + '<div class="grid2">' + follows + propP + "</div>" + '<div class="grid2">' + tasksPanel() + shootsPanel(7, t("td_shoots7")) + "</div>";
   }
 
   // ---------- editor ----------
@@ -4040,7 +4038,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     var v = {};
     ["dms", "replies", "calls"].forEach(function (k) { v[k] = Math.max(0, Math.round(u.numVal("td-" + k))); });
     S.put("outreach", { id: u.today() + "_" + who.id, date: u.today(), owner: who.id, dms: v.dms, replies: v.replies, calls: v.calls });
-    ui.toast(v.dms >= DM_TARGET ? t("td_target_hit") : t("td_log_saved"));
+    ui.toast(t("td_log_saved"));
     ui.render(true);
   });
 })(window.GK);
@@ -4360,7 +4358,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     ];
     if (founder()) tiles.push({ label: t("ins_tm_comm"), icon: "cash", value: u.money(X.commissionOwed()), hint: t("ins_tm_comm_n", { a: u.money(X.commissionPaid()) }) });
     else if (role === "sales") {
-      var mine = S.all("projects").filter(function (p) { return p.mohamed; }), owed = u.sum(mine, function (p) { return m.commission(p).owed; });
+      var mine = S.all("projects").filter(function (p) { return !!m.commission(p).basis; }), owed = u.sum(mine, function (p) { return m.commission(p).owed; });
       tiles.push({ label: t("ins_tm_comm"), icon: "cash", value: u.money(owed), hint: t("ins_tm_comm_n", { a: u.money(u.sum(mine, function (p) { return m.commission(p).paid; })) }) });
     } else tiles.push(Object.assign({ label: t("ins_tm_done"), icon: "check", value: String(done7), spark: spark }, cmpCount(done7, doneP), done7 || doneP ? { deltaLabel: t("ins_vs_week") } : {}));
     var dec = "";
@@ -4434,7 +4432,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
 })(window.GK);
 
 /* ---- modules/pipeline.js ---- */
-/* GECKO Ops · module: pipeline (Mohamed's sales board) */
+/* GECKO Ops · module: pipeline (sales pipeline) */
 (function (GK) {
   "use strict";
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
@@ -4466,7 +4464,6 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     pl_funnel: ["Weekly funnel", "Entonnoir par semaine"], pl_week: ["Week", "Semaine"], pl_this_week: ["This week", "Cette semaine"],
     pl_week_of: ["Week of {d}", "Semaine du {d}"], pl_dms: ["DMs", "DM"], pl_replies: ["Replies", "Réponses"], pl_rate: ["Reply rate", "Taux de réponse"],
     pl_calls: ["Calls", "Appels"], pl_props: ["Proposals", "Propositions"], pl_won: ["Won", "Gagnés"], pl_total: ["4 weeks", "4 semaines"],
-    pl_target: ["Target: 10 DMs a day, 50 to 70 a week.", "Objectif : 10 DM par jour, 50 à 70 par semaine."],
     pl_below: ["Below 50", "Sous 50"], pl_running: ["In progress", "En cours"],
     pl_reasons: ["Why we lose", "Pourquoi on perd"], pl_reasons_none: ["No lost leads yet.", "Aucun prospect perdu pour l'instant."],
     pl_everyone: ["Everyone", "Tout le monde"],
@@ -4564,7 +4561,6 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     var ownerSel = '<select class="in inline small" data-c="pl-owner" aria-label="' + esc(t("pl_owner")) + '"><option value="">' + esc(t("pl_everyone")) + "</option>" +
       sellers().map(function (p) { return '<option value="' + esc(p.id) + '"' + (p.id === owner ? " selected" : "") + ">" + esc(p.name) + "</option>"; }).join("") + "</select>";
     return '<div class="panel"><div class="panel-h"><h2 class="sec">' + esc(t("pl_funnel")) + "</h2>" + ownerSel + "</div>" +
-      '<p class="small muted" style="margin:0">' + esc(t("pl_target")) + "</p>" +
       '<div class="tbl"><table><thead><tr><th>' + esc(t("pl_week")) + '</th><th class="r">' + esc(t("pl_dms")) + '</th><th></th><th class="r">' + esc(t("pl_replies")) +
       '</th><th class="r">' + esc(t("pl_rate")) + '</th><th class="r">' + esc(t("pl_calls")) + '</th><th class="r">' + esc(t("pl_props")) + '</th><th class="r">' + esc(t("pl_won")) + "</th></tr></thead><tbody>" +
       rows.join("") + "</tbody><tfoot><tr><td>" + esc(t("pl_total")) + '</td><td class="r num">' + tot.dms + '</td><td></td><td class="r num">' + tot.replies + '</td><td class="r num">' +
@@ -4649,7 +4645,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       if (lead.projectId !== project.id) S.patch("leads", lead.id, { projectId: project.id });
       ui.go("projects", { id: project.id });
     } else if (GK.pj && typeof GK.pj.openNew === "function") {
-      GK.pj.openNew({ clientId: client.id, pack: lead.pack || "", mohamed: m.member(lead.owner).role === "sales", sourceLeadId: lead.id });
+      GK.pj.openNew({ clientId: client.id, pack: lead.pack || "", sourceLeadId: lead.id });
     }
     else ui.go("projects");
   }
@@ -4796,7 +4792,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
 })(window.GK);
 
 /* ---- modules/clients.js ---- */
-/* GECKO Ops · module: clients (who we work for, what they owe, their SKIN contracts) */
+/* GECKO Ops · module: clients (who we work for, what they owe, their monthly contracts) */
 (function (GK) {
   "use strict";
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
@@ -4818,24 +4814,24 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     cl_assign_hint: ["Editors and assistants only see their assigned clients and projects.", "Les éditeurs et assistants ne voient que les clients et projets qui leur sont affectés."],
     cl_assign_client: ["Client access", "Accès client"], cl_assign_project: ["Project access", "Accès projet"],
     cl_assign_invite: ["Invite editors or assistants before assigning work.", "Invitez des éditeurs ou assistants avant d'affecter du travail."],
-    cl_skin: ["SKIN", "SKIN"], cl_k_clients: ["Clients", "Clients"], cl_k_skin: ["Active SKIN contracts", "Contrats SKIN actifs"],
+    cl_skin: ["Monthly", "Mensuel"], cl_k_clients: ["Clients", "Clients"], cl_k_skin: ["Active monthly contracts", "Contrats mensuels actifs"],
     cl_k_inv: ["Invoiced to date", "Facturé à ce jour"], cl_k_owed: ["Still owed", "Reste dû"],
     cl_back: ["All clients", "Tous les clients"], cl_wa: ["Copy WhatsApp", "Copier le WhatsApp"], cl_no_wa: ["No WhatsApp number yet.", "Pas encore de numéro WhatsApp."],
     cl_details: ["Details", "Coordonnées"], cl_projects: ["Projects", "Projets"], cl_invoices: ["Invoices", "Factures"], cl_draft_no: ["Draft", "Brouillon"],
     cl_inv_no: ["No.", "N°"], cl_inv_what: ["What", "Objet"], cl_inv_amount: ["Amount", "Montant"], cl_inv_left: ["Left", "Reste"],
-    cl_contracts: ["SKIN contracts", "Contrats SKIN"], cl_start_skin: ["Start a SKIN contract", "Démarrer un contrat SKIN"],
-    cl_skin_none: ["No monthly contract. SKIN 10 or SKIN 20, three months minimum.", "Pas de contrat mensuel. SKIN 10 ou SKIN 20, trois mois minimum."],
+    cl_contracts: ["Monthly contracts", "Contrats mensuels"], cl_start_skin: ["Start a monthly contract", "Démarrer un contrat mensuel"],
+    cl_skin_none: ["No monthly contract yet. Three months minimum.", "Pas encore de contrat mensuel. Trois mois minimum."],
     cl_skin_pack: ["Pack", "Pack"], cl_skin_start: ["First month", "Premier mois"], cl_skin_min: ["Minimum 3 months. The client can stop after the third month.", "Minimum 3 mois. Le client peut arrêter après le troisième mois."],
-    cl_skin_title: ["SKIN", "SKIN"], cl_skin_acc: ["contract", "contrat"],
-    cl_skin_has: ["This client already has an active SKIN contract.", "Ce client a déjà un contrat SKIN actif."],
+    cl_skin_title: ["Monthly contract", "Contrat mensuel"], cl_skin_acc: ["contract", "contrat"],
+    cl_skin_has: ["This client already has an active monthly contract.", "Ce client a déjà un contrat mensuel actif."],
     cl_skin_months: ["{n} of 3 minimum months made", "{n} mois créés sur 3 minimum"], cl_skin_from: ["From {m}", "Depuis {m}"],
     cl_skin_end_min: ["Earliest end: {m}", "Fin au plus tôt : {m}"], cl_skin_active: ["Active", "Actif"], cl_skin_ended: ["Ended", "Terminé"],
     cl_skin_end: ["End contract", "Arrêter le contrat"], cl_skin_end_wait: ["It can end once 3 months exist ({n} so far).", "Arrêt possible quand 3 mois existent ({n} pour l'instant)."],
-    cl_skin_end_q: ["End this SKIN contract?", "Arrêter ce contrat SKIN ?"], cl_skin_end_body: ["No new monthly projects will be due. Existing months stay as they are.", "Plus aucun mois ne sera à créer. Les mois existants restent tels quels."],
-    cl_skin_months_link: ["Monthly projects", "Projets mensuels"], cl_skin_started: ["SKIN contract started", "Contrat SKIN démarré"],
+    cl_skin_end_q: ["End this monthly contract?", "Arrêter ce contrat mensuel ?"], cl_skin_end_body: ["No new monthly projects will be due. Existing months stay as they are.", "Plus aucun mois ne sera à créer. Les mois existants restent tels quels."],
+    cl_skin_months_link: ["Monthly projects", "Projets mensuels"], cl_skin_started: ["Monthly contract started", "Contrat mensuel démarré"],
     cl_skin_month_n: ["Month {n}", "Mois {n}"],
     cl_log_added: ["added", "ajouté"], cl_log_edited: ["details edited", "coordonnées modifiées"],
-    cl_log_skin: ["SKIN contract started ({p}, {m})", "Contrat SKIN démarré ({p}, {m})"], cl_log_skin_end: ["SKIN contract ended", "Contrat SKIN arrêté"],
+    cl_log_skin: ["Monthly contract started ({p}, {m})", "Contrat mensuel démarré ({p}, {m})"], cl_log_skin_end: ["Monthly contract ended", "Contrat mensuel arrêté"],
     cl_del: ["Delete client", "Supprimer le client"], cl_del_founder: ["Only the founder can delete a client.", "Seul le fondateur peut supprimer un client."],
     cl_del_blocked: ["This client has projects or invoices. They stay for the books.", "Ce client a des projets ou des factures. Ils restent pour la comptabilité."],
     cl_del_q: ["Delete this client?", "Supprimer ce client ?"], cl_del_body: ["They have no projects and no invoices. This can't be undone.", "Aucun projet ni facture. C'est définitif."],
@@ -5051,15 +5047,15 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     }, t("del"));
   });
 
-  // ---------- SKIN contracts ----------
+  // ---------- monthly contracts ----------
   GK.act("cl-skin-new", function (el) {
     if (!canEdit()) return ui.toast(t("cl_no_edit"));
     var c = S.get("clients", el.dataset.id); if (!c) return;
-    var packs = ["SKIN10", "SKIN20"];
+    var packs = m.packKeys().filter(function (k) { return m.pack(k).monthly; });
     ui.modal({
       title: t("cl_skin_title"), accent: t("cl_skin_acc"), label: c.brand,
       body: '<div class="form">' +
-        ui.field({ id: "clk-pack", label: t("cl_skin_pack"), type: "select", value: "SKIN10", options: packs.map(function (k) { return [k, m.pack(k).name + " · " + u.money(m.pack(k).price) + " " + t("per_month")]; }) }) +
+        ui.field({ id: "clk-pack", label: t("cl_skin_pack"), type: "select", value: packs[0], options: packs.map(function (k) { return [k, m.pack(k).name + " · " + u.money(m.pack(k).price) + " " + t("per_month")]; }) }) +
         ui.field({ id: "clk-start", label: t("cl_skin_start"), type: "month", value: u.month(u.today()) }) + "</div>" +
         '<p class="note" style="margin:0">' + esc(t("cl_skin_min")) + "</p>" +
         '<p class="small muted" style="margin:0">' + esc(t("no_discount")) + "</p>",
@@ -5090,7 +5086,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
 
 /* ---- modules/projects.js ---- */
 /* GECKO Ops · module: projects
-   Board of every project by stage, SKIN months to open, the New project flow (GK.pj.openNew),
+   Board of every project by stage, monthly projects to open, the New project flow (GK.pj.openNew),
    and the project detail: stage stepper with payment gates, onboarding, creative plan,
    deliverables (angle > reel > hooks, carousels) with the scope check, money, tasks and log. */
 (function (GK) {
@@ -5102,29 +5098,29 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     pj_d_accent: ["project", "projet"],
     pj_sub: ["{n} active · {b} blocked by a payment or an approval", "{n} en cours · {b} bloqués par un paiement ou une validation"],
     pj_new: ["New project", "Nouveau projet"], pj_new_t: ["New", "Nouveau"], pj_new_acc: ["project", "projet"],
-    pj_f_all: ["All", "Tous"], pj_f_moh: ["With Mohamed", "Avec Mohamed"], pj_f_skin: ["SKIN only", "SKIN seulement"],
+    pj_f_all: ["All", "Tous"], pj_f_moh: ["Partner share", "Part partenaire"], pj_f_skin: ["Monthly only", "Mensuels seulement"],
     pj_filter: ["Filter projects", "Filtrer les projets"],
     pj_done_more: ["+ {n} older", "+ {n} plus anciens"],
     pj_month_n: ["Month {n}", "Mois {n}"],
     pj_shoot_on: ["Shoot {d}", "Tournage le {d}"], pj_no_shoot: ["No shoot date", "Pas de date de tournage"],
     pj_approved_x: ["{a}/{b} approved", "{a}/{b} validés"], pj_no_files: ["No files planned yet", "Aucun fichier prévu"],
     pj_empty_col: ["Nothing here.", "Rien ici."],
-    pj_due_h: ["SKIN months to open", "Mois SKIN à ouvrir"],
+    pj_due_h: ["Monthly projects to open", "Projets mensuels à ouvrir"],
     pj_due_line: ["{pack} · month {n} · {month}", "{pack} · mois {n} · {month}"],
     pj_create_month: ["Create month {n}", "Créer le mois {n}"],
     pj_month_made: ["Month {n} created with its invoice draft.", "Mois {n} créé avec son brouillon de facture."],
     pj_no_perm: ["Your role can't change this. Ask Heni.", "Votre rôle ne permet pas ce changement. Demandez à Heni."],
-    pj_founder_only: ["Only Heni can do this.", "Seul Heni peut faire ça."],
+    pj_founder_only: ["Only the owner can do this.", "Seul le fondateur peut faire ça."],
     // new project
     pj_client: ["Client", "Client"], pj_pack: ["Pack", "Pack"], pj_name: ["Project name", "Nom du projet"],
     pj_name_ph: ["Eid launch, Drop 04…", "Lancement Aïd, Drop 04…"],
     pj_shoot: ["Shoot date", "Date de tournage"], pj_optional: ["Optional, you can set it later.", "Optionnel, à fixer plus tard."],
-    pj_moh_brought: ["Mohamed brought this client ({p} of profit to him)", "Mohamed a amené ce client ({p} du bénéfice pour lui)"],
-    pj_skin_has: ["This client already has an active SKIN contract.", "Ce client a déjà un contrat SKIN actif."],
+    pj_moh_brought: ["Partner share applies ({p} of profit)", "Part partenaire applicable ({p} du bénéfice)"],
+    pj_skin_has: ["This client already has an active monthly contract.", "Ce client a déjà un contrat mensuel actif."],
     pj_inv_deposit: ["deposit", "acompte"], pj_inv_balance: ["balance", "solde"],
     pj_add_client: ["Add a new client", "Ajouter un nouveau client"], pj_no_client: ["No client yet. Add the client, then come back.", "Aucun client. Ajoutez le client, puis revenez."],
     pj_new_hint_once: ["Creates the project at onboarding and two invoice drafts: 50% deposit and 50% balance.", "Crée le projet au démarrage et deux brouillons de facture : acompte 50 % et solde 50 %."],
-    pj_new_hint_month: ["Creates the month at onboarding (inside the client's SKIN contract) and its invoice draft, full price, paid before the shoot.", "Crée le mois au démarrage (dans le contrat SKIN du client) et son brouillon de facture, prix complet, payé avant le tournage."],
+    pj_new_hint_month: ["Creates the month at onboarding (inside the client's monthly contract) and its invoice draft, full price, paid before the shoot.", "Crée le mois au démarrage (dans le contrat mensuel du client) et son brouillon de facture, prix complet, payé avant le tournage."],
     pj_create: ["Create project", "Créer le projet"], pj_created: ["Project created. Invoice drafts are in Money.", "Projet créé. Les brouillons de facture sont dans Argent."],
     // detail
     pj_back: ["All projects", "Tous les projets"], pj_to_prod: ["Open in production", "Ouvrir en production"],
@@ -5143,9 +5139,9 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     pj_no_baseline: ["No baseline on the client yet.", "Pas encore de chiffre de départ sur le client."],
     pj_open_client: ["Open client", "Ouvrir le client"],
     pj_details: ["Details", "Infos"], pj_format: ["Main format", "Format principal"],
-    pj_moh_on: ["Mohamed on this project (commission)", "Mohamed sur ce projet (commission)"],
-    pj_moh_yes: ["Mohamed is on this project: {p} of profit goes to him.", "Mohamed est sur ce projet : {p} du bénéfice pour lui."],
-    pj_moh_no: ["No commission on this project.", "Pas de commission sur ce projet."],
+    pj_moh_on: ["Partner share on this project", "Part partenaire sur ce projet"],
+    pj_moh_yes: ["Partner share applies: {p} of profit.", "Part partenaire applicable : {p} du bénéfice."],
+    pj_moh_no: ["No partner share on this project.", "Pas de part partenaire sur ce projet."],
     pj_delete: ["Delete project", "Supprimer le projet"],
     pj_del_q: ["Delete this project?", "Supprimer ce projet ?"],
     pj_del_body: ["The project, its draft invoices and its tasks go. This can't be undone.", "Le projet, ses brouillons de facture et ses tâches seront supprimés. Impossible d'annuler."],
@@ -5188,7 +5184,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     pj_cost_basis_h: ["Un actual expense replaces only the estimate explicitly selected in Expenses. Other estimates and actual expenses remain separate.", "Une dépense réelle remplace uniquement l'estimation explicitement sélectionnée dans Dépenses. Les autres estimations et dépenses réelles restent distinctes."],
     pj_estimate: ["Estimate", "Estimation"], pj_estimate_replaced: ["replaced by linked actual spend", "remplacée par une dépense réelle liée"],
     pj_actual_cost: ["Actual spend", "Dépenses réelles"], pj_estimated_total: ["Budget estimates", "Estimations budgétaires"],
-    pj_profit: ["Profit", "Bénéfice"], pj_comm: ["Mohamed {p}", "Mohamed {p}"],
+    pj_profit: ["Profit", "Bénéfice"], pj_comm: ["Partner share {p}", "Part partenaire {p}"],
     pj_net_note: ["tax withheld included, stamps excluded", "retenue incluse, hors timbre"],
     pj_cost_founder: ["Only Heni changes cost lines: they set the commission.", "Seul Heni modifie les coûts : ils fixent la commission."],
     pj_lead_link_error: ["Project created, but its lead link could not be saved. The source lead is retained on the project for recovery.", "Projet créé, mais le lien au prospect n'a pas été enregistré. Le prospect source est conservé sur le projet pour récupération."],
@@ -5208,7 +5204,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     pj_add_task: ["Add task", "Ajouter la tâche"], pj_no_tasks: ["No tasks on this project.", "Aucune tâche sur ce projet."],
     pj_new_task: ["New task", "Nouvelle tâche"],
     pj_log: ["Latest activity", "Activité récente"], pj_no_log: ["Nothing logged yet.", "Rien d'enregistré."],
-    pj_readonly: ["You can see this project. Changes are made by Heni or Mohamed.", "Vous pouvez consulter ce projet. Les changements sont faits par Heni ou Mohamed."],
+    pj_readonly: ["You can see this project. Changes are made by the owner or the Client Lead.", "Vous pouvez consulter ce projet. Les changements sont faits par le fondateur ou le responsable clients."],
     pj_late: ["late", "en retard"]
   });
 
@@ -5232,7 +5228,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   function emptyReport() { return { metric: "cpp", now: "", why: {}, more: "", kill: "", next: "" }; }
   function dis(cond, reason) { return cond ? { disabled: true, title: reason } : {}; }
   function opts(base, extra) { return Object.assign({}, base || {}, extra || {}); }
-  function commPct() { return u.pct(+m.rules().commission || 0); }
+  function hasShare(p) { return !!m.commission(p).basis; }
   function kv(k, v) { return t("pj_log_kv", { k: k, v: v }); }
   /** Cost lines set the profit, so the commission: only the founder edits them. */
   function canCost() { return canEdit() && m.isFounder(); }
@@ -5243,7 +5239,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     return (m.ROLE_NAV[role] || []).indexOf("clients") > -1;
   }
 
-  /** Invoice drafts for a fresh project: deposit + balance (one-off) or one month (SKIN). */
+  /** Invoice drafts for a fresh project: deposit + balance (one-off) or one month (monthly offers). */
   function draftInvoices(p) {
     var pk = m.pack(p.pack), r = m.rules(), price = m.projectPrice(p), base = { no: "", clientId: p.clientId, projectId: p.id, stamp: r.stamp, issued: "", due: "", payments: [], credited: false, log: [] };
     if (pk.monthly) {
@@ -5258,7 +5254,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   function baseProject(o) {
     return {
       clientId: o.clientId, sourceLeadId: o.sourceLeadId || "", sourceQuoteId: o.sourceQuoteId || "", contractId: o.contractId || "", month: o.month || 0, name: o.name, pack: o.pack, price: o.price, stage: "onboarding",
-      planApproved: false, planApprovedOn: "", shootDate: o.shootDate || "", format: "9x16", mohamed: !!o.mohamed,
+      planApproved: false, planApprovedOn: "", shootDate: o.shootDate || "", format: "9x16",
       onboarding: o.onboarding || [false, false, false, false, false, false, false],
       angles: [], reels: [], carousels: [], costs: m.estimateCosts(o.pack), report: emptyReport(), payout: null, log: []
     };
@@ -5269,13 +5265,13 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     if (!skipDrafts) draftInvoices(p).forEach(function (inv) { S.put("invoices", inv, { log: log }); });
     return p;
   }
-  /** Next SKIN month of a contract. Onboarding carries over except the plan and shoot steps. */
+  /** Next month of a monthly contract. Onboarding carries over except the plan and shoot steps. */
   function createMonth(c) {
     var ms = m.contractMonths(c), last = ms[ms.length - 1], n = (last ? last.month : 0) + 1;
     var p = createWithInvoices(baseProject({
       clientId: c.clientId, contractId: c.id, month: n, name: t("pj_month_n", { n: n }), pack: c.pack,
       price: m.contractPrice(c),
-      mohamed: last ? !!last.mohamed : false, onboarding: [true, true, true, true, true, false, false]
+      onboarding: [true, true, true, true, true, false, false]
     }), t("pj_month_n", { n: n }));
     return p ? { p: p, n: n } : null;
   }
@@ -5290,7 +5286,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       '<span class="m">' + esc(p.shootDate ? t("pj_shoot_on", { d: u.fmtDate(p.shootDate) }) : t("pj_no_shoot")) + "</span>" +
       (pr.total ? '<span class="m num">' + esc(t("pj_approved_x", { a: pr.done, b: pr.total })) + "</span>" + ui.meter(pr.done / pr.total * 100) : '<span class="m">' + esc(t("pj_no_files")) + "</span>") +
       gates.map(function (g) { return '<span class="gate">' + esc(g) + "</span>"; }).join("") +
-      (p.mohamed ? '<span class="row">' + ui.pill(t("pj_f_moh")) + "</span>" : "") +
+      (m.isFounder() && hasShare(p) ? '<span class="row">' + ui.pill(t("pj_f_moh")) + "</span>" : "") +
       "</div>";
   }
   function monthsDuePanel() {
@@ -5307,7 +5303,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   function board(params) {
     var f = params.filter || "all";
     var all = S.all("projects");
-    var list = all.filter(function (p) { return f === "moh" ? p.mohamed : f === "skin" ? isMonthly(p) : true; });
+    var list = all.filter(function (p) { return f === "moh" ? hasShare(p) : f === "skin" ? isMonthly(p) : true; });
     var active = all.filter(function (p) { return p.stage !== "done"; });
     var blocked = active.filter(function (p) { return m.gates(p).length; });
     var h = ui.head({
@@ -5317,7 +5313,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     });
     h += GK.insight.projects();
     h += monthsDuePanel();
-    h += '<div class="tabs" role="tablist" aria-label="' + esc(t("pj_filter")) + '">' + [["all", "pj_f_all"], ["moh", "pj_f_moh"], ["skin", "pj_f_skin"]].map(function (x) {
+    h += '<div class="tabs" role="tablist" aria-label="' + esc(t("pj_filter")) + '">' + [["all", "pj_f_all"]].concat(m.isFounder() ? [["moh", "pj_f_moh"]] : []).concat([["skin", "pj_f_skin"]]).map(function (x) {
       return '<button type="button" role="tab" data-a="pj-filter" data-v="' + x[0] + '" aria-selected="' + (f === x[0]) + '">' + esc(t(x[1])) + "</button>";
     }).join("") + "</div>";
     h += '<div class="board">' + m.STAGES.map(function (s) {
@@ -5380,8 +5376,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     } else {
       h += '<div class="list"><div class="li"><span class="lab sm muted">' + esc(t("pj_shoot")) + "</span><span>" + esc(u.fmtDate(p.shootDate)) + '</span></div><div class="li"><span class="lab sm muted">' + esc(t("pj_format")) + '</span><span class="code">' + esc(p.format || "9x16") + "</span></div></div>";
     }
-    if (founder) h += '<label class="check"><input type="checkbox" data-c="pj-moh"' + (p.mohamed ? " checked" : "") + "><span>" + esc(t("pj_moh_on")) + "</span></label>";
-    else h += '<p class="small muted" style="margin:0">' + esc(p.mohamed ? t("pj_moh_yes", { p: commPct() }) : t("pj_moh_no")) + "</p>";
+    if (founder) h += '<p class="small muted" style="margin:0">' + esc(hasShare(p) ? t("pj_moh_yes", { p: u.pct(m.commission(p).pct) }) : t("pj_moh_no")) + "</p>";
     if (founder) h += '<div class="row">' + ui.btn(t("pj_delete"), "pj-del", opts({ cls: "ghost sm" }, dis(issued, t("pj_del_issued")))) + "</div>";
     return h + "</section>";
   }
@@ -5466,7 +5461,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       { lab: t("pj_cost_basis"), v: u.money(m.costOf(p)) },
       { lab: t("pj_profit"), v: u.money(m.profit(p)) }
     ];
-    if (p.mohamed) k.push({ lab: t("pj_comm", { p: commPct() }), v: u.money(com.amount), n: com.paidOn ? t("pj_comm_paid", { d: u.fmtDate(com.paidOn) }) : com.owed ? t("pj_comm_owed", { x: u.money(com.owed) }) : t("pj_comm_wait") });
+    if (hasShare(p)) k.push({ lab: t("pj_comm", { p: u.pct(com.pct) }), v: u.money(com.amount), n: com.paidOn ? t("pj_comm_paid", { d: u.fmtDate(com.paidOn) }) : com.owed ? t("pj_comm_owed", { x: u.money(com.owed) }) : t("pj_comm_wait") });
     h += ui.kpis(k);
     // cost lines
     h += '<h3 class="sec">' + esc(t("pj_costs")) + "</h3>";
@@ -5537,7 +5532,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   function detail(p) {
     var pk = m.pack(p.pack);
     var sub = '<span class="row">' + ui.stagePill(p) + ui.chip(pk.name, p.pack) + (p.month ? '<span class="small">' + esc(monthLabel(p)) + "</span>" : "") +
-      (p.mohamed ? ui.pill(t("pj_f_moh")) : "") + ui.sample() + "</span>";
+      (m.isFounder() && hasShare(p) ? ui.pill(t("pj_f_moh")) : "") + ui.sample() + "</span>";
     var h = ui.head({
       label: t("nav_projects"), title: m.brand(p.clientId) + " · " + p.name, accent: t("pj_d_accent"), sub: sub,
       actions: ui.btn(t("pj_back"), "pj-back", { cls: "ghost" }) + ui.btn(t("pj_to_prod"), "pj-prod")
@@ -5567,7 +5562,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     newCtx = { contractId: o.contractId || "", month: o.month || 0, price: o.price, sourceLeadId: o.sourceLeadId || "", sourceQuoteId: o.sourceQuoteId || "" };
     var clients = S.all("clients").sort(u.by("brand"));
     var me = GK.me(), ctr = o.contractId ? S.get("contracts", o.contractId) : null;
-    var pk = o.pack || (ctr && ctr.pack) || "GRIP";
+    var pk = o.pack || (ctr && ctr.pack) || "test";
     if (!clients.length) {
       ui.modal({ title: t("pj_new_t"), accent: t("pj_new_acc"), label: t("nav_projects"), body: '<p style="margin:0">' + esc(t("pj_no_client")) + "</p>", foot: ui.btn(t("cancel"), "close", { cls: "ghost" }) + ui.btn(t("pj_add_client"), "pj-new-client", { cls: "primary" }) });
       return;
@@ -5578,7 +5573,6 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       ui.field({ id: "pj-n-pack", label: t("pj_pack"), type: "select", value: pk, options: m.packKeys().map(function (k) { var x = m.pack(k); return [k, x.name + " · " + u.money(x.price) + (x.monthly ? " " + t("per_month") : "")]; }), attrs: ' data-c="pj-n-pack"' }) +
       ui.field({ id: "pj-n-name", label: t("pj_name"), value: o.month ? t("pj_month_n", { n: o.month }) : "", placeholder: t("pj_name_ph") }) +
       "</div>" +
-      ui.field({ id: "pj-n-moh", label: t("pj_moh_brought", { p: commPct() }), type: "checkbox", value: o.mohamed != null ? !!o.mohamed : !!(me && me.role === "sales") }) +
       '<p class="note" id="pj-n-hint" style="margin:0">' + esc(t(monthly ? "pj_new_hint_month" : "pj_new_hint_once")) + "</p>" +
       '<div class="row"><button type="button" class="link small" data-a="pj-new-client">' + esc(t("pj_add_client")) + "</button></div>";
     ui.modal({ title: t("pj_new_t"), accent: t("pj_new_acc"), label: t("nav_projects"), body: body, foot: ui.btn(t("cancel"), "close", { cls: "ghost" }) + ui.btn(t("pj_create"), "pj-new-save", { cls: "primary" }) });
@@ -5622,11 +5616,11 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       }
     }
     if (pk.monthly) {
-      // A SKIN project belongs to a contract: reuse the client's active one for this pack, or open one.
+      // A monthly project belongs to a contract: reuse the client's active one for this pack, or open one.
       var c = contractId ? S.get("contracts", contractId) : null;
       if (c && (c.clientId !== clientId || c.pack !== pack)) { c = null; month = 0; }
       if (!c) c = S.all("contracts").find(function (x) { return x.clientId === clientId && x.pack === pack && x.status === "active"; });
-      // One active SKIN contract per client: a different SKIN pack can't open a second one.
+      // One active monthly contract per client: a different monthly offer can't open a second one.
       if (!c && S.all("contracts").some(function (x) { return x.clientId === clientId && x.status === "active"; })) { u.focus("pj-n-pack"); return ui.toast(t("pj_skin_has")); }
       if (!c) {
         c = S.put("contracts", { clientId: clientId, pack: pack, monthlyPrice: newCtx.price != null ? +newCtx.price : m.priceFor(pack, clientId, 1).price, start: u.month(u.today()), minMonths: 3, status: "active" });
@@ -5640,7 +5634,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     var price = pk.monthly
       ? m.contractPrice(c)
       : (newCtx.price != null ? newCtx.price : m.priceFor(pack, clientId, month).price);
-    var p = createWithInvoices(baseProject({ clientId: clientId, sourceLeadId: newCtx.sourceLeadId, sourceQuoteId: newCtx.sourceQuoteId, contractId: contractId, month: month, name: name, pack: pack, price: price, mohamed: u.checked("pj-n-moh") }), t("pj_created"), !!newCtx.sourceQuoteId);
+    var p = createWithInvoices(baseProject({ clientId: clientId, sourceLeadId: newCtx.sourceLeadId, sourceQuoteId: newCtx.sourceQuoteId, contractId: contractId, month: month, name: name, pack: pack, price: price }), t("pj_created"), !!newCtx.sourceQuoteId);
     if (!p) return;
     var leadLinkFailed = false;
     if (newCtx.sourceLeadId) {
@@ -5697,10 +5691,6 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     var p = cur(); if (!p) return;
     if (f === "shootDate" && !m.canShoot(p)) { el.value = p.shootDate || ""; return ui.toast(t("gate_shoot")); }
     save(o, (f === "shootDate" ? kv(t("pj_shoot"), u.fmtDate(el.value)) : kv(t("pj_format"), el.value)));
-  });
-  GK.change("pj-moh", function (el) {
-    if (!m.isFounder() || !canEdit()) { el.checked = !el.checked; return ui.toast(t("pj_founder_only")); }
-    save({ mohamed: el.checked }, el.checked ? t("pj_moh_yes", { p: commPct() }) : t("pj_moh_no"));
   });
   GK.act("pj-del", function () {
     if (!m.isFounder() || !canEdit()) return ui.toast(t("pj_founder_only"));
@@ -6234,7 +6224,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     dv_changes_lab: ["What the client wants changed", "Ce que le client veut changer"],
     dv_changes_ph: ["Their words, short. The editor reads this.", "Leurs mots, en bref. Le monteur lit ceci."],
     dv_changes_saved: ["Sent back to editing as changes asked", "Renvoyé au montage en retouches"],
-    dv_no_rights: ["Only Heni or Mohamed record client feedback.", "Seuls Heni ou Mohamed notent les retours client."],
+    dv_no_rights: ["Only the owner or the Client Lead record client feedback.", "Seuls le fondateur ou le responsable clients notent les retours client."],
     dv_only_approved: ["Only approved files go to the client.", "Seuls les fichiers validés partent chez le client."],
     dv_not_ready: ["in progress", "en cours"], dv_no_files: ["No files planned yet.", "Aucun fichier prévu."],
     dv_msg_copied: ["Message copied. Paste it in WhatsApp.", "Message copié. Collez-le dans WhatsApp."],
@@ -6465,14 +6455,14 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     rp_none: ["No project is in testing yet. Projects show up here once their files are delivered and the ads are running.", "Aucun projet en test pour l'instant. Les projets apparaissent ici une fois les fichiers livrés et les pubs lancées."],
     rp_results: ["Results per hook", "Résultats par accroche"],
     rp_filled: ["{n} of {total} hooks have numbers", "{n} accroches sur {total} ont des chiffres"],
-    rp_how: ["Hook rate = 3-second views ÷ impressions. CTR = link clicks ÷ impressions. Cost per purchase = spend ÷ purchases, in DT. Lowest cost wins.", "Taux d'accroche = vues 3 secondes ÷ impressions. CTR = clics ÷ impressions. Coût par achat = dépense ÷ achats, en DT. Le coût le plus bas gagne."],
+    rp_how: ["Hook rate = 3-second views ÷ impressions. CTR = link clicks ÷ impressions. Cost per purchase = spend ÷ purchases, in TND. Lowest cost wins.", "Taux d'accroche = vues 3 secondes ÷ impressions. CTR = clics ÷ impressions. Coût par achat = dépense ÷ achats, en TND. Le coût le plus bas gagne."],
     rp_no_hooks: ["This project has no hooks to test.", "Ce projet n'a pas d'accroche à tester."],
     rp_c_rank: ["#", "#"], rp_c_code: ["Code", "Code"], rp_c_angle: ["Angle", "Angle"], rp_c_hook: ["Hook", "Accroche"],
-    rp_c_rate: ["Hook rate %", "Taux d'accroche %"], rp_c_ctr: ["CTR %", "CTR %"], rp_c_cpp: ["Cost / purchase (DT)", "Coût / achat (DT)"],
+    rp_c_rate: ["Hook rate %", "Taux d'accroche %"], rp_c_ctr: ["CTR %", "CTR %"], rp_c_cpp: ["Cost / purchase (TND)", "Coût / achat (TND)"],
     rp_c_brand: ["Brand", "Marque"], rp_c_tested: ["Hooks with a cost", "Accroches avec un coût"],
     rp_best_hook: ["Best hook", "Meilleure accroche"], rp_best_angle: ["Best angle", "Meilleur angle"],
     rp_angles: ["Angles · average cost per purchase", "Angles · coût moyen par achat"],
-    rp_no_edit: ["Only Heni and Mohamed can enter results.", "Seuls Heni et Mohamed peuvent saisir les résultats."],
+    rp_no_edit: ["Only the owner and the Client Lead can enter results.", "Seuls le fondateur et le responsable clients peuvent saisir les résultats."],
     rp_report: ["The report", "Le rapport"],
     rp_now: ["Orders per week now", "Commandes par semaine maintenant"],
     rp_baseline: ["Baseline before GECKO", "Point de départ avant GECKO"],
@@ -6788,7 +6778,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
 })(window.GK);
 
 /* ---- modules/finance.js ---- */
-/* GECKO Ops · module: finance (Money). Invoices, Mohamed's commission, month close, the auto-entrepreneur cap.
+/* GECKO Ops · module: finance (Money). Invoices, partner share, month close, the auto-entrepreneur cap.
    All money rules come from GK.m; this file only adds them up for display. */
 (function (GK) {
   "use strict";
@@ -6816,7 +6806,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     fi_paid_note: ["Paid counts the money received plus the tax withheld by the client.", "Payé compte l'argent reçu plus la retenue à la source du client."],
     // form
     fi_f_client: ["Client", "Client"], fi_f_project: ["Project", "Projet"], fi_f_noproject: ["No project", "Sans projet"], fi_f_kind: ["Kind", "Type"],
-    fi_f_label: ["Label", "Libellé"], fi_f_amount: ["Amount (DT, before stamp)", "Montant (DT, hors timbre)"], fi_f_stamp: ["Stamp duty (DT)", "Droit de timbre (DT)"],
+    fi_f_label: ["Label", "Libellé"], fi_f_amount: ["Amount (TND, before stamp)", "Montant (TND, hors timbre)"], fi_f_stamp: ["Stamp duty (TND)", "Droit de timbre (TND)"],
     fi_f_stamp_h: ["Droit de timbre, per invoice. Accountant to confirm.", "Droit de timbre, par facture. À confirmer par le comptable."],
     fi_f_extra_h: ["Studio, talent and ad spend: invoice it here only if GECKO really sells it.", "Studio, talent et budget pub : facturez ici seulement si GECKO le vend vraiment."],
     fi_f_extra_direct: ["Your rule: the supplier invoices the client directly, so extras stay out of your cap. Best not to invoice this here. If you must, keep it as a pass-through at cost.", "Votre règle : le fournisseur facture le client directement, pour que les extras restent hors plafond. Mieux vaut ne pas facturer ici. Si vous devez le faire, gardez-le en débours, au prix coûtant."],
@@ -6839,7 +6829,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     fi_deleted: ["Draft deleted", "Brouillon supprimé"],
     fi_doc_btn: ["Invoice document", "Document de facture"],
     fi_pay: ["Record payment", "Enregistrer un paiement"], fi_payments: ["Payments", "Paiements"], fi_no_payments: ["No payment yet.", "Aucun paiement pour l'instant."],
-    fi_p_date: ["Date", "Date"], fi_p_net: ["Net received (DT)", "Net reçu (DT)"], fi_p_wh: ["Withheld by client (DT)", "Retenue à la source (DT)"],
+    fi_p_date: ["Date", "Date"], fi_p_net: ["Net received (TND)", "Net reçu (TND)"], fi_p_wh: ["Withheld by client (TND)", "Retenue à la source (TND)"],
     fi_p_wh_h: ["Company clients often keep {p}% of the amount and pay it to the tax office for you. Accountant to confirm.", "Les sociétés gardent souvent {p} % du montant et le versent au fisc pour vous. À confirmer par le comptable."],
     fi_p_wh_none: ["No tax ID on file for this client, so usually nothing is withheld.", "Pas de matricule fiscal pour ce client, donc en général pas de retenue."],
     fi_p_method: ["Method", "Moyen"], fi_p_ref: ["Reference", "Référence"], fi_p_ref_ph: ["Transfer ref, cheque no.", "Réf. virement, n° de chèque"],
@@ -6868,16 +6858,16 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     fi_cm_amount: ["Commission", "Commission"], fi_cm_payable: ["Payable", "Exigible"], fi_cm_paid: ["Paid", "Payée"], fi_cm_owed: ["Owed", "Dû"],
     fi_cm_yes: ["Ready to pay", "Prête à payer"], fi_cm_wait: ["Waiting on client", "Attente client"], fi_cm_wait_dl: ["Waiting on delivery", "Attente livraison"], fi_cm_nocosts: ["No costs logged", "Aucun coût saisi"],
     fi_cm_nocosts_t: ["Log this project's costs first, or the commission is overstated.", "Saisissez d'abord les coûts du projet, sinon la commission est surestimée."],
-    fi_cm_mark: ["Mark paid", "Marquer payée"], fi_cm_mark_q: ["Pay Mohamed {a}?", "Payer {a} à Mohamed ?"],
+    fi_cm_mark: ["Mark paid", "Marquer payée"], fi_cm_mark_q: ["Pay the partner share of {a}?", "Payer la part partenaire de {a} ?"],
     fi_cm_mark_body: ["For {p}. It's recorded as paid today.", "Pour {p}. Enregistré comme payé aujourd'hui."], fi_cm_done: ["Commission marked paid", "Commission marquée payée"],
     fi_cm_owed_now: ["Owed now", "Dû maintenant"], fi_cm_paid_year: ["Paid this year", "Payé cette année"], fi_cm_pending: ["Not payable yet", "Pas encore exigible"],
-    fi_cm_note: ["{p}% of project profit on projects Mohamed brought or worked. Profit is what the client paid (tax withheld counts as paid, stamp duty left out) minus costs. It becomes payable once the client has paid in full and the work is delivered: before that, costs are only estimates.", "{p} % du bénéfice des projets apportés ou suivis par Mohamed. Bénéfice = ce que le client a payé (la retenue compte comme payée, le timbre est exclu) moins les coûts. Exigible une fois que le client a tout payé et que le travail est livré : avant, les coûts ne sont que des estimations."],
-    fi_cm_none: ["No projects with Mohamed yet.", "Pas encore de projet avec Mohamed."], fi_total_row: ["Total", "Total"],
+    fi_cm_note: ["{p}% of project profit on projects covered by the partner share rules (first clients, or clients the partner brought alone). Profit is what the client paid (tax withheld counts as paid, stamp duty left out) minus costs. It becomes payable once the client has paid in full and the work is delivered: before that, costs are only estimates.", "{p} % du bénéfice des projets couverts par les règles de la part partenaire (premiers clients, ou clients apportés seul par le partenaire). Bénéfice = ce que le client a payé (la retenue compte comme payée, le timbre est exclu) moins les coûts. Exigible une fois que le client a tout payé et que le travail est livré : avant, les coûts ne sont que des estimations."],
+    fi_cm_none: ["No projects with a partner share yet.", "Pas encore de projet avec une part partenaire."], fi_total_row: ["Total", "Total"],
     // month close
     fi_mc_month: ["Month", "Mois"], fi_mc_in: ["Money in", "Entrées"], fi_mc_out: ["Money out", "Sorties"],
     fi_mc_net: ["Payments received (net)", "Paiements reçus (net)"], fi_mc_wh: ["Withheld by clients (tax credit)", "Retenues des clients (crédit d'impôt)"],
     fi_mc_in_total: ["Total in", "Total entrées"], fi_mc_costs: ["Project costs, shoots this month", "Coûts projets, tournages du mois"],
-    fi_mc_salary: ["Heni's salary", "Salaire de Heni"], fi_mc_comm: ["Commissions paid", "Commissions payées"], fi_mc_out_total: ["Total out", "Total sorties"],
+    fi_mc_salary: ["Owner salary", "Salaire du fondateur"], fi_mc_comm: ["Commissions paid", "Commissions payées"], fi_mc_out_total: ["Total out", "Total sorties"],
     fi_mc_reserve: ["Reserve, {p}% of money in", "Réserve, {p} % des entrées"], fi_mc_left: ["Left after reserve", "Reste après réserve"],
     fi_mc_invoiced: ["Invoiced this month (before stamp, credit notes deducted)", "Facturé ce mois (hors timbre, avoirs déduits)"],
     fi_mc_nocosts: ["no costs logged", "aucun coût saisi"],
@@ -6910,7 +6900,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   function r3(n) { return Math.round((+n || 0) * 1000) / 1000; }
   /** Money in whole dinars: totals, commission, month close, cap. */
   function fm(n) { return u.money(Math.round(+n || 0)); }
-  /** One invoice or payment amount: whole dinars, or up to 2 decimals only when it has a fraction (728.5 -> "728.5 DT"). */
+  /** One invoice or payment amount: whole dinars, or up to 2 decimals only when it has a fraction (728.5 -> "728.5 TND"). */
   function fmP(n) { var v = Math.round((+n || 0) * 100) / 100; return u.money(v, v % 1 === 0 ? 0 : Math.round(v * 10) === v * 10 ? 1 : 2); }
   /** " : " in French, ": " in English. */
   function colon() { return u.fr() ? "\u00a0: " : ": "; }
@@ -7345,7 +7335,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   // ---------- commission ----------
   function commissionHTML() {
     var r = m.rules(), year = u.year(u.today());
-    var ps = S.all("projects").filter(function (p) { return p.mohamed; }).sort(u.by(function (p) { return p.shootDate || p.planApprovedOn || ""; }, "desc"));
+    var ps = S.all("projects").filter(function (p) { return !!m.commission(p).basis; }).sort(u.by(function (p) { return p.shootDate || p.planApprovedOn || ""; }, "desc"));
     var rows = ps.map(function (p) { return { p: p, c: m.commission(p), rec: m.received(p), cost: m.costOf(p), prof: m.profit(p) }; });
     var owedNow = u.sum(rows, function (x) { return x.c.owed; });
     var paidYear = u.sum(S.all("projects").filter(function (p) { return p.payout && p.payout.paidOn && u.year(p.payout.paidOn) === year; }), function (p) { return +p.payout.amount || 0; });
@@ -7471,7 +7461,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     fi_cl_invoiced: ["Revenue invoiced (before stamp, credit notes deducted)", "Chiffre d'affaires facturé (hors timbre, avoirs déduits)"],
     fi_cl_cash: ["Cash received (net)", "Encaissements (net)"], fi_cl_wh: ["Tax withheld by clients (tax credit, not cash)", "Retenues à la source des clients (crédit d'impôt, pas de la trésorerie)"],
     fi_cl_in: ["Money in", "Total entrées"], fi_cl_costs: ["Project costs", "Coûts des projets"], fi_cl_project_exp: ["Project-linked expense", "Dépense liée au projet"],
-    fi_cl_over: ["Overheads (Expenses tab)", "Charges (onglet Dépenses)"], fi_cl_salary: ["Heni's salary", "Salaire de Heni"], fi_cl_comm: ["Commissions paid", "Commissions payées"],
+    fi_cl_over: ["Overheads (Expenses tab)", "Charges (onglet Dépenses)"], fi_cl_salary: ["Owner salary", "Salaire du fondateur"], fi_cl_comm: ["Commissions paid", "Commissions payées"],
     fi_cl_out: ["Money out", "Total sorties"], fi_cl_reserve: ["Reserve, {p}% of money in", "Réserve, {p} % des entrées"], fi_cl_left: ["Left after reserve", "Reste après réserve"],
     fi_cl_stmt: ["Profit and loss", "Compte de résultat"], fi_cl_est: ["estimate", "estimation"],
     fi_cl_nocosts: ["no costs logged", "aucun coût saisi"],
@@ -7570,7 +7560,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     fi_ex_c_date: ["Date", "Date"], fi_ex_c_label: ["Expense", "Dépense"], fi_ex_c_cat: ["Category", "Catégorie"], fi_ex_c_vendor: ["Vendor", "Fournisseur"], fi_ex_c_project: ["Project", "Projet"], fi_ex_c_amount: ["Amount", "Montant"], fi_ex_c_when: ["Repeats", "Récurrence"],
     fi_ex_none: ["No expenses here.", "Aucune dépense ici."], fi_ex_monthly: ["Every month", "Chaque mois"], fi_ex_monthly_until: ["Every month until {m}", "Chaque mois jusqu'en {m}"], fi_ex_once: ["Once", "Une fois"],
     fi_ex_receipt: ["Receipt", "Justificatif"], fi_ex_open_link: ["Open", "Ouvrir"],
-    fi_ex_f_date: ["Date (first charge for a monthly one)", "Date (premier prélèvement si mensuelle)"], fi_ex_f_label: ["What was it", "De quoi s'agit-il"], fi_ex_f_cat: ["Category", "Catégorie"], fi_ex_f_amount: ["Amount (DT)", "Montant (DT)"],
+    fi_ex_f_date: ["Date (first charge for a monthly one)", "Date (premier prélèvement si mensuelle)"], fi_ex_f_label: ["What was it", "De quoi s'agit-il"], fi_ex_f_cat: ["Category", "Catégorie"], fi_ex_f_amount: ["Amount (TND)", "Montant (TND)"],
     fi_ex_f_rec: ["Repeats", "Récurrence"], fi_ex_f_until: ["Last month (optional)", "Dernier mois (facultatif)"], fi_ex_f_until_h: ["Leave empty while it still runs.", "Laissez vide tant que ça continue."],
     fi_ex_f_vendor: ["Vendor", "Fournisseur"], fi_ex_f_project: ["Project (optional)", "Projet (facultatif)"], fi_ex_f_link: ["Receipt or link (https://...)", "Justificatif ou lien (https://...)"], fi_ex_f_note: ["Note", "Note"],
     fi_ex_f_estimate: ["Replaces estimate (optional)", "Remplace l'estimation (facultatif)"],
@@ -7749,7 +7739,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     fi_xp_yes: ["yes", "oui"], fi_xp_no: ["no", "non"], fi_xp_monthly: ["monthly", "mensuelle"], fi_xp_once: ["once", "unique"],
     fi_xp_s_title: ["{co} · yearly summary {y}", "{co} · résumé annuel {y}"], fi_xp_s_note: ["Estimate from the invoices, payments and expenses in GECKO Ops. Accountant to confirm.", "Estimation à partir des factures, paiements et dépenses de GECKO Ops. À confirmer par le comptable."],
     fi_xp_s_inv: ["Invoiced, counted for the cap", "Facturé, compté pour le plafond"], fi_xp_s_cap: ["Cap", "Plafond"], fi_xp_s_cash: ["Cash received (net)", "Encaissements (net)"], fi_xp_s_wh: ["Tax withheld by clients (credit)", "Retenues à la source des clients (crédit)"],
-    fi_xp_s_stamp: ["Stamp duty on invoices issued", "Timbres sur factures émises"], fi_xp_s_over: ["Overheads", "Charges"], fi_xp_s_costs: ["Direct project costs", "Coûts directs des projets"], fi_xp_s_sal: ["Heni's salary", "Salaire de Heni"],
+    fi_xp_s_stamp: ["Stamp duty on invoices issued", "Timbres sur factures émises"], fi_xp_s_over: ["Overheads", "Charges"], fi_xp_s_costs: ["Direct project costs", "Coûts directs des projets"], fi_xp_s_sal: ["Owner salary", "Salaire du fondateur"],
     fi_xp_s_comm: ["Commissions paid", "Commissions payées"], fi_xp_s_open: ["Still owed by clients today", "Encore dû par les clients aujourd'hui"]
   });
 
@@ -7854,7 +7844,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc, X = GK.x, FIN = GK.fin, F = FIN.u;
 
   GK.i18n.add({
-    fi_fc_open: ["Cash in the bank today (DT)", "Trésorerie en banque aujourd'hui (DT)"], fi_fc_open_h: ["The forecast starts from this number. Check it against your bank balance once a week.", "La prévision part de ce chiffre. Comparez-le chaque semaine au solde de la banque."],
+    fi_fc_open: ["Cash in the bank today (TND)", "Trésorerie en banque aujourd'hui (TND)"], fi_fc_open_h: ["The forecast starts from this number. Check it against your bank balance once a week.", "La prévision part de ce chiffre. Comparez-le chaque semaine au solde de la banque."],
     fi_fc_open_save: ["Save opening cash", "Enregistrer la trésorerie"], fi_fc_open_saved: ["Opening cash saved", "Trésorerie de départ enregistrée"], fi_fc_open_zero: ["Opening cash is 0, so the balances below show only the change from today. Enter your real balance to make them true.", "La trésorerie de départ est à 0 : les soldes ci-dessous montrent seulement la variation depuis aujourd'hui. Entrez votre solde réel."],
     fi_fc_founder: ["Only Heni can change the opening cash.", "Seul Heni peut modifier la trésorerie de départ."],
     fi_fc_chart: ["Cash balance, next 13 weeks", "Solde de trésorerie, 13 prochaines semaines"], fi_fc_chart_sub: ["Two lines: what is booked, and booked plus the leads you keep switched on. Estimate.", "Deux lignes : ce qui est acquis, et acquis plus les prospects que vous laissez activés. Estimation."],
@@ -7867,10 +7857,10 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     fi_fc_c_week: ["Week of", "Semaine du"], fi_fc_c_in: ["In, booked", "Entrées acquises"], fi_fc_c_pipe: ["In, pipeline", "Entrées pipeline"], fi_fc_c_out: ["Out", "Sorties"], fi_fc_c_bal: ["Balance, booked", "Solde acquis"], fi_fc_c_balp: ["Balance, with pipeline", "Solde avec pipeline"],
     fi_fc_table: ["Week by week", "Semaine par semaine"], fi_fc_table_h: ["Tap a week to see what is in and out.", "Touchez une semaine pour voir les entrées et les sorties."],
     fi_fc_week: ["Week of {d}", "Semaine du {d}"], fi_fc_in: ["Money in, booked", "Entrées acquises"], fi_fc_lead: ["Money in, pipeline (not booked)", "Entrées pipeline (non acquises)"], fi_fc_out: ["Money out", "Sorties"],
-    fi_fc_nothing: ["Nothing this week.", "Rien cette semaine."], fi_fc_salary: ["Heni's salary", "Salaire de Heni"], fi_fc_comm: ["Commission owed to Mohamed", "Commission due à Mohamed"],
-    fi_fc_if: ["What if", "Et si"], fi_fc_if_h: ["Switch leads off to see the line without them. Each lead counts as its chance times 50% of the pack (a month for SKIN), two weeks after its next step.", "Désactivez des prospects pour voir la ligne sans eux. Chaque prospect compte à hauteur de sa probabilité × 50 % du pack (un mois pour SKIN), deux semaines après sa prochaine étape."],
+    fi_fc_nothing: ["Nothing this week.", "Rien cette semaine."], fi_fc_salary: ["Owner salary", "Salaire du fondateur"], fi_fc_comm: ["Partner share owed", "Part partenaire due"],
+    fi_fc_if: ["What if", "Et si"], fi_fc_if_h: ["Switch leads off to see the line without them. Each lead counts as its chance times 50% of the pack (a month for monthly offers), two weeks after its next step.", "Désactivez des prospects pour voir la ligne sans eux. Chaque prospect compte à hauteur de sa probabilité × 50 % du pack (un mois pour les offres mensuelles), deux semaines après sa prochaine étape."],
     fi_fc_if_none: ["No lead at the call or proposal stage right now.", "Aucun prospect au stade appel ou proposition pour l'instant."], fi_fc_if_row: ["{b} · {s} · {a}", "{b} · {s} · {a}"],
-    fi_fc_note: ["Booked: unpaid invoices on their due date (late ones land in week 1). Out: overheads from the Expenses tab, Heni's salary on the 1st, commission owed in week 1 and project costs in the week of the shoot. Estimate.", "Acquis : factures impayées à leur échéance (les retards tombent la semaine 1). Sorties : charges de l'onglet Dépenses, salaire de Heni le 1er, commission due la semaine 1 et coûts projets la semaine du tournage. Estimation."],
+    fi_fc_note: ["Booked: unpaid invoices on their due date (late ones land in week 1). Out: overheads from the Expenses tab, Owner salary on the 1st, commission owed in week 1 and project costs in the week of the shoot. Estimate.", "Acquis : factures impayées à leur échéance (les retards tombent la semaine 1). Sorties : charges de l'onglet Dépenses, salaire de Heni le 1er, commission due la semaine 1 et coûts projets la semaine du tournage. Estimation."],
     fi_fc_prob: ["{p} chance", "{p} de chances"]
   });
 
@@ -7970,7 +7960,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     fi_ov_recv: ["Receivables", "À recevoir"], fi_ov_recv_n: ["{n} invoices open", "{n} factures ouvertes"], fi_ov_recv_1: ["1 invoice open", "1 facture ouverte"],
     fi_ov_over: ["Overdue", "En retard"], fi_ov_over_n: ["{n} invoices late", "{n} factures en retard"], fi_ov_over_1: ["1 invoice late", "1 facture en retard"], fi_ov_over_0: ["Nothing late", "Rien en retard"],
     fi_ov_cap: ["Cap used", "Plafond utilisé"], fi_ov_cap_n: ["{a} of {b}, {y}", "{a} sur {b}, {y}"],
-    fi_ov_mrr: ["Monthly retainers", "Récurrent mensuel"], fi_ov_mrr_n: ["active SKIN contracts", "contrats SKIN actifs"],
+    fi_ov_mrr: ["Monthly retainers", "Récurrent mensuel"], fi_ov_mrr_n: ["active monthly contracts", "contrats mensuels actifs"],
     fi_ov_run: ["Runway", "Autonomie"], fi_ov_run_v: ["{n} months", "{n} mois"], fi_ov_run_n: ["at the last 3 months' spending", "au rythme des 3 derniers mois"],
     fi_ov_run_none: ["Set the opening cash in Cash forecast", "Renseignez la trésorerie de départ dans Prévision"],
     fi_ov_inout: ["Money in and money out", "Entrées et sorties"], fi_ov_inout_sub: ["Last 6 months. Cash received (net) against everything paid out. Estimate.", "6 derniers mois. Encaissements (net) face à tout ce qui sort. Estimation."],
@@ -8146,8 +8136,8 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     fi_q_c_no: ["Number", "Numéro"], fi_q_c_client: ["Client", "Client"], fi_q_c_title: ["Quote", "Devis"], fi_q_c_total: ["Total", "Total"], fi_q_c_valid: ["Valid until", "Valable jusqu'au"], fi_q_c_status: ["Status", "Statut"],
     fi_q_none: ["No quotes here.", "Aucun devis ici."], fi_q_draft: ["Draft", "Brouillon"], fi_q_back: ["All quotes", "Tous les devis"],
     fi_q_f_client: ["Client", "Client"], fi_q_f_pack: ["Pack", "Pack"], fi_q_custom: ["Custom lines", "Lignes libres"], fi_q_f_title: ["Quote title", "Titre du devis"], fi_q_f_valid: ["Valid until", "Valable jusqu'au"],
-    fi_q_f_note: ["Note for the client (optional)", "Note pour le client (facultatif)"], fi_q_lines: ["Lines", "Lignes"], fi_q_l_label: ["Description", "Désignation"], fi_q_l_qty: ["Qty", "Qté"], fi_q_l_price: ["Unit price (DT)", "Prix unitaire (DT)"],
-    fi_q_lines_h: ["Quantity × price. To give more, add a line at 0 DT (an extra reel, extra hook variations). Never lower the price.", "Quantité × prix. Pour offrir plus, ajoutez une ligne à 0 DT (un reel en plus, des variantes d'accroche en plus). Ne baissez jamais le prix."],
+    fi_q_f_note: ["Note for the client (optional)", "Note pour le client (facultatif)"], fi_q_lines: ["Lines", "Lignes"], fi_q_l_label: ["Description", "Désignation"], fi_q_l_qty: ["Qty", "Qté"], fi_q_l_price: ["Unit price (TND)", "Prix unitaire (TND)"],
+    fi_q_lines_h: ["Quantity × price. To give more, add a line at 0 TND (an extra reel, extra hook variations). Never lower the price.", "Quantité × prix. Pour offrir plus, ajoutez une ligne à 0 TND (un reel en plus, des variantes d'accroche en plus). Ne baissez jamais le prix."],
     fi_q_total: ["Total", "Total"], fi_q_pack_line: ["pack", "pack"], fi_q_included: ["Included", "Inclus"],
     fi_q_need_line: ["Add at least one line with a description.", "Ajoutez au moins une ligne avec une désignation."], fi_q_need_total: ["The total must be above zero.", "Le total doit être supérieur à zéro."],
     fi_q_need_valid: ["Pick a validity date.", "Choisissez une date de validité."], fi_q_no_clients: ["Add a client first.", "Ajoutez d'abord un client."],
@@ -8163,7 +8153,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     fi_q_acc_t: ["Quote", "Devis"], fi_q_acc_a: ["accepted", "accepté"], fi_q_acc_intro: ["{no} · {b} · {a}. What should happen with the invoices?", "{no} · {b} · {a}. Que faire pour les factures ?"],
     fi_q_acc_proj: ["Project", "Projet"],     fi_q_acc_new: ["New project (finish acceptance after saving)", "Nouveau projet (terminer l'acceptation après l'enregistrement)"],
     fi_q_acc_drafts: ["No project yet: just create the draft invoices", "Pas encore de projet : créer seulement les factures brouillons"],
-    fi_q_acc_h: ["Invoices follow the packs rules: 50% deposit and 50% balance, or one month for SKIN. They stay drafts until you issue them.", "Les factures suivent les règles des packs : 50 % d'acompte et 50 % de solde, ou un mois pour SKIN. Elles restent des brouillons jusqu'à leur émission."],
+    fi_q_acc_h: ["Invoices follow the packs rules: 50% deposit and 50% balance, or one month for monthly offers. They stay drafts until you issue them.", "Les factures suivent les règles des packs : 50 % d'acompte et 50 % de solde, ou un mois pour les offres mensuelles. Elles restent des brouillons jusqu'à leur émission."],
     fi_q_acc_go: ["Mark accepted", "Marquer accepté"], fi_q_acc_done_inv: ["Quote accepted, {n} draft invoices linked", "Devis accepté, {n} factures brouillons liées"],
     fi_q_acc_done_proj: ["Save the project to finish accepting this quote. Cancelling leaves it unchanged.", "Enregistrez le projet pour terminer l'acceptation. Annuler laisse le devis inchangé."],
     fi_q_number_error: ["Quote not marked as sent: {e}", "Devis non marqué comme envoyé : {e}"],
@@ -8740,7 +8730,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     po_pick: ["Client", "Client"],
     po_none: ["No clients yet. Add one in Clients.", "Aucun client pour l'instant. Ajoutez-en un dans Clients."],
     po_copy: ["Copy WhatsApp update", "Copier le message WhatsApp"],
-    po_no_perm: ["Only Heni and Mohamed send client updates.", "Seuls Heni et Mohamed envoient les messages clients."],
+    po_no_perm: ["Only the owner and the Client Lead send client updates.", "Seuls le fondateur et le responsable clients envoient les messages clients."],
     po_hello: ["Hello {name}, here is your", "Bonjour {name}, voici votre"], po_hello_a: ["update", "point"],
     po_intro: ["Here is where {brand} stands with GECKO today.", "Voici où en est {brand} avec GECKO aujourd'hui."],
     po_kind: ["Client update", "Point client"],
@@ -9011,8 +9001,8 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     po_file_applied: ["Client feedback applied to {code} · v{version}.", "Retour client appliqué à {code} · v{version}."],
     po_file_snapshot_failed: ["The file state changed, but this client page could not be refreshed. Publish an update before relying on its displayed status.", "L'état du fichier a changé, mais cette page client n'a pas pu être actualisée. Publiez une mise à jour avant de vous fier à son statut affiché."],
     po_file_stale: ["This feedback does not match the current published file version. Publish the current file and ask the client to confirm again.", "Ce retour ne correspond pas à la version publiée actuelle. Publiez le fichier actuel et demandez une nouvelle confirmation au client."],
-    po_no_perm2: ["Only Heni and Mohamed manage client pages.", "Seuls Heni et Mohamed gèrent les pages client."],
-    po_no_perm3: ["Only Heni and Mohamed can approve a plan.", "Seuls Heni et Mohamed peuvent valider un plan."]
+    po_no_perm2: ["Only the owner and the Client Lead manage client pages.", "Seuls le fondateur et le responsable clients gèrent les pages client."],
+    po_no_perm3: ["Only the owner and the Client Lead can approve a plan.", "Seuls le fondateur et le responsable clients peuvent valider un plan."]
   });
 
   /** Stamp with seconds, so "edited after publishing" works inside the same minute. */
@@ -11183,23 +11173,23 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     // packs
     se_packs: ["Packs", "Packs"],
     se_packs_hint: ["Prices are what the client pays, excluding stamp duty. Cost estimate is what a pack costs us to make; the rates below give a suggestion.", "Les prix sont ceux payés par le client, hors timbre. L'estimation de coût est ce que le pack nous coûte ; les tarifs ci-dessous donnent une suggestion."],
-    se_c_pack: ["Pack", "Pack"], se_c_name: ["Name", "Nom"], se_c_price: ["Price (DT)", "Prix (DT)"], se_c_monthly: ["Monthly", "Mensuel"],
+    se_c_pack: ["Pack", "Pack"], se_c_name: ["Name", "Nom"], se_c_price: ["Price (TND)", "Prix (TND)"], se_c_monthly: ["Monthly", "Mensuel"],
     se_c_angles: ["Angles", "Angles"], se_c_reels: ["Reels", "Reels"], se_c_var: ["Variations", "Variations"], se_c_car: ["Carousels", "Carrousels"],
-    se_c_cost: ["Cost estimate (DT)", "Coût estimé (DT)"], se_from_rates: ["rates say {v}", "selon les tarifs : {v}"],
+    se_c_cost: ["Cost estimate (TND)", "Coût estimé (TND)"], se_from_rates: ["rates say {v}", "selon les tarifs : {v}"],
     se_save_packs: ["Save packs", "Enregistrer les packs"], se_reset_packs: ["Reset packs to defaults", "Remettre les packs par défaut"],
     se_reset_q: ["Reset to defaults?", "Remettre par défaut ?"],
     se_reset_packs_b: ["Pack names, prices and contents go back to the business model values. Existing projects keep their pack key.", "Les noms, prix et contenus des packs reviennent aux valeurs du business model. Les projets existants gardent leur pack."],
     se_reset_rates_b: ["Cost rates and money rules go back to the business model values.", "Les tarifs et les règles d'argent reviennent aux valeurs du business model."],
     // rates
-    se_rates: ["Cost rates (DT)", "Tarifs de coûts (DT)"],
+    se_rates: ["Cost rates (TND)", "Tarifs de coûts (TND)"],
     se_r_heniDay: ["Heni, shoot day", "Heni, journée de tournage"], se_r_reel: ["Reel edit, each", "Montage d'un reel"], se_r_gear: ["Gear rental, full day", "Location matériel, journée"],
     se_r_assistant: ["Assistant, day", "Assistant, journée"], se_r_transport: ["Transport and small buys, day", "Transport et petits achats, journée"],
     se_r_recut: ["Hook re-cut, each", "Re-montage d'une accroche"], se_r_carousel: ["Carousel design, each", "Design d'un carrousel"], se_r_report: ["Monthly report", "Rapport mensuel"],
     // rules
     se_rules: ["Money rules", "Règles d'argent"],
-    se_u_cap: ["Yearly invoicing cap (DT)", "Plafond annuel de facturation (DT)"], se_u_reserve: ["Reserve (% of revenue)", "Réserve (% du chiffre)"],
-    se_u_commission: ["Mohamed's commission (% of profit)", "Commission de Mohamed (% du bénéfice)"], se_u_salary: ["Heni's salary (DT / month)", "Salaire de Heni (DT / mois)"],
-    se_u_stamp: ["Stamp duty per invoice (DT)", "Droit de timbre par facture (DT)"], se_u_withholding: ["Withholding by company clients (%)", "Retenue à la source des sociétés (%)"],
+    se_u_cap: ["Yearly invoicing cap (TND)", "Plafond annuel de facturation (TND)"], se_u_reserve: ["Reserve (% of revenue)", "Réserve (% du chiffre)"],
+    se_u_commission: ["Partner share (% of profit)", "Part partenaire (% du bénéfice)"], se_u_salary: ["Owner salary (TND / month)", "Salaire du fondateur (TND / mois)"],
+    se_u_stamp: ["Stamp duty per invoice (TND)", "Droit de timbre par facture (TND)"], se_u_withholding: ["Withholding by company clients (%)", "Retenue à la source des sociétés (%)"],
     se_u_dueDays: ["Invoices due after (days)", "Échéance des factures (jours)"],
     se_u_extrasDirect: ["Extras (studio, talent) are invoiced directly by the supplier to the client", "Les extras (studio, talents) sont facturés directement au client par le fournisseur"],
     se_acct: ["Accountant to confirm.", "À confirmer par le comptable."],
@@ -11226,7 +11216,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     se_coll_ideas: ["creative ideas and revisions", "idées créatives et révisions"], se_coll_boards: ["whiteboards", "tableaux blancs"], se_coll_shares: ["client shares", "partages client"],
     se_coll_feedback: ["client feedback", "retours client"], se_coll_expenses: ["expenses", "dépenses"], se_coll_quotes: ["quotes", "devis"],
     se_sharing: ["Sharing with the team", "Partager avec l'équipe"],
-    se_share_body: ["To let Mohamed and the freelancers work in GECKO Ops, share this page with them as Contributor. Viewers can only read. The first time they open it, each person picks their name and role.", "Pour que Mohamed et les freelances travaillent dans GECKO Ops, partagez cette page avec eux en Contributeur. Les Lecteurs peuvent seulement consulter. À la première ouverture, chacun choisit son nom et son rôle."],
+    se_share_body: ["To let the team and freelancers work in GECKO Ops, share this page with them as Contributor. Viewers can only read. The first time they open it, each person picks their name and role.", "Pour que l'équipe et les freelances travaillent dans GECKO Ops, partagez cette page avec eux en Contributeur. Les Lecteurs peuvent seulement consulter. À la première ouverture, chacun choisit son nom et son rôle."],
     se_lang_note: ["Language and theme are at the bottom of the menu.", "La langue et le thème sont en bas du menu."]
   });
 
@@ -11618,7 +11608,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     // tiles
     db_t_cash: ["Cash in this month", "Encaissé ce mois"], db_t_cash_n: ["goal {g}", "objectif {g}"], db_t_cash_n0: ["net, after withholding", "net, après retenue"],
     db_d_vs: ["{s}{p} vs last month", "{s}{p} vs mois dernier"], db_d_new: ["First money in", "Premiers encaissements"],
-    db_t_mrr: ["MRR · SKIN", "MRR · SKIN"], db_t_mrr_n_1: ["1 active contract", "1 contrat actif"], db_t_mrr_n: ["{n} active contracts", "{n} contrats actifs"], db_t_mrr_0: ["No SKIN contract yet", "Pas encore de contrat SKIN"],
+    db_t_mrr: ["Monthly retainers", "Récurrent mensuel"], db_t_mrr_n_1: ["1 active contract", "1 contrat actif"], db_t_mrr_n: ["{n} active contracts", "{n} contrats actifs"], db_t_mrr_0: ["No monthly contract yet", "Pas encore de contrat mensuel"],
     db_t_owed: ["Clients owe", "Reste à encaisser"], db_t_owed_n: ["{a} overdue", "{a} en retard"], db_t_owed_0: ["Nothing overdue", "Rien en retard"],
     db_t_cap: ["Yearly cap used", "Plafond annuel utilisé"], db_t_cap_s: ["{a} of {b}", "{a} sur {b}"],
     db_t_run: ["Cash runway", "Autonomie de trésorerie"], db_t_run_m: ["{n} months", "{n} mois"], db_t_run_n: ["at {b} a month out", "à {b} de sorties par mois"],
@@ -11627,7 +11617,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     db_t_dm: ["DM reply rate", "Taux de réponse DM"], db_t_dm_n: ["{n} a day vs {g} goal, last 4 weeks", "{n} par jour pour {g} visés, 4 dernières semaines"], db_t_dm_n0: ["{n} a day, last 4 weeks", "{n} par jour, 4 dernières semaines"],
     db_t_dm_na: ["No DMs logged yet", "Aucun DM saisi"],
     // charts
-    db_c_money: ["Money in and money out", "Argent entré et sorti"], db_c_money_sub: ["By month, DT. Money out = expenses + salary + project costs + commissions (estimate).", "Par mois, DT. Sorties = dépenses + salaire + coûts projets + commissions (estimation)."],
+    db_c_money: ["Money in and money out", "Argent entré et sorti"], db_c_money_sub: ["By month, TND. Money out = expenses + salary + project costs + commissions (estimate).", "Par mois, TND. Sorties = dépenses + salaire + coûts projets + commissions (estimation)."],
     db_s_in: ["Money in", "Entrées"], db_s_out: ["Money out", "Sorties"], db_goal: ["Goal", "Objectif"],
     db_net_line: ["Net over {n} months: {a}. Best month {b}.", "Net sur {n} mois : {a}. Meilleur mois : {b}."],
     db_c_fc: ["Next 13 weeks of cash", "Trésorerie des 13 prochaines semaines"], db_c_fc_sub: ["Estimate. Booked = invoices due and costs known. With pipeline adds weighted leads.", "Estimation. Acquis = factures dues et coûts connus. Avec pipeline ajoute les prospects pondérés."],
@@ -11646,7 +11636,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     db_shoots: ["Next shoots, 14 days", "Prochains tournages, 14 jours"], db_shoots_none: ["No shoot in the next 14 days.", "Aucun tournage dans les 14 prochains jours."], db_today: ["Today", "Aujourd'hui"], db_in_d: ["in {n} days", "dans {n} jours"], db_tomorrow: ["Tomorrow", "Demain"],
     // goals
     db_goals: ["Goals", "Objectifs"], db_goals_sub: ["They feed the goal line and the tiles.", "Ils alimentent la ligne d'objectif et les tuiles."],
-    db_g_rev: ["Monthly revenue goal (DT)", "Objectif de chiffre mensuel (DT)"], db_g_dm: ["DMs per day", "DM par jour"], db_g_margin: ["Margin target (%)", "Marge visée (%)"],
+    db_g_rev: ["Monthly revenue goal (TND)", "Objectif de chiffre mensuel (TND)"], db_g_dm: ["DMs per day", "DM par jour"], db_g_margin: ["Margin target (%)", "Marge visée (%)"],
     db_g_save: ["Save goals", "Enregistrer les objectifs"], db_g_saved: ["Goals saved", "Objectifs enregistrés"]
   });
 
@@ -12155,7 +12145,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     return '<section class="panel"><div class="stack" style="gap:2px"><h3 class="sec" style="margin:0">' + esc(t("st_won_title")) + (brand ? " " + esc(t("st_won_for", { brand: brand })) : "") + '</h3><span class="small muted">' + esc(t("st_won_note")) + "</span></div>" +
       (list.length ? '<div class="list">' + list.map(function (h) {
         return '<div class="li" style="flex-wrap:wrap"><div class="stack" style="gap:2px;flex:1 1 220px"><span>“' + esc(h.text) + '”</span><span class="m">' +
-          esc(m.brand(h.project.clientId)) + " · " + esc(h.angle) + (h.cpp ? " · " + esc(u.dec(h.cpp)) + " DT " + esc(t("st_cpp")) : "") + "</span></div>" +
+          esc(m.brand(h.project.clientId)) + " · " + esc(h.angle) + (h.cpp ? " · " + esc(u.dec(h.cpp)) + " TND " + esc(t("st_cpp")) : "") + "</span></div>" +
           ui.btn(t("copy"), "st-copy-text", { cls: "ghost sm", data: { text: h.text } }) + "</div>";
       }).join("") + "</div>" : ui.empty(t("st_won_empty"))) + "</section>";
   }
@@ -12323,7 +12313,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     st_d_send: ["Send to project", "Envoyer au projet"], st_d_send_btn: ["Send to a project", "Envoyer à un projet"],
     st_d_send_note: ["Creates the angle if it is missing, then a reel with this hook and script.", "Crée l'angle s'il manque, puis un reel avec cette accroche et ce script."],
     st_d_send_need_ready: ["Only a ready idea can be sent.", "Seule une idée prête peut être envoyée."],
-    st_d_send_need_rights: ["Ask Heni or Mohamed to send it to the project.", "Demandez à Heni ou Mohamed de l'envoyer au projet."],
+    st_d_send_need_rights: ["Ask the owner or the Client Lead to send it to the project.", "Demandez au fondateur ou au responsable clients de l'envoyer au projet."],
     st_d_send_no_proj: ["This client has no project between onboarding and editing.", "Ce client n'a aucun projet entre le démarrage et le montage."],
     st_d_send_pick: ["Project", "Projet"], st_d_send_angle: ["Angle used: {a}", "Angle utilisé : {a}"], st_d_send_new_angle: ["Angle used: {a} (new)", "Angle utilisé : {a} (nouveau)"],
     st_d_send_go: ["Create the reel", "Créer le reel"], st_d_angle_default: ["General", "Général"],

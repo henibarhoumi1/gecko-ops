@@ -1,4 +1,4 @@
-/* GECKO Ops · module: finance (Money). Invoices, Mohamed's commission, month close, the auto-entrepreneur cap.
+/* GECKO Ops · module: finance (Money). Invoices, partner share, month close, the auto-entrepreneur cap.
    All money rules come from GK.m; this file only adds them up for display. */
 (function (GK) {
   "use strict";
@@ -26,7 +26,7 @@
     fi_paid_note: ["Paid counts the money received plus the tax withheld by the client.", "Payé compte l'argent reçu plus la retenue à la source du client."],
     // form
     fi_f_client: ["Client", "Client"], fi_f_project: ["Project", "Projet"], fi_f_noproject: ["No project", "Sans projet"], fi_f_kind: ["Kind", "Type"],
-    fi_f_label: ["Label", "Libellé"], fi_f_amount: ["Amount (DT, before stamp)", "Montant (DT, hors timbre)"], fi_f_stamp: ["Stamp duty (DT)", "Droit de timbre (DT)"],
+    fi_f_label: ["Label", "Libellé"], fi_f_amount: ["Amount (TND, before stamp)", "Montant (TND, hors timbre)"], fi_f_stamp: ["Stamp duty (TND)", "Droit de timbre (TND)"],
     fi_f_stamp_h: ["Droit de timbre, per invoice. Accountant to confirm.", "Droit de timbre, par facture. À confirmer par le comptable."],
     fi_f_extra_h: ["Studio, talent and ad spend: invoice it here only if GECKO really sells it.", "Studio, talent et budget pub : facturez ici seulement si GECKO le vend vraiment."],
     fi_f_extra_direct: ["Your rule: the supplier invoices the client directly, so extras stay out of your cap. Best not to invoice this here. If you must, keep it as a pass-through at cost.", "Votre règle : le fournisseur facture le client directement, pour que les extras restent hors plafond. Mieux vaut ne pas facturer ici. Si vous devez le faire, gardez-le en débours, au prix coûtant."],
@@ -49,7 +49,7 @@
     fi_deleted: ["Draft deleted", "Brouillon supprimé"],
     fi_doc_btn: ["Invoice document", "Document de facture"],
     fi_pay: ["Record payment", "Enregistrer un paiement"], fi_payments: ["Payments", "Paiements"], fi_no_payments: ["No payment yet.", "Aucun paiement pour l'instant."],
-    fi_p_date: ["Date", "Date"], fi_p_net: ["Net received (DT)", "Net reçu (DT)"], fi_p_wh: ["Withheld by client (DT)", "Retenue à la source (DT)"],
+    fi_p_date: ["Date", "Date"], fi_p_net: ["Net received (TND)", "Net reçu (TND)"], fi_p_wh: ["Withheld by client (TND)", "Retenue à la source (TND)"],
     fi_p_wh_h: ["Company clients often keep {p}% of the amount and pay it to the tax office for you. Accountant to confirm.", "Les sociétés gardent souvent {p} % du montant et le versent au fisc pour vous. À confirmer par le comptable."],
     fi_p_wh_none: ["No tax ID on file for this client, so usually nothing is withheld.", "Pas de matricule fiscal pour ce client, donc en général pas de retenue."],
     fi_p_method: ["Method", "Moyen"], fi_p_ref: ["Reference", "Référence"], fi_p_ref_ph: ["Transfer ref, cheque no.", "Réf. virement, n° de chèque"],
@@ -78,16 +78,16 @@
     fi_cm_amount: ["Commission", "Commission"], fi_cm_payable: ["Payable", "Exigible"], fi_cm_paid: ["Paid", "Payée"], fi_cm_owed: ["Owed", "Dû"],
     fi_cm_yes: ["Ready to pay", "Prête à payer"], fi_cm_wait: ["Waiting on client", "Attente client"], fi_cm_wait_dl: ["Waiting on delivery", "Attente livraison"], fi_cm_nocosts: ["No costs logged", "Aucun coût saisi"],
     fi_cm_nocosts_t: ["Log this project's costs first, or the commission is overstated.", "Saisissez d'abord les coûts du projet, sinon la commission est surestimée."],
-    fi_cm_mark: ["Mark paid", "Marquer payée"], fi_cm_mark_q: ["Pay Mohamed {a}?", "Payer {a} à Mohamed ?"],
+    fi_cm_mark: ["Mark paid", "Marquer payée"], fi_cm_mark_q: ["Pay the partner share of {a}?", "Payer la part partenaire de {a} ?"],
     fi_cm_mark_body: ["For {p}. It's recorded as paid today.", "Pour {p}. Enregistré comme payé aujourd'hui."], fi_cm_done: ["Commission marked paid", "Commission marquée payée"],
     fi_cm_owed_now: ["Owed now", "Dû maintenant"], fi_cm_paid_year: ["Paid this year", "Payé cette année"], fi_cm_pending: ["Not payable yet", "Pas encore exigible"],
-    fi_cm_note: ["{p}% of project profit on projects Mohamed brought or worked. Profit is what the client paid (tax withheld counts as paid, stamp duty left out) minus costs. It becomes payable once the client has paid in full and the work is delivered: before that, costs are only estimates.", "{p} % du bénéfice des projets apportés ou suivis par Mohamed. Bénéfice = ce que le client a payé (la retenue compte comme payée, le timbre est exclu) moins les coûts. Exigible une fois que le client a tout payé et que le travail est livré : avant, les coûts ne sont que des estimations."],
-    fi_cm_none: ["No projects with Mohamed yet.", "Pas encore de projet avec Mohamed."], fi_total_row: ["Total", "Total"],
+    fi_cm_note: ["{p}% of project profit on projects covered by the partner share rules (first clients, or clients the partner brought alone). Profit is what the client paid (tax withheld counts as paid, stamp duty left out) minus costs. It becomes payable once the client has paid in full and the work is delivered: before that, costs are only estimates.", "{p} % du bénéfice des projets couverts par les règles de la part partenaire (premiers clients, ou clients apportés seul par le partenaire). Bénéfice = ce que le client a payé (la retenue compte comme payée, le timbre est exclu) moins les coûts. Exigible une fois que le client a tout payé et que le travail est livré : avant, les coûts ne sont que des estimations."],
+    fi_cm_none: ["No projects with a partner share yet.", "Pas encore de projet avec une part partenaire."], fi_total_row: ["Total", "Total"],
     // month close
     fi_mc_month: ["Month", "Mois"], fi_mc_in: ["Money in", "Entrées"], fi_mc_out: ["Money out", "Sorties"],
     fi_mc_net: ["Payments received (net)", "Paiements reçus (net)"], fi_mc_wh: ["Withheld by clients (tax credit)", "Retenues des clients (crédit d'impôt)"],
     fi_mc_in_total: ["Total in", "Total entrées"], fi_mc_costs: ["Project costs, shoots this month", "Coûts projets, tournages du mois"],
-    fi_mc_salary: ["Heni's salary", "Salaire de Heni"], fi_mc_comm: ["Commissions paid", "Commissions payées"], fi_mc_out_total: ["Total out", "Total sorties"],
+    fi_mc_salary: ["Owner salary", "Salaire du fondateur"], fi_mc_comm: ["Commissions paid", "Commissions payées"], fi_mc_out_total: ["Total out", "Total sorties"],
     fi_mc_reserve: ["Reserve, {p}% of money in", "Réserve, {p} % des entrées"], fi_mc_left: ["Left after reserve", "Reste après réserve"],
     fi_mc_invoiced: ["Invoiced this month (before stamp, credit notes deducted)", "Facturé ce mois (hors timbre, avoirs déduits)"],
     fi_mc_nocosts: ["no costs logged", "aucun coût saisi"],
@@ -120,7 +120,7 @@
   function r3(n) { return Math.round((+n || 0) * 1000) / 1000; }
   /** Money in whole dinars: totals, commission, month close, cap. */
   function fm(n) { return u.money(Math.round(+n || 0)); }
-  /** One invoice or payment amount: whole dinars, or up to 2 decimals only when it has a fraction (728.5 -> "728.5 DT"). */
+  /** One invoice or payment amount: whole dinars, or up to 2 decimals only when it has a fraction (728.5 -> "728.5 TND"). */
   function fmP(n) { var v = Math.round((+n || 0) * 100) / 100; return u.money(v, v % 1 === 0 ? 0 : Math.round(v * 10) === v * 10 ? 1 : 2); }
   /** " : " in French, ": " in English. */
   function colon() { return u.fr() ? "\u00a0: " : ": "; }
@@ -555,7 +555,7 @@
   // ---------- commission ----------
   function commissionHTML() {
     var r = m.rules(), year = u.year(u.today());
-    var ps = S.all("projects").filter(function (p) { return p.mohamed; }).sort(u.by(function (p) { return p.shootDate || p.planApprovedOn || ""; }, "desc"));
+    var ps = S.all("projects").filter(function (p) { return !!m.commission(p).basis; }).sort(u.by(function (p) { return p.shootDate || p.planApprovedOn || ""; }, "desc"));
     var rows = ps.map(function (p) { return { p: p, c: m.commission(p), rec: m.received(p), cost: m.costOf(p), prof: m.profit(p) }; });
     var owedNow = u.sum(rows, function (x) { return x.c.owed; });
     var paidYear = u.sum(S.all("projects").filter(function (p) { return p.payout && p.payout.paidOn && u.year(p.payout.paidOn) === year; }), function (p) { return +p.payout.amount || 0; });

@@ -312,7 +312,7 @@
     ];
     if (founder()) tiles.push({ label: t("ins_tm_comm"), icon: "cash", value: u.money(X.commissionOwed()), hint: t("ins_tm_comm_n", { a: u.money(X.commissionPaid()) }) });
     else if (role === "sales") {
-      var mine = S.all("projects").filter(function (p) { return p.mohamed; }), owed = u.sum(mine, function (p) { return m.commission(p).owed; });
+      var mine = S.all("projects").filter(function (p) { return !!m.commission(p).basis; }), owed = u.sum(mine, function (p) { return m.commission(p).owed; });
       tiles.push({ label: t("ins_tm_comm"), icon: "cash", value: u.money(owed), hint: t("ins_tm_comm_n", { a: u.money(u.sum(mine, function (p) { return m.commission(p).paid; })) }) });
     } else tiles.push(Object.assign({ label: t("ins_tm_done"), icon: "check", value: String(done7), spark: spark }, cmpCount(done7, doneP), done7 || doneP ? { deltaLabel: t("ins_vs_week") } : {}));
     var dec = "";

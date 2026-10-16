@@ -11,7 +11,7 @@
     fi_ex_c_date: ["Date", "Date"], fi_ex_c_label: ["Expense", "Dépense"], fi_ex_c_cat: ["Category", "Catégorie"], fi_ex_c_vendor: ["Vendor", "Fournisseur"], fi_ex_c_project: ["Project", "Projet"], fi_ex_c_amount: ["Amount", "Montant"], fi_ex_c_when: ["Repeats", "Récurrence"],
     fi_ex_none: ["No expenses here.", "Aucune dépense ici."], fi_ex_monthly: ["Every month", "Chaque mois"], fi_ex_monthly_until: ["Every month until {m}", "Chaque mois jusqu'en {m}"], fi_ex_once: ["Once", "Une fois"],
     fi_ex_receipt: ["Receipt", "Justificatif"], fi_ex_open_link: ["Open", "Ouvrir"],
-    fi_ex_f_date: ["Date (first charge for a monthly one)", "Date (premier prélèvement si mensuelle)"], fi_ex_f_label: ["What was it", "De quoi s'agit-il"], fi_ex_f_cat: ["Category", "Catégorie"], fi_ex_f_amount: ["Amount (DT)", "Montant (DT)"],
+    fi_ex_f_date: ["Date (first charge for a monthly one)", "Date (premier prélèvement si mensuelle)"], fi_ex_f_label: ["What was it", "De quoi s'agit-il"], fi_ex_f_cat: ["Category", "Catégorie"], fi_ex_f_amount: ["Amount (TND)", "Montant (TND)"],
     fi_ex_f_rec: ["Repeats", "Récurrence"], fi_ex_f_until: ["Last month (optional)", "Dernier mois (facultatif)"], fi_ex_f_until_h: ["Leave empty while it still runs.", "Laissez vide tant que ça continue."],
     fi_ex_f_vendor: ["Vendor", "Fournisseur"], fi_ex_f_project: ["Project (optional)", "Projet (facultatif)"], fi_ex_f_link: ["Receipt or link (https://...)", "Justificatif ou lien (https://...)"], fi_ex_f_note: ["Note", "Note"],
     fi_ex_f_estimate: ["Replaces estimate (optional)", "Remplace l'estimation (facultatif)"],

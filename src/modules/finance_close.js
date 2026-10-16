@@ -7,7 +7,7 @@
     fi_cl_invoiced: ["Revenue invoiced (before stamp, credit notes deducted)", "Chiffre d'affaires facturé (hors timbre, avoirs déduits)"],
     fi_cl_cash: ["Cash received (net)", "Encaissements (net)"], fi_cl_wh: ["Tax withheld by clients (tax credit, not cash)", "Retenues à la source des clients (crédit d'impôt, pas de la trésorerie)"],
     fi_cl_in: ["Money in", "Total entrées"], fi_cl_costs: ["Project costs", "Coûts des projets"], fi_cl_project_exp: ["Project-linked expense", "Dépense liée au projet"],
-    fi_cl_over: ["Overheads (Expenses tab)", "Charges (onglet Dépenses)"], fi_cl_salary: ["Heni's salary", "Salaire de Heni"], fi_cl_comm: ["Commissions paid", "Commissions payées"],
+    fi_cl_over: ["Overheads (Expenses tab)", "Charges (onglet Dépenses)"], fi_cl_salary: ["Owner salary", "Salaire du fondateur"], fi_cl_comm: ["Commissions paid", "Commissions payées"],
     fi_cl_out: ["Money out", "Total sorties"], fi_cl_reserve: ["Reserve, {p}% of money in", "Réserve, {p} % des entrées"], fi_cl_left: ["Left after reserve", "Reste après réserve"],
     fi_cl_stmt: ["Profit and loss", "Compte de résultat"], fi_cl_est: ["estimate", "estimation"],
     fi_cl_nocosts: ["no costs logged", "aucun coût saisi"],

@@ -1,4 +1,4 @@
-/* GECKO Ops · module: pipeline (Mohamed's sales board) */
+/* GECKO Ops · module: pipeline (sales pipeline) */
 (function (GK) {
   "use strict";
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
@@ -30,7 +30,6 @@
     pl_funnel: ["Weekly funnel", "Entonnoir par semaine"], pl_week: ["Week", "Semaine"], pl_this_week: ["This week", "Cette semaine"],
     pl_week_of: ["Week of {d}", "Semaine du {d}"], pl_dms: ["DMs", "DM"], pl_replies: ["Replies", "Réponses"], pl_rate: ["Reply rate", "Taux de réponse"],
     pl_calls: ["Calls", "Appels"], pl_props: ["Proposals", "Propositions"], pl_won: ["Won", "Gagnés"], pl_total: ["4 weeks", "4 semaines"],
-    pl_target: ["Target: 10 DMs a day, 50 to 70 a week.", "Objectif : 10 DM par jour, 50 à 70 par semaine."],
     pl_below: ["Below 50", "Sous 50"], pl_running: ["In progress", "En cours"],
     pl_reasons: ["Why we lose", "Pourquoi on perd"], pl_reasons_none: ["No lost leads yet.", "Aucun prospect perdu pour l'instant."],
     pl_everyone: ["Everyone", "Tout le monde"],
@@ -128,7 +127,6 @@
     var ownerSel = '<select class="in inline small" data-c="pl-owner" aria-label="' + esc(t("pl_owner")) + '"><option value="">' + esc(t("pl_everyone")) + "</option>" +
       sellers().map(function (p) { return '<option value="' + esc(p.id) + '"' + (p.id === owner ? " selected" : "") + ">" + esc(p.name) + "</option>"; }).join("") + "</select>";
     return '<div class="panel"><div class="panel-h"><h2 class="sec">' + esc(t("pl_funnel")) + "</h2>" + ownerSel + "</div>" +
-      '<p class="small muted" style="margin:0">' + esc(t("pl_target")) + "</p>" +
       '<div class="tbl"><table><thead><tr><th>' + esc(t("pl_week")) + '</th><th class="r">' + esc(t("pl_dms")) + '</th><th></th><th class="r">' + esc(t("pl_replies")) +
       '</th><th class="r">' + esc(t("pl_rate")) + '</th><th class="r">' + esc(t("pl_calls")) + '</th><th class="r">' + esc(t("pl_props")) + '</th><th class="r">' + esc(t("pl_won")) + "</th></tr></thead><tbody>" +
       rows.join("") + "</tbody><tfoot><tr><td>" + esc(t("pl_total")) + '</td><td class="r num">' + tot.dms + '</td><td></td><td class="r num">' + tot.replies + '</td><td class="r num">' +
@@ -213,7 +211,7 @@
       if (lead.projectId !== project.id) S.patch("leads", lead.id, { projectId: project.id });
       ui.go("projects", { id: project.id });
     } else if (GK.pj && typeof GK.pj.openNew === "function") {
-      GK.pj.openNew({ clientId: client.id, pack: lead.pack || "", mohamed: m.member(lead.owner).role === "sales", sourceLeadId: lead.id });
+      GK.pj.openNew({ clientId: client.id, pack: lead.pack || "", sourceLeadId: lead.id });
     }
     else ui.go("projects");
   }

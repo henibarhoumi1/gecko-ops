@@ -175,44 +175,44 @@
     }
     var FL = "freelance";
     // Sidi Denim · SKIN 10 · ended last winter (churn risk)
-    proj({ id: "psid1", clientId: "csid", contractId: "ksid", month: 1, name: "Month 1", pack: "SKIN10", stage: "done", shoot: -335, plan: -339, mohamed: true, report: ["9.4", "Day 1 vs day 60", "Studio packshots", "More street walking", "Proof beats polish"] });
-    proj({ id: "psid2", clientId: "csid", contractId: "ksid", month: 2, name: "Month 2", pack: "SKIN10", stage: "done", shoot: -305, plan: -309, mohamed: true, report: ["8.1", "Street fit", "Care tips", "Louage test"] });
-    proj({ id: "psid3", clientId: "csid", contractId: "ksid", month: 3, name: "Month 3", pack: "SKIN10", stage: "done", shoot: -275, plan: -279, mohamed: true, report: ["8.8", "Street fit", "Washing tip", "Renewal: new angle on fit"] });
+    proj({ id: "psid1", clientId: "csid", contractId: "ksid", month: 1, name: "Month 1", pack: "monthly8", stage: "done", shoot: -335, plan: -339, mohamed: true, report: ["9.4", "Day 1 vs day 60", "Studio packshots", "More street walking", "Proof beats polish"] });
+    proj({ id: "psid2", clientId: "csid", contractId: "ksid", month: 2, name: "Month 2", pack: "monthly8", stage: "done", shoot: -305, plan: -309, mohamed: true, report: ["8.1", "Street fit", "Care tips", "Louage test"] });
+    proj({ id: "psid3", clientId: "csid", contractId: "ksid", month: 3, name: "Month 3", pack: "monthly8", stage: "done", shoot: -275, plan: -279, mohamed: true, report: ["8.8", "Street fit", "Washing tip", "Renewal: new angle on fit"] });
     // Argan Bloom · GRIP · lost after this one
-    proj({ id: "parg", clientId: "carg", name: "Glow kit", pack: "GRIP", stage: "done", shoot: -280, plan: -290, mohamed: true, report: ["11.2", "Spot the fake", "Routine timer", "Second batch (declined)"] });
+    proj({ id: "parg", clientId: "carg", name: "Glow kit", pack: "test", stage: "done", shoot: -280, plan: -290, mohamed: true, report: ["11.2", "Spot the fake", "Routine timer", "Second batch (declined)"] });
     // Fidda Studio · SKIN 10 · three months, paused
-    proj({ id: "pfid1", clientId: "cfid", contractId: "kfid", month: 1, name: "Month 1", pack: "SKIN10", stage: "done", shoot: -240, plan: -244, mohamed: false, report: ["7.6", "Gift reactions", "Flat lays", "Workshop sparks"] });
-    proj({ id: "pfid2", clientId: "cfid", contractId: "kfid", month: 2, name: "Month 2", pack: "SKIN10", stage: "done", shoot: -210, plan: -214, mohamed: false, report: ["6.2", "Workshop sparks", "Stacking", "Gift box"] });
-    proj({ id: "pfid3", clientId: "cfid", contractId: "kfid", month: 3, name: "Month 3", pack: "SKIN10", stage: "done", shoot: -180, plan: -184, mohamed: false, report: ["5.9", "Gift she keeps", "Price reveal", "Come back for gifting season"] });
-    proj({ id: "pcab1", clientId: "ccab", name: "Earbuds launch", pack: "GRIP", stage: "done", shoot: -200, plan: -208, mohamed: true, report: ["6.8", "Drop test", "Unboxing", "Power bank next"] });
-    proj({ id: "pmed1", clientId: "cmed", name: "Summer drop", pack: "GRIP", stage: "done", shoot: -150, plan: -158, mohamed: true, report: ["5.1", "Three looks", "Mannequin shots", "Real sizes"] });
-    proj({ id: "pbyr", clientId: "cbyr", name: "Weekend brunch", pack: "GRIP", stage: "done", shoot: -125, plan: -131, mohamed: false, extraCosts: [["other", "Food for the shoot", 85]], report: ["2.4", "Sea view", "Menu board", "Iftar menu"] });
-    proj({ id: "pnab", clientId: "cnab", name: "Summer season", pack: "SEASON", stage: "done", shoot: -110, plan: -120, mohamed: true, extraCosts: [[FL, "Second camera (Walid)", 250], [FL, "Motion titles (Nesrine)", 160]], report: ["4.7", "Painter close-ups", "Lifestyle table", "Holiday table set"] });
-    proj({ id: "pkel0", clientId: "ckel", name: "Squat test", pack: "GRIP", stage: "done", shoot: -85, plan: -92, mohamed: true, report: ["4.2", "Squat-proof", "Gym b-roll", "Upgrade to SKIN 10"] });
-    proj({ id: "pkel1", clientId: "ckel", contractId: "kkel", month: 1, name: "Month 1", pack: "SKIN10", stage: "report", shoot: -30, plan: -33, mohamed: true, extraCosts: [[FL, "Voice-over (Rim)", 90]],
+    proj({ id: "pfid1", clientId: "cfid", contractId: "kfid", month: 1, name: "Month 1", pack: "monthly8", stage: "done", shoot: -240, plan: -244, mohamed: false, report: ["7.6", "Gift reactions", "Flat lays", "Workshop sparks"] });
+    proj({ id: "pfid2", clientId: "cfid", contractId: "kfid", month: 2, name: "Month 2", pack: "monthly8", stage: "done", shoot: -210, plan: -214, mohamed: false, report: ["6.2", "Workshop sparks", "Stacking", "Gift box"] });
+    proj({ id: "pfid3", clientId: "cfid", contractId: "kfid", month: 3, name: "Month 3", pack: "monthly8", stage: "done", shoot: -180, plan: -184, mohamed: false, report: ["5.9", "Gift she keeps", "Price reveal", "Come back for gifting season"] });
+    proj({ id: "pcab1", clientId: "ccab", name: "Earbuds launch", pack: "test", stage: "done", shoot: -200, plan: -208, mohamed: true, report: ["6.8", "Drop test", "Unboxing", "Power bank next"] });
+    proj({ id: "pmed1", clientId: "cmed", name: "Summer drop", pack: "test", stage: "done", shoot: -150, plan: -158, mohamed: true, report: ["5.1", "Three looks", "Mannequin shots", "Real sizes"] });
+    proj({ id: "pbyr", clientId: "cbyr", name: "Weekend brunch", pack: "test", stage: "done", shoot: -125, plan: -131, mohamed: false, extraCosts: [["other", "Food for the shoot", 85]], report: ["2.4", "Sea view", "Menu board", "Iftar menu"] });
+    proj({ id: "pnab", clientId: "cnab", name: "Summer season", pack: "campaign", stage: "done", shoot: -110, plan: -120, mohamed: true, extraCosts: [[FL, "Second camera (Walid)", 250], [FL, "Motion titles (Nesrine)", 160]], report: ["4.7", "Painter close-ups", "Lifestyle table", "Holiday table set"] });
+    proj({ id: "pkel0", clientId: "ckel", name: "Squat test", pack: "test", stage: "done", shoot: -85, plan: -92, mohamed: true, report: ["4.2", "Squat-proof", "Gym b-roll", "Upgrade to SKIN 10"] });
+    proj({ id: "pkel1", clientId: "ckel", contractId: "kkel", month: 1, name: "Month 1", pack: "monthly8", stage: "report", shoot: -30, plan: -33, mohamed: true, extraCosts: [[FL, "Voice-over (Rim)", 90]],
       report: ["5.2", "Squat-proof, sunrise beach", "Coach talking head", "30-day challenge series", "The squat test answers the first worry in 3 seconds"], log: [L("Report sent to Hamza", 7)] });
-    proj({ id: "pmed2", clientId: "cmed", name: "Back to school", pack: "GRIP", stage: "delivered", shoot: -24, plan: -32, mohamed: true,
+    proj({ id: "pmed2", clientId: "cmed", name: "Back to school", pack: "test", stage: "delivered", shoot: -24, plan: -32, mohamed: true,
       log: [L("Files delivered", 6, "medit"), L("Balance paid, files unlocked", 12, "mmoh")] });
-    proj({ id: "pcab2", clientId: "ccab", name: "Power bank drop", pack: "GRIP", stage: "edit", shoot: -13, plan: -24, mohamed: true,
+    proj({ id: "pcab2", clientId: "ccab", name: "Power bank drop", pack: "test", stage: "edit", shoot: -13, plan: -24, mohamed: true,
       log: [L("Editing started", 11, "mamira"), L("Balance overdue: files stay locked", 4, "mmoh")] });
-    proj({ id: "pkel2", clientId: "ckel", contractId: "kkel", month: 2, name: "Month 2", pack: "SKIN10", stage: "edit", shoot: -2, plan: -5, mohamed: true, extraCosts: [[FL, "Voice-over (Rim)", 90]],
+    proj({ id: "pkel2", clientId: "ckel", contractId: "kkel", month: 2, name: "Month 2", pack: "monthly8", stage: "edit", shoot: -2, plan: -5, mohamed: true, extraCosts: [[FL, "Voice-over (Rim)", 90]],
       log: [L("Plan approved", 5), L("Shoot done at the beach, 31 clips", 2, "mwalid")] });
-    proj({ id: "phar1", clientId: "char", contractId: "khar", month: 1, name: "Month 1", pack: "SKIN20", stage: "shoot", shoot: 4, plan: -3, mohamed: true, extraCosts: [[FL, "Motion titles (Nesrine)", 160]],
+    proj({ id: "phar1", clientId: "char", contractId: "khar", month: 1, name: "Month 1", pack: "monthly12", stage: "shoot", shoot: 4, plan: -3, mohamed: true, extraCosts: [[FL, "Motion titles (Nesrine)", 160]],
       log: [L("Month 1 paid", 4, "mmoh"), L("Plan approved by Mourad", 3)] });
-    proj({ id: "pmed3", clientId: "cmed", name: "Winter coats", pack: "GRIP", stage: "shoot", shoot: 3, plan: -5, mohamed: true, log: [L("Deposit paid", 7, "mmoh"), L("Plan approved", 5)] });
-    proj({ id: "pdje", clientId: "cdje", name: "Gift boxes", pack: "GRIP", stage: "plan", shoot: 18, plan: -4, mohamed: true, extraCosts: [["other", "Ferry and hotel, Djerba", 140]], log: [L("Deposit paid", 6, "mmoh"), L("Plan approved", 4)] });
-    proj({ id: "pzina", clientId: "czin", name: "Launch", pack: "GRIP", stage: "plan", shoot: null, plan: null, mohamed: true, log: [L("Deposit invoice sent", 3, "mmoh"), L("Creative plan sent for review", 2)] });
-    proj({ id: "pbam", clientId: "cbam", name: "First campaign", pack: "GRIP", stage: "onboard", shoot: null, plan: null, mohamed: true, ob: 2, log: [L("Project created", 2, "mmoh")] });
-    proj({ id: "pmedk1", clientId: "cmed", contractId: "kmed", month: 1, name: "Month 1", pack: "SKIN10", stage: "onboard", shoot: 26, plan: null, mohamed: true, ob: 3, log: [L("Contract signed", 8, "mmoh")] });
+    proj({ id: "pmed3", clientId: "cmed", name: "Winter coats", pack: "test", stage: "shoot", shoot: 3, plan: -5, mohamed: true, log: [L("Deposit paid", 7, "mmoh"), L("Plan approved", 5)] });
+    proj({ id: "pdje", clientId: "cdje", name: "Gift boxes", pack: "test", stage: "plan", shoot: 18, plan: -4, mohamed: true, extraCosts: [["other", "Ferry and hotel, Djerba", 140]], log: [L("Deposit paid", 6, "mmoh"), L("Plan approved", 4)] });
+    proj({ id: "pzina", clientId: "czin", name: "Launch", pack: "test", stage: "plan", shoot: null, plan: null, mohamed: true, log: [L("Deposit invoice sent", 3, "mmoh"), L("Creative plan sent for review", 2)] });
+    proj({ id: "pbam", clientId: "cbam", name: "First campaign", pack: "test", stage: "onboard", shoot: null, plan: null, mohamed: true, ob: 2, log: [L("Project created", 2, "mmoh")] });
+    proj({ id: "pmedk1", clientId: "cmed", contractId: "kmed", month: 1, name: "Month 1", pack: "monthly8", stage: "onboard", shoot: 26, plan: null, mohamed: true, ob: 3, log: [L("Contract signed", 8, "mmoh")] });
     C.projects = C.projects.concat(P);
 
     // ================= contracts =================
     C.contracts = C.contracts.concat([
-      { id: "ksid", clientId: "csid", pack: "SKIN10", start: u.month(d(-342)), minMonths: 3, status: "ended", log: [L("Ended after 3 months", 262, "mheni")] },
-      { id: "kfid", clientId: "cfid", pack: "SKIN10", start: u.month(d(-247)), minMonths: 3, status: "ended", log: [L("Paused after 3 months", 170, "mheni")] },
-      { id: "kkel", clientId: "ckel", pack: "SKIN10", start: u.month(d(-36)), minMonths: 3, status: "active", log: [L("Signed", 40, "mmoh")] },
-      { id: "khar", clientId: "char", pack: "SKIN20", start: u.month(d(-6)), minMonths: 3, status: "active", log: [L("Signed", 9, "mmoh")] },
-      { id: "kmed", clientId: "cmed", pack: "SKIN10", start: u.month(d(26)), minMonths: 3, status: "active", log: [L("Signed, starts next month", 8, "mmoh")] }
+      { id: "ksid", clientId: "csid", pack: "monthly8", start: u.month(d(-342)), minMonths: 3, status: "ended", log: [L("Ended after 3 months", 262, "mheni")] },
+      { id: "kfid", clientId: "cfid", pack: "monthly8", start: u.month(d(-247)), minMonths: 3, status: "ended", log: [L("Paused after 3 months", 170, "mheni")] },
+      { id: "kkel", clientId: "ckel", pack: "monthly8", start: u.month(d(-36)), minMonths: 3, status: "active", log: [L("Signed", 40, "mmoh")] },
+      { id: "khar", clientId: "char", pack: "monthly12", start: u.month(d(-6)), minMonths: 3, status: "active", log: [L("Signed", 9, "mmoh")] },
+      { id: "kmed", clientId: "cmed", pack: "monthly8", start: u.month(d(26)), minMonths: 3, status: "active", log: [L("Signed, starts next month", 8, "mmoh")] }
     ]);
 
     // ================= invoices =================
@@ -277,7 +277,7 @@
     if (C.projects.some(function (p) { return p.id === "patl"; })) extra("patl", "Two extra hook variations", 64, -19, -16);
     C.invoices = C.invoices.concat(INV);
 
-    // commission: paid out for closed projects Mohamed worked; still owed on the newest delivered ones
+    // commission: paid out for closed projects with a partner share; still owed on the newest delivered ones
     function received(pid) {
       return u.sum(C.invoices.filter(function (i) { return i.projectId === pid && i.kind !== "credit" && !i.credited && !(i.kind === "extra" && i.passThrough); }), function (i) {
         return Math.min(u.sum(i.payments || [], function (x) { return (+x.net || 0) + (+x.withheld || 0); }), +i.amount || 0);
@@ -294,25 +294,25 @@
     // ================= leads and outreach =================
     function hist(stages) { return stages.map(function (s) { return { stage: s[0], at: d(s[1]) }; }); }
     var LD = [
-      ["Sfax Sneaker Lab", "Ayoub", "@sfax.sneakerlab", "teardown_dm", "dm", [1, 0, 0, 0], "GRIP", "Send the teardown video", 0, [["dm", -1]]],
-      ["Olive Grove Soap", "Nadia", "@olivegrove.soap", "teardown_dm", "dm", [1, 1, 0, 0], "GRIP", "Follow up on the DM", 1, [["dm", -3]]],
-      ["Mahdia Linen", "Lotfi", "@mahdia.linen", "teardown_dm", "dm", [1, 0, 0, 0], "GRIP", "Second DM with a hook idea", 2, [["dm", -4]]],
-      ["Tozeur Leather", "Khalil", "@tozeur.leather", "inbound", "dm", [1, 1, 0, 0], "SEASON", "Reply to their question on prices", 0, [["dm", 0]]],
-      ["Bizerte Bakes", "Dorra", "@bizerte.bakes", "teardown_dm", "replied", [1, 1, 1, 0], "GRIP", "Book a 15-minute call", 1, [["dm", -7], ["replied", -2]]],
-      ["Pixel Case TN", "Youssef", "@pixelcase.tn", "media_buyer", "replied", [1, 1, 0, 0], "GRIP", "Send two case studies", -1, [["dm", -9], ["replied", -4]]],
-      ["Gabes Henna Co", "Salwa", "@gabes.henna", "teardown_dm", "replied", [1, 0, 0, 0], "GRIP", "Ask for orders per week", 3, [["dm", -6], ["replied", -1]]],
-      ["Carthage Kids", "Aymen", "@carthage.kids", "referral", "call", [1, 1, 1, 0], "SKIN10", "Call Tuesday 15:00", 2, [["dm", -12], ["replied", -9], ["call", -1]]],
-      ["Hammam Glow", "Emna", "@hammam.glow", "warm", "call", [1, 1, 1, 1], "SKIN10", "Discovery call, bring the Kelibia results", 0, [["dm", -10], ["replied", -6], ["call", -3]]],
-      ["Sousse Surf Shop", "Firas", "@soussesurf", "media_buyer", "call", [1, 1, 0, 0], "GRIP", "Call after their stock arrives", 6, [["dm", -15], ["replied", -11], ["call", -5]]],
-      ["Bled Coffee Roasters", "Nizar", "@bled.roasters", "warm", "proposal", [1, 1, 1, 1], "SEASON", "Proposal follow-up", -2, [["dm", -21], ["replied", -18], ["call", -12], ["proposal", -6]]],
-      ["Lumiere Lingerie", "Sarra", "@lumiere.lingerie", "referral", "proposal", [1, 1, 1, 1], "SKIN20", "Answer questions on the 3-month minimum", 1, [["dm", -18], ["replied", -15], ["call", -9], ["proposal", -3]]],
-      ["Harissa House", "Mourad", "@harissa.house", "teardown_dm", "won", [1, 1, 1, 1], "SKIN20", "", null, [["dm", -40], ["replied", -35], ["call", -25], ["proposal", -18], ["won", -9]]],
-      ["Zina Hair", "Asma", "@zina.hair", "inbound", "won", [1, 1, 0, 1], "GRIP", "", null, [["dm", -20], ["call", -12], ["proposal", -8], ["won", -4]]],
-      ["Djerba Dates", "Bilel", "@djerba.dates", "media_buyer", "won", [1, 1, 1, 1], "GRIP", "", null, [["dm", -30], ["replied", -26], ["call", -19], ["proposal", -14], ["won", -10]]],
-      ["Bambino Tunis", "Houda", "@bambino.tunis", "referral", "won", [1, 0, 0, 1], "GRIP", "", null, [["dm", -11], ["call", -6], ["proposal", -4], ["won", -2]]],
-      ["Kairouan Rugs", "Habib", "@kairouan.rugs", "teardown_dm", "lost", [1, 0, 0, 0], "GRIP", "", null, [["dm", -40], ["replied", -36], ["lost", -30]], "no_budget"],
-      ["Monastir Swim", "Hiba", "@monastir.swim", "teardown_dm", "lost", [1, 1, 0, 0], "GRIP", "", null, [["dm", -50], ["lost", -35]], "no_reply"],
-      ["Argan Bloom", "Meriem", "@argan.bloom", "warm", "lost", [1, 1, 1, 0], "GRIP", "", null, [["dm", -215], ["call", -208], ["proposal", -204], ["lost", -200]], "went_elsewhere"]
+      ["Sfax Sneaker Lab", "Ayoub", "@sfax.sneakerlab", "teardown_dm", "dm", [1, 0, 0, 0], "test", "Send the teardown video", 0, [["dm", -1]]],
+      ["Olive Grove Soap", "Nadia", "@olivegrove.soap", "teardown_dm", "dm", [1, 1, 0, 0], "test", "Follow up on the DM", 1, [["dm", -3]]],
+      ["Mahdia Linen", "Lotfi", "@mahdia.linen", "teardown_dm", "dm", [1, 0, 0, 0], "test", "Second DM with a hook idea", 2, [["dm", -4]]],
+      ["Tozeur Leather", "Khalil", "@tozeur.leather", "inbound", "dm", [1, 1, 0, 0], "campaign", "Reply to their question on prices", 0, [["dm", 0]]],
+      ["Bizerte Bakes", "Dorra", "@bizerte.bakes", "teardown_dm", "replied", [1, 1, 1, 0], "test", "Book a 15-minute call", 1, [["dm", -7], ["replied", -2]]],
+      ["Pixel Case TN", "Youssef", "@pixelcase.tn", "media_buyer", "replied", [1, 1, 0, 0], "test", "Send two case studies", -1, [["dm", -9], ["replied", -4]]],
+      ["Gabes Henna Co", "Salwa", "@gabes.henna", "teardown_dm", "replied", [1, 0, 0, 0], "test", "Ask for orders per week", 3, [["dm", -6], ["replied", -1]]],
+      ["Carthage Kids", "Aymen", "@carthage.kids", "referral", "call", [1, 1, 1, 0], "monthly8", "Call Tuesday 15:00", 2, [["dm", -12], ["replied", -9], ["call", -1]]],
+      ["Hammam Glow", "Emna", "@hammam.glow", "warm", "call", [1, 1, 1, 1], "monthly8", "Discovery call, bring the Kelibia results", 0, [["dm", -10], ["replied", -6], ["call", -3]]],
+      ["Sousse Surf Shop", "Firas", "@soussesurf", "media_buyer", "call", [1, 1, 0, 0], "test", "Call after their stock arrives", 6, [["dm", -15], ["replied", -11], ["call", -5]]],
+      ["Bled Coffee Roasters", "Nizar", "@bled.roasters", "warm", "proposal", [1, 1, 1, 1], "campaign", "Proposal follow-up", -2, [["dm", -21], ["replied", -18], ["call", -12], ["proposal", -6]]],
+      ["Lumiere Lingerie", "Sarra", "@lumiere.lingerie", "referral", "proposal", [1, 1, 1, 1], "monthly12", "Answer questions on the 3-month minimum", 1, [["dm", -18], ["replied", -15], ["call", -9], ["proposal", -3]]],
+      ["Harissa House", "Mourad", "@harissa.house", "teardown_dm", "won", [1, 1, 1, 1], "monthly12", "", null, [["dm", -40], ["replied", -35], ["call", -25], ["proposal", -18], ["won", -9]]],
+      ["Zina Hair", "Asma", "@zina.hair", "inbound", "won", [1, 1, 0, 1], "test", "", null, [["dm", -20], ["call", -12], ["proposal", -8], ["won", -4]]],
+      ["Djerba Dates", "Bilel", "@djerba.dates", "media_buyer", "won", [1, 1, 1, 1], "test", "", null, [["dm", -30], ["replied", -26], ["call", -19], ["proposal", -14], ["won", -10]]],
+      ["Bambino Tunis", "Houda", "@bambino.tunis", "referral", "won", [1, 0, 0, 1], "test", "", null, [["dm", -11], ["call", -6], ["proposal", -4], ["won", -2]]],
+      ["Kairouan Rugs", "Habib", "@kairouan.rugs", "teardown_dm", "lost", [1, 0, 0, 0], "test", "", null, [["dm", -40], ["replied", -36], ["lost", -30]], "no_budget"],
+      ["Monastir Swim", "Hiba", "@monastir.swim", "teardown_dm", "lost", [1, 1, 0, 0], "test", "", null, [["dm", -50], ["lost", -35]], "no_reply"],
+      ["Argan Bloom", "Meriem", "@argan.bloom", "warm", "lost", [1, 1, 1, 0], "test", "", null, [["dm", -215], ["call", -208], ["proposal", -204], ["lost", -200]], "went_elsewhere"]
     ];
     LD.forEach(function (x, k) {
       var owner = k % 5 === 3 ? "mheni" : "mmoh", last = x[9][x[9].length - 1];
@@ -331,12 +331,12 @@
     // ================= quotes =================
     function invOf(pid) { return C.invoices.filter(function (i) { return i.projectId === pid && i.kind !== "extra"; }).map(function (i) { return i.id; }); }
     var QS = [
-      { clientId: "cmed", projectId: "pmedk1", pack: "SKIN10", title: "SKIN 10 · monthly creative", lines: [{ label: "SKIN 10: one shoot a month, 10 reels, 20 hook variations, 3 carousels", qty: 1, price: 3500 }], amount: 3500, status: "accepted", validUntil: d(4), sentOn: d(-14), acceptedOn: d(-8), note: "3-month minimum, paid at the start of each month.", invoiceIds: invOf("pmedk1") },
-      { clientId: "char", projectId: "phar1", pack: "SKIN20", title: "SKIN 20 · monthly creative", lines: [{ label: "SKIN 20: one long shoot a month, 20 reels, 40 hook variations, 6 carousels", qty: 1, price: 5000 }], amount: 5000, status: "accepted", validUntil: d(-2), sentOn: d(-16), acceptedOn: d(-9), note: "", invoiceIds: invOf("phar1") },
-      { clientId: "cbam", projectId: "pbam", pack: "GRIP", title: "GRIP · First campaign", lines: [{ label: "GRIP pack: 2 angles, 4 reels, 8 hook variations", qty: 1, price: 1500 }], amount: 1500, status: "accepted", validUntil: d(10), sentOn: d(-4), acceptedOn: d(-2), note: "", invoiceIds: invOf("pbam") },
-      { clientId: "cbyr", projectId: "", pack: "GRIP", title: "GRIP · Iftar menu", lines: [{ label: "GRIP pack: 2 angles, 4 reels, 8 hook variations", qty: 1, price: 1500 }, { label: "Menu carousel, 6 slides", qty: 1, price: 240 }], amount: 1740, status: "sent", validUntil: d(9), sentOn: d(-4), acceptedOn: "", note: "Shoot before the menu goes live.", invoiceIds: [] },
-      { clientId: "csid", projectId: "", pack: "SKIN10", title: "SKIN 10 · renewal", lines: [{ label: "SKIN 10: 3 more months", qty: 3, price: 3500 }], amount: 10500, status: "expired", validUntil: d(-20), sentOn: d(-34), acceptedOn: "", note: "New media buyer on their side.", invoiceIds: [] },
-      { clientId: "carg", projectId: "", pack: "GRIP", title: "GRIP · Second batch", lines: [{ label: "GRIP pack: 2 angles, 4 reels, 8 hook variations", qty: 1, price: 1500 }], amount: 1500, status: "declined", validUntil: d(-196), sentOn: d(-210), acceptedOn: "", note: "Went with another studio.", invoiceIds: [] }
+      { clientId: "cmed", projectId: "pmedk1", pack: "monthly8", title: "SKIN 10 · monthly creative", lines: [{ label: "SKIN 10: one shoot a month, 10 reels, 20 hook variations, 3 carousels", qty: 1, price: 3500 }], amount: 3500, status: "accepted", validUntil: d(4), sentOn: d(-14), acceptedOn: d(-8), note: "3-month minimum, paid at the start of each month.", invoiceIds: invOf("pmedk1") },
+      { clientId: "char", projectId: "phar1", pack: "monthly12", title: "SKIN 20 · monthly creative", lines: [{ label: "SKIN 20: one long shoot a month, 20 reels, 40 hook variations, 6 carousels", qty: 1, price: 5000 }], amount: 5000, status: "accepted", validUntil: d(-2), sentOn: d(-16), acceptedOn: d(-9), note: "", invoiceIds: invOf("phar1") },
+      { clientId: "cbam", projectId: "pbam", pack: "test", title: "GRIP · First campaign", lines: [{ label: "GRIP pack: 2 angles, 4 reels, 8 hook variations", qty: 1, price: 1500 }], amount: 1500, status: "accepted", validUntil: d(10), sentOn: d(-4), acceptedOn: d(-2), note: "", invoiceIds: invOf("pbam") },
+      { clientId: "cbyr", projectId: "", pack: "test", title: "GRIP · Iftar menu", lines: [{ label: "GRIP pack: 2 angles, 4 reels, 8 hook variations", qty: 1, price: 1500 }, { label: "Menu carousel, 6 slides", qty: 1, price: 240 }], amount: 1740, status: "sent", validUntil: d(9), sentOn: d(-4), acceptedOn: "", note: "Shoot before the menu goes live.", invoiceIds: [] },
+      { clientId: "csid", projectId: "", pack: "monthly8", title: "SKIN 10 · renewal", lines: [{ label: "SKIN 10: 3 more months", qty: 3, price: 3500 }], amount: 10500, status: "expired", validUntil: d(-20), sentOn: d(-34), acceptedOn: "", note: "New media buyer on their side.", invoiceIds: [] },
+      { clientId: "carg", projectId: "", pack: "test", title: "GRIP · Second batch", lines: [{ label: "GRIP pack: 2 angles, 4 reels, 8 hook variations", qty: 1, price: 1500 }], amount: 1500, status: "declined", validUntil: d(-196), sentOn: d(-210), acceptedOn: "", note: "Went with another studio.", invoiceIds: [] }
     ];
     var qMax = {};
     C.quotes.forEach(function (q) { var mm = /^Q-(\d{4})-(\d+)$/.exec(q.no || ""); if (mm) qMax[mm[1]] = Math.max(qMax[mm[1]] || 0, +mm[2]); });
@@ -346,7 +346,7 @@
       if (q.acceptedOn) q.log.push({ at: q.acceptedOn + "T16:00", who: "mmoh", text: "Accepted" });
       C.quotes.push(q);
     });
-    C.quotes.push({ id: id("q"), no: "", clientId: "cfid", projectId: "", pack: "SEASON", title: "SEASON · Gifting season", lines: [{ label: "SEASON pack: 4 angles, 16 reels, 32 hook variations, 4 carousels", qty: 1, price: 4800 }], amount: 4800,
+    C.quotes.push({ id: id("q"), no: "", clientId: "cfid", projectId: "", pack: "campaign", title: "SEASON · Gifting season", lines: [{ label: "SEASON pack: 4 angles, 16 reels, 32 hook variations, 4 carousels", qty: 1, price: 4800 }], amount: 4800,
       status: "draft", validUntil: d(21), sentOn: "", acceptedOn: "", note: "Leila wants to come back before the holidays.", invoiceIds: [], log: [L("Draft started", 1)] });
 
     // ================= expenses =================
@@ -427,7 +427,7 @@
       ["pmed3", "Book two models", "masst", -1, -2],
       ["pmed2", "Upload finals to Drive", "medit", -6, -6],
       ["pmed2", "Ask for Ads Manager access", "mskan", 2, null],
-      ["pmed2", "Pay Mohamed's share for Back to school", "mheni", 4, null],
+      ["pmed2", "Pay the partner share for Back to school", "mheni", 4, null],
       ["pdje", "Book ferry and hotel for Djerba", "masst", 5, null],
       ["pdje", "Confirm product samples arrive a week before", "mmoh", 10, null],
       ["pdje", "Storyboard the palm harvest reel", "mheni", 8, null],
@@ -531,7 +531,7 @@
       [4, "09:05", "phar1", "mmoh", "Month 1 paid. Mourad is excited, yalla."],
       [4, "09:30", "pcab2", "mmoh", "Cable Corner balance is now overdue. Reminder sent on WhatsApp."],
       [4, "09:31", "pcab2", "mheni", "Merci. Keep it friendly, they always pay in the end."],
-      [4, "14:22", "general", "mskan", "Ads Manager access for Medina still missing. @Mohamed can you ask Yasmine?"],
+      [4, "14:22", "general", "mskan", "Ads Manager access for Medina still missing. Can you ask Yasmine?"],
       [4, "14:40", "general", "mmoh", "Asked. She'll add you tonight."],
       [3, "08:30", "phar1", "mheni", "Plan approved by Mourad. Shoot in a week, kitchen studio."],
       [3, "10:12", "general", "mmoh", "Zina Hair deposit invoice sent. Bambino onboarding call tomorrow."],
@@ -553,7 +553,7 @@
       [0, "08:40", "general", "mheni", "Good morning. Today: Medina shot list, Bambino call, Cable Corner follow-up."],
       [0, "09:05", "pcab2", "mmoh", "Called Anis. He says the transfer goes out Friday. Inchallah."],
       [0, "09:30", "pkel2", "mamira", "Taking reels 6 to 10. Will share by Thursday."],
-      [0, "10:10", "general", "mskan", "Medina access works now. Merci @Mohamed."],
+      [0, "10:10", "general", "mskan", "Medina access works now. Merci."],
       [0, "10:30", "phar1", "mwalid", "Lights tested in the kitchen studio. Bringing the slider."],
       [0, "11:02", "general", "mmoh", "Hammam Glow call at 15:00. Bringing the Kelibia results."],
       [0, "11:20", "pmed3", "mmoh", "300 DT in cash from Yasmine for the balance. Rest after the shoot."]

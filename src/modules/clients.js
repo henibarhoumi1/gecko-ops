@@ -1,4 +1,4 @@
-/* GECKO Ops · module: clients (who we work for, what they owe, their SKIN contracts) */
+/* GECKO Ops · module: clients (who we work for, what they owe, their monthly contracts) */
 (function (GK) {
   "use strict";
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
@@ -20,24 +20,24 @@
     cl_assign_hint: ["Editors and assistants only see their assigned clients and projects.", "Les éditeurs et assistants ne voient que les clients et projets qui leur sont affectés."],
     cl_assign_client: ["Client access", "Accès client"], cl_assign_project: ["Project access", "Accès projet"],
     cl_assign_invite: ["Invite editors or assistants before assigning work.", "Invitez des éditeurs ou assistants avant d'affecter du travail."],
-    cl_skin: ["SKIN", "SKIN"], cl_k_clients: ["Clients", "Clients"], cl_k_skin: ["Active SKIN contracts", "Contrats SKIN actifs"],
+    cl_skin: ["Monthly", "Mensuel"], cl_k_clients: ["Clients", "Clients"], cl_k_skin: ["Active monthly contracts", "Contrats mensuels actifs"],
     cl_k_inv: ["Invoiced to date", "Facturé à ce jour"], cl_k_owed: ["Still owed", "Reste dû"],
     cl_back: ["All clients", "Tous les clients"], cl_wa: ["Copy WhatsApp", "Copier le WhatsApp"], cl_no_wa: ["No WhatsApp number yet.", "Pas encore de numéro WhatsApp."],
     cl_details: ["Details", "Coordonnées"], cl_projects: ["Projects", "Projets"], cl_invoices: ["Invoices", "Factures"], cl_draft_no: ["Draft", "Brouillon"],
     cl_inv_no: ["No.", "N°"], cl_inv_what: ["What", "Objet"], cl_inv_amount: ["Amount", "Montant"], cl_inv_left: ["Left", "Reste"],
-    cl_contracts: ["SKIN contracts", "Contrats SKIN"], cl_start_skin: ["Start a SKIN contract", "Démarrer un contrat SKIN"],
-    cl_skin_none: ["No monthly contract. SKIN 10 or SKIN 20, three months minimum.", "Pas de contrat mensuel. SKIN 10 ou SKIN 20, trois mois minimum."],
+    cl_contracts: ["Monthly contracts", "Contrats mensuels"], cl_start_skin: ["Start a monthly contract", "Démarrer un contrat mensuel"],
+    cl_skin_none: ["No monthly contract yet. Three months minimum.", "Pas encore de contrat mensuel. Trois mois minimum."],
     cl_skin_pack: ["Pack", "Pack"], cl_skin_start: ["First month", "Premier mois"], cl_skin_min: ["Minimum 3 months. The client can stop after the third month.", "Minimum 3 mois. Le client peut arrêter après le troisième mois."],
-    cl_skin_title: ["SKIN", "SKIN"], cl_skin_acc: ["contract", "contrat"],
-    cl_skin_has: ["This client already has an active SKIN contract.", "Ce client a déjà un contrat SKIN actif."],
+    cl_skin_title: ["Monthly contract", "Contrat mensuel"], cl_skin_acc: ["contract", "contrat"],
+    cl_skin_has: ["This client already has an active monthly contract.", "Ce client a déjà un contrat mensuel actif."],
     cl_skin_months: ["{n} of 3 minimum months made", "{n} mois créés sur 3 minimum"], cl_skin_from: ["From {m}", "Depuis {m}"],
     cl_skin_end_min: ["Earliest end: {m}", "Fin au plus tôt : {m}"], cl_skin_active: ["Active", "Actif"], cl_skin_ended: ["Ended", "Terminé"],
     cl_skin_end: ["End contract", "Arrêter le contrat"], cl_skin_end_wait: ["It can end once 3 months exist ({n} so far).", "Arrêt possible quand 3 mois existent ({n} pour l'instant)."],
-    cl_skin_end_q: ["End this SKIN contract?", "Arrêter ce contrat SKIN ?"], cl_skin_end_body: ["No new monthly projects will be due. Existing months stay as they are.", "Plus aucun mois ne sera à créer. Les mois existants restent tels quels."],
-    cl_skin_months_link: ["Monthly projects", "Projets mensuels"], cl_skin_started: ["SKIN contract started", "Contrat SKIN démarré"],
+    cl_skin_end_q: ["End this monthly contract?", "Arrêter ce contrat mensuel ?"], cl_skin_end_body: ["No new monthly projects will be due. Existing months stay as they are.", "Plus aucun mois ne sera à créer. Les mois existants restent tels quels."],
+    cl_skin_months_link: ["Monthly projects", "Projets mensuels"], cl_skin_started: ["Monthly contract started", "Contrat mensuel démarré"],
     cl_skin_month_n: ["Month {n}", "Mois {n}"],
     cl_log_added: ["added", "ajouté"], cl_log_edited: ["details edited", "coordonnées modifiées"],
-    cl_log_skin: ["SKIN contract started ({p}, {m})", "Contrat SKIN démarré ({p}, {m})"], cl_log_skin_end: ["SKIN contract ended", "Contrat SKIN arrêté"],
+    cl_log_skin: ["Monthly contract started ({p}, {m})", "Contrat mensuel démarré ({p}, {m})"], cl_log_skin_end: ["Monthly contract ended", "Contrat mensuel arrêté"],
     cl_del: ["Delete client", "Supprimer le client"], cl_del_founder: ["Only the founder can delete a client.", "Seul le fondateur peut supprimer un client."],
     cl_del_blocked: ["This client has projects or invoices. They stay for the books.", "Ce client a des projets ou des factures. Ils restent pour la comptabilité."],
     cl_del_q: ["Delete this client?", "Supprimer ce client ?"], cl_del_body: ["They have no projects and no invoices. This can't be undone.", "Aucun projet ni facture. C'est définitif."],
@@ -253,15 +253,15 @@
     }, t("del"));
   });
 
-  // ---------- SKIN contracts ----------
+  // ---------- monthly contracts ----------
   GK.act("cl-skin-new", function (el) {
     if (!canEdit()) return ui.toast(t("cl_no_edit"));
     var c = S.get("clients", el.dataset.id); if (!c) return;
-    var packs = ["SKIN10", "SKIN20"];
+    var packs = m.packKeys().filter(function (k) { return m.pack(k).monthly; });
     ui.modal({
       title: t("cl_skin_title"), accent: t("cl_skin_acc"), label: c.brand,
       body: '<div class="form">' +
-        ui.field({ id: "clk-pack", label: t("cl_skin_pack"), type: "select", value: "SKIN10", options: packs.map(function (k) { return [k, m.pack(k).name + " · " + u.money(m.pack(k).price) + " " + t("per_month")]; }) }) +
+        ui.field({ id: "clk-pack", label: t("cl_skin_pack"), type: "select", value: packs[0], options: packs.map(function (k) { return [k, m.pack(k).name + " · " + u.money(m.pack(k).price) + " " + t("per_month")]; }) }) +
         ui.field({ id: "clk-start", label: t("cl_skin_start"), type: "month", value: u.month(u.today()) }) + "</div>" +
         '<p class="note" style="margin:0">' + esc(t("cl_skin_min")) + "</p>" +
         '<p class="small muted" style="margin:0">' + esc(t("no_discount")) + "</p>",

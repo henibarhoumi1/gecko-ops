@@ -8,7 +8,7 @@
     fi_ov_recv: ["Receivables", "À recevoir"], fi_ov_recv_n: ["{n} invoices open", "{n} factures ouvertes"], fi_ov_recv_1: ["1 invoice open", "1 facture ouverte"],
     fi_ov_over: ["Overdue", "En retard"], fi_ov_over_n: ["{n} invoices late", "{n} factures en retard"], fi_ov_over_1: ["1 invoice late", "1 facture en retard"], fi_ov_over_0: ["Nothing late", "Rien en retard"],
     fi_ov_cap: ["Cap used", "Plafond utilisé"], fi_ov_cap_n: ["{a} of {b}, {y}", "{a} sur {b}, {y}"],
-    fi_ov_mrr: ["Monthly retainers", "Récurrent mensuel"], fi_ov_mrr_n: ["active SKIN contracts", "contrats SKIN actifs"],
+    fi_ov_mrr: ["Monthly retainers", "Récurrent mensuel"], fi_ov_mrr_n: ["active monthly contracts", "contrats mensuels actifs"],
     fi_ov_run: ["Runway", "Autonomie"], fi_ov_run_v: ["{n} months", "{n} mois"], fi_ov_run_n: ["at the last 3 months' spending", "au rythme des 3 derniers mois"],
     fi_ov_run_none: ["Set the opening cash in Cash forecast", "Renseignez la trésorerie de départ dans Prévision"],
     fi_ov_inout: ["Money in and money out", "Entrées et sorties"], fi_ov_inout_sub: ["Last 6 months. Cash received (net) against everything paid out. Estimate.", "6 derniers mois. Encaissements (net) face à tout ce qui sort. Estimation."],

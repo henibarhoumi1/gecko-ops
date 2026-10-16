@@ -21,8 +21,8 @@
     C.clients = (C.clients || []).concat([{ id: "cdz", brand: "Dar Zaghouan", code: "ZAGHOUAN", contact: "Wided", phone: "+216 71 000 505", whatsapp: "+216 71 000 505", email: "", sector: "Home decor",
       taxId: "9988776/D/M/000", buyer: "In-house", baseline: { v: 12, date: y1 + "-08-20" }, notes: "Two projects last year, paid on time." }]);
     function closed(id, name, plan, shoot, mohamed, payout) {
-      return { id: id, clientId: "cdz", contractId: "", month: 0, name: name, pack: "GRIP", stage: "done", planApproved: true, planApprovedOn: plan, shootDate: shoot, format: "9x16", mohamed: mohamed,
-        onboarding: [true, true, true, true, true, true, true], angles: [], reels: [], carousels: [], costs: m.estimateCosts("GRIP"),
+      return { id: id, clientId: "cdz", contractId: "", month: 0, name: name, pack: "test", stage: "done", planApproved: true, planApprovedOn: plan, shootDate: shoot, format: "9x16", mohamed: mohamed,
+        onboarding: [true, true, true, true, true, true, true], angles: [], reels: [], carousels: [], costs: m.estimateCosts("test"),
         report: { metric: "cpp", now: "5.8", why: {}, more: "", kill: "", next: "" }, payout: payout, log: [] };
     }
     C.projects = (C.projects || []).concat([
@@ -58,9 +58,9 @@
 
     // ---- quotes: one draft, one sent, one accepted and already converted to the Kahwa Lab project's draft invoices
     C.quotes = (C.quotes || []).concat([
-      { id: "fq1", no: "Q-" + y + "-001", clientId: "ckah", projectId: "pkah", pack: "SEASON", title: "SEASON · Winter season", lines: [{ label: "SEASON pack: 4 angles, 16 reels, 32 hook variations, 4 carousels", qty: 1, price: 4800 }], amount: 4800,
+      { id: "fq1", no: "Q-" + y + "-001", clientId: "ckah", projectId: "pkah", pack: "campaign", title: "SEASON · Winter season", lines: [{ label: "SEASON pack: 4 angles, 16 reels, 32 hook variations, 4 carousels", qty: 1, price: 4800 }], amount: 4800,
         status: "accepted", validUntil: d(2), sentOn: d(-12), acceptedOn: d(-6), note: "", invoiceIds: ["i9", "i10"], log: [] },
-      { id: "fq2", no: "Q-" + y + "-002", clientId: "catl", projectId: "", pack: "GRIP", title: "GRIP · Drop 04", lines: [{ label: "GRIP pack: 2 angles, 4 reels, 8 hook variations", qty: 1, price: 1500 }, { label: "Extra: 2 more hook variations", qty: 1, price: 0 }], amount: 1500,
+      { id: "fq2", no: "Q-" + y + "-002", clientId: "catl", projectId: "", pack: "test", title: "GRIP · Drop 04", lines: [{ label: "GRIP pack: 2 angles, 4 reels, 8 hook variations", qty: 1, price: 1500 }, { label: "Extra: 2 more hook variations", qty: 1, price: 0 }], amount: 1500,
         status: "sent", validUntil: d(10), sentOn: d(-4), acceptedOn: "", note: "", invoiceIds: [], log: [] },
       { id: "fq3", no: "", clientId: "cjas", projectId: "", pack: "", title: "Ramadan teaser", lines: [{ label: "Teaser reel, 15 seconds", qty: 2, price: 300 }, { label: "Captions in French and Arabic", qty: 1, price: 120 }], amount: 720,
         status: "draft", validUntil: d(14), sentOn: "", acceptedOn: "", note: "Shoot on the same day as the Eid launch re-cuts.", invoiceIds: [], log: [] }

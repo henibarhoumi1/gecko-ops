@@ -20,23 +20,23 @@
     // packs
     se_packs: ["Packs", "Packs"],
     se_packs_hint: ["Prices are what the client pays, excluding stamp duty. Cost estimate is what a pack costs us to make; the rates below give a suggestion.", "Les prix sont ceux payés par le client, hors timbre. L'estimation de coût est ce que le pack nous coûte ; les tarifs ci-dessous donnent une suggestion."],
-    se_c_pack: ["Pack", "Pack"], se_c_name: ["Name", "Nom"], se_c_price: ["Price (DT)", "Prix (DT)"], se_c_monthly: ["Monthly", "Mensuel"],
+    se_c_pack: ["Pack", "Pack"], se_c_name: ["Name", "Nom"], se_c_price: ["Price (TND)", "Prix (TND)"], se_c_monthly: ["Monthly", "Mensuel"],
     se_c_angles: ["Angles", "Angles"], se_c_reels: ["Reels", "Reels"], se_c_var: ["Variations", "Variations"], se_c_car: ["Carousels", "Carrousels"],
-    se_c_cost: ["Cost estimate (DT)", "Coût estimé (DT)"], se_from_rates: ["rates say {v}", "selon les tarifs : {v}"],
+    se_c_cost: ["Cost estimate (TND)", "Coût estimé (TND)"], se_from_rates: ["rates say {v}", "selon les tarifs : {v}"],
     se_save_packs: ["Save packs", "Enregistrer les packs"], se_reset_packs: ["Reset packs to defaults", "Remettre les packs par défaut"],
     se_reset_q: ["Reset to defaults?", "Remettre par défaut ?"],
     se_reset_packs_b: ["Pack names, prices and contents go back to the business model values. Existing projects keep their pack key.", "Les noms, prix et contenus des packs reviennent aux valeurs du business model. Les projets existants gardent leur pack."],
     se_reset_rates_b: ["Cost rates and money rules go back to the business model values.", "Les tarifs et les règles d'argent reviennent aux valeurs du business model."],
     // rates
-    se_rates: ["Cost rates (DT)", "Tarifs de coûts (DT)"],
+    se_rates: ["Cost rates (TND)", "Tarifs de coûts (TND)"],
     se_r_heniDay: ["Heni, shoot day", "Heni, journée de tournage"], se_r_reel: ["Reel edit, each", "Montage d'un reel"], se_r_gear: ["Gear rental, full day", "Location matériel, journée"],
     se_r_assistant: ["Assistant, day", "Assistant, journée"], se_r_transport: ["Transport and small buys, day", "Transport et petits achats, journée"],
     se_r_recut: ["Hook re-cut, each", "Re-montage d'une accroche"], se_r_carousel: ["Carousel design, each", "Design d'un carrousel"], se_r_report: ["Monthly report", "Rapport mensuel"],
     // rules
     se_rules: ["Money rules", "Règles d'argent"],
-    se_u_cap: ["Yearly invoicing cap (DT)", "Plafond annuel de facturation (DT)"], se_u_reserve: ["Reserve (% of revenue)", "Réserve (% du chiffre)"],
-    se_u_commission: ["Mohamed's commission (% of profit)", "Commission de Mohamed (% du bénéfice)"], se_u_salary: ["Heni's salary (DT / month)", "Salaire de Heni (DT / mois)"],
-    se_u_stamp: ["Stamp duty per invoice (DT)", "Droit de timbre par facture (DT)"], se_u_withholding: ["Withholding by company clients (%)", "Retenue à la source des sociétés (%)"],
+    se_u_cap: ["Yearly invoicing cap (TND)", "Plafond annuel de facturation (TND)"], se_u_reserve: ["Reserve (% of revenue)", "Réserve (% du chiffre)"],
+    se_u_commission: ["Partner share (% of profit)", "Part partenaire (% du bénéfice)"], se_u_salary: ["Owner salary (TND / month)", "Salaire du fondateur (TND / mois)"],
+    se_u_stamp: ["Stamp duty per invoice (TND)", "Droit de timbre par facture (TND)"], se_u_withholding: ["Withholding by company clients (%)", "Retenue à la source des sociétés (%)"],
     se_u_dueDays: ["Invoices due after (days)", "Échéance des factures (jours)"],
     se_u_extrasDirect: ["Extras (studio, talent) are invoiced directly by the supplier to the client", "Les extras (studio, talents) sont facturés directement au client par le fournisseur"],
     se_acct: ["Accountant to confirm.", "À confirmer par le comptable."],
@@ -63,7 +63,7 @@
     se_coll_ideas: ["creative ideas and revisions", "idées créatives et révisions"], se_coll_boards: ["whiteboards", "tableaux blancs"], se_coll_shares: ["client shares", "partages client"],
     se_coll_feedback: ["client feedback", "retours client"], se_coll_expenses: ["expenses", "dépenses"], se_coll_quotes: ["quotes", "devis"],
     se_sharing: ["Sharing with the team", "Partager avec l'équipe"],
-    se_share_body: ["To let Mohamed and the freelancers work in GECKO Ops, share this page with them as Contributor. Viewers can only read. The first time they open it, each person picks their name and role.", "Pour que Mohamed et les freelances travaillent dans GECKO Ops, partagez cette page avec eux en Contributeur. Les Lecteurs peuvent seulement consulter. À la première ouverture, chacun choisit son nom et son rôle."],
+    se_share_body: ["To let the team and freelancers work in GECKO Ops, share this page with them as Contributor. Viewers can only read. The first time they open it, each person picks their name and role.", "Pour que l'équipe et les freelances travaillent dans GECKO Ops, partagez cette page avec eux en Contributeur. Les Lecteurs peuvent seulement consulter. À la première ouverture, chacun choisit son nom et son rôle."],
     se_lang_note: ["Language and theme are at the bottom of the menu.", "La langue et le thème sont en bas du menu."]
   });
 

@@ -29,7 +29,7 @@
     st_d_send: ["Send to project", "Envoyer au projet"], st_d_send_btn: ["Send to a project", "Envoyer à un projet"],
     st_d_send_note: ["Creates the angle if it is missing, then a reel with this hook and script.", "Crée l'angle s'il manque, puis un reel avec cette accroche et ce script."],
     st_d_send_need_ready: ["Only a ready idea can be sent.", "Seule une idée prête peut être envoyée."],
-    st_d_send_need_rights: ["Ask Heni or Mohamed to send it to the project.", "Demandez à Heni ou Mohamed de l'envoyer au projet."],
+    st_d_send_need_rights: ["Ask the owner or the Client Lead to send it to the project.", "Demandez au fondateur ou au responsable clients de l'envoyer au projet."],
     st_d_send_no_proj: ["This client has no project between onboarding and editing.", "Ce client n'a aucun projet entre le démarrage et le montage."],
     st_d_send_pick: ["Project", "Projet"], st_d_send_angle: ["Angle used: {a}", "Angle utilisé : {a}"], st_d_send_new_angle: ["Angle used: {a} (new)", "Angle utilisé : {a} (nouveau)"],
     st_d_send_go: ["Create the reel", "Créer le reel"], st_d_angle_default: ["General", "Général"],

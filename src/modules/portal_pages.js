@@ -55,8 +55,8 @@
     po_file_applied: ["Client feedback applied to {code} · v{version}.", "Retour client appliqué à {code} · v{version}."],
     po_file_snapshot_failed: ["The file state changed, but this client page could not be refreshed. Publish an update before relying on its displayed status.", "L'état du fichier a changé, mais cette page client n'a pas pu être actualisée. Publiez une mise à jour avant de vous fier à son statut affiché."],
     po_file_stale: ["This feedback does not match the current published file version. Publish the current file and ask the client to confirm again.", "Ce retour ne correspond pas à la version publiée actuelle. Publiez le fichier actuel et demandez une nouvelle confirmation au client."],
-    po_no_perm2: ["Only Heni and Mohamed manage client pages.", "Seuls Heni et Mohamed gèrent les pages client."],
-    po_no_perm3: ["Only Heni and Mohamed can approve a plan.", "Seuls Heni et Mohamed peuvent valider un plan."]
+    po_no_perm2: ["Only the owner and the Client Lead manage client pages.", "Seuls le fondateur et le responsable clients gèrent les pages client."],
+    po_no_perm3: ["Only the owner and the Client Lead can approve a plan.", "Seuls le fondateur et le responsable clients peuvent valider un plan."]
   });
 
   /** Stamp with seconds, so "edited after publishing" works inside the same minute. */

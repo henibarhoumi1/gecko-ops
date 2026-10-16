@@ -319,7 +319,7 @@
     return '<section class="panel"><div class="stack" style="gap:2px"><h3 class="sec" style="margin:0">' + esc(t("st_won_title")) + (brand ? " " + esc(t("st_won_for", { brand: brand })) : "") + '</h3><span class="small muted">' + esc(t("st_won_note")) + "</span></div>" +
       (list.length ? '<div class="list">' + list.map(function (h) {
         return '<div class="li" style="flex-wrap:wrap"><div class="stack" style="gap:2px;flex:1 1 220px"><span>“' + esc(h.text) + '”</span><span class="m">' +
-          esc(m.brand(h.project.clientId)) + " · " + esc(h.angle) + (h.cpp ? " · " + esc(u.dec(h.cpp)) + " DT " + esc(t("st_cpp")) : "") + "</span></div>" +
+          esc(m.brand(h.project.clientId)) + " · " + esc(h.angle) + (h.cpp ? " · " + esc(u.dec(h.cpp)) + " TND " + esc(t("st_cpp")) : "") + "</span></div>" +
           ui.btn(t("copy"), "st-copy-text", { cls: "ghost sm", data: { text: h.text } }) + "</div>";
       }).join("") + "</div>" : ui.empty(t("st_won_empty"))) + "</section>";
   }

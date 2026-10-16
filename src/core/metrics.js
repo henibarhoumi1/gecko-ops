@@ -1,6 +1,6 @@
 /* GECKO Ops · metrics. Read-only numbers computed from the store, shared by the dashboard, finance and reports.
    Everything here is an ESTIMATE built from the records: say so wherever it is shown.
-   Money out = actual expenses ledger (one-off + recurring) + Heni's salary + commissions paid.
+   Money out = actual expenses ledger (one-off + recurring) + Owner salary + commissions paid.
    Project cost-line estimates are used for planning and project profitability until explicitly reconciled to actual expenses. */
 (function (GK) {
   "use strict";
@@ -139,7 +139,7 @@
     var won = S.all("leads").filter(function (l) { return l.stage === "won"; }).length, lost = S.all("leads").filter(function (l) { return l.stage === "lost"; }).length;
     return won + lost ? won / (won + lost) * 100 : null;
   };
-  /** Monthly recurring revenue from active SKIN contracts. */
+  /** Monthly recurring revenue from active monthly contracts. */
   X.mrr = function () {
     return u.sum(S.all("contracts").filter(function (c) { return c.status === "active"; }), function (c) {
       return m.toTND(m.contractPrice(c), m.pack(c.pack).currency);

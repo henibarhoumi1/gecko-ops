@@ -27,7 +27,7 @@
     dv_changes_lab: ["What the client wants changed", "Ce que le client veut changer"],
     dv_changes_ph: ["Their words, short. The editor reads this.", "Leurs mots, en bref. Le monteur lit ceci."],
     dv_changes_saved: ["Sent back to editing as changes asked", "Renvoyé au montage en retouches"],
-    dv_no_rights: ["Only Heni or Mohamed record client feedback.", "Seuls Heni ou Mohamed notent les retours client."],
+    dv_no_rights: ["Only the owner or the Client Lead record client feedback.", "Seuls le fondateur ou le responsable clients notent les retours client."],
     dv_only_approved: ["Only approved files go to the client.", "Seuls les fichiers validés partent chez le client."],
     dv_not_ready: ["in progress", "en cours"], dv_no_files: ["No files planned yet.", "Aucun fichier prévu."],
     dv_msg_copied: ["Message copied. Paste it in WhatsApp.", "Message copié. Collez-le dans WhatsApp."],
