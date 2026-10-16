@@ -991,7 +991,7 @@ window.GK = window.GK || {};
     your_name: ["Your name", "Votre nom"], your_role: ["Your role", "Votre rôle"], join: ["Join", "Rejoindre"],
     // roles
     role_founder: ["Founder · creative director", "Fondateur · directeur créatif"], role_sales: ["Client Lead", "Responsable clients"],
-    role_editor: ["Freelance editor", "Monteur freelance"], role_assistant: ["Freelance assistant", "Assistant freelance"],
+    role_editor: ["Freelance editor", "Monteur freelance"], role_assistant: ["Production", "Production"],
     // project stages (crm-pipeline.md, after won)
     st_onboarding: ["Onboarding", "Démarrage"], st_scripting: ["Scripting", "Scripts"], st_pre_production: ["Pre-production", "Préproduction"], st_shoot: ["Shoot", "Tournage"],
     st_editing: ["Editing", "Montage"], st_client_review: ["Client review", "Revue client"], st_revisions: ["Revisions", "Retouches"], st_delivered: ["Delivered", "Livré"],
@@ -1573,8 +1573,11 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   // ---------- roles ----------
   M.ROLE_NAV = {
     founder: ["guide", "today", "tasks", "calendar", "inbox", "activity", "dashboard", "pipeline", "clients", "projects", "shootday", "production", "studio", "boards", "deliveries", "reports", "finance", "portal", "docs", "team", "settings"],
-    sales: ["guide", "today", "tasks", "calendar", "inbox", "pipeline", "clients", "projects", "shootday", "production", "studio", "boards", "deliveries", "reports", "portal", "docs", "team", "settings"],
-    editor: ["guide", "today", "tasks", "calendar", "inbox", "projects", "production", "studio", "boards", "deliveries", "docs", "team"],
+    // Client Lead: selling and client follow-up; no money screens
+    sales: ["guide", "today", "tasks", "calendar", "inbox", "pipeline", "clients", "projects", "shootday", "studio", "boards", "deliveries", "reports", "portal", "docs", "team"],
+    // Editors: only what they edit
+    editor: ["guide", "today", "tasks", "calendar", "inbox", "projects", "studio", "deliveries", "docs"],
+    // Production (manager or assistant): shoots, scripts, boards
     assistant: ["guide", "today", "tasks", "calendar", "inbox", "projects", "shootday", "production", "studio", "boards", "docs", "team"]
   };
   /** Permission check for the current viewer. */
@@ -2661,7 +2664,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   };
   X.workload = function () {
     var files = [];
-    S.all("projects").forEach(function (p) { if (p.stage !== "done") m.files(p).forEach(function (f) { files.push(f.item.status || "todo"); }); });
+    S.all("projects").forEach(function (p) { if (p.stage !== "retention") m.files(p).forEach(function (f) { files.push(f.item.status || "todo"); }); });
     return S.all("team").map(function (mem) {
       return { member: mem, tasks: S.all("tasks").filter(function (t) { return t.who === mem.id && !t.done; }).length, late: S.all("tasks").filter(function (t) { return t.who === mem.id && !t.done && t.due && t.due < u.today(); }).length };
     }).concat([{ filesOpen: files.filter(function (s) { return s !== "approved"; }).length, filesTotal: files.length }]);
@@ -2710,7 +2713,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       }
       if (w === 0) S.all("projects").forEach(function (p) { var c = m.commission(p); if (c.owed > 0) { row.out += c.owed; row.items.push({ k: "out", t: "Commission", v: c.owed }); } });
       S.all("projects").forEach(function (p) {
-        if (p.shootDate && p.shootDate >= from && p.shootDate < to && p.stage !== "done") {
+        if (p.shootDate && p.shootDate >= from && p.shootDate < to && p.stage !== "retention") {
           var projectExpenses = S.all("expenses").filter(function (e) { return e.projectId === p.id; });
           var c = m.unmatchedEstimateOf(p, projectExpenses);
           if (c) { row.out += c; row.items.push({ k: "out", t: m.projectLabel(p), v: c }); }
@@ -2827,7 +2830,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     return best;
   };
   X.clientHasOpenWork = function (c) {
-    return S.all("projects").some(function (p) { return p.clientId === c.id && p.stage !== "done"; }) || S.all("contracts").some(function (k) { return k.clientId === c.id && k.status === "active"; });
+    return S.all("projects").some(function (p) { return p.clientId === c.id && p.stage !== "retention"; }) || S.all("contracts").some(function (k) { return k.clientId === c.id && k.status === "active"; });
   };
   /** Clients at risk: a late payer, or a past client with nothing open and no activity for `quietDays` (up to a year). [{client, kind: "late"|"quiet", amount, late, idle}] */
   X.clientRisks = function (quietDays) {
@@ -2843,7 +2846,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
 
   /** "shoot" when the shoot date passed and the project is still before editing, "delivery" when a delivery date passed before delivery, else "". */
   X.projectLate = function (p) {
-    if (p.stage === "done") return "";
+    if (p.stage === "retention") return "";
     var td = u.today(), si = m.STAGES.indexOf(p.stage);
     if (p.shootDate && p.shootDate < td && si <= m.STAGES.indexOf("shoot")) return "shoot";
     var dd = String(p.deliveryDate || p.deliverBy || "").slice(0, 10);
@@ -2853,7 +2856,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   /** File counts by status across the given projects (default: not done): {todo, edit, review, revise, approved, total}. */
   X.fileCounts = function (projects) {
     var o = { todo: 0, edit: 0, review: 0, revise: 0, approved: 0, total: 0 };
-    (projects || S.all("projects").filter(function (p) { return p.stage !== "done"; })).forEach(function (p) {
+    (projects || S.all("projects").filter(function (p) { return p.stage !== "retention"; })).forEach(function (p) {
       m.files(p).forEach(function (f) { var s = f.item.status || "todo"; if (o[s] == null) s = "todo"; o[s]++; o.total++; });
     });
     return o;
@@ -3232,9 +3235,9 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   /** Shared status pills */
   UI.invPill = function (i) { var s = GK.m.invStatus(i); return UI.pill(t("inv_" + s), { paid: "done", overdue: "urgent", partial: "chroma", issued: "chroma", credited: "", credit: "", draft: "" }[s]); };
   /** Project stage: one dot colour per stage. Blocked by a gate shows urgent; closed shows green. */
-  var STAGE_DOT = { onboard: "", plan: "dot-yellow", shoot: "dot-pink", edit: "dot-blue", delivered: "dot-chroma", testing: "dot-gel", report: "dot-work", done: "" };
+  var STAGE_DOT = { onboarding: "", scripting: "dot-yellow", pre_production: "dot-yellow", shoot: "dot-pink", editing: "dot-blue", client_review: "dot-gel", revisions: "dot-gel", delivered: "dot-chroma", paid: "dot-work", retention: "" };
   UI.STAGE_DOT = STAGE_DOT;
-  UI.stagePill = function (p) { return UI.pill(t("st_" + p.stage), p.stage === "done" ? "green" : GK.m.gates(p).length ? "urgent" : STAGE_DOT[p.stage] || ""); };
+  UI.stagePill = function (p) { return UI.pill(t("st_" + p.stage), p.stage === "retention" ? "green" : GK.m.gates(p).length ? "urgent" : STAGE_DOT[p.stage] || ""); };
   /** Small coloured swatch for column headers. cls: a dot-* class. */
   UI.dot = function (cls) { return '<i class="sd ' + esc(cls || "") + '" aria-hidden="true"></i>'; };
   UI.filePill = function (s) { return UI.pill(t("s_" + (s || "todo")), { approved: "green", revise: "urgent", review: "yellow", edit: "blue" }[s] || ""); };
@@ -3733,7 +3736,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   function plural(key, n) { return n === 1 ? t(key + "_1") : n === 0 && GK.i18n.has(key + "_0") ? t(key + "_0") : t(key + "_n", { n: n }); }
   function me() { return GK.me() || { id: "", name: "", role: "founder" }; }
   function today() { return u.today(); }
-  function active(p) { return p.stage !== "done"; }
+  function active(p) { return p.stage !== "retention"; }
   function founderName() { var f = S.all("team").find(function (x) { return x.role === "founder"; }); return f ? f.name : "Heni"; }
   function salesName() { var f = S.all("team").find(function (x) { return x.role === "sales"; }); return f ? f.name : t("role_sales"); }
   function dueLabel(d) {
@@ -3758,7 +3761,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   function needs() {
     var out = [], td = today();
     var projects = S.all("projects");
-    projects.filter(function (p) { return p.stage === "plan" && !p.planApproved; }).forEach(function (p) {
+    projects.filter(function (p) { return p.stage === "scripting" && !p.planApproved; }).forEach(function (p) {
       out.push({ main: t("td_plan_wait"), meta: m.projectLabel(p), label: t("td_b_plan"), view: "projects", params: { id: p.id }, rec: t("td_r_plan"), icon: "projects" });
     });
     projects.filter(active).forEach(function (p) {
@@ -4231,7 +4234,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   // ---------- projects and production ----------
   GK.insight.projects = function (mode) {
     var today = td(), money = founder() || me().role === "sales", prod = mode === "production";
-    var active = S.all("projects").filter(function (p) { return p.stage !== "done"; });
+    var active = S.all("projects").filter(function (p) { return p.stage !== "retention"; });
     var late = active.filter(function (p) { return X.projectLate(p); });
     var fc = X.fileCounts(active), blocked = active.filter(function (p) { return m.gates(p).length; });
     var next7 = X.shootsIn(today, d(7)), prev7 = X.shootsIn(d(-7), d(-1));
@@ -4271,13 +4274,13 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
 
   // ---------- deliveries ----------
   GK.insight.deliveries = function () {
-    var money = founder(), STAGES = ["edit", "delivered", "testing"];
+    var money = founder(), STAGES = ["editing", "client_review", "revisions", "delivered"];
     var list = S.all("projects").filter(function (p) { return STAGES.indexOf(p.stage) > -1; });
     var wait = 0, appr = 0, lockedN = 0, ready = 0, lockedBy = [], waitBy = [];
     list.forEach(function (p) {
       var fs = m.files(p), ap = fs.filter(function (f) { return f.item.status === "approved"; }), ok = ap.filter(function (f) { return f.item.clientOk; });
       appr += ap.length; wait += ap.length - ok.length;
-      if (p.stage === "edit" && fs.length && ap.length === fs.length) ready++;
+      if (p.stage === "editing" && fs.length && ap.length === fs.length) ready++;
       if (!m.canFiles(p) && ap.length) { lockedN += ap.length; lockedBy.push({ p: p, n: ap.length }); }
       if (ap.length - ok.length > 0 && m.canFiles(p)) waitBy.push({ p: p, n: ap.length - ok.length });
     });
@@ -4849,7 +4852,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   /** Issued invoices before stamp, credit notes included (they carry a negative amount). Same basis as Finance. */
   function invoiced(c) { return u.sum(invsOf(c), m.invoiceTurnover); }
   function owed(c) { return u.sum(invsOf(c).filter(billable), m.invBalance); }
-  function activeProjects(c) { return projsOf(c).filter(function (p) { return p.stage !== "done"; }); }
+  function activeProjects(c) { return projsOf(c).filter(function (p) { return p.stage !== "retention"; }); }
   function activeContract(c) { return contractsOf(c).filter(function (k) { return k.status === "active"; })[0] || null; }
 
   // ---------- list ----------
@@ -4893,7 +4896,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       (canEdit() ? '<div class="row" style="justify-content:flex-end">' + ui.btn(t("save"), "cl-save", { cls: "primary", data: { id: c.id } }) + "</div>" : "") + "</div>";
   }
   function projectsPanel(c) {
-    var ps = projsOf(c).sort(u.by(function (p) { return (p.stage === "done" ? "1" : "0") + (p.shootDate || ""); }));
+    var ps = projsOf(c).sort(u.by(function (p) { return (p.stage === "retention" ? "1" : "0") + (p.shootDate || ""); }));
     return '<div class="panel"><div class="panel-h"><h2 class="sec">' + esc(t("cl_projects")) + '</h2><span class="small muted num">' + ps.length + "</span></div>" +
       (ps.length ? '<div class="list">' + ps.map(function (p) {
         return '<div class="li click" tabindex="0" data-a="cl-proj" data-id="' + esc(p.id) + '"><div class="stack" style="gap:2px"><strong>' + esc(p.name) + '</strong><span class="m">' +
@@ -5304,7 +5307,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     var f = params.filter || "all";
     var all = S.all("projects");
     var list = all.filter(function (p) { return f === "moh" ? hasShare(p) : f === "skin" ? isMonthly(p) : true; });
-    var active = all.filter(function (p) { return p.stage !== "done"; });
+    var active = all.filter(function (p) { return p.stage !== "retention"; });
     var blocked = active.filter(function (p) { return m.gates(p).length; });
     var h = ui.head({
       label: t("nav_projects"), title: t("pj_title"), accent: t("pj_accent"),
@@ -5551,7 +5554,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       var p = params.id ? m.project(params.id) : null;
       return p ? detail(p) : board(params);
     },
-    count: function () { return S.all("projects").filter(function (p) { return p.stage !== "done"; }).length || ""; }
+    count: function () { return S.all("projects").filter(function (p) { return p.stage !== "retention"; }).length || ""; }
   });
 
   // ---------- New project (also used by other modules) ----------
@@ -6271,7 +6274,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   }
   function inScope(p) {
     if (STAGES.indexOf(stageKey(p)) > -1) return true;
-    return p.stage === "done" && m.files(p).length > 0 && lastTouch(p) >= u.addDays(u.today(), -30);
+    return p.stage === "retention" && m.files(p).length > 0 && lastTouch(p) >= u.addDays(u.today(), -30);
   }
   function projects() {
     var order = { editing: 0, client_review: 1, revisions: 2, delivered: 3, paid: 4, retention: 5 };
@@ -6537,7 +6540,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     var id = ui.p("reports").projectId;
     var p = list.find(function (x) { return x.id === id; });
     if (p) return p;
-    return list.find(function (x) { return x.stage === "testing"; }) || list[0] || null;
+    return list.find(function (x) { return x.stage === "delivered"; }) || list[0] || null;
   }
   function monthOf(p) {
     var c = m.contractOf(p);
@@ -6729,7 +6732,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       return h;
     },
     count: function () {
-      var n = S.all("projects").filter(function (p) { return p.stage === "testing" && !hookRows(p).some(hasNumbers); }).length;
+      var n = S.all("projects").filter(function (p) { return p.stage === "delivered" && !hookRows(p).some(hasNumbers); }).length;
       return n || "";
     }
   });
@@ -8777,7 +8780,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   function clientsList() { return S.all("clients").sort(function (a, b) { return String(a.brand).localeCompare(String(b.brand)); }); }
   function projectsOf(c) {
     var all = S.all("projects").filter(function (p) { return p.clientId === c.id; });
-    var cur = all.filter(function (p) { return p.stage !== "done"; }).sort(u.by(function (p) { return SI(p.stage); }));
+    var cur = all.filter(function (p) { return p.stage !== "retention"; }).sort(u.by(function (p) { return SI(p.stage); }));
     if (cur.length) return cur;
     var done = all.sort(u.by(function (p) { return p.shootDate || ""; }, "desc"));
     return done.slice(0, 1);
@@ -8786,7 +8789,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     var list = clientsList(), id = ui.p("portal").clientId;
     var c = list.find(function (x) { return x.id === id; });
     if (c) return c;
-    return list.find(function (x) { return S.all("projects").some(function (p) { return p.clientId === x.id && p.stage !== "done"; }); }) || list[0] || null;
+    return list.find(function (x) { return S.all("projects").some(function (p) { return p.clientId === x.id && p.stage !== "retention"; }); }) || list[0] || null;
   }
   function invoicesOf(c) {
     return S.all("invoices").filter(function (i) { return i.clientId === c.id && i.no; }).sort(u.by("issued", "desc"));
@@ -8807,14 +8810,14 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
         out.push(t(key, { name: p.name, amt: amt, no: i.no }).replace(/\.\./g, "."));
       });
       if (si <= SI("shoot") && p.shootDate && p.shootDate >= u.today()) out.push(t("po_need_product", { date: u.fmtDate(p.shootDate, { weekday: "long", day: "numeric", month: "long" }) }));
-      if (p.stage === "testing" && !hasResults(p)) out.push(t("po_need_results", { name: p.name }));
+      if (p.stage === "delivered" && !hasResults(p)) out.push(t("po_need_results", { name: p.name }));
     });
     return out;
   }
   function stepper(p) {
     var si = SI(p.stage);
     return '<div class="stepper" role="list">' + m.STAGES.map(function (s, i) {
-      var cls = p.stage === "done" || i < si ? "done" : i === si ? "now" : "";
+      var cls = p.stage === "retention" || i < si ? "done" : i === si ? "now" : "";
       return '<div role="listitem" class="' + cls + '"' + (i === si ? ' aria-current="step"' : "") + ">" + esc(stageWord(s)) + "</div>";
     }).join("") + "</div>";
   }
@@ -9414,7 +9417,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   P.scope = function (share) {
     var all = S.all("projects").filter(function (p) { return p.clientId === share.clientId; });
     if (share.projectId) return all.filter(function (p) { return p.id === share.projectId; });
-    var cur = all.filter(function (p) { return p.stage !== "done"; }).sort(u.by(function (p) { return SI(p.stage); }));
+    var cur = all.filter(function (p) { return p.stage !== "retention"; }).sort(u.by(function (p) { return SI(p.stage); }));
     if (cur.length) return cur;
     return all.sort(u.by(function (p) { return p.shootDate || ""; }, "desc")).slice(0, 1);
   };
@@ -9457,7 +9460,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       add({ deposit: 1, balance: 1, month: 1 }[i.kind] ? i.kind : "invoice", { no: i.no, amount: round2(m.invBalance(i)), due: i.due || "", late: m.invStatus(i) === "overdue" });
     });
     if (si <= SI("shoot") && p.shootDate && p.shootDate >= u.today()) add("product", { date: p.shootDate });
-    if (p.stage === "testing" && !hasResults(p)) add("results");
+    if (p.stage === "delivered" && !hasResults(p)) add("results");
     return out;
   }
   function timelineOf(p) {
@@ -9650,7 +9653,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   function p() { return ui.p("team"); }
   function openTasksFor(id) { return S.all("tasks").filter(function (x) { return !x.done && x.who === id; }); }
   function byDue(a, b) { var A = a.due || "9999", B = b.due || "9999"; return A < B ? -1 : A > B ? 1 : 0; }
-  function activeProjects() { return S.all("projects").filter(function (x) { return x.stage !== "done"; }).sort(u.by(function (x) { return m.projectLabel(x).toLowerCase(); })); }
+  function activeProjects() { return S.all("projects").filter(function (x) { return x.stage !== "retention"; }).sort(u.by(function (x) { return m.projectLabel(x).toLowerCase(); })); }
   function canDelTask(x) { return m.can("tasks") && (m.isFounder() || x.who === me().id); }
   function dueTxt(d) {
     if (!d) return t("tm_no_due");
@@ -10003,7 +10006,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     if (d === u.addDays(td, 1)) return t("tk_tomorrow");
     return u.fmtDate(d, { weekday: "long", day: "numeric", month: "long" });
   };
-  TK.activeProjects = function () { return S.all("projects").filter(function (x) { return x.stage !== "done"; }).sort(u.by(function (x) { return m.projectLabel(x).toLowerCase(); })); };
+  TK.activeProjects = function () { return S.all("projects").filter(function (x) { return x.stage !== "retention"; }).sort(u.by(function (x) { return m.projectLabel(x).toLowerCase(); })); };
 
   TK.css("gk-shared-css", [
     ".gk-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px}",
@@ -10142,7 +10145,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   function filters() {
     var st = P(), mine = !!st.mine;
     var clients = S.all("clients").sort(u.by(function (c) { return String(c.brand).toLowerCase(); }));
-    var projects = S.all("projects").filter(function (x) { return x.stage !== "done" || x.id === st.proj; }).sort(u.by(function (x) { return m.projectLabel(x).toLowerCase(); }));
+    var projects = S.all("projects").filter(function (x) { return x.stage !== "retention" || x.id === st.proj; }).sort(u.by(function (x) { return m.projectLabel(x).toLowerCase(); }));
     var any = st.who || st.proj || st.client;
     return '<div class="gk-bar"><div class="gk-bar-l">' + TK.chips("tk-mine", [{ v: "0", label: t("tk_everyone"), on: !mine }, { v: "1", label: t("tk_mine"), on: mine }], t("tk_filters")) +
       (mine ? "" : TK.select("tk-f-who", t("tk_f_who"), st.who || "", [["", t("tk_f_any_who")]].concat(team().map(function (x) { return [x.id, x.name]; })))) +
@@ -10230,7 +10233,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   // ---------- side panel (core ui.sidePanel when present; else rendered in the page) ----------
   function panelParts(x) {
     var c = can(), p = proj(x), dis = c ? "" : " disabled";
-    var projects = S.all("projects").filter(function (y) { return y.stage !== "done" || y.id === x.projectId; }).sort(u.by(function (y) { return m.projectLabel(y).toLowerCase(); }));
+    var projects = S.all("projects").filter(function (y) { return y.stage !== "retention" || y.id === x.projectId; }).sort(u.by(function (y) { return m.projectLabel(y).toLowerCase(); }));
     var status = x.done ? "done" : x.status === "doing" ? "doing" : "todo";
     var body = '<div class="form" style="grid-template-columns:minmax(0,1fr)">' +
       ui.field({ id: "tk-e-title", label: t("tk_p_title"), value: x.title, attrs: ' maxlength="200"' + dis }) +
@@ -10473,7 +10476,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   function events(ignoreFilter) {
     var out = [], today = td();
     S.all("projects").forEach(function (p) {
-      if (p.shootDate) out.push({ date: p.shootDate, type: "shoot", id: p.id, title: m.brand(p.clientId) + " · " + p.name, sub: m.pack(p.pack).name, done: p.stage === "done", late: false });
+      if (p.shootDate) out.push({ date: p.shootDate, type: "shoot", id: p.id, title: m.brand(p.clientId) + " · " + p.name, sub: m.pack(p.pack).name, done: p.stage === "retention", late: false });
       var dd = p.deliveryDate || p.deliverBy || "";
       if (/^\d{4}-\d{2}-\d{2}/.test(dd)) out.push({ date: dd.slice(0, 10), type: "delivery", id: p.id, title: m.brand(p.clientId) + " · " + p.name, sub: t("st_" + p.stage), done: m.STAGES.indexOf(p.stage) >= m.STAGES.indexOf("delivered"), late: false });
     });
@@ -11059,7 +11062,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   function quiet() {
     var td = u.today(), lim = u.addDays(td, -7), last = {};
     function bump(id, d) { if (id && d && (!last[id] || d > last[id])) last[id] = d; }
-    var act = S.all("projects").filter(function (p) { return p.stage !== "done"; });
+    var act = S.all("projects").filter(function (p) { return p.stage !== "retention"; });
     act.forEach(function (p) { (p.log || []).forEach(function (l) { bump(p.id, day(l.at)); }); bump(p.id, p.planApprovedOn); bump(p.id, p.shootDate && p.shootDate <= td ? p.shootDate : ""); });
     S.all("tasks").forEach(function (x) { bump(x.projectId, x.doneOn); (x.log || []).forEach(function (l) { bump(x.projectId, day(l.at)); }); });
     S.all("msgs").forEach(function (x) { bump(x.ch, day(x.at)); });
@@ -11674,7 +11677,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     } else out.push({ w: 10, text: t("db_l_cash"), btn: "db_b_settings", view: "settings", params: {} });
     var quiet = S.all("leads").filter(function (l) { return ["dm", "replied", "call", "proposal"].indexOf(l.stage) > -1 && l.nextDate && u.daysBetween(l.nextDate, today) >= 3; });
     if (quiet.length) out.push({ w: 60, text: t(quiet.length === 1 ? "db_l_quiet_1" : "db_l_quiet_n", { n: quiet.length, b: names(quiet, function (l) { return l.brand; }) }), btn: "db_b_pipeline", view: "pipeline", params: quiet.length === 1 ? { id: quiet[0].id } : {} });
-    var gated = S.all("projects").filter(function (p) { return p.stage !== "done" && m.gates(p).length; });
+    var gated = S.all("projects").filter(function (p) { return p.stage !== "retention" && m.gates(p).length; });
     if (gated.length) out.push({ w: 80, text: t(gated.length === 1 ? "db_l_gate_1" : "db_l_gate_n", { n: gated.length, b: names(gated, function (p) { return m.projectLabel(p); }) }), btn: "db_b_project", view: "projects", params: { id: gated[0].id } });
     var owed = u.sum(S.all("projects"), function (p) { return m.commission(p).owed; });
     if (owed > 0) out.push({ w: 50, text: t("db_l_comm", { a: fm(owed) }), btn: "db_b_comm", view: "finance", params: { tab: "commission", invoiceId: "" } });
@@ -11777,7 +11780,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   function ideasPanel() {
     var ideas = S.all("ideas"), today = u.today(), end = u.addDays(today, 14);
     var stages = ["idea", "concept", "script", "ready", "shot", "parked"];
-    var shoots = S.all("projects").filter(function (p) { return p.shootDate && p.shootDate >= today && p.shootDate <= end && p.stage !== "done"; }).sort(u.by("shootDate"));
+    var shoots = S.all("projects").filter(function (p) { return p.shootDate && p.shootDate >= today && p.shootDate <= end && p.stage !== "retention"; }).sort(u.by("shootDate"));
     var chart = ideas.length ? C.hbars({ title: t("db_c_ideas"), sub: t("db_c_ideas_sub"), fmt: function (n) { return String(n); }, items: stages.map(function (s) { return { label: t("db_i_" + s), value: ideas.filter(function (i) { return i.stage === s; }).length }; }) })
       : '<h3 class="sec">' + esc(t("db_c_ideas")) + "</h3>" + ui.empty(t("db_ideas_none"));
     var sh = '<h3 class="sec">' + esc(t("db_shoots")) + "</h3>" + (shoots.length ? '<div class="list">' + shoots.map(function (p) {
@@ -12662,7 +12665,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   function sendableProjects(clientId) {
     return projectsOf(clientId).filter(function (p) {
       var k = m.STAGES.indexOf(p.stage);
-      return (k >= 0 && k <= m.STAGES.indexOf("editing")) || p.stage === "onboard" || p.stage === "edit";
+      return (k >= 0 && k <= m.STAGES.indexOf("editing")) || p.stage === "onboarding" || p.stage === "editing";
     });
   }
 
@@ -16012,7 +16015,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   function stepper(p) {
     var STG = ["onboard", "plan", "shoot", "edit", "delivered", "testing", "report", "done"];
     return '<div class="stepper" role="list" aria-label="' + esc(t("cm_now")) + '">' + STG.map(function (s, i) {
-      var cls = p.stage === "done" || i < p.stageIdx ? "done" : i === p.stageIdx ? "now" : "";
+      var cls = p.stage === "retention" || i < p.stageIdx ? "done" : i === p.stageIdx ? "now" : "";
       return '<div role="listitem" class="' + cls + '"' + (i === p.stageIdx ? ' aria-current="step"' : "") + ">" + esc(stageWord(s)) + "</div>";
     }).join("") + "</div>";
   }
@@ -16402,13 +16405,13 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
             title: t("sh_f_paid", { amt: u.money((+p.net || 0) + (+p.withheld || 0)) }), meta: m.brand(i.clientId) + (i.no ? " · " + i.no : "") });
         });
       });
-      S.all("projects").filter(function (p) { return p.stage !== "done"; }).forEach(function (p) {
+      S.all("projects").filter(function (p) { return p.stage !== "retention"; }).forEach(function (p) {
         var n = m.files(p).filter(function (f) { return f.item.status === "review"; }).length;
         if (n) out.push({ id: "rev:" + p.id + ":" + n, icon: "production", at: td, view: "production", params: { projectId: p.id }, title: t(n === 1 ? "sh_f_review_1" : "sh_f_review_n", { n: n }), meta: m.projectLabel(p) });
       });
     }
     if (founder || r === "sales") {
-      S.all("projects").filter(function (p) { return p.stage === "plan" && !p.planApproved; }).forEach(function (p) {
+      S.all("projects").filter(function (p) { return p.stage === "scripting" && !p.planApproved; }).forEach(function (p) {
         out.push({ id: "plan:" + p.id, icon: "projects", at: td, view: "projects", params: { id: p.id }, title: t("sh_f_plan"), meta: m.projectLabel(p) });
       });
       S.all("feedback").filter(function (f) { return (f.at || "").slice(0, 10) >= u.addDays(td, -10); }).forEach(function (f) {

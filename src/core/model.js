@@ -523,8 +523,11 @@
   // ---------- roles ----------
   M.ROLE_NAV = {
     founder: ["guide", "today", "tasks", "calendar", "inbox", "activity", "dashboard", "pipeline", "clients", "projects", "shootday", "production", "studio", "boards", "deliveries", "reports", "finance", "portal", "docs", "team", "settings"],
-    sales: ["guide", "today", "tasks", "calendar", "inbox", "pipeline", "clients", "projects", "shootday", "production", "studio", "boards", "deliveries", "reports", "portal", "docs", "team", "settings"],
-    editor: ["guide", "today", "tasks", "calendar", "inbox", "projects", "production", "studio", "boards", "deliveries", "docs", "team"],
+    // Client Lead: selling and client follow-up; no money screens
+    sales: ["guide", "today", "tasks", "calendar", "inbox", "pipeline", "clients", "projects", "shootday", "studio", "boards", "deliveries", "reports", "portal", "docs", "team"],
+    // Editors: only what they edit
+    editor: ["guide", "today", "tasks", "calendar", "inbox", "projects", "studio", "deliveries", "docs"],
+    // Production (manager or assistant): shoots, scripts, boards
     assistant: ["guide", "today", "tasks", "calendar", "inbox", "projects", "shootday", "production", "studio", "boards", "docs", "team"]
   };
   /** Permission check for the current viewer. */

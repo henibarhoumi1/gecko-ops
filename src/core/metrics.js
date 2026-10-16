@@ -130,7 +130,7 @@
   };
   X.workload = function () {
     var files = [];
-    S.all("projects").forEach(function (p) { if (p.stage !== "done") m.files(p).forEach(function (f) { files.push(f.item.status || "todo"); }); });
+    S.all("projects").forEach(function (p) { if (p.stage !== "retention") m.files(p).forEach(function (f) { files.push(f.item.status || "todo"); }); });
     return S.all("team").map(function (mem) {
       return { member: mem, tasks: S.all("tasks").filter(function (t) { return t.who === mem.id && !t.done; }).length, late: S.all("tasks").filter(function (t) { return t.who === mem.id && !t.done && t.due && t.due < u.today(); }).length };
     }).concat([{ filesOpen: files.filter(function (s) { return s !== "approved"; }).length, filesTotal: files.length }]);
@@ -179,7 +179,7 @@
       }
       if (w === 0) S.all("projects").forEach(function (p) { var c = m.commission(p); if (c.owed > 0) { row.out += c.owed; row.items.push({ k: "out", t: "Commission", v: c.owed }); } });
       S.all("projects").forEach(function (p) {
-        if (p.shootDate && p.shootDate >= from && p.shootDate < to && p.stage !== "done") {
+        if (p.shootDate && p.shootDate >= from && p.shootDate < to && p.stage !== "retention") {
           var projectExpenses = S.all("expenses").filter(function (e) { return e.projectId === p.id; });
           var c = m.unmatchedEstimateOf(p, projectExpenses);
           if (c) { row.out += c; row.items.push({ k: "out", t: m.projectLabel(p), v: c }); }
@@ -296,7 +296,7 @@
     return best;
   };
   X.clientHasOpenWork = function (c) {
-    return S.all("projects").some(function (p) { return p.clientId === c.id && p.stage !== "done"; }) || S.all("contracts").some(function (k) { return k.clientId === c.id && k.status === "active"; });
+    return S.all("projects").some(function (p) { return p.clientId === c.id && p.stage !== "retention"; }) || S.all("contracts").some(function (k) { return k.clientId === c.id && k.status === "active"; });
   };
   /** Clients at risk: a late payer, or a past client with nothing open and no activity for `quietDays` (up to a year). [{client, kind: "late"|"quiet", amount, late, idle}] */
   X.clientRisks = function (quietDays) {
@@ -312,7 +312,7 @@
 
   /** "shoot" when the shoot date passed and the project is still before editing, "delivery" when a delivery date passed before delivery, else "". */
   X.projectLate = function (p) {
-    if (p.stage === "done") return "";
+    if (p.stage === "retention") return "";
     var td = u.today(), si = m.STAGES.indexOf(p.stage);
     if (p.shootDate && p.shootDate < td && si <= m.STAGES.indexOf("shoot")) return "shoot";
     var dd = String(p.deliveryDate || p.deliverBy || "").slice(0, 10);
@@ -322,7 +322,7 @@
   /** File counts by status across the given projects (default: not done): {todo, edit, review, revise, approved, total}. */
   X.fileCounts = function (projects) {
     var o = { todo: 0, edit: 0, review: 0, revise: 0, approved: 0, total: 0 };
-    (projects || S.all("projects").filter(function (p) { return p.stage !== "done"; })).forEach(function (p) {
+    (projects || S.all("projects").filter(function (p) { return p.stage !== "retention"; })).forEach(function (p) {
       m.files(p).forEach(function (f) { var s = f.item.status || "todo"; if (o[s] == null) s = "todo"; o[s]++; o.total++; });
     });
     return o;

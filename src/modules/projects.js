@@ -217,7 +217,7 @@
     var f = params.filter || "all";
     var all = S.all("projects");
     var list = all.filter(function (p) { return f === "moh" ? hasShare(p) : f === "skin" ? isMonthly(p) : true; });
-    var active = all.filter(function (p) { return p.stage !== "done"; });
+    var active = all.filter(function (p) { return p.stage !== "retention"; });
     var blocked = active.filter(function (p) { return m.gates(p).length; });
     var h = ui.head({
       label: t("nav_projects"), title: t("pj_title"), accent: t("pj_accent"),
@@ -464,7 +464,7 @@
       var p = params.id ? m.project(params.id) : null;
       return p ? detail(p) : board(params);
     },
-    count: function () { return S.all("projects").filter(function (p) { return p.stage !== "done"; }).length || ""; }
+    count: function () { return S.all("projects").filter(function (p) { return p.stage !== "retention"; }).length || ""; }
   });
 
   // ---------- New project (also used by other modules) ----------

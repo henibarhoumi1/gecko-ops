@@ -44,7 +44,7 @@
   function p() { return ui.p("team"); }
   function openTasksFor(id) { return S.all("tasks").filter(function (x) { return !x.done && x.who === id; }); }
   function byDue(a, b) { var A = a.due || "9999", B = b.due || "9999"; return A < B ? -1 : A > B ? 1 : 0; }
-  function activeProjects() { return S.all("projects").filter(function (x) { return x.stage !== "done"; }).sort(u.by(function (x) { return m.projectLabel(x).toLowerCase(); })); }
+  function activeProjects() { return S.all("projects").filter(function (x) { return x.stage !== "retention"; }).sort(u.by(function (x) { return m.projectLabel(x).toLowerCase(); })); }
   function canDelTask(x) { return m.can("tasks") && (m.isFounder() || x.who === me().id); }
   function dueTxt(d) {
     if (!d) return t("tm_no_due");

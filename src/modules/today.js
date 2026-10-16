@@ -80,7 +80,7 @@
   function plural(key, n) { return n === 1 ? t(key + "_1") : n === 0 && GK.i18n.has(key + "_0") ? t(key + "_0") : t(key + "_n", { n: n }); }
   function me() { return GK.me() || { id: "", name: "", role: "founder" }; }
   function today() { return u.today(); }
-  function active(p) { return p.stage !== "done"; }
+  function active(p) { return p.stage !== "retention"; }
   function founderName() { var f = S.all("team").find(function (x) { return x.role === "founder"; }); return f ? f.name : "Heni"; }
   function salesName() { var f = S.all("team").find(function (x) { return x.role === "sales"; }); return f ? f.name : t("role_sales"); }
   function dueLabel(d) {
@@ -105,7 +105,7 @@
   function needs() {
     var out = [], td = today();
     var projects = S.all("projects");
-    projects.filter(function (p) { return p.stage === "plan" && !p.planApproved; }).forEach(function (p) {
+    projects.filter(function (p) { return p.stage === "scripting" && !p.planApproved; }).forEach(function (p) {
       out.push({ main: t("td_plan_wait"), meta: m.projectLabel(p), label: t("td_b_plan"), view: "projects", params: { id: p.id }, rec: t("td_r_plan"), icon: "projects" });
     });
     projects.filter(active).forEach(function (p) {

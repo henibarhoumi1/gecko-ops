@@ -92,7 +92,7 @@
     var id = ui.p("reports").projectId;
     var p = list.find(function (x) { return x.id === id; });
     if (p) return p;
-    return list.find(function (x) { return x.stage === "testing"; }) || list[0] || null;
+    return list.find(function (x) { return x.stage === "delivered"; }) || list[0] || null;
   }
   function monthOf(p) {
     var c = m.contractOf(p);
@@ -284,7 +284,7 @@
       return h;
     },
     count: function () {
-      var n = S.all("projects").filter(function (p) { return p.stage === "testing" && !hookRows(p).some(hasNumbers); }).length;
+      var n = S.all("projects").filter(function (p) { return p.stage === "delivered" && !hookRows(p).some(hasNumbers); }).length;
       return n || "";
     }
   });

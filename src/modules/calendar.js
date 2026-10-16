@@ -87,7 +87,7 @@
   function events(ignoreFilter) {
     var out = [], today = td();
     S.all("projects").forEach(function (p) {
-      if (p.shootDate) out.push({ date: p.shootDate, type: "shoot", id: p.id, title: m.brand(p.clientId) + " · " + p.name, sub: m.pack(p.pack).name, done: p.stage === "done", late: false });
+      if (p.shootDate) out.push({ date: p.shootDate, type: "shoot", id: p.id, title: m.brand(p.clientId) + " · " + p.name, sub: m.pack(p.pack).name, done: p.stage === "retention", late: false });
       var dd = p.deliveryDate || p.deliverBy || "";
       if (/^\d{4}-\d{2}-\d{2}/.test(dd)) out.push({ date: dd.slice(0, 10), type: "delivery", id: p.id, title: m.brand(p.clientId) + " · " + p.name, sub: t("st_" + p.stage), done: m.STAGES.indexOf(p.stage) >= m.STAGES.indexOf("delivered"), late: false });
     });

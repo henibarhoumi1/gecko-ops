@@ -321,9 +321,9 @@
   /** Shared status pills */
   UI.invPill = function (i) { var s = GK.m.invStatus(i); return UI.pill(t("inv_" + s), { paid: "done", overdue: "urgent", partial: "chroma", issued: "chroma", credited: "", credit: "", draft: "" }[s]); };
   /** Project stage: one dot colour per stage. Blocked by a gate shows urgent; closed shows green. */
-  var STAGE_DOT = { onboard: "", plan: "dot-yellow", shoot: "dot-pink", edit: "dot-blue", delivered: "dot-chroma", testing: "dot-gel", report: "dot-work", done: "" };
+  var STAGE_DOT = { onboarding: "", scripting: "dot-yellow", pre_production: "dot-yellow", shoot: "dot-pink", editing: "dot-blue", client_review: "dot-gel", revisions: "dot-gel", delivered: "dot-chroma", paid: "dot-work", retention: "" };
   UI.STAGE_DOT = STAGE_DOT;
-  UI.stagePill = function (p) { return UI.pill(t("st_" + p.stage), p.stage === "done" ? "green" : GK.m.gates(p).length ? "urgent" : STAGE_DOT[p.stage] || ""); };
+  UI.stagePill = function (p) { return UI.pill(t("st_" + p.stage), p.stage === "retention" ? "green" : GK.m.gates(p).length ? "urgent" : STAGE_DOT[p.stage] || ""); };
   /** Small coloured swatch for column headers. cls: a dot-* class. */
   UI.dot = function (cls) { return '<i class="sd ' + esc(cls || "") + '" aria-hidden="true"></i>'; };
   UI.filePill = function (s) { return UI.pill(t("s_" + (s || "todo")), { approved: "green", revise: "urgent", review: "yellow", edit: "blue" }[s] || ""); };

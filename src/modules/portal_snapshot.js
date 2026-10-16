@@ -31,7 +31,7 @@
   P.scope = function (share) {
     var all = S.all("projects").filter(function (p) { return p.clientId === share.clientId; });
     if (share.projectId) return all.filter(function (p) { return p.id === share.projectId; });
-    var cur = all.filter(function (p) { return p.stage !== "done"; }).sort(u.by(function (p) { return SI(p.stage); }));
+    var cur = all.filter(function (p) { return p.stage !== "retention"; }).sort(u.by(function (p) { return SI(p.stage); }));
     if (cur.length) return cur;
     return all.sort(u.by(function (p) { return p.shootDate || ""; }, "desc")).slice(0, 1);
   };
@@ -74,7 +74,7 @@
       add({ deposit: 1, balance: 1, month: 1 }[i.kind] ? i.kind : "invoice", { no: i.no, amount: round2(m.invBalance(i)), due: i.due || "", late: m.invStatus(i) === "overdue" });
     });
     if (si <= SI("shoot") && p.shootDate && p.shootDate >= u.today()) add("product", { date: p.shootDate });
-    if (p.stage === "testing" && !hasResults(p)) add("results");
+    if (p.stage === "delivered" && !hasResults(p)) add("results");
     return out;
   }
   function timelineOf(p) {

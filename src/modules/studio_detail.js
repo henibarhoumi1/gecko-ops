@@ -165,7 +165,7 @@
   function sendableProjects(clientId) {
     return projectsOf(clientId).filter(function (p) {
       var k = m.STAGES.indexOf(p.stage);
-      return (k >= 0 && k <= m.STAGES.indexOf("editing")) || p.stage === "onboard" || p.stage === "edit";
+      return (k >= 0 && k <= m.STAGES.indexOf("editing")) || p.stage === "onboarding" || p.stage === "editing";
     });
   }
 

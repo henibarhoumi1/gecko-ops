@@ -74,7 +74,7 @@
   }
   function inScope(p) {
     if (STAGES.indexOf(stageKey(p)) > -1) return true;
-    return p.stage === "done" && m.files(p).length > 0 && lastTouch(p) >= u.addDays(u.today(), -30);
+    return p.stage === "retention" && m.files(p).length > 0 && lastTouch(p) >= u.addDays(u.today(), -30);
   }
   function projects() {
     var order = { editing: 0, client_review: 1, revisions: 2, delivered: 3, paid: 4, retention: 5 };

@@ -55,7 +55,7 @@
   /** Issued invoices before stamp, credit notes included (they carry a negative amount). Same basis as Finance. */
   function invoiced(c) { return u.sum(invsOf(c), m.invoiceTurnover); }
   function owed(c) { return u.sum(invsOf(c).filter(billable), m.invBalance); }
-  function activeProjects(c) { return projsOf(c).filter(function (p) { return p.stage !== "done"; }); }
+  function activeProjects(c) { return projsOf(c).filter(function (p) { return p.stage !== "retention"; }); }
   function activeContract(c) { return contractsOf(c).filter(function (k) { return k.status === "active"; })[0] || null; }
 
   // ---------- list ----------
@@ -99,7 +99,7 @@
       (canEdit() ? '<div class="row" style="justify-content:flex-end">' + ui.btn(t("save"), "cl-save", { cls: "primary", data: { id: c.id } }) + "</div>" : "") + "</div>";
   }
   function projectsPanel(c) {
-    var ps = projsOf(c).sort(u.by(function (p) { return (p.stage === "done" ? "1" : "0") + (p.shootDate || ""); }));
+    var ps = projsOf(c).sort(u.by(function (p) { return (p.stage === "retention" ? "1" : "0") + (p.shootDate || ""); }));
     return '<div class="panel"><div class="panel-h"><h2 class="sec">' + esc(t("cl_projects")) + '</h2><span class="small muted num">' + ps.length + "</span></div>" +
       (ps.length ? '<div class="list">' + ps.map(function (p) {
         return '<div class="li click" tabindex="0" data-a="cl-proj" data-id="' + esc(p.id) + '"><div class="stack" style="gap:2px"><strong>' + esc(p.name) + '</strong><span class="m">' +

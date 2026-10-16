@@ -137,7 +137,7 @@
     if (d === u.addDays(td, 1)) return t("tk_tomorrow");
     return u.fmtDate(d, { weekday: "long", day: "numeric", month: "long" });
   };
-  TK.activeProjects = function () { return S.all("projects").filter(function (x) { return x.stage !== "done"; }).sort(u.by(function (x) { return m.projectLabel(x).toLowerCase(); })); };
+  TK.activeProjects = function () { return S.all("projects").filter(function (x) { return x.stage !== "retention"; }).sort(u.by(function (x) { return m.projectLabel(x).toLowerCase(); })); };
 
   TK.css("gk-shared-css", [
     ".gk-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px}",
@@ -276,7 +276,7 @@
   function filters() {
     var st = P(), mine = !!st.mine;
     var clients = S.all("clients").sort(u.by(function (c) { return String(c.brand).toLowerCase(); }));
-    var projects = S.all("projects").filter(function (x) { return x.stage !== "done" || x.id === st.proj; }).sort(u.by(function (x) { return m.projectLabel(x).toLowerCase(); }));
+    var projects = S.all("projects").filter(function (x) { return x.stage !== "retention" || x.id === st.proj; }).sort(u.by(function (x) { return m.projectLabel(x).toLowerCase(); }));
     var any = st.who || st.proj || st.client;
     return '<div class="gk-bar"><div class="gk-bar-l">' + TK.chips("tk-mine", [{ v: "0", label: t("tk_everyone"), on: !mine }, { v: "1", label: t("tk_mine"), on: mine }], t("tk_filters")) +
       (mine ? "" : TK.select("tk-f-who", t("tk_f_who"), st.who || "", [["", t("tk_f_any_who")]].concat(team().map(function (x) { return [x.id, x.name]; })))) +
@@ -364,7 +364,7 @@
   // ---------- side panel (core ui.sidePanel when present; else rendered in the page) ----------
   function panelParts(x) {
     var c = can(), p = proj(x), dis = c ? "" : " disabled";
-    var projects = S.all("projects").filter(function (y) { return y.stage !== "done" || y.id === x.projectId; }).sort(u.by(function (y) { return m.projectLabel(y).toLowerCase(); }));
+    var projects = S.all("projects").filter(function (y) { return y.stage !== "retention" || y.id === x.projectId; }).sort(u.by(function (y) { return m.projectLabel(y).toLowerCase(); }));
     var status = x.done ? "done" : x.status === "doing" ? "doing" : "todo";
     var body = '<div class="form" style="grid-template-columns:minmax(0,1fr)">' +
       ui.field({ id: "tk-e-title", label: t("tk_p_title"), value: x.title, attrs: ' maxlength="200"' + dis }) +

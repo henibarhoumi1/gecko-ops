@@ -59,7 +59,7 @@
   function clientsList() { return S.all("clients").sort(function (a, b) { return String(a.brand).localeCompare(String(b.brand)); }); }
   function projectsOf(c) {
     var all = S.all("projects").filter(function (p) { return p.clientId === c.id; });
-    var cur = all.filter(function (p) { return p.stage !== "done"; }).sort(u.by(function (p) { return SI(p.stage); }));
+    var cur = all.filter(function (p) { return p.stage !== "retention"; }).sort(u.by(function (p) { return SI(p.stage); }));
     if (cur.length) return cur;
     var done = all.sort(u.by(function (p) { return p.shootDate || ""; }, "desc"));
     return done.slice(0, 1);
@@ -68,7 +68,7 @@
     var list = clientsList(), id = ui.p("portal").clientId;
     var c = list.find(function (x) { return x.id === id; });
     if (c) return c;
-    return list.find(function (x) { return S.all("projects").some(function (p) { return p.clientId === x.id && p.stage !== "done"; }); }) || list[0] || null;
+    return list.find(function (x) { return S.all("projects").some(function (p) { return p.clientId === x.id && p.stage !== "retention"; }); }) || list[0] || null;
   }
   function invoicesOf(c) {
     return S.all("invoices").filter(function (i) { return i.clientId === c.id && i.no; }).sort(u.by("issued", "desc"));
@@ -89,14 +89,14 @@
         out.push(t(key, { name: p.name, amt: amt, no: i.no }).replace(/\.\./g, "."));
       });
       if (si <= SI("shoot") && p.shootDate && p.shootDate >= u.today()) out.push(t("po_need_product", { date: u.fmtDate(p.shootDate, { weekday: "long", day: "numeric", month: "long" }) }));
-      if (p.stage === "testing" && !hasResults(p)) out.push(t("po_need_results", { name: p.name }));
+      if (p.stage === "delivered" && !hasResults(p)) out.push(t("po_need_results", { name: p.name }));
     });
     return out;
   }
   function stepper(p) {
     var si = SI(p.stage);
     return '<div class="stepper" role="list">' + m.STAGES.map(function (s, i) {
-      var cls = p.stage === "done" || i < si ? "done" : i === si ? "now" : "";
+      var cls = p.stage === "retention" || i < si ? "done" : i === si ? "now" : "";
       return '<div role="listitem" class="' + cls + '"' + (i === si ? ' aria-current="step"' : "") + ">" + esc(stageWord(s)) + "</div>";
     }).join("") + "</div>";
   }
