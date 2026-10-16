@@ -6,7 +6,7 @@
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    po_title: ["What the client", "Ce que le client"], po_accent: ["sees", "voit"],
+    po_title: ["Client pages", "Pages client"], po_accent: ["", ""],
     po_sub: ["One link per client: their plan, scripts, files, timeline, invoices and boards. Or a quick update to screen-share or send on WhatsApp.", "Un lien par client : son plan, ses scripts, ses fichiers, son calendrier, ses factures et ses tableaux. Ou un point rapide à partager à l'écran ou sur WhatsApp."],
     po_note: ["A quick update is a clean document for a call or a WhatsApp message. For something the client can open and answer, use Client pages.", "Le point rapide est un document clair pour un appel ou un message WhatsApp. Pour quelque chose que le client ouvre et auquel il répond, utilisez les Pages client."],
     po_pick: ["Client", "Client"],

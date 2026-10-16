@@ -7,8 +7,8 @@
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    pj_title: ["Projects", "Projets en"], pj_accent: ["moving", "cours"],
-    pj_d_accent: ["project", "projet"],
+    pj_title: ["Projects", "Projets"], pj_accent: ["", ""],
+    pj_d_accent: ["", ""],
     pj_sub: ["{n} active · {b} blocked by a payment or an approval", "{n} en cours · {b} bloqués par un paiement ou une validation"],
     pj_new: ["New project", "Nouveau projet"], pj_new_t: ["New", "Nouveau"], pj_new_acc: ["project", "projet"],
     pj_f_all: ["All", "Tous"], pj_f_moh: ["Partner share", "Part partenaire"], pj_f_skin: ["Monthly only", "Mensuels seulement"],

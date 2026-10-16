@@ -5,9 +5,9 @@
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    fi_title: ["Money", "L'argent"], fi_accent: ["matters", "compte"],
+    fi_title: ["Money", "Argent"], fi_accent: ["", ""],
     fi_sub: ["Cash, invoices, quotes, overheads, the 13-week forecast, the month close and the yearly cap.", "Trésorerie, factures, devis, charges, prévision à 13 semaines, clôture du mois et plafond annuel."],
-    fi_tab_overview: ["Overview", "Vue d'ensemble"], fi_tab_invoices: ["Invoices", "Factures"], fi_tab_quotes: ["Quotes", "Devis"], fi_tab_expenses: ["Expenses", "Dépenses"],
+    fi_tab_overview: ["Overview", "Vue d'ensemble"], fi_tab_more: ["More", "Plus"], fi_tab_invoices: ["Invoices", "Factures"], fi_tab_quotes: ["Quotes", "Devis"], fi_tab_expenses: ["Expenses", "Dépenses"],
     fi_tab_forecast: ["Cash forecast", "Prévision"], fi_tab_close: ["Month close", "Clôture du mois"], fi_tab_profit: ["Profitability", "Rentabilité"],
     fi_tab_cap: ["Tax and cap", "Taxes et plafond"], fi_tab_commission: ["Commission", "Commission"], fi_tab_export: ["Export", "Export"],
     fi_founder_only: ["Only the owner can change invoices and payments.", "Seul le fondateur peut modifier les factures et les paiements."],
@@ -197,10 +197,15 @@
   // ---------- page ----------
   var FIN = GK.fin = { tabs: {}, order: ["overview", "invoices", "quotes", "expenses", "forecast", "close", "profit", "cap", "commission", "export"] };
   function liveTabs() { return FIN.order.filter(function (k) { return FIN.tabs[k]; }); }
+  var MAIN = ["overview", "invoices", "quotes", "expenses"];
+  /** Four everyday tabs; the planning and year-end screens sit behind "More". */
   function tabsHTML(cur) {
-    return '<div class="tabs" role="tablist">' + liveTabs().map(function (k) {
-      return '<button type="button" role="tab" data-a="fi-tab" data-tab="' + k + '" aria-selected="' + (cur === k) + '">' + esc(t("fi_tab_" + k)) + "</button>";
-    }).join("") + "</div>";
+    var live = liveTabs(), more = live.filter(function (k) { return MAIN.indexOf(k) < 0; }), inMore = more.indexOf(cur) > -1 || P().more;
+    function tab(k, on, lab) { return '<button type="button" role="tab" data-a="fi-tab" data-tab="' + k + '" aria-selected="' + on + '">' + esc(lab || t("fi_tab_" + k)) + "</button>"; }
+    var h = '<div class="tabs" role="tablist">' + live.filter(function (k) { return MAIN.indexOf(k) > -1; }).map(function (k) { return tab(k, cur === k && !inMore); }).join("") +
+      (more.length ? '<button type="button" role="tab" data-a="fi-more" aria-selected="' + !!inMore + '">' + esc(t("fi_tab_more")) + "</button>" : "") + "</div>";
+    if (inMore && more.length) h += '<div class="tabs fi-sub" role="tablist">' + more.map(function (k) { return tab(k, cur === k); }).join("") + "</div>";
+    return h;
   }
   function kpisHTML() {
     var all = invoices(), open = all.filter(isOpen), over = all.filter(function (i) { return m.invStatus(i) === "overdue"; });
@@ -652,7 +657,8 @@
   GK.change("fi-capyear", function (el) { P().capYear = el.value; el.blur(); ui.render(true); });
 
   // ---------- navigation ----------
-  GK.act("fi-tab", function (el) { ui.go("finance", { tab: el.dataset.tab, invoiceId: "", quoteId: "" }); });
+  GK.act("fi-tab", function (el) { var k = el.dataset.tab; ui.go("finance", { tab: k, more: MAIN.indexOf(k) < 0, invoiceId: "", quoteId: "" }); });
+  GK.act("fi-more", function () { var p = P(), first = liveTabs().filter(function (k) { return MAIN.indexOf(k) < 0; })[0]; ui.go("finance", { more: true, tab: MAIN.indexOf(p.tab) < 0 && p.tab ? p.tab : first, invoiceId: "", quoteId: "" }); });
   GK.act("fi-filter", function (el) { ui.go("finance", { filter: el.dataset.f, invoiceId: "" }); });
   GK.act("fi-open", function (el) { ui.closeModal(true); ui.go("finance", { tab: "invoices", invoiceId: el.dataset.id }); });
   GK.act("fi-back", function () { ui.go("finance", { invoiceId: "" }); });

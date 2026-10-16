@@ -5,7 +5,7 @@
   var MSG_SHOWN = 60;
 
   GK.i18n.add({
-    tm_title: ["One", "Une"], tm_accent: ["team", "équipe"],
+    tm_title: ["Team", "Équipe"], tm_accent: ["", ""],
     tm_sub: ["Who does what, by when. And the conversation around it.", "Qui fait quoi, pour quand. Et la discussion autour."],
     tm_tab_tasks: ["Tasks", "Tâches"], tm_tab_msgs: ["Messages", "Messages"], tm_tab_people: ["People", "Personnes"],
     tm_everyone: ["Everyone", "Tout le monde"], tm_mine: ["Mine", "Les miennes"],

@@ -8,7 +8,7 @@
   var STEP = 30, MAX_ROWS = 400;
 
   GK.i18n.add({
-    ac_title: ["What", "Ce qui a"], ac_accent: ["changed", "bougé"],
+    ac_title: ["Activity", "Activité"], ac_accent: ["", ""],
     ac_sub: ["{n} changes in the last {d} days, newest first.", "{n} changements ces {d} derniers jours, du plus récent au plus ancien."],
     ac_founder_only: ["The activity timeline is for the owner.", "Le fil d'activité est réservé au fondateur."],
     ac_types: ["Show", "Afficher"], ac_person: ["Person", "Personne"], ac_anyone: ["Everyone", "Tout le monde"], ac_system: ["No one named", "Personne de nommé"],

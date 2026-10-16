@@ -8,7 +8,7 @@
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc, TK = GK.tk;
 
   GK.i18n.add({
-    ca_title: ["What's", "Ce qui"], ca_accent: ["coming", "arrive"],
+    ca_title: ["Calendar", "Calendrier"], ca_accent: ["", ""],
     ca_sub: ["Shoots, due dates and follow-ups in one place. Click anything to open it.", "Tournages, échéances et relances au même endroit. Cliquez pour ouvrir."],
     ca_month: ["Month", "Mois"], ca_week: ["Week", "Semaine"], ca_agenda: ["Agenda", "Agenda"], ca_view: ["View", "Affichage"],
     ca_prev: ["Previous", "Précédent"], ca_next: ["Next", "Suivant"], ca_today: ["Today", "Aujourd'hui"],

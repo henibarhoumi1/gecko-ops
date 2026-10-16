@@ -4,10 +4,10 @@
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    td_t_founder: ["On the", "Sur la"], td_a_founder: ["table", "table"],
-    td_t_sales: ["Ten a", "Dix par"], td_a_sales: ["day", "jour"],
-    td_t_editor: ["In the", "Au"], td_a_editor: ["edit", "montage"],
-    td_t_assistant: ["Next", "Prochain"], td_a_assistant: ["shoot", "tournage"],
+    td_t_founder: ["Home", "Accueil"], td_a_founder: ["", ""],
+    td_t_sales: ["Home", "Accueil"], td_a_sales: ["", ""],
+    td_t_editor: ["Home", "Accueil"], td_a_editor: ["", ""],
+    td_t_assistant: ["Home", "Accueil"], td_a_assistant: ["", ""],
     td_hello: ["Hi {name}. Here's what needs you today.", "Bonjour {name}. Voici ce qui vous attend aujourd'hui."], td_hello_anon: ["Here's what needs you today.", "Voici ce qui vous attend aujourd'hui."],
     td_needs: ["Needs you", "Pour vous"],
     td_needs_none: ["Nothing waiting on you. Good day to shoot or to sell.", "Rien ne vous attend. Bonne journée pour tourner ou vendre."],

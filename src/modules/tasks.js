@@ -12,7 +12,7 @@
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    tk_title: ["Who does", "Qui fait"], tk_accent: ["what", "quoi"],
+    tk_title: ["Tasks", "Tâches"], tk_accent: ["", ""],
     tk_sub: ["{open} open · {late} overdue · {week} due in the next 7 days", "{open} ouvertes · {late} en retard · {week} à faire sous 7 jours"],
     // insight
     tk_k_open: ["Open", "Ouvertes"], tk_k_open_n: ["across {n} people", "pour {n} personnes"], tk_k_open_1: ["for one person", "pour une personne"],

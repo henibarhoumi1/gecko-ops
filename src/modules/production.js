@@ -4,7 +4,7 @@
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    pr_title: ["Cut, check,", "Monter, relire,"], pr_accent: ["approve", "valider"],
+    pr_title: ["Edit files", "Fichiers de montage"], pr_accent: ["", ""],
     pr_sub: ["Every hook and carousel is one file. Editors send them to review, the owner approves them.", "Chaque accroche et chaque carrousel est un fichier. Les monteurs l'envoient en relecture, Heni valide."],
     pr_project: ["Project", "Projet"], pr_all: ["All projects", "Tous les projets"],
     pr_board: ["Board", "Tableau"], pr_reels: ["By reel", "Par reel"],

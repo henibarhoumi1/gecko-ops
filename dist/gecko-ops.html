@@ -3662,10 +3662,10 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    td_t_founder: ["On the", "Sur la"], td_a_founder: ["table", "table"],
-    td_t_sales: ["Ten a", "Dix par"], td_a_sales: ["day", "jour"],
-    td_t_editor: ["In the", "Au"], td_a_editor: ["edit", "montage"],
-    td_t_assistant: ["Next", "Prochain"], td_a_assistant: ["shoot", "tournage"],
+    td_t_founder: ["Home", "Accueil"], td_a_founder: ["", ""],
+    td_t_sales: ["Home", "Accueil"], td_a_sales: ["", ""],
+    td_t_editor: ["Home", "Accueil"], td_a_editor: ["", ""],
+    td_t_assistant: ["Home", "Accueil"], td_a_assistant: ["", ""],
     td_hello: ["Hi {name}. Here's what needs you today.", "Bonjour {name}. Voici ce qui vous attend aujourd'hui."], td_hello_anon: ["Here's what needs you today.", "Voici ce qui vous attend aujourd'hui."],
     td_needs: ["Needs you", "Pour vous"],
     td_needs_none: ["Nothing waiting on you. Good day to shoot or to sell.", "Rien ne vous attend. Bonne journée pour tourner ou vendre."],
@@ -4372,7 +4372,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    pl_title: ["Leads in", "Prospects en"], pl_accent: ["play", "jeu"],
+    pl_title: ["Leads", "Prospects"], pl_accent: ["", ""], pl_m_board: ["Leads", "Prospects"], pl_m_results: ["Results", "Résultats"],
     pl_sub: ["{open} open · {due} to follow up today or late", "{open} en cours · {due} à relancer aujourd'hui ou en retard"],
     pl_add: ["Add lead", "Ajouter un prospect"], pl_new: ["New", "Nouveau"], pl_lead: ["lead", "prospect"],
     pl_no_edit: ["Only sales and the founder can change leads.", "Seuls le commercial et le fondateur peuvent modifier les prospects."],
@@ -4515,7 +4515,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
 
   GK.view("pipeline", {
     render: function (params) {
-      var leads = S.all("leads"), today = u.today(), owner = params.owner || "";
+      var leads = S.all("leads"), today = u.today(), owner = params.owner || "", mode = params.mode === "results" ? "results" : "board";
       var open = leads.filter(m.isOpen);
       var due = open.filter(function (l) { return l.nextDate && l.nextDate <= today; }).length;
       var qual = open.filter(m.qualified).length;
@@ -4524,11 +4524,11 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       var values = t("pl_won_value", { a: u.money(GK.x.wonOpportunityValue()) });
       if (m.isFounder()) values += " " + t("pl_confirmed_revenue", { r: u.money(GK.x.confirmedRevenue(u.year(today))) });
       return ui.head({ label: t("nav_pipeline"), title: t("pl_title"), accent: t("pl_accent"), sub: esc(t("pl_sub", { open: open.length, due: due })) + " " + ui.sample(), actions: add }) +
-        GK.insight.pipeline() +
-        '<p class="small muted">' + esc(values) + "</p>" +
-        board(open) +
-        '<div class="grid3">' + closedList(leads, "won") + closedList(leads, "lost") + reasonsPanel(leads, owner) + "</div>" +
-        funnelPanel(owner);
+        '<div class="row between" style="flex-wrap:wrap"><div class="tabs" role="tablist">' + ["board", "results"].map(function (k) {
+          return '<button type="button" role="tab" data-a="pl-mode" data-v="' + k + '" aria-selected="' + (mode === k) + '">' + esc(t("pl_m_" + k)) + "</button>";
+        }).join("") + "</div></div>" +
+        (mode === "board" ? board(open) : GK.insight.pipeline() + '<p class="small muted">' + esc(values) + "</p>" +
+          '<div class="grid3">' + closedList(leads, "won") + closedList(leads, "lost") + reasonsPanel(leads, owner) + "</div>" + funnelPanel(owner));
     },
     after: function () {
       // Opened from elsewhere (Today's "Open lead"): ui.go("pipeline", {id}) opens that lead once.
@@ -4543,6 +4543,8 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       return S.all("leads").filter(function (l) { return m.isOpen(l) && l.nextDate && l.nextDate <= today; }).length || "";
     }
   });
+
+  GK.act("pl-mode", function (el) { ui.go("pipeline", { mode: el.dataset.v }); });
 
   // ---------- stage moves ----------
   function wonFlow(lead, fields) {
@@ -4732,7 +4734,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    cl_title: ["Clients on", "Clients à"], cl_accent: ["board", "bord"], cl_file: ["file", "fiche"],
+    cl_title: ["Clients", "Clients"], cl_accent: ["", ""], cl_file: ["file", "fiche"],
     cl_sub: ["{n} brands · {owed} still owed", "{n} marques · {owed} restant dû"],
     cl_add: ["Add client", "Ajouter un client"], cl_new: ["New", "Nouveau"], cl_client: ["client", "client"],
     cl_no_edit: ["Only sales and the founder can change clients.", "Seuls le commercial et le fondateur peuvent modifier les clients."],
@@ -5028,8 +5030,8 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    pj_title: ["Projects", "Projets en"], pj_accent: ["moving", "cours"],
-    pj_d_accent: ["project", "projet"],
+    pj_title: ["Projects", "Projets"], pj_accent: ["", ""],
+    pj_d_accent: ["", ""],
     pj_sub: ["{n} active · {b} blocked by a payment or an approval", "{n} en cours · {b} bloqués par un paiement ou une validation"],
     pj_new: ["New project", "Nouveau projet"], pj_new_t: ["New", "Nouveau"], pj_new_acc: ["project", "projet"],
     pj_f_all: ["All", "Tous"], pj_f_moh: ["Partner share", "Part partenaire"], pj_f_skin: ["Monthly only", "Mensuels seulement"],
@@ -5883,7 +5885,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    pr_title: ["Cut, check,", "Monter, relire,"], pr_accent: ["approve", "valider"],
+    pr_title: ["Edit files", "Fichiers de montage"], pr_accent: ["", ""],
     pr_sub: ["Every hook and carousel is one file. Editors send them to review, the owner approves them.", "Chaque accroche et chaque carrousel est un fichier. Les monteurs l'envoient en relecture, Heni valide."],
     pr_project: ["Project", "Projet"], pr_all: ["All projects", "Tous les projets"],
     pr_board: ["Board", "Tableau"], pr_reels: ["By reel", "Par reel"],
@@ -6201,7 +6203,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    dv_title: ["Files out the", "Fichiers, au"], dv_accent: ["door", "client"],
+    dv_title: ["Delivery", "Livraison"], dv_accent: ["", ""],
     dv_sub: ["What's approved, what the client signed off, and the message to send. Files only leave once the money is in.", "Ce qui est validé, ce que le client a accepté, et le message à envoyer. Les fichiers partent seulement une fois payés."],
     dv_empty: ["Nothing to deliver right now. Projects show up here once editing starts.", "Rien à livrer pour l'instant. Les projets apparaissent ici dès le montage."],
     dv_k_ready: ["Ready to send", "Prêts à envoyer"], dv_k_ready_n: ["projects with every file approved", "projets avec tous les fichiers validés"],
@@ -6449,7 +6451,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    rp_title: ["What", "Ce qui"], rp_accent: ["won", "gagne"],
+    rp_title: ["Ad results", "Résultats pub"], rp_accent: ["", ""],
     rp_sub: ["The proof that the creative works. Enter the ad numbers per hook, see what won, and send the client a one-page report.", "La preuve que les créas marchent. Saisissez les chiffres des pubs par accroche, voyez ce qui gagne et envoyez au client un rapport d'une page."],
     rp_pick: ["Project", "Projet"],
     rp_none: ["No project is in testing yet. Projects show up here once their files are delivered and the ads are running.", "Aucun projet en test pour l'instant. Les projets apparaissent ici une fois les fichiers livrés et les pubs lancées."],
@@ -6785,9 +6787,9 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    fi_title: ["Money", "L'argent"], fi_accent: ["matters", "compte"],
+    fi_title: ["Money", "Argent"], fi_accent: ["", ""],
     fi_sub: ["Cash, invoices, quotes, overheads, the 13-week forecast, the month close and the yearly cap.", "Trésorerie, factures, devis, charges, prévision à 13 semaines, clôture du mois et plafond annuel."],
-    fi_tab_overview: ["Overview", "Vue d'ensemble"], fi_tab_invoices: ["Invoices", "Factures"], fi_tab_quotes: ["Quotes", "Devis"], fi_tab_expenses: ["Expenses", "Dépenses"],
+    fi_tab_overview: ["Overview", "Vue d'ensemble"], fi_tab_more: ["More", "Plus"], fi_tab_invoices: ["Invoices", "Factures"], fi_tab_quotes: ["Quotes", "Devis"], fi_tab_expenses: ["Expenses", "Dépenses"],
     fi_tab_forecast: ["Cash forecast", "Prévision"], fi_tab_close: ["Month close", "Clôture du mois"], fi_tab_profit: ["Profitability", "Rentabilité"],
     fi_tab_cap: ["Tax and cap", "Taxes et plafond"], fi_tab_commission: ["Commission", "Commission"], fi_tab_export: ["Export", "Export"],
     fi_founder_only: ["Only the owner can change invoices and payments.", "Seul le fondateur peut modifier les factures et les paiements."],
@@ -6977,10 +6979,15 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   // ---------- page ----------
   var FIN = GK.fin = { tabs: {}, order: ["overview", "invoices", "quotes", "expenses", "forecast", "close", "profit", "cap", "commission", "export"] };
   function liveTabs() { return FIN.order.filter(function (k) { return FIN.tabs[k]; }); }
+  var MAIN = ["overview", "invoices", "quotes", "expenses"];
+  /** Four everyday tabs; the planning and year-end screens sit behind "More". */
   function tabsHTML(cur) {
-    return '<div class="tabs" role="tablist">' + liveTabs().map(function (k) {
-      return '<button type="button" role="tab" data-a="fi-tab" data-tab="' + k + '" aria-selected="' + (cur === k) + '">' + esc(t("fi_tab_" + k)) + "</button>";
-    }).join("") + "</div>";
+    var live = liveTabs(), more = live.filter(function (k) { return MAIN.indexOf(k) < 0; }), inMore = more.indexOf(cur) > -1 || P().more;
+    function tab(k, on, lab) { return '<button type="button" role="tab" data-a="fi-tab" data-tab="' + k + '" aria-selected="' + on + '">' + esc(lab || t("fi_tab_" + k)) + "</button>"; }
+    var h = '<div class="tabs" role="tablist">' + live.filter(function (k) { return MAIN.indexOf(k) > -1; }).map(function (k) { return tab(k, cur === k && !inMore); }).join("") +
+      (more.length ? '<button type="button" role="tab" data-a="fi-more" aria-selected="' + !!inMore + '">' + esc(t("fi_tab_more")) + "</button>" : "") + "</div>";
+    if (inMore && more.length) h += '<div class="tabs fi-sub" role="tablist">' + more.map(function (k) { return tab(k, cur === k); }).join("") + "</div>";
+    return h;
   }
   function kpisHTML() {
     var all = invoices(), open = all.filter(isOpen), over = all.filter(function (i) { return m.invStatus(i) === "overdue"; });
@@ -7432,7 +7439,8 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   GK.change("fi-capyear", function (el) { P().capYear = el.value; el.blur(); ui.render(true); });
 
   // ---------- navigation ----------
-  GK.act("fi-tab", function (el) { ui.go("finance", { tab: el.dataset.tab, invoiceId: "", quoteId: "" }); });
+  GK.act("fi-tab", function (el) { var k = el.dataset.tab; ui.go("finance", { tab: k, more: MAIN.indexOf(k) < 0, invoiceId: "", quoteId: "" }); });
+  GK.act("fi-more", function () { var p = P(), first = liveTabs().filter(function (k) { return MAIN.indexOf(k) < 0; })[0]; ui.go("finance", { more: true, tab: MAIN.indexOf(p.tab) < 0 && p.tab ? p.tab : first, invoiceId: "", quoteId: "" }); });
   GK.act("fi-filter", function (el) { ui.go("finance", { filter: el.dataset.f, invoiceId: "" }); });
   GK.act("fi-open", function (el) { ui.closeModal(true); ui.go("finance", { tab: "invoices", invoiceId: el.dataset.id }); });
   GK.act("fi-back", function () { ui.go("finance", { invoiceId: "" }); });
@@ -8724,7 +8732,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    po_title: ["What the client", "Ce que le client"], po_accent: ["sees", "voit"],
+    po_title: ["Client pages", "Pages client"], po_accent: ["", ""],
     po_sub: ["One link per client: their plan, scripts, files, timeline, invoices and boards. Or a quick update to screen-share or send on WhatsApp.", "Un lien par client : son plan, ses scripts, ses fichiers, son calendrier, ses factures et ses tableaux. Ou un point rapide à partager à l'écran ou sur WhatsApp."],
     po_note: ["A quick update is a clean document for a call or a WhatsApp message. For something the client can open and answer, use Client pages.", "Le point rapide est un document clair pour un appel ou un message WhatsApp. Pour quelque chose que le client ouvre et auquel il répond, utilisez les Pages client."],
     po_pick: ["Client", "Client"],
@@ -9611,7 +9619,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   var MSG_SHOWN = 60;
 
   GK.i18n.add({
-    tm_title: ["One", "Une"], tm_accent: ["team", "équipe"],
+    tm_title: ["Team", "Équipe"], tm_accent: ["", ""],
     tm_sub: ["Who does what, by when. And the conversation around it.", "Qui fait quoi, pour quand. Et la discussion autour."],
     tm_tab_tasks: ["Tasks", "Tâches"], tm_tab_msgs: ["Messages", "Messages"], tm_tab_people: ["People", "Personnes"],
     tm_everyone: ["Everyone", "Tout le monde"], tm_mine: ["Mine", "Les miennes"],
@@ -9878,7 +9886,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    tk_title: ["Who does", "Qui fait"], tk_accent: ["what", "quoi"],
+    tk_title: ["Tasks", "Tâches"], tk_accent: ["", ""],
     tk_sub: ["{open} open · {late} overdue · {week} due in the next 7 days", "{open} ouvertes · {late} en retard · {week} à faire sous 7 jours"],
     // insight
     tk_k_open: ["Open", "Ouvertes"], tk_k_open_n: ["across {n} people", "pour {n} personnes"], tk_k_open_1: ["for one person", "pour une personne"],
@@ -10394,7 +10402,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc, TK = GK.tk;
 
   GK.i18n.add({
-    ca_title: ["What's", "Ce qui"], ca_accent: ["coming", "arrive"],
+    ca_title: ["Calendar", "Calendrier"], ca_accent: ["", ""],
     ca_sub: ["Shoots, due dates and follow-ups in one place. Click anything to open it.", "Tournages, échéances et relances au même endroit. Cliquez pour ouvrir."],
     ca_month: ["Month", "Mois"], ca_week: ["Week", "Semaine"], ca_agenda: ["Agenda", "Agenda"], ca_view: ["View", "Affichage"],
     ca_prev: ["Previous", "Précédent"], ca_next: ["Next", "Suivant"], ca_today: ["Today", "Aujourd'hui"],
@@ -10644,7 +10652,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   var SHOWN = 80;
 
   GK.i18n.add({
-    ix_title: ["Talk it", "On en"], ix_accent: ["through", "parle"],
+    ix_title: ["Inbox", "Messages"], ix_accent: ["", ""],
     ix_sub: ["{u} unread in {c} channels · {n} messages this week", "{u} non lus dans {c} canaux · {n} messages cette semaine"],
     ix_general: ["General", "Général"], ix_channels: ["Channels", "Canaux"], ix_find: ["Find a channel", "Trouver un canal"],
     ix_k_unread: ["Unread", "Non lus"], ix_k_unread_n: ["in {n} channels", "dans {n} canaux"], ix_k_unread_0: ["you're up to date", "vous êtes à jour"],
@@ -10947,7 +10955,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   var STEP = 30, MAX_ROWS = 400;
 
   GK.i18n.add({
-    ac_title: ["What", "Ce qui a"], ac_accent: ["changed", "bougé"],
+    ac_title: ["Activity", "Activité"], ac_accent: ["", ""],
     ac_sub: ["{n} changes in the last {d} days, newest first.", "{n} changements ces {d} derniers jours, du plus récent au plus ancien."],
     ac_founder_only: ["The activity timeline is for the owner.", "Le fil d'activité est réservé au fondateur."],
     ac_types: ["Show", "Afficher"], ac_person: ["Person", "Personne"], ac_anyone: ["Everyone", "Tout le monde"], ac_system: ["No one named", "Personne de nommé"],
@@ -11157,7 +11165,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    se_title: ["How the studio", "Comment le studio"], se_accent: ["runs", "tourne"],
+    se_title: ["Settings", "Réglages"], se_accent: ["", ""],
     se_sub: ["Company details for invoices, the packs and their prices, the cost rates and money rules, and where the data lives.", "Les infos de la société pour les factures, les packs et leurs prix, les tarifs de coûts, les règles d'argent et l'endroit où vivent les données."],
     se_tab_company: ["Company", "Société"], se_tab_packs: ["Packs & rules", "Packs & règles"], se_tab_data: ["Data & sharing", "Données & partage"],
     se_read_only: ["Only the owner can change these settings. You can read them.", "Seul le fondateur peut modifier ces réglages. Vous pouvez les consulter."],
@@ -11589,7 +11597,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, X = GK.x, C = GK.charts, esc = u.esc;
 
   GK.i18n.add({
-    db_title: ["Studio", "Le pouls"], db_accent: ["pulse", "du studio"],
+    db_title: ["Numbers", "Chiffres"], db_accent: ["", ""],
     db_sub: ["Are we okay this month, what is slipping, where the next money comes from.", "On va bien ce mois-ci, ce qui glisse, d'où vient le prochain argent."],
     db_founder_only: ["The dashboard is for the owner only.", "Le tableau de bord est réservé au fondateur."],
     db_range: ["Period", "Période"], db_r3: ["3 months", "3 mois"], db_r6: ["6 months", "6 mois"], db_r12: ["12 months", "12 mois"],
@@ -12075,7 +12083,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    st_title: ["Ideas and", "Idées et"], st_accent: ["scripts", "scripts"],
+    st_title: ["Ideas and scripts", "Idées et scripts"], st_accent: ["", ""],
     st_sub: ["Capture an idea in five seconds, shape it, get the owner's go, send it to the project.", "Notez une idée en cinq secondes, travaillez-la, obtenez le feu vert du fondateur, envoyez-la au projet."],
     st_board: ["Board", "Tableau"], st_bank: ["Hook bank", "Banque d'accroches"], st_scripts: ["Script bank", "Banque de scripts"],
     st_sb_sub: ["Every written script, ready to copy or reuse for a new client.", "Tous les scripts écrits, prêts à copier ou réutiliser pour un nouveau client."],
@@ -13544,7 +13552,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   var B = GK.boards = GK.boards || {};
 
   GK.i18n.add({
-    bd_title: ["Plan the", "Planifiez le"], bd_accent: ["shoot", "tournage"],
+    bd_title: ["Whiteboards", "Tableaux blancs"], bd_accent: ["", ""],
     bd_sub: ["Pin the ideas, frames and shot lists for a video or a campaign. Everything saves as you go.", "Posez les idées, les plans et les listes de plans d'une vidéo ou d'une campagne. Tout s'enregistre au fil de l'eau."],
     bd_new: ["New board", "Nouveau tableau"], bd_empty: ["No boards yet. Start from a template.", "Aucun tableau pour l'instant. Partez d'un modèle."],
     bd_no_match: ["No board matches these filters.", "Aucun tableau ne correspond à ces filtres."],

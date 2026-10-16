@@ -4,7 +4,7 @@
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    cl_title: ["Clients on", "Clients à"], cl_accent: ["board", "bord"], cl_file: ["file", "fiche"],
+    cl_title: ["Clients", "Clients"], cl_accent: ["", ""], cl_file: ["file", "fiche"],
     cl_sub: ["{n} brands · {owed} still owed", "{n} marques · {owed} restant dû"],
     cl_add: ["Add client", "Ajouter un client"], cl_new: ["New", "Nouveau"], cl_client: ["client", "client"],
     cl_no_edit: ["Only sales and the founder can change clients.", "Seuls le commercial et le fondateur peuvent modifier les clients."],
