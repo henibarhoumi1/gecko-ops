@@ -290,7 +290,7 @@
 
   function sendPanel(i) {
     var lr = H.linkedReel(i), revisions = H.approvedRevisions(i), selected = H.selectedRevision(i), founder = m.isFounder();
-    var h = '<section class="panel"><h2 class="sec">' + esc(t("st_d_send")) + "</h2>";
+    var h = '<section class="panel" data-tour="st-send"><h2 class="sec">' + esc(t("st_d_send")) + "</h2>";
     if (revisions.length) {
       h += ui.field({ id: "st-d-revision", label: t("st_d_rev_send"), type: "select", value: selected && selected.id || "",
         options: revisions.map(function (r, n) { return [r.id, t("st_revision_n", { n: n + 1, d: u.fmtDate(r.approvedOn || r.snapshot.approvedOn) })]; }),
