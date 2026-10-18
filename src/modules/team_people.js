@@ -89,11 +89,20 @@
   function p() { return ui.p("team"); }
   function isOwner() { return m.isFounder() && m.can("*"); }
   function extra(id) { return ((m.cfg().teamExtra || {})[id]) || {}; }
+  var PRIV = ["private", "pay"];
+  /** Pay and credentials live in config.teamPrivate, which the server strips for everyone but the owner. */
+  function privX(id) { return ((m.cfg().teamPrivate || {})[id]) || {}; }
   function getX(mb, key) {
+    if (PRIV.indexOf(key) > -1) { var pv = privX(mb.id)[key]; if (pv && Object.keys(pv).length) return pv; }
     var own = mb[key], ex = extra(mb.id)[key];
     return (own && Object.keys(own).length ? own : ex) || {};
   }
   function saveX(mb, key, val) {
+    if (PRIV.indexOf(key) > -1) {
+      var pa = u.clone(m.cfg().teamPrivate || {}); pa[mb.id] = Object.assign({}, pa[mb.id] || {}); pa[mb.id][key] = val;
+      if (mb[key] && S.backend !== "supabase") { var clear = {}; clear[key] = null; S.patch("team", mb.id, clear, { log: "" }); }
+      return S.setConfig({ teamPrivate: pa });
+    }
     if (S.backend === "supabase") {
       var all = u.clone(m.cfg().teamExtra || {}); all[mb.id] = Object.assign({}, all[mb.id] || {}); all[mb.id][key] = val;
       return S.setConfig({ teamExtra: all });

@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(26);
+select extensions.plan(28);
 
 insert into auth.users (
   id, aud, role, email, encrypted_password, email_confirmed_at,
@@ -44,7 +44,7 @@ insert into public.workspace_records(workspace_id, collection, id, client_id, pr
   ('10000000-0000-4000-8000-000000000001', 'tasks', 't2', 'c2', 'p2', 'sales', '{"id":"t2","clientId":"c2","projectId":"p2","who":"sales","title":"Private task"}');
 
 insert into public.workspace_settings(workspace_id, data) values
-  ('10000000-0000-4000-8000-000000000001', '{"private":"founder-only"}'),
+  ('10000000-0000-4000-8000-000000000001', '{"private":"founder-only","teamPrivate":{"editor":{"pay":{"type":"day","amount":200}}},"rolePay":{"editor":{"type":"project"}},"cash":{"accounts":[]}}'),
   ('10000000-0000-4000-8000-000000000002', '{}');
 
 insert into public.client_shares(
@@ -109,6 +109,8 @@ select extensions.throws_ok(
 
 select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000002', true);
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000002","role":"authenticated","email":"editor@local.test"}', true);
+select extensions.is(public.get_workspace_config('10000000-0000-4000-8000-000000000001')->'teamPrivate', null::jsonb, 'non-founders never receive team pay or credentials');
+select extensions.ok(public.get_workspace_config('10000000-0000-4000-8000-000000000001') ?| array['rolePay', 'cash'] = false, 'non-founders never receive role pay defaults or the cash book');
 select extensions.is((select count(*) from public.get_workspace_records('10000000-0000-4000-8000-000000000001', 'clients')), 1::bigint, 'editor sees only the assigned client');
 select extensions.is((select count(*) from public.get_workspace_records('10000000-0000-4000-8000-000000000001', 'projects')), 1::bigint, 'editor sees only the assigned project');
 select extensions.is((select count(*) from public.get_workspace_records('10000000-0000-4000-8000-000000000001', 'tasks')), 1::bigint, 'editor sees only the assigned task');
