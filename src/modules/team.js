@@ -6,7 +6,7 @@
 
   GK.i18n.add({
     tm_title: ["Team", "Équipe"], tm_accent: ["", ""],
-    tm_sub: ["Who does what, by when. And the conversation around it.", "Qui fait quoi, pour quand. Et la discussion autour."],
+    tm_sub: ["Who does what, by when.", "Qui fait quoi, pour quand."],
     tm_tab_tasks: ["Tasks", "Tâches"], tm_tab_msgs: ["Messages", "Messages"], tm_tab_people: ["People", "Personnes"],
     tm_everyone: ["Everyone", "Tout le monde"], tm_mine: ["Mine", "Les miennes"],
     tm_add_task: ["Add task", "Ajouter une tâche"], tm_new_task: ["New", "Nouvelle"], tm_new_task_acc: ["task", "tâche"],
@@ -172,11 +172,11 @@
   GK.view("team", {
     render: function () {
       var st = p(), tab = st.tab || "tasks";
-      if (["tasks", "msgs", "people"].indexOf(tab) < 0) tab = "tasks";
-      var tabs = '<div class="tabs" role="tablist">' + ["tasks", "msgs", "people"].map(function (k) {
+      if (["tasks", "people"].indexOf(tab) < 0) tab = "tasks";
+      var tabs = '<div class="tabs" role="tablist">' + ["tasks", "people"].map(function (k) {
         return '<button type="button" role="tab" data-a="tm-tab" data-v="' + k + '" aria-selected="' + (k === tab) + '">' + esc(t("tm_tab_" + k)) + "</button>";
       }).join("") + "</div>";
-      var body = tab === "msgs" ? msgsTab() : tab === "people" ? peopleTab() : tasksTab();
+      var body = tab === "people" ? peopleTab() : tasksTab();
       return ui.head({ label: t("nav_team"), title: t("tm_title"), accent: t("tm_accent"), sub: esc(t("tm_sub")), actions: ui.sample() }) + (tab === "msgs" ? "" : GK.insight.team()) + tabs + body;
     },
     count: function () { var who = GK.me(); return who ? (openTasksFor(who.id).length || "") : ""; },

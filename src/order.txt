@@ -29,7 +29,6 @@ modules/portal_*.js
 modules/team.js
 modules/tasks.js
 modules/calendar.js
-modules/inbox.js
 modules/activity.js
 modules/settings.js
 modules/settings_*.js

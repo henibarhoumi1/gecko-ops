@@ -1,6 +1,6 @@
 /* GECKO Ops · module: activity (founder)
    A timeline of what changed, built from each record's log lines ({at, who, text}), plus invoice payments,
-   messages, finished tasks, lead stage moves (when a lead has no log yet) and client feedback.
+   finished tasks, lead stage moves (when a lead has no log yet) and client feedback.
    Filter by type and person, grouped by day, newest first. Each line opens its record. */
 (function (GK) {
   "use strict";
@@ -19,7 +19,7 @@
     ac_k_who: ["Most active, 7 days", "Le plus actif, 7 jours"], ac_k_who_n: ["{n} changes", "{n} changements"],
     ac_k_quiet: ["Quiet projects", "Projets silencieux"], ac_k_quiet_n: ["active, nothing logged for 7+ days", "en cours, rien depuis 7 jours ou plus"],
     ac_dec_t: ["{n} active projects went quiet", "{n} projets en cours sont silencieux"], ac_dec_t1: ["1 active project went quiet", "1 projet en cours est silencieux"],
-    ac_dec_why: ["{p} has had no change, task or message for {d} days.", "{p} n'a eu aucun changement, tâche ou message depuis {d} jours."],
+    ac_dec_why: ["{p} has had no change or task for {d} days.", "{p} n'a eu aucun changement ni tâche depuis {d} jours."],
     ac_dec_rec: ["Check where it stands and set the next step.", "Vérifiez où il en est et fixez la prochaine étape."],
     ac_dec_btn: ["Open project", "Ouvrir le projet"],
     ac_paid: ["Payment received: {amt}", "Paiement reçu : {amt}"], ac_wrote: ["wrote in", "a écrit dans"],
@@ -31,7 +31,7 @@
     ac_clear: ["Clear filters", "Effacer les filtres"]
   });
 
-  var TYPES = ["project", "lead", "client", "money", "task", "message", "studio"];
+  var TYPES = ["project", "lead", "client", "money", "task", "studio"];
   var ICON = { project: "projects", lead: "lead", client: "clients", money: "finance", task: "tasks", message: "inbox", studio: "studio" };
   var COLL = {
     projects: { type: "project", label: function (x) { return m.projectLabel(x); }, open: function (x) { return ["projects", { id: x.id }]; } },
@@ -95,10 +95,6 @@
         });
       });
     });
-    S.all("msgs").forEach(function (x) {
-      if (!x.at) return;
-      push({ at: x.at, who: x.who || "", type: "message", text: t("ac_wrote"), label: chLabel(x.ch), ex: String(x.text || "").replace(/\s+/g, " ").slice(0, 140), open: ["inbox", { ch: x.ch }] });
-    });
     S.all("feedback").forEach(function (f) {
       if (!f.at) return;
       push({ at: f.at, who: "client", type: "client", text: t("ac_fb", { k: t("ac_fb_" + (f.kind || "comment")) }), label: m.brand(f.clientId), ex: String(f.text || "").slice(0, 140), open: f.projectId && m.project(f.projectId) ? ["projects", { id: f.projectId }] : ["clients", { id: f.clientId }] });
@@ -116,14 +112,13 @@
     });
   }
 
-  /** Active projects with no log, task or message for 7+ days. */
+  /** Active projects with no log or task for 7+ days. */
   function quiet() {
     var td = u.today(), lim = u.addDays(td, -7), last = {};
     function bump(id, d) { if (id && d && (!last[id] || d > last[id])) last[id] = d; }
     var act = S.all("projects").filter(function (p) { return p.stage !== "retention"; });
     act.forEach(function (p) { (p.log || []).forEach(function (l) { bump(p.id, day(l.at)); }); bump(p.id, p.planApprovedOn); bump(p.id, p.shootDate && p.shootDate <= td ? p.shootDate : ""); });
     S.all("tasks").forEach(function (x) { bump(x.projectId, x.doneOn); (x.log || []).forEach(function (l) { bump(x.projectId, day(l.at)); }); });
-    S.all("msgs").forEach(function (x) { bump(x.ch, day(x.at)); });
     S.all("invoices").forEach(function (i) { (i.payments || []).forEach(function (p) { bump(i.projectId, p.date); }); bump(i.projectId, i.issued); });
     return act.filter(function (p) { return !last[p.id] || last[p.id] < lim; }).map(function (p) { return { p: p, last: last[p.id] || "" }; })
       .sort(function (a, b) { return (a.last || "0") < (b.last || "0") ? -1 : 1; });

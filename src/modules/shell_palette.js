@@ -23,7 +23,7 @@
     sh_k_then: ["then", "puis"]
   });
 
-  var GO = [["h", "today"], ["i", "inbox"], ["t", "tasks"], ["c", "calendar"], ["l", "pipeline"], ["k", "clients"], ["p", "projects"], ["r", "production"], ["d", "deliveries"], ["s", "studio"], ["w", "boards"], ["f", "finance"], ["m", "team"], [",", "settings"]];
+  var GO = [["h", "today"], ["t", "tasks"], ["c", "calendar"], ["l", "pipeline"], ["k", "clients"], ["p", "projects"], ["r", "production"], ["d", "deliveries"], ["s", "studio"], ["w", "boards"], ["f", "finance"], ["m", "team"], [",", "settings"]];
 
   function norm(s) { return String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); }
   /** 0 = no match; higher is better */

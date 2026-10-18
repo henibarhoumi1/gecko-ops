@@ -82,7 +82,7 @@
 
   /** Sidebar groups (DESIGN.md §3). A view not listed here lands in Main. */
   UI.GROUPS = [
-    { id: "main", views: ["guide", "today", "tasks", "calendar", "inbox"] },
+    { id: "main", views: ["guide", "today", "tasks", "calendar"] },
     { id: "sell", views: ["pipeline", "clients"] },
     { id: "make", views: ["projects", "shootday", "production", "deliveries", "studio", "boards", "reports"] },
     { id: "money", views: ["dashboard", "finance", "portal"] },
@@ -473,7 +473,7 @@
   }
   /** Phone bottom bar: 5 items + More (opens the full sidebar as a drawer). */
   function bottomHTML(nav) {
-    var pick = ["today", "tasks", "inbox", "calendar", "projects"].filter(function (v) { return nav.indexOf(v) > -1; });
+    var pick = ["today", "tasks", "calendar", "shootday", "projects"].filter(function (v) { return nav.indexOf(v) > -1; });
     nav.forEach(function (v) { if (pick.length < 5 && pick.indexOf(v) < 0 && !UI.NAV_PARENT[v]) pick.push(v); });
     var inMore = pick.indexOf(UI.state.view) < 0;
     return '<nav class="bnav" aria-label="GECKO Ops">' + pick.map(function (v) {

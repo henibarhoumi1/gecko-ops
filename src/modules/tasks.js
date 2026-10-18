@@ -6,7 +6,7 @@
      status: "" | "doing"   set from the board or the panel; "Doing" also includes open tasks due today or overdue
      note:   free text      shown and edited in the side panel
      log:    [{at, who, text}] the store's activity lines (written through S.put / S.patch {log})
-   Shared helpers for the tasks, calendar, inbox and activity views live on GK.tk. */
+   Shared helpers for the tasks, calendar and activity views live on GK.tk. */
 (function (GK) {
   "use strict";
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
@@ -64,7 +64,7 @@
     tk_esc: ["Esc closes", "Échap pour fermer"]
   });
 
-  // ---------- shared helpers (used by calendar, inbox and activity too) ----------
+  // ---------- shared helpers (used by calendar and activity too) ----------
   var TK = GK.tk = GK.tk || {};
   /** Inject one <style id> once. Tokens only. */
   TK.css = function (id, text) {
