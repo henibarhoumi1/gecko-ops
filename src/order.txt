@@ -27,9 +27,9 @@ modules/finance_*.js
 modules/portal.js
 modules/portal_*.js
 modules/team.js
+modules/team_*.js
 modules/tasks.js
 modules/calendar.js
-modules/inbox.js
 modules/activity.js
 modules/settings.js
 modules/settings_*.js
@@ -37,12 +37,15 @@ modules/docs*.js
 modules/guide*.js
 modules/dashboard.js
 modules/dashboard_*.js
+modules/shootday.js
 modules/studio.js
 modules/studio_*.js
 modules/boards.js
 modules/boards_*.js
 modules/clientmode.js
 modules/clientmode_*.js
+modules/marketing.js
+modules/marketing_*.js
 modules/shell.js
 modules/shell_*.js
 core/main.js

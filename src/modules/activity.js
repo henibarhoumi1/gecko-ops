@@ -1,6 +1,6 @@
 /* GECKO Ops · module: activity (founder)
    A timeline of what changed, built from each record's log lines ({at, who, text}), plus invoice payments,
-   messages, finished tasks, lead stage moves (when a lead has no log yet) and client feedback.
+   finished tasks, lead stage moves (when a lead has no log yet) and client feedback.
    Filter by type and person, grouped by day, newest first. Each line opens its record. */
 (function (GK) {
   "use strict";
@@ -8,18 +8,18 @@
   var STEP = 30, MAX_ROWS = 400;
 
   GK.i18n.add({
-    ac_title: ["What", "Ce qui a"], ac_accent: ["changed", "bougé"],
+    ac_title: ["Activity", "Activité"], ac_accent: ["", ""],
     ac_sub: ["{n} changes in the last {d} days, newest first.", "{n} changements ces {d} derniers jours, du plus récent au plus ancien."],
-    ac_founder_only: ["The activity timeline is for Heni.", "Le fil d'activité est réservé à Heni."],
+    ac_founder_only: ["The activity timeline is for the owner.", "Le fil d'activité est réservé au fondateur."],
     ac_types: ["Show", "Afficher"], ac_person: ["Person", "Personne"], ac_anyone: ["Everyone", "Tout le monde"], ac_system: ["No one named", "Personne de nommé"],
-    ac_t_project: ["Projects", "Projets"], ac_t_lead: ["Leads", "Prospects"], ac_t_client: ["Clients", "Clients"], ac_t_money: ["Money", "Argent"],
+    ac_t_project: ["Projects", "Projets"], ac_t_lead: ["Leads", "Prospects"], ac_t_client: ["Clients", "Clients"], ac_t_money: ["Finance", "Finance"],
     ac_t_task: ["Tasks", "Tâches"], ac_t_message: ["Messages", "Messages"], ac_t_studio: ["Studio", "Studio"],
     ac_k_changes: ["Changes, last 7 days", "Changements, 7 jours"], ac_k_changes_n: ["{d} vs the 7 days before ({p})", "{d} par rapport aux 7 jours d'avant ({p})"],
     ac_k_cash: ["Cash received, 7 days", "Encaissé, 7 jours"], ac_k_cash_n: ["{n} payments · {p} the week before", "{n} paiements · {p} la semaine d'avant"], ac_k_cash_n1: ["1 payment · {p} the week before", "1 paiement · {p} la semaine d'avant"],
     ac_k_who: ["Most active, 7 days", "Le plus actif, 7 jours"], ac_k_who_n: ["{n} changes", "{n} changements"],
     ac_k_quiet: ["Quiet projects", "Projets silencieux"], ac_k_quiet_n: ["active, nothing logged for 7+ days", "en cours, rien depuis 7 jours ou plus"],
     ac_dec_t: ["{n} active projects went quiet", "{n} projets en cours sont silencieux"], ac_dec_t1: ["1 active project went quiet", "1 projet en cours est silencieux"],
-    ac_dec_why: ["{p} has had no change, task or message for {d} days.", "{p} n'a eu aucun changement, tâche ou message depuis {d} jours."],
+    ac_dec_why: ["{p} has had no change or task for {d} days.", "{p} n'a eu aucun changement ni tâche depuis {d} jours."],
     ac_dec_rec: ["Check where it stands and set the next step.", "Vérifiez où il en est et fixez la prochaine étape."],
     ac_dec_btn: ["Open project", "Ouvrir le projet"],
     ac_paid: ["Payment received: {amt}", "Paiement reçu : {amt}"], ac_wrote: ["wrote in", "a écrit dans"],
@@ -31,14 +31,14 @@
     ac_clear: ["Clear filters", "Effacer les filtres"]
   });
 
-  var TYPES = ["project", "lead", "client", "money", "task", "message", "studio"];
+  var TYPES = ["project", "lead", "client", "money", "task", "studio"];
   var ICON = { project: "projects", lead: "lead", client: "clients", money: "finance", task: "tasks", message: "inbox", studio: "studio" };
   var COLL = {
     projects: { type: "project", label: function (x) { return m.projectLabel(x); }, open: function (x) { return ["projects", { id: x.id }]; } },
     contracts: { type: "project", label: function (x) { return m.brand(x.clientId) + " · " + m.pack(x.pack).name; }, open: function (x) { return ["clients", { id: x.clientId }]; } },
     leads: { type: "lead", label: function (x) { return x.brand; }, open: function (x) { return ["pipeline", { id: x.id }]; } },
     clients: { type: "client", label: function (x) { return x.brand; }, open: function (x) { return ["clients", { id: x.id }]; } },
-    shares: { type: "client", label: function (x) { return x.title || m.brand(x.clientId); }, open: function () { return ["portal", {}]; } },
+    shares: { type: "client", label: function (x) { return x.title || m.brand(x.clientId); }, open: function (x) { return ["clients", { id: x.clientId, tab: "portal" }]; } },
     invoices: { type: "money", label: function (x) { return (x.no || t("inv_draft")) + " · " + m.brand(x.clientId); }, open: function (x) { return ["finance", { tab: "invoices", invoiceId: x.id }]; } },
     quotes: { type: "money", label: function (x) { return (x.no || x.title || "") + " · " + m.brand(x.clientId); }, open: function (x) { return ["finance", { tab: "quotes", quoteId: x.id }]; } },
     expenses: { type: "money", label: function (x) { return x.label || ""; }, open: function () { return ["finance", { tab: "expenses" }]; } },
@@ -95,10 +95,6 @@
         });
       });
     });
-    S.all("msgs").forEach(function (x) {
-      if (!x.at) return;
-      push({ at: x.at, who: x.who || "", type: "message", text: t("ac_wrote"), label: chLabel(x.ch), ex: String(x.text || "").replace(/\s+/g, " ").slice(0, 140), open: ["inbox", { ch: x.ch }] });
-    });
     S.all("feedback").forEach(function (f) {
       if (!f.at) return;
       push({ at: f.at, who: "client", type: "client", text: t("ac_fb", { k: t("ac_fb_" + (f.kind || "comment")) }), label: m.brand(f.clientId), ex: String(f.text || "").slice(0, 140), open: f.projectId && m.project(f.projectId) ? ["projects", { id: f.projectId }] : ["clients", { id: f.clientId }] });
@@ -116,14 +112,13 @@
     });
   }
 
-  /** Active projects with no log, task or message for 7+ days. */
+  /** Active projects with no log or task for 7+ days. */
   function quiet() {
     var td = u.today(), lim = u.addDays(td, -7), last = {};
     function bump(id, d) { if (id && d && (!last[id] || d > last[id])) last[id] = d; }
-    var act = S.all("projects").filter(function (p) { return p.stage !== "done"; });
+    var act = S.all("projects").filter(function (p) { return p.stage !== "retention"; });
     act.forEach(function (p) { (p.log || []).forEach(function (l) { bump(p.id, day(l.at)); }); bump(p.id, p.planApprovedOn); bump(p.id, p.shootDate && p.shootDate <= td ? p.shootDate : ""); });
     S.all("tasks").forEach(function (x) { bump(x.projectId, x.doneOn); (x.log || []).forEach(function (l) { bump(x.projectId, day(l.at)); }); });
-    S.all("msgs").forEach(function (x) { bump(x.ch, day(x.at)); });
     S.all("invoices").forEach(function (i) { (i.payments || []).forEach(function (p) { bump(i.projectId, p.date); }); bump(i.projectId, i.issued); });
     return act.filter(function (p) { return !last[p.id] || last[p.id] < lim; }).map(function (p) { return { p: p, last: last[p.id] || "" }; })
       .sort(function (a, b) { return (a.last || "0") < (b.last || "0") ? -1 : 1; });

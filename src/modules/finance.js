@@ -5,12 +5,12 @@
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    fi_title: ["Money", "L'argent"], fi_accent: ["matters", "compte"],
+    fi_title: ["Finance", "Finance"], fi_accent: ["", ""],
     fi_sub: ["Cash, invoices, quotes, overheads, the 13-week forecast, the month close and the yearly cap.", "Trésorerie, factures, devis, charges, prévision à 13 semaines, clôture du mois et plafond annuel."],
-    fi_tab_overview: ["Overview", "Vue d'ensemble"], fi_tab_invoices: ["Invoices", "Factures"], fi_tab_quotes: ["Quotes", "Devis"], fi_tab_expenses: ["Expenses", "Dépenses"],
+    fi_tab_overview: ["Overview", "Vue d'ensemble"], fi_tab_more: ["More", "Plus"], fi_tab_invoices: ["Invoices", "Factures"], fi_tab_quotes: ["Quotes", "Devis"], fi_tab_expenses: ["Expenses", "Dépenses"],
     fi_tab_forecast: ["Cash forecast", "Prévision"], fi_tab_close: ["Month close", "Clôture du mois"], fi_tab_profit: ["Profitability", "Rentabilité"],
     fi_tab_cap: ["Tax and cap", "Taxes et plafond"], fi_tab_commission: ["Commission", "Commission"], fi_tab_export: ["Export", "Export"],
-    fi_founder_only: ["Only Heni can change invoices and payments.", "Seul Heni peut modifier les factures et les paiements."],
+    fi_founder_only: ["Only the owner can change invoices and payments.", "Seul le fondateur peut modifier les factures et les paiements."],
     fi_acct: ["Accountant to confirm.", "À confirmer par le comptable."],
     fi_estimate: ["estimate", "estimation"],
     // kpis
@@ -195,12 +195,17 @@
   }
 
   // ---------- page ----------
-  var FIN = GK.fin = { tabs: {}, order: ["overview", "invoices", "quotes", "expenses", "forecast", "close", "profit", "cap", "commission", "export"] };
+  var FIN = GK.fin = { tabs: {}, order: ["overview", "cash", "invoices", "quotes", "expenses", "forecast", "offers", "close", "profit", "cap", "commission", "export"] };
   function liveTabs() { return FIN.order.filter(function (k) { return FIN.tabs[k]; }); }
+  var MAIN = ["overview", "cash", "invoices", "quotes", "expenses"];
+  /** Five everyday tabs; the planning and year-end screens sit behind "More". */
   function tabsHTML(cur) {
-    return '<div class="tabs" role="tablist">' + liveTabs().map(function (k) {
-      return '<button type="button" role="tab" data-a="fi-tab" data-tab="' + k + '" aria-selected="' + (cur === k) + '">' + esc(t("fi_tab_" + k)) + "</button>";
-    }).join("") + "</div>";
+    var live = liveTabs(), more = live.filter(function (k) { return MAIN.indexOf(k) < 0; }), inMore = more.indexOf(cur) > -1 || P().more;
+    function tab(k, on, lab) { return '<button type="button" role="tab" data-a="fi-tab" data-tab="' + k + '" aria-selected="' + on + '">' + esc(lab || t("fi_tab_" + k)) + "</button>"; }
+    var h = '<div class="tabs" role="tablist">' + live.filter(function (k) { return MAIN.indexOf(k) > -1; }).map(function (k) { return tab(k, cur === k && !inMore); }).join("") +
+      (more.length ? '<button type="button" role="tab" data-a="fi-more" aria-selected="' + !!inMore + '">' + esc(t("fi_tab_more")) + "</button>" : "") + "</div>";
+    if (inMore && more.length) h += '<div class="tabs fi-sub" role="tablist">' + more.map(function (k) { return tab(k, cur === k); }).join("") + "</div>";
+    return h;
   }
   function kpisHTML() {
     var all = invoices(), open = all.filter(isOpen), over = all.filter(function (i) { return m.invStatus(i) === "overdue"; });
@@ -460,6 +465,7 @@
       ui.field({ id: "fi-p-net", label: t("fi_p_net"), type: "number", value: net, attrs: ' min="0" step="0.01"' }) +
       ui.field({ id: "fi-p-wh", label: t("fi_p_wh"), type: "number", value: wh, hint: c && c.taxId ? t("fi_p_wh_h", { p: r.withholding }) : t("fi_p_wh_none"), attrs: ' min="0" step="0.01"' }) +
       ui.field({ id: "fi-p-method", label: t("fi_p_method"), type: "select", value: "transfer", options: METHODS.map(function (k) { return [k, t("fi_m_" + k)]; }) }) +
+      (FIN.accountField ? FIN.accountField("fi-p-acct", t("fi_cb_pay_acct"), "") : "") +
       ui.field({ id: "fi-p-ref", label: t("fi_p_ref"), placeholder: t("fi_p_ref_ph"), span: true }) + "</div>";
     ui.modal({ title: t("fi_pay_title"), accent: t("fi_pay_accent"), body: body,
       foot: ui.btn(t("cancel"), "close", { cls: "ghost" }) + ui.btn(t("save"), "fi-pay-save", { cls: "primary", data: { id: i.id } }) });
@@ -471,7 +477,7 @@
     if (!date) return u.focus("fi-p-date");
     if (net < 0 || wh < 0 || net + wh <= 0) { u.focus("fi-p-net"); return ui.toast(t("fi_pay_zero")); }
     if (r3(net + wh) > bal + 0.0005) { u.focus("fi-p-net"); return ui.toast(t("fi_overpay", { b: fmP(bal) })); }
-    var pays = (i.payments || []).concat([{ date: date, net: net, withheld: wh, method: u.val("fi-p-method") || "transfer", ref: u.val("fi-p-ref").trim() }]);
+    var pays = (i.payments || []).concat([{ date: date, net: net, withheld: wh, method: u.val("fi-p-method") || "transfer", ref: u.val("fi-p-ref").trim(), account: u.val("fi-p-acct") || "" }]);
     var saved = S.patch("invoices", i.id, { payments: pays }, { log: t("fi_log_pay", { a: fmP(net + wh), d: u.fmtDate(date) }) });
     if (saved) syncLeadPayment(saved);
     ui.closeModal(true); ui.toast(t("fi_pay_saved"));
@@ -652,7 +658,8 @@
   GK.change("fi-capyear", function (el) { P().capYear = el.value; el.blur(); ui.render(true); });
 
   // ---------- navigation ----------
-  GK.act("fi-tab", function (el) { ui.go("finance", { tab: el.dataset.tab, invoiceId: "", quoteId: "" }); });
+  GK.act("fi-tab", function (el) { var k = el.dataset.tab; ui.go("finance", { tab: k, more: MAIN.indexOf(k) < 0, invoiceId: "", quoteId: "" }); });
+  GK.act("fi-more", function () { var p = P(), first = liveTabs().filter(function (k) { return MAIN.indexOf(k) < 0; })[0]; ui.go("finance", { more: true, tab: MAIN.indexOf(p.tab) < 0 && p.tab ? p.tab : first, invoiceId: "", quoteId: "" }); });
   GK.act("fi-filter", function (el) { ui.go("finance", { filter: el.dataset.f, invoiceId: "" }); });
   GK.act("fi-open", function (el) { ui.closeModal(true); ui.go("finance", { tab: "invoices", invoiceId: el.dataset.id }); });
   GK.act("fi-back", function () { ui.go("finance", { invoiceId: "" }); });

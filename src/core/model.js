@@ -47,10 +47,11 @@
       upfront: deposit (50% to book) | month (monthly, paid in advance) | full (paid upfront). */
   M.PACKS_DEFAULT = {
     audit:      { name: "Ad Audit",        market: "tunisia", currency: "TND", price: 150,  launch: null, monthly: false, upfront: "full",    shootDays: 0, angles: 0, reels: 0,  variations: 0,  carousels: 0, cost: 0 },
-    test:       { name: "Test Campaign",   market: "tunisia", currency: "TND", price: 1500, launch: 1000, monthly: false, upfront: "deposit", shootDays: 1, angles: 3, reels: 3,  variations: 6,  carousels: 1, cost: 350 },
-    monthly8:   { name: "Monthly 8",       market: "tunisia", currency: "TND", price: 3200, launch: 2500, monthly: true,  upfront: "month",   shootDays: 2, angles: 4, reels: 8,  variations: 16, carousels: 2, cost: 700, minMonths: 3 },
-    monthly12:  { name: "Monthly 12",      market: "tunisia", currency: "TND", price: 4800, launch: 3800, monthly: true,  upfront: "month",   shootDays: 3, angles: 4, reels: 12, variations: 24, carousels: 2, cost: 1050, minMonths: 3, ads: true },
-    campaign:   { name: "Campaign",        market: "tunisia", currency: "TND", price: 4800, launch: 3600, monthly: false, upfront: "deposit", shootDays: 2, angles: 4, reels: 10, variations: 10, carousels: 2, cost: 700 },
+    test:       { name: "Test Campaign",   market: "tunisia", currency: "TND", price: 1500, launch: 1000, monthly: false, upfront: "deposit", shootDays: 1, angles: 3, reels: 3,  variations: 6,  carousels: 1, statics: 0,  mashups: 0, cost: 380 },
+    regular:    { name: "Regular",          market: "tunisia", currency: "TND", price: 3200, launch: 2200, monthly: true,  upfront: "month",   shootDays: 1, angles: 3, reels: 10, variations: 20, carousels: 1, statics: 4,  mashups: 0, cost: 380, minMonths: 3, rev: 4 },
+    premier:    { name: "Pro",              market: "tunisia", currency: "TND", price: 3900, launch: 3200, monthly: true,  upfront: "month",   shootDays: 1, angles: 4, reels: 15, variations: 30, carousels: 2, statics: 6,  mashups: 2, cost: 380, minMonths: 3 },
+    premium:    { name: "Creative Partner", market: "tunisia", currency: "TND", price: 4800, launch: null, monthly: true,  upfront: "month",   shootDays: 1, angles: 4, reels: 20, variations: 60, carousels: 2, statics: 10, mashups: 4, cost: 500, minMonths: 3, ads: true, from: true, note: "20 reels and up, sized to the volume the brand needs; VIP: priority dates, a direct line, Meta ads run by Gecko" },
+    campaign:   { name: "Campaign",        market: "tunisia", currency: "TND", price: 4800, launch: 3600, monthly: false, upfront: "deposit", shootDays: 2, angles: 4, reels: 10, variations: 10, carousels: 2, cost: 760 },
     remote_edit:{ name: "Remote Ad Edit Pack", market: "international", currency: "USD", price: 700, launch: null, monthly: true, upfront: "month", shootDays: 0, angles: 0, reels: 8, variations: 16, carousels: 0, cost: 240 },
     gulf_trip:  { name: "Gulf Shoot Trip", market: "international", currency: "USD", price: 3500, launch: null, monthly: false, upfront: "deposit", shootDays: 2, angles: 4, reels: 8, variations: 16, carousels: 0, cost: 0 },
     tn_day:     { name: "Tunisia Shoot Day", market: "international", currency: "EUR", price: 950, launch: null, monthly: false, upfront: "deposit", shootDays: 1, angles: 2, reels: 4, variations: 4, carousels: 0, cost: 350 },
@@ -58,16 +59,7 @@
     custom:     { name: "Custom",          market: "tunisia", currency: "TND", price: 0,    launch: null, monthly: false, upfront: "deposit", shootDays: 1, angles: 0, reels: 0,  variations: 0,  carousels: 0, cost: 0 }
   };
   /** Add-ons, as quote lines. at: price, or pct of the offer (express). */
-  M.ADDONS_DEFAULT = [
-    { key: "reel_existing", name: "Extra reel from existing footage", price: 150 },
-    { key: "reel_shoot", name: "Extra reel with a new half-day shoot", price: 400 },
-    { key: "carousel", name: "Extra carousel", price: 120 },
-    { key: "community", name: "Posting and community management (month)", price: 600 },
-    { key: "ads", name: "Meta ads management (month)", price: 700 },
-    { key: "raw", name: "Raw footage", price: 300 },
-    { key: "express", name: "Express delivery (72 hours)", pct: 25 },
-    { key: "revision", name: "Extra revision round (per piece)", price: 80 }
-  ];
+  M.ADDONS_DEFAULT = []; // add-ons removed (Oct 2026); quotes use custom lines
   /** Cost rates (TND). Owner pay is what Heni is paid on a project before the partner share is worked out. */
   M.RATES_DEFAULT = {
     camera: 300, transport: 50, food: 30, editReel: 30, assistant: 120, lights: 80,
@@ -116,12 +108,13 @@
   // ---------- lookups ----------
   function S() { return GK.store; }
   M.cfg = function () { return S().config() || M.defaultConfig(); };
-  function packsCfg() { var c = M.cfg(); return c.version >= 2 && c.packs ? c.packs : M.PACKS_DEFAULT; }
+  /** Saved offers from before Regular, Pro and Creative Partner (18 Oct 2026) fall back to the defaults. */
+  function packsCfg() { var c = M.cfg(); return c.version >= 2 && c.packs && c.packs.regular && c.packs.regular.rev === 4 ? c.packs : M.PACKS_DEFAULT; }
   M.pack = function (k) { if (M.OLD && M.OLD.pack[k]) k = M.OLD.pack[k]; var p = packsCfg()[k] || M.PACKS_DEFAULT[k]; return p ? Object.assign({ currency: "TND", launch: null, upfront: p && p.monthly ? "month" : "deposit", market: "tunisia" }, p) : { name: k || "—", currency: "TND", price: 0, launch: null, monthly: false, upfront: "deposit", reels: 0, variations: 0, carousels: 0, angles: 0, shootDays: 0, cost: 0 }; };
   M.packKeys = function (market) { var ps = packsCfg(); return Object.keys(ps).filter(function (k) { return !market || (ps[k].market || "tunisia") === market; }); };
-  M.addons = function () { var c = M.cfg(); return c.version >= 2 && c.addons ? c.addons : M.ADDONS_DEFAULT; };
+  M.addons = function () { return M.ADDONS_DEFAULT; };
   /** Stored rules and rates from the first version (old packs, 75,000 cap) are ignored, except the opening cash. */
-  M.rules = function () { var c = M.cfg(), r = c.version >= 2 ? (c.rules || {}) : { openingCash: (c.rules || {}).openingCash }; var d = M.RULES_DEFAULT; var o = {}; for (var k in d) o[k] = r[k] != null ? r[k] : d[k]; return o; };
+  M.rules = function () { var c = M.cfg(), r = c.version >= 2 ? (c.rules || {}) : { openingCash: (c.rules || {}).openingCash }; var d = M.RULES_DEFAULT; var o = {}; for (var k in d) o[k] = r[k] != null ? r[k] : d[k]; if (typeof M.cashTotal === "function") { var ct = M.cashTotal(); if (ct != null) o.openingCash = ct; } return o; };
   M.rates = function () { var c = M.cfg(), r = c.version >= 2 ? (c.rates || {}) : {}; var d = M.RATES_DEFAULT; var o = {}; for (var k in d) o[k] = r[k] != null ? r[k] : d[k]; return o; };
   M.company = function () { var c = M.cfg().company || {}; var d = M.COMPANY_DEFAULT; var o = {}; for (var k in d) o[k] = c[k] != null && c[k] !== "" ? c[k] : d[k]; o.appUrl = c.appUrl != null ? c.appUrl : d.appUrl; o.mf = c.mf || ""; o.legal = c.legal || ""; o.invoiceNote = c.invoiceNote || ""; o.address = c.address || (u.fr() ? "Tunis, Tunisie" : "Tunis, Tunisia"); return o; };
   M.client = function (id) { return S().get("clients", id); };
@@ -463,7 +456,7 @@
       ["other", t("est_transport", { n: days, r: r.transport }), days * r.transport],
       ["other", t("est_food", { n: days, r: r.food }), days * r.food]
     ];
-    if (pk.ads || pk.reels >= 10) lines.push(["freelance", t("est_assistant", { n: days, r: r.assistant }), days * r.assistant]);
+    if (pk.ads) lines.push(["freelance", t("est_assistant", { n: days, r: r.assistant }), days * r.assistant]);
     return lines.filter(function (l) { return l[2] > 0; }).map(function (l) { return { id: u.uid("c"), kind: l[0], label: l[1], amount: Math.round(l[2]) }; });
   };
 
@@ -522,10 +515,13 @@
 
   // ---------- roles ----------
   M.ROLE_NAV = {
-    founder: ["guide", "today", "tasks", "calendar", "inbox", "activity", "dashboard", "pipeline", "clients", "projects", "production", "studio", "boards", "deliveries", "reports", "finance", "portal", "docs", "team", "settings"],
-    sales: ["guide", "today", "tasks", "calendar", "inbox", "pipeline", "clients", "projects", "production", "studio", "boards", "deliveries", "reports", "portal", "docs", "team", "settings"],
-    editor: ["guide", "today", "tasks", "calendar", "inbox", "projects", "production", "studio", "boards", "deliveries", "docs", "team"],
-    assistant: ["guide", "today", "tasks", "calendar", "inbox", "projects", "production", "studio", "boards", "docs", "team"]
+    founder: ["guide", "today", "tasks", "calendar", "activity", "dashboard", "pipeline", "clients", "projects", "production", "studio", "boards", "deliveries", "reports", "finance", "marketing", "docs", "team", "settings"],
+    // Client Lead: selling and client follow-up; no money screens
+    sales: ["guide", "today", "tasks", "calendar", "pipeline", "clients", "projects", "studio", "boards", "deliveries", "reports", "marketing", "docs", "team"],
+    // Editors: only what they edit
+    editor: ["guide", "today", "tasks", "calendar", "projects", "studio", "deliveries", "docs"],
+    // Production (manager or assistant): shoots, scripts, boards
+    assistant: ["guide", "today", "tasks", "calendar", "projects", "production", "studio", "boards", "docs", "team"]
   };
   /** Permission check for the current viewer. */
   M.can = function (what) {
@@ -534,9 +530,9 @@
     var P = {
       founder: ["*"],
       // Client Lead: opens and moves deals; drafts proposals (sending one needs the founder's approval); no money, costs or pay
-      sales: ["leads", "leads.import", "clients", "projects.create", "projects.edit", "quotes.draft", "tasks", "msgs", "portal", "outreach", "reports.edit", "ideas", "boards", "docs", "docs.edit"],
+      sales: ["leads", "leads.import", "clients", "projects.create", "projects.edit", "quotes.draft", "tasks", "msgs", "portal", "outreach", "reports.edit", "ideas", "boards", "docs", "docs.edit", "shoot"],
       editor: ["tasks", "msgs", "files.status", "files.edit", "ideas", "boards", "docs"],
-      assistant: ["tasks", "msgs", "ideas", "boards", "docs"]
+      assistant: ["tasks", "msgs", "ideas", "boards", "docs", "shoot"]
     }[role] || [];
     return P.indexOf("*") > -1 || P.indexOf(what) > -1 || what === "view";
   };
@@ -544,8 +540,8 @@
 
   // ---------- migration from the first version (old packs, stages and channels) ----------
   M.OLD = {
-    pack: { GRIP: "test", SEASON: "campaign", SKIN10: "monthly8", SKIN20: "monthly12" },
-    packName: [[/SKIN 20/g, "Monthly 12"], [/SKIN 10/g, "Monthly 8"], [/\bSKIN\b/g, "Monthly"], [/\bGRIP\b/g, "Test Campaign"], [/\bSEASON\b/g, "Campaign"]],
+    pack: { GRIP: "test", SEASON: "campaign", SKIN10: "premier", SKIN20: "premium", monthly8: "premier", monthly12: "premium" },
+    packName: [[/SKIN 20/g, "Premium"], [/SKIN 10/g, "Premier"], [/Monthly 12/g, "Premium"], [/Monthly 8/g, "Premier"], [/\bSKIN\b/g, "Monthly"], [/\bGRIP\b/g, "Test Campaign"], [/\bSEASON\b/g, "Campaign"]],
     stage: { onboard: "onboarding", plan: "scripting", edit: "editing", testing: "delivered", report: "paid", done: "retention" },
     lead: { dm: "contacted", replied: "conversation", call: "meeting_booked", proposal: "proposal_sent" },
     source: { teardown_dm: "outbound_dm", media_buyer: "referral_personal", referral: "referral_client", warm: "referral_personal", inbound: "ig_organic" },

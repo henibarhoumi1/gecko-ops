@@ -6,7 +6,7 @@
 
 The same file runs as a claude.ai artifact (shared team data through the artifact database)
 and as a plain static website (data kept in the browser until a hosted backend is plugged in).
-The brand fonts (Geist, Instrument Serif; woff2 from gecko/brand/fonts) are inlined, so nothing loads from a font CDN.
+The brand font (Familjen Grotesk; woff2 from gecko/brand/fonts) are inlined, so nothing loads from a font CDN.
 """
 import base64, json, os, pathlib, re, sys
 

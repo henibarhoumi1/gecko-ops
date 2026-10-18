@@ -8,7 +8,7 @@
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc, TK = GK.tk;
 
   GK.i18n.add({
-    ca_title: ["What's", "Ce qui"], ca_accent: ["coming", "arrive"],
+    ca_title: ["Calendar", "Calendrier"], ca_accent: ["", ""],
     ca_sub: ["Shoots, due dates and follow-ups in one place. Click anything to open it.", "Tournages, échéances et relances au même endroit. Cliquez pour ouvrir."],
     ca_month: ["Month", "Mois"], ca_week: ["Week", "Semaine"], ca_agenda: ["Agenda", "Agenda"], ca_view: ["View", "Affichage"],
     ca_prev: ["Previous", "Précédent"], ca_next: ["Next", "Suivant"], ca_today: ["Today", "Aujourd'hui"],
@@ -25,11 +25,21 @@
     ca_k_leads: ["Follow-ups, next 7 days", "Relances, 7 jours"], ca_k_leads_n: ["{n} late", "{n} en retard"],
     ca_k_mine: ["My tasks, next 7 days", "Mes tâches, 7 jours"],
     ca_done: ["done", "faite"], ca_paid_left: ["{amt} left", "reste {amt}"],
-    ca_open_day: ["Open {d}", "Ouvrir le {d}"]
+    ca_open_day: ["Open {d}", "Ouvrir le {d}"],
+    ca_day_none: ["Nothing on this day.", "Rien ce jour-là."], ca_day_add: ["Add a task for this day", "Ajouter une tâche ce jour-là"],
+    ca_day_ph: ["What needs doing", "À faire"], ca_add: ["Add", "Ajouter"], ca_added: ["Task added", "Tâche ajoutée"],
+    ca_drag_hint: ["Drag an item onto another day to move it.", "Glissez un élément sur un autre jour pour le déplacer."],
+    ca_moved: ["Moved to {d}", "Déplacé au {d}"], ca_cant_move: ["This one can't be moved from here.", "Impossible de le déplacer d'ici."],
+    ca_new_on: ["New on {d}", "Nouveau le {d}"], ca_n_event: ["Event", "Événement"], ca_n_task: ["Task", "Tâche"], ca_n_shoot: ["Shoot", "Tournage"], ca_n_lead: ["Follow-up", "Relance"], ca_n_project: ["Project", "Projet"],
+    ca_f_title: ["Title", "Titre"], ca_f_time: ["Time", "Heure"], ca_f_who: ["Who", "Qui"], ca_f_project: ["Project", "Projet"], ca_f_lead: ["Lead", "Prospect"], ca_f_next: ["What to do", "À faire"],
+    ca_ev_ph: ["Client call, location scout…", "Appel client, repérage…"], ca_save: ["Save", "Enregistrer"], ca_saved: ["Saved on {d}", "Enregistré le {d}"],
+    ca_no_projects: ["No active project yet.", "Aucun projet actif."], ca_no_leads: ["No open lead yet.", "Aucun prospect ouvert."], ca_new_project_instead: ["New project instead", "Plutôt un nouveau projet"],
+    ca_locked: ["waiting on scripts and deposit", "attend scripts et acompte"], ca_t_event: ["Events", "Événements"], ca_1_event: ["Event", "Événement"],
+    ca_keys: ["Arrow keys move the day. Enter opens the week.", "Les flèches changent de jour. Entrée ouvre la semaine."]
   });
 
-  var TYPES = ["shoot", "task", "invoice", "delivery", "lead"];
-  var ICON = { shoot: "production", task: "tasks", invoice: "invoice", delivery: "deliveries", lead: "lead" };
+  var TYPES = ["event", "shoot", "task", "invoice", "delivery", "lead"];
+  var ICON = { event: "calendar", shoot: "production", task: "tasks", invoice: "invoice", delivery: "deliveries", lead: "lead" };
 
   TK.css("gk-calendar-css", [
     ".ca-top{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between}",
@@ -40,6 +50,7 @@
     ".ca-ib.prev .ic{transform:rotate(180deg)}",
     ".ca-ib:focus-visible,.ca-ev:focus-visible,.ca-dn:focus-visible,.ca-more:focus-visible{outline:2px solid var(--chroma);outline-offset:2px}",
     ".gk-dot.shoot,.ca-ev.shoot{--ca-c:var(--chroma)}.gk-dot.task,.ca-ev.task{--ca-c:var(--tx-3,var(--ink-3))}.gk-dot.invoice,.ca-ev.invoice{--ca-c:var(--gel-deep,var(--gel))}",
+    ".gk-dot.event,.ca-ev.event{--ca-c:var(--tx)}.gk-dot.event{background:var(--ca-c)}",
     ".gk-dot.lead,.ca-ev.lead{--ca-c:var(--gel)}.gk-dot.delivery,.ca-ev.delivery{--ca-c:var(--chroma)}",
     ".gk-dot.shoot,.gk-dot.task,.gk-dot.invoice,.gk-dot.lead{background:var(--ca-c)}.gk-dot.delivery{background:transparent;border:2px solid var(--ca-c);box-sizing:border-box}",
     ".ca-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--s1,transparent)}",
@@ -72,11 +83,62 @@
     "@media (max-width:640px){.ca-cell{min-height:58px;padding:3px;align-items:center}.ca-cell .ca-ev,.ca-cell .ca-more{display:none}.ca-dots{display:flex;justify-content:center}.ca-wd{padding:6px 2px;text-align:center;font-size:10px}}"
   ].join("\n"));
 
+
+  // ---------- month: one ink card of big numbers on the pink and yellow band ----------
+  TK.css("gk-cal2-css", [
+    ".c2{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:0;background:linear-gradient(90deg,var(--b-pink) 0 50%,var(--b-yellow) 50% 100%);padding:clamp(16px,4vw,48px);position:relative;overflow:hidden}",
+    ".c2-card{background:var(--b-ink);color:var(--b-white);padding:clamp(16px,3vw,36px) clamp(12px,2.6vw,32px);position:relative;min-width:0;animation:c2in .45s var(--ease) both}",
+    ".c2-card.fwd{animation-name:c2fwd}.c2-card.back{animation-name:c2back}",
+    "@keyframes c2in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}",
+    "@keyframes c2fwd{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}",
+    "@keyframes c2back{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}",
+    ".c2-mh{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:clamp(10px,2vw,22px)}",
+    ".c2-mh b{font-size:clamp(22px,3vw,34px);font-weight:700;letter-spacing:-.03em;line-height:1}",
+    ".c2-mh span{font-family:var(--f-type);font-size:11px;letter-spacing:.08em;text-transform:uppercase;opacity:.7}",
+    ".c2-g{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));position:relative}",
+    ".c2-wd{font-family:var(--f-type);font-weight:700;font-size:11px;letter-spacing:.08em;text-align:center;opacity:.6;padding-bottom:10px}",
+    ".c2-row{display:contents}",
+    ".c2-d{all:unset;box-sizing:border-box;cursor:pointer;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;height:clamp(52px,7.4vw,84px);border-top:1px solid rgba(252,250,245,.28);font-size:clamp(18px,2.6vw,32px);font-weight:500;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--b-white);transition:color .25s var(--ease)}",
+    ".c2-d.first{border-top:0}",
+    ".c2-d.we{color:rgba(252,250,245,.55)}.c2-d.out{color:rgba(252,250,245,.22)}",
+    ".c2-d:not(.sel):hover .n{box-shadow:inset 0 -2px 0 currentColor!important}",
+    ".c2-d:focus-visible{outline:2px solid var(--b-yellow);outline-offset:-2px}",
+    ".c2-d.sel{color:var(--b-ink)}",
+    ".c2-d.today:not(.sel) .n{box-shadow:inset 0 -2px 0 var(--b-yellow)!important}",
+    ".c2-d .n{line-height:1;padding:0 2px}",
+    ".c2-dots{display:flex;gap:3px;height:6px}",
+    ".c2-dots i{width:6px;height:6px;border-radius:50%!important;background:var(--b-white)}",
+    ".c2-dots i.event{background:var(--b-white);outline:1px solid var(--b-ink)}.c2-dots i.shoot{background:var(--b-pink)}.c2-dots i.task{background:var(--b-yellow)}.c2-dots i.delivery{background:transparent;border:1.5px solid var(--b-pink);box-sizing:border-box}",
+    ".c2-d.sel .c2-dots i{background:var(--b-ink)}.c2-d.sel .c2-dots i.delivery{background:transparent;border-color:var(--b-ink)}",
+    ".c2-d .n,.c2-dots{position:relative;z-index:2}",
+    ".c2-ring{position:absolute;z-index:1;left:0;top:0;width:var(--c2w,48px);height:var(--c2w,48px);border-radius:50%!important;background:var(--b-white);transform:translate(var(--c2x,0),var(--c2y,0));transition:transform .42s cubic-bezier(.3,1.4,.5,1);pointer-events:none}",
+    ".c2-d.drop{color:var(--b-ink)}.c2-d.drop::before{content:'';position:absolute;inset:4px;background:var(--b-pink);z-index:-1}",
+    ".c2-side{padding:clamp(4px,2vw,20px) 0 0 clamp(16px,3vw,40px);display:flex;flex-direction:column;gap:12px;min-width:0;color:var(--b-ink)}",
+    ".c2-big{font-size:clamp(64px,10vw,140px);font-weight:700;letter-spacing:-.05em;line-height:.85}",
+    ".c2-wk{font-family:var(--f-type);font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase}",
+    ".c2-list{display:flex;flex-direction:column;gap:6px}",
+    ".c2-it{all:unset;box-sizing:border-box;cursor:grab;display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--b-white);color:var(--b-ink);border:1px solid var(--b-ink);animation:c2it .35s var(--ease) both;min-width:0}",
+    ".c2-it:active{cursor:grabbing}.c2-it:hover{transform:translateX(3px)}",
+    ".c2-it .ic{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7}",
+    ".c2-it .tx{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
+    ".c2-it .ty{font-family:var(--f-type);font-size:10px;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}",
+    ".c2-it.done .tx{text-decoration:line-through;opacity:.55}.c2-it.late .ty{background:var(--b-ink);color:var(--b-white);padding:2px 4px}",
+    "@keyframes c2it{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}",
+    ".c2-add{display:flex;gap:6px}.c2-add input{flex:1;min-width:0;height:40px;padding:0 12px;border:1px solid var(--b-ink);background:var(--b-white);color:var(--b-ink);font:inherit}",
+    ".c2-add .btn{height:40px;background:var(--b-ink);color:var(--b-white);border-color:var(--b-ink)}",
+    ".c2-new{display:flex;flex-wrap:wrap;gap:6px}.c2-new .btn{background:var(--b-white);color:var(--b-ink);border:1px solid var(--b-ink);animation:c2it .35s var(--ease) both}.c2-new .btn:hover{background:var(--b-ink);color:var(--b-white)}",
+    ".c2-hint{font-family:var(--f-type);font-size:11px;letter-spacing:.04em;opacity:.75;margin:0}",
+    ".c2-empty{margin:0;padding:14px 0;font-size:15px}",
+    "@media (max-width:640px){.c2-mh span{display:none}}",
+    "@media (max-width:860px){.c2{grid-template-columns:minmax(0,1fr);background:linear-gradient(180deg,var(--b-pink) 0 55%,var(--b-yellow) 55% 100%)}.c2-side{padding:20px 0 0}}",
+    "@media (prefers-reduced-motion:reduce){.c2-card,.c2-it{animation:none}.c2-ring{transition:none}}"
+  ].join("\n"));
+
   function P() { return ui.p("calendar"); }
   function td() { return u.today(); }
   function money() { var r = TK.role(); return r === "founder" || r === "sales"; }
   function phone() { try { return !!(window.matchMedia && window.matchMedia("(max-width: 640px)").matches); } catch (e) { return false; } }
-  function mode() { var m0 = P().mode; return m0 === "month" || m0 === "week" || m0 === "agenda" ? m0 : (phone() ? "agenda" : "month"); }
+  function mode() { var m0 = P().mode; return m0 === "month" || m0 === "week" || m0 === "agenda" ? m0 : "month"; }
   function anchor() { var d = P().d; return /^\d{4}-\d{2}-\d{2}$/.test(d || "") ? d : td(); }
   function off() { return P().off || {}; }
   function allowed(type) { return (type !== "invoice" && type !== "lead") || money(); }
@@ -87,13 +149,14 @@
   function events(ignoreFilter) {
     var out = [], today = td();
     S.all("projects").forEach(function (p) {
-      if (p.shootDate) out.push({ date: p.shootDate, type: "shoot", id: p.id, title: m.brand(p.clientId) + " · " + p.name, sub: m.pack(p.pack).name, done: p.stage === "done", late: false });
+      if (p.shootDate) out.push({ date: p.shootDate, type: "shoot", id: p.id, title: m.brand(p.clientId) + " · " + p.name, sub: m.pack(p.pack).name, done: p.stage === "retention", late: false });
       var dd = p.deliveryDate || p.deliverBy || "";
       if (/^\d{4}-\d{2}-\d{2}/.test(dd)) out.push({ date: dd.slice(0, 10), type: "delivery", id: p.id, title: m.brand(p.clientId) + " · " + p.name, sub: t("st_" + p.stage), done: m.STAGES.indexOf(p.stage) >= m.STAGES.indexOf("delivered"), late: false });
     });
     S.all("tasks").forEach(function (x) {
       if (!x.due) return;
       var p = x.projectId ? m.project(x.projectId) : null;
+      if (x.kind === "event") return out.push({ date: x.due, type: "event", id: x.id, title: (x.time ? x.time + " · " : "") + x.title, sub: x.who ? m.member(x.who).name : "", done: false, late: false });
       out.push({ date: x.due, type: "task", id: x.id, title: x.title, sub: (x.who ? m.member(x.who).name : "") + (p ? " · " + m.projectLabel(p) : ""), done: !!x.done, late: !x.done && x.due < today });
     });
     if (money()) {
@@ -125,23 +188,67 @@
   function itemsLabel(n) { return n === 1 ? t("ca_1_item") : t("ca_n_items", { n: n }); }
 
   // ---------- views ----------
+  function selDay() {
+    var a = anchor(), s0 = P().sel;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(s0 || "") && s0.slice(0, 7) === a.slice(0, 7)) return s0;
+    return td().slice(0, 7) === a.slice(0, 7) ? td() : a.slice(0, 8) + "01";
+  }
+  function dayPanel(d, evs) {
+    var list = evs.filter(function (e) { return e.date === d; });
+    var h = '<div class="c2-big">' + (+d.slice(8)) + '</div><div class="c2-wk">' + esc(u.fmtDate(d, { weekday: "long" }) + " · " + u.fmtMonth(d.slice(0, 7))) + "</div>";
+    h += list.length ? '<div class="c2-list">' + list.map(function (e, i) {
+      var lab = t("ca_1_" + e.type) + ": " + e.title;
+      return '<button type="button" class="c2-it ' + e.type + (e.done ? " done" : "") + (e.late ? " late" : "") + '" draggable="true" data-a="ca-open" data-t="' + e.type + '" data-id="' + esc(e.id) + '" aria-label="' + esc(lab) + '" style="animation-delay:' + (i * 50) + 'ms">' +
+        ui.icon(ICON[e.type]) + '<span class="tx">' + esc(e.title) + '</span><span class="ty">' + esc(e.late ? t("ca_overdue") : t("ca_1_" + e.type)) + "</span></button>";
+    }).join("") + "</div>" + '<p class="c2-hint">' + esc(t("ca_drag_hint")) + "</p>" : '<p class="c2-empty">' + esc(t("ca_day_none")) + "</p>";
+    var kinds = newKinds();
+    if (kinds.length) h += '<div class="c2-wk" style="margin-top:6px">' + esc(t("ca_new_on", { d: u.fmtDate(d, { day: "numeric", month: "short" }) })) + '</div><div class="c2-new">' + kinds.map(function (k, i) {
+      return '<button type="button" class="btn sm" data-a="ca2-new" data-k="' + k + '" style="animation-delay:' + (i * 40) + 'ms">' + ui.icon(k === "project" ? "projects" : ICON[k]) + "<span>" + esc(t("ca_n_" + k)) + "</span></button>";
+    }).join("") + "</div>";
+    return h;
+  }
   function monthView(evs) {
-    var a = anchor(), first = a.slice(0, 8) + "01", ym = a.slice(0, 7);
+    var a = anchor(), first = a.slice(0, 8) + "01", ym = a.slice(0, 7), sel = selDay(), today = td();
     var start = u.weekStart(first), lastDay = u.addDays(u.month(u.addDays(first, 32)) + "-01", -1), end = u.addDays(u.weekStart(lastDay), 6);
-    var map = byDay(evs.filter(function (e) { return e.date >= start && e.date <= end; })), today = td();
-    var h = '<div class="ca-grid" role="grid" aria-label="' + esc(u.fmtMonth(ym)) + '"><div role="row" style="display:contents">' + weekdays().map(function (w) { return '<div class="ca-wd" role="columnheader">' + esc(w) + "</div>"; }).join("") + "</div>";
+    var map = byDay(evs.filter(function (e) { return e.date >= start && e.date <= end; }));
+    var dir = P().dir || "", h = '<section class="c2" id="c2">';
+    h += '<div class="c2-card ' + (dir > 0 ? "fwd" : dir < 0 ? "back" : "") + '"><div class="c2-mh"><b>' + esc(u.fmtMonth(ym)) + '</b><span>' + esc(t("ca_keys")) + "</span></div>";
+    h += '<div class="c2-g" role="grid" aria-label="' + esc(u.fmtMonth(ym)) + '"><i class="c2-ring" aria-hidden="true"></i>' + weekdays().map(function (w) { return '<div class="c2-wd" role="columnheader">' + esc(w.slice(0, 1)) + "</div>"; }).join("");
     for (var d = start, i = 0; d <= end; d = u.addDays(d, 1), i++) {
-      if (i % 7 === 0) h += (i ? "</div>" : "") + '<div role="row" style="display:contents">';
-      var list = map[d] || [], shown = list.slice(0, 3);
-      var dl = u.fmtDate(d, { weekday: "long", day: "numeric", month: "long" });
-      h += '<div class="ca-cell' + (d.slice(0, 7) !== ym ? " out" : "") + (d === today ? " today" : "") + '" role="gridcell">' +
-        '<button type="button" class="ca-dn" data-a="ca-day" data-v="' + d + '" aria-label="' + esc(dl + (list.length ? " · " + itemsLabel(list.length) : "")) + '"' + (d === today ? ' aria-current="date"' : "") + ">" + (+d.slice(8)) + "</button>" +
-        shown.map(function (e) { return ev(e); }).join("") +
-        (list.length > shown.length ? '<button type="button" class="ca-more" data-a="ca-day" data-v="' + d + '">' + esc(t("ca_more", { n: list.length - shown.length })) + "</button>" : "") +
-        (list.length ? '<span class="ca-dots" aria-hidden="true">' + list.slice(0, 4).map(function (e) { return '<i class="gk-dot ' + e.type + '"></i>'; }).join("") + "</span>" : "") +
-        "</div>";
+      var list = map[d] || [], wd = i % 7, kinds = {};
+      list.forEach(function (e) { kinds[e.type] = 1; });
+      h += '<button type="button" role="gridcell" class="c2-d' + (i < 7 ? " first" : "") + (wd >= 5 ? " we" : "") + (d.slice(0, 7) !== ym ? " out" : "") + (d === today ? " today" : "") + (d === sel ? " sel" : "") + '" data-a="ca2-sel" data-v="' + d + '" aria-label="' + esc(u.fmtDate(d, { weekday: "long", day: "numeric", month: "long" }) + (list.length ? " · " + itemsLabel(list.length) : "")) + '"' + (d === today ? ' aria-current="date"' : "") + (d === sel ? ' aria-selected="true"' : ' aria-selected="false"') + ' tabindex="' + (d === sel ? 0 : -1) + '">' +
+        '<span class="n">' + (+d.slice(8)) + '</span><span class="c2-dots" aria-hidden="true">' + Object.keys(kinds).slice(0, 4).map(function (k) { return '<i class="' + k + '"></i>'; }).join("") + "</span></button>";
     }
-    return h + "</div></div>";
+    h += "</div></div>";
+    h += '<div class="c2-side" id="c2-side" aria-live="polite">' + dayPanel(sel, evs) + "</div></section>";
+    P().dir = "";
+    return h;
+  }
+  /** Slide the white circle under the selected day. */
+  function placeRing(animate) {
+    var g = document.querySelector(".c2-g"), ring = g && g.querySelector(".c2-ring"), cell = g && g.querySelector(".c2-d.sel");
+    if (!ring || !cell) { if (ring) ring.style.opacity = "0"; return; }
+    var w = Math.min(cell.offsetHeight - 10, cell.offsetWidth - 6);
+    if (!animate) ring.style.transition = "none";
+    ring.style.setProperty("--c2w", w + "px");
+    ring.style.setProperty("--c2x", (cell.offsetLeft + (cell.offsetWidth - w) / 2) + "px");
+    ring.style.setProperty("--c2y", (cell.offsetTop + (cell.offsetHeight - w) / 2) + "px");
+    ring.style.opacity = "1";
+    if (!animate) { void ring.offsetWidth; ring.style.transition = ""; }
+  }
+  function select(d, focus) {
+    var a = anchor();
+    if (d.slice(0, 7) !== a.slice(0, 7)) { P().dir = d > a ? 1 : -1; P().sel = d; ui.go("calendar", { d: d.slice(0, 8) + "01", mode: "month", sel: d }); if (focus) setTimeout(function () { var b = document.querySelector('.c2-d[data-v="' + d + '"]'); if (b) b.focus(); }, 0); return; }
+    P().sel = d;
+    var cells = document.querySelectorAll(".c2-d");
+    for (var i = 0; i < cells.length; i++) {
+      var on = cells[i].getAttribute("data-v") === d;
+      cells[i].classList.toggle("sel", on); cells[i].setAttribute("aria-selected", on ? "true" : "false"); cells[i].tabIndex = on ? 0 : -1;
+      if (on && focus) cells[i].focus();
+    }
+    placeRing(true);
+    var side = document.getElementById("c2-side"); if (side) side.innerHTML = dayPanel(d, events());
   }
   function weekView(evs) {
     var start = u.weekStart(anchor()), map = byDay(evs), today = td(), h = '<div class="ca-week">';
@@ -206,7 +313,7 @@
       else { from = a; to = u.addDays(a, 29); }
       var counts = {}; everything.forEach(function (e) { if (e.date >= from && e.date <= to) counts[e.type] = (counts[e.type] || 0) + 1; });
       var h = ui.head({ label: t("nav_calendar"), title: t("ca_title"), accent: t("ca_accent"), sub: esc(t("ca_sub")), actions: ui.sample() });
-      h += insight(everything);
+      if (md !== "month") h += insight(everything);
       h += '<div class="ca-top"><div class="ca-nav">' +
         '<button type="button" class="ca-ib prev" data-a="ca-step" data-v="-1" aria-label="' + esc(t("ca_prev")) + '">' + ui.icon("chevron") + "</button>" +
         '<button type="button" class="ca-ib" data-a="ca-step" data-v="1" aria-label="' + esc(t("ca_next")) + '">' + ui.icon("chevron") + "</button>" +
@@ -216,16 +323,102 @@
       h += md === "month" ? monthView(all) : md === "week" ? weekView(all) : agendaView(all);
       return h;
     },
+    after: function () { if (mode() === "month") { placeRing(false); bindMonth(); } },
     count: function () { return ""; }
   });
+
+  // month interactions: keys, drag to move, resize
+  var dragged = null;
+  function bindMonth() {
+    var root = document.getElementById("c2"); if (!root || root._b) return; root._b = 1;
+    root.addEventListener("keydown", function (ev) {
+      var cell = ev.target.closest && ev.target.closest(".c2-d"); if (!cell) return;
+      var step = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 }[ev.key];
+      if (step) { ev.preventDefault(); select(u.addDays(cell.getAttribute("data-v"), step), true); }
+      else if (ev.key === "Enter" && P().sel === cell.getAttribute("data-v")) { ev.preventDefault(); ui.go("calendar", { d: cell.getAttribute("data-v"), mode: "week" }); }
+    });
+    root.addEventListener("dragstart", function (ev) { var it = ev.target.closest && ev.target.closest(".c2-it"); if (!it) return; dragged = { t: it.getAttribute("data-t"), id: it.getAttribute("data-id") }; try { ev.dataTransfer.setData("text/plain", dragged.id); ev.dataTransfer.effectAllowed = "move"; } catch (e) {} });
+    root.addEventListener("dragover", function (ev) { var c = ev.target.closest && ev.target.closest(".c2-d"); if (!c || !dragged) return; ev.preventDefault(); clearDrop(); c.classList.add("drop"); });
+    root.addEventListener("dragleave", function (ev) { var c = ev.target.closest && ev.target.closest(".c2-d"); if (c) c.classList.remove("drop"); });
+    root.addEventListener("drop", function (ev) { var c = ev.target.closest && ev.target.closest(".c2-d"); clearDrop(); if (!c || !dragged) return; ev.preventDefault(); move(dragged, c.getAttribute("data-v")); dragged = null; });
+    root.addEventListener("dragend", function () { clearDrop(); dragged = null; });
+  }
+  function clearDrop() { var x = document.querySelectorAll(".c2-d.drop"); for (var i = 0; i < x.length; i++) x[i].classList.remove("drop"); }
+  function move(it, d) {
+    var ok = false;
+    if ((it.t === "task" || it.t === "event") && m.can("tasks")) { S.patch("tasks", it.id, { due: d }); ok = true; }
+    else if (it.t === "shoot" && m.can("projects.edit")) { var p = m.project(it.id); if (p && m.canShoot(p)) { S.patch("projects", it.id, { shootDate: d }); ok = true; } }
+    else if (it.t === "lead" && money() && m.can("leads")) { S.patch("leads", it.id, { nextDate: d }); ok = true; }
+    if (!ok) return ui.toast(t("ca_cant_move"));
+    P().sel = d; ui.toast(t("ca_moved", { d: u.fmtDate(d, { weekday: "short", day: "numeric", month: "short" }) })); ui.render(true);
+  }
+  function newKinds() {
+    var k = [];
+    if (m.can("tasks")) k.push("event", "task");
+    if (m.can("projects.edit")) k.push("shoot");
+    if (money() && m.can("leads")) k.push("lead");
+    if (m.can("projects.create") && GK.pj) k.push("project");
+    return k;
+  }
+  function teamOpts() { return [["", "—"]].concat(S.all("team").sort(u.by("name")).map(function (x) { return [x.id, x.name]; })); }
+  function openNew(k) {
+    var d = selDay(), dl = u.fmtDate(d, { weekday: "long", day: "numeric", month: "long" }), me = TK.me(), body = "", foot;
+    if (k === "project") return GK.pj.openNew({});
+    if (k === "event" || k === "task") {
+      body = ui.field({ id: "c2-f-title", label: t("ca_f_title"), placeholder: k === "event" ? t("ca_ev_ph") : t("ca_day_ph") }) + '<div class="form">' +
+        (k === "event" ? ui.field({ id: "c2-f-time", label: t("ca_f_time"), type: "time" }) : "") +
+        ui.field({ id: "c2-f-who", label: t("ca_f_who"), type: "select", value: me.id || "", options: teamOpts() }) + "</div>";
+    } else if (k === "shoot") {
+      var ps = S.all("projects").filter(function (p) { return p.stage !== "retention"; }).sort(u.by(function (p) { return m.projectLabel(p); }));
+      body = ps.length ? ui.field({ id: "c2-f-proj", label: t("ca_f_project"), type: "select", options: ps.map(function (p) { return [p.id, m.projectLabel(p) + (m.canShoot(p) ? "" : " · " + t("ca_locked"))]; }) }) : '<p style="margin:0">' + esc(t("ca_no_projects")) + "</p>";
+      body += '<div class="row"><button type="button" class="link small" data-a="ca2-new" data-k="project">' + esc(t("ca_new_project_instead")) + "</button></div>";
+      if (!ps.length) foot = ui.btn(t("cancel"), "close", { cls: "ghost" });
+    } else if (k === "lead") {
+      var ls = S.all("leads").filter(function (l) { return l.stage !== "won" && l.stage !== "lost"; }).sort(u.by("brand"));
+      body = ls.length ? ui.field({ id: "c2-f-lead", label: t("ca_f_lead"), type: "select", options: ls.map(function (l) { return [l.id, l.brand]; }) }) + ui.field({ id: "c2-f-next", label: t("ca_f_next") }) : '<p style="margin:0">' + esc(t("ca_no_leads")) + "</p>";
+      if (!ls.length) foot = ui.btn(t("cancel"), "close", { cls: "ghost" });
+    }
+    ui.modal({ title: t("ca_n_" + k), label: dl, body: body, foot: foot || ui.btn(t("cancel"), "close", { cls: "ghost" }) + ui.btn(t("ca_save"), "ca2-save", { cls: "primary", data: { k: k } }) });
+    setTimeout(function () { var f = document.getElementById("c2-f-title") || document.getElementById("c2-f-proj") || document.getElementById("c2-f-lead"); if (f) f.focus(); }, 30);
+  }
+  function save(k) {
+    var d = selDay();
+    if (k === "event" || k === "task") {
+      if (!m.can("tasks")) return;
+      var title = u.val("c2-f-title").trim();
+      if (!title) { u.focus("c2-f-title"); return ui.toast(t("required")); }
+      var rec = { id: u.uid("t"), projectId: "", title: title.slice(0, 200), who: u.val("c2-f-who"), due: d, done: false, doneOn: "" };
+      if (k === "event") { rec.kind = "event"; rec.time = u.val("c2-f-time"); }
+      S.put("tasks", rec);
+    } else if (k === "shoot") {
+      var p = m.project(u.val("c2-f-proj"));
+      if (!p || !m.can("projects.edit")) return;
+      if (!m.canShoot(p)) return ui.toast(t("gate_shoot"));
+      S.patch("projects", p.id, { shootDate: d });
+    } else if (k === "lead") {
+      var id = u.val("c2-f-lead"); if (!id || !m.can("leads")) return;
+      var ch = { nextDate: d }, nx = u.val("c2-f-next").trim(); if (nx) ch.next = nx.slice(0, 200);
+      S.patch("leads", id, ch);
+    }
+    ui.closeModal(true); P().sel = d;
+    ui.toast(t("ca_saved", { d: u.fmtDate(d, { weekday: "short", day: "numeric", month: "short" }) })); ui.render(true);
+  }
+  GK.act("ca2-new", function (el) { var k = el.getAttribute("data-k"); if (k === "project") ui.closeModal(true); openNew(k); });
+  GK.act("ca2-save", function (el) { save(el.getAttribute("data-k")); });
+  GK.act("ca2-sel", function (el) {
+    var d = el.getAttribute("data-v");
+    if (P().sel === d && selDay() === d) return ui.go("calendar", { d: d, mode: phone() ? "agenda" : "week" });
+    select(d, false);
+  });
+  var rz; window.addEventListener("resize", function () { clearTimeout(rz); rz = setTimeout(function () { if (document.getElementById("c2")) placeRing(false); }, 120); });
 
   function shift(n) {
     var md = mode(), a = anchor();
     if (md === "month") { var x = new Date(a.slice(0, 8) + "15T12:00:00"); x.setMonth(x.getMonth() + n); return u.iso(x).slice(0, 8) + "01"; }
     return u.addDays(a, (md === "week" ? 7 : 30) * n);
   }
-  GK.act("ca-step", function (el) { ui.go("calendar", { d: shift(+el.getAttribute("data-v")), mode: mode() }); });
-  GK.act("ca-today", function () { ui.go("calendar", { d: td(), mode: mode() }); });
+  GK.act("ca-step", function (el) { P().dir = +el.getAttribute("data-v"); P().sel = ""; ui.go("calendar", { d: shift(+el.getAttribute("data-v")), mode: mode() }); });
+  GK.act("ca-today", function () { P().sel = td(); ui.go("calendar", { d: td(), mode: mode() }); });
   GK.act("ca-mode", function (el) { ui.go("calendar", { mode: el.getAttribute("data-v") }); });
   GK.act("ca-day", function (el) { ui.go("calendar", { d: el.getAttribute("data-v"), mode: phone() ? "agenda" : "week" }); });
   GK.act("ca-type", function (el) {
@@ -235,14 +428,14 @@
   });
   GK.act("ca-open", function (el) {
     var k = el.getAttribute("data-t"), id = el.getAttribute("data-id"), nav = TK.nav();
-    if (k === "task") return ui.go("tasks", { open: id, focusPanel: true });
+    if (k === "task" || k === "event") return ui.go("tasks", { open: id, focusPanel: true });
     if (k === "shoot" || k === "delivery") return ui.go("projects", { id: id });
     if (k === "lead") return ui.go("pipeline", { id: id });
     if (k === "invoice") {
       var inv = S.get("invoices", id);
       if (nav.indexOf("finance") > -1) return ui.go("finance", { tab: "invoices", invoiceId: id });
       if (inv && inv.projectId && m.project(inv.projectId)) return ui.go("projects", { id: inv.projectId });
-      return ui.go("clients", { id: inv ? inv.clientId : "" });
+      return ui.go("clients", { id: inv ? inv.clientId : "", tab: "invoices" });
     }
   });
 })(window.GK);

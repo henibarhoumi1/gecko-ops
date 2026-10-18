@@ -31,7 +31,7 @@
   P.scope = function (share) {
     var all = S.all("projects").filter(function (p) { return p.clientId === share.clientId; });
     if (share.projectId) return all.filter(function (p) { return p.id === share.projectId; });
-    var cur = all.filter(function (p) { return p.stage !== "done"; }).sort(u.by(function (p) { return SI(p.stage); }));
+    var cur = all.filter(function (p) { return p.stage !== "retention"; }).sort(u.by(function (p) { return SI(p.stage); }));
     if (cur.length) return cur;
     return all.sort(u.by(function (p) { return p.shootDate || ""; }, "desc")).slice(0, 1);
   };
@@ -74,7 +74,7 @@
       add({ deposit: 1, balance: 1, month: 1 }[i.kind] ? i.kind : "invoice", { no: i.no, amount: round2(m.invBalance(i)), due: i.due || "", late: m.invStatus(i) === "overdue" });
     });
     if (si <= SI("shoot") && p.shootDate && p.shootDate >= u.today()) add("product", { date: p.shootDate });
-    if (p.stage === "testing" && !hasResults(p)) add("results");
+    if (p.stage === "delivered" && !hasResults(p)) add("results");
     return out;
   }
   function timelineOf(p) {
@@ -100,20 +100,43 @@
     return tl;
   }
 
+  function numOrNull(v) { return v === "" || v == null || isNaN(+v) ? null : +v; }
+  var EXTRA_KINDS = { talent: "talent", prop: "prop", cost: "fee" };
+  /** Ad numbers for the client: per hook (hook rate, CTR, cost per purchase) plus the headline report. Never any internal figure. */
+  function resultsOf(c, share, ps) {
+    var list = share.projectId ? ps : S.all("projects").filter(function (p) { return p.clientId === c.id; });
+    var out = { hooks: [], reports: [] };
+    list.forEach(function (p) {
+      m.files(p).forEach(function (f) {
+        if (f.kind !== "hook") return;
+        var r = f.item.results || {}, cpp = numOrNull(r.cpp), hook = numOrNull(r.hook), ctr = numOrNull(r.ctr);
+        if (cpp == null && hook == null && ctr == null) return;
+        out.hooks.push({ project: p.name, code: f.code, text: f.item.text || "", angle: f.angle ? f.angle.name : "", hook: hook, ctr: ctr, cpp: cpp != null && cpp > 0 ? cpp : null });
+      });
+      var rep = p.report || {};
+      if (rep.now != null && rep.now !== "" || rep.more || rep.next) {
+        out.reports.push({ project: p.name, now: numOrNull(rep.now), before: c.baseline && c.baseline.v ? +c.baseline.v : null, more: String(rep.more || ""), next: String(rep.next || "") });
+      }
+    });
+    out.hooks.sort(function (a, b) { return (a.cpp == null) - (b.cpp == null) || (a.cpp || 0) - (b.cpp || 0) || (b.hook || 0) - (a.hook || 0); });
+    return out;
+  }
+
   /** The snapshot. `share` supplies clientId, projectId, sections, boardIds, scriptIds. */
   P.buildSnapshot = function (share) {
     var c = m.client(share.clientId); if (!c) return null;
     var co = m.company(), sec = share.sections || {};
     var ps = P.scope(share), unlocked;
     var snap = {
-      v: 2,
+      v: 3,
       brand: { name: c.brand },
       contact: { name: first(c.contact) },
       company: { name: co.name, phone: co.phone, email: co.email, instagram: co.instagram },
       lang: GK.i18n.lang(),
       title: share.title || "",
-      sections: { plan: !!sec.plan, scripts: !!sec.scripts, files: !!sec.files, timeline: !!sec.timeline, invoices: !!sec.invoices, boards: !!sec.boards },
-      projects: [], invoices: [], boards: []
+      sections: { plan: !!sec.plan, scripts: !!sec.scripts, files: !!sec.files, timeline: !!sec.timeline, invoices: !!sec.invoices, boards: !!sec.boards,
+        assets: sec.assets !== false, results: sec.results !== false, updates: sec.notes !== false, extras: sec.extras !== false },
+      projects: [], invoices: [], boards: [], history: [], brandAssets: [], results: { hooks: [], reports: [] }, updates: [], extras: []
     };
     ps.forEach(function (p) {
       var pk = m.pack(p.pack);
@@ -173,6 +196,24 @@
         if (svg && svg.length < 150000) snap.boards.push({ title: b.title || "", svg: svg });
       });
     }
+    // projects finished before (the page's own scope excluded), only names and dates
+    if (!share.projectId) {
+      S.all("projects").filter(function (p) { return p.clientId === c.id && pids.indexOf(p.id) < 0 && (p.stage === "retention" || SI(p.stage) >= SI("delivered")); })
+        .sort(u.by(function (p) { return p.shootDate || ""; }, "desc")).forEach(function (p) {
+          snap.history.push({ id: p.id, name: p.name, pack: m.pack(p.pack).name, shootDate: p.shootDate || "", stage: p.stage, progress: { done: m.progress(p).done, total: m.progress(p).total } });
+        });
+    }
+    if (snap.sections.assets) (c.assets || []).forEach(function (a) {
+      if (a && link(a.url)) snap.brandAssets.push({ id: a.id, name: String(a.name || ""), kind: String(a.kind || "other"), url: link(a.url) });
+    });
+    if (snap.sections.results) snap.results = resultsOf(c, share, ps);
+    if (snap.sections.updates && Array.isArray(c.notes)) c.notes.filter(function (n) { return n && n.shared && n.text; }).sort(u.by("at", "desc")).forEach(function (n) {
+      snap.updates.push({ id: n.id, at: n.at || "", text: String(n.text) });
+    });
+    if (snap.sections.extras) (c.extras || []).filter(function (x) { return x && (!share.projectId || !x.projectId || x.projectId === share.projectId); }).forEach(function (x) {
+      var pr = x.projectId && m.project(x.projectId);
+      snap.extras.push({ id: x.id, project: pr ? pr.name : "", kind: EXTRA_KINDS[x.kind] || "prop", name: String(x.name || ""), detail: String(x.detail || ""), price: round2(x.amount), status: x.status === "approved" || x.status === "declined" ? x.status : "proposed" });
+    });
     return snap;
   };
 
@@ -188,6 +229,7 @@
         if (idea.id) targets["idea:" + idea.id] = ["approve", "changes"];
       });
     });
+    if (snapshot.sections && snapshot.sections.extras) (snapshot.extras || []).forEach(function (x) { if (x.id) targets["extra:" + x.id] = ["approve", "changes"]; });
     return targets;
   };
 
@@ -212,7 +254,7 @@
   P.selfTest = function () {
     var hits = [], n = 0;
     S.all("clients").forEach(function (c) {
-      var share = { clientId: c.id, projectId: "", sections: { plan: 1, scripts: 1, files: 1, timeline: 1, invoices: 1, boards: 1 }, boardIds: S.all("boards").filter(function (b) { return b.clientId === c.id; }).map(function (b) { return b.id; }) };
+      var share = { clientId: c.id, projectId: "", sections: { plan: 1, scripts: 1, files: 1, timeline: 1, invoices: 1, boards: 1, assets: 1, results: 1, updates: 1, extras: 1 }, boardIds: S.all("boards").filter(function (b) { return b.clientId === c.id; }).map(function (b) { return b.id; }) };
       var s = P.buildSnapshot(share); if (!s) return;
       n++; P.check(s).forEach(function (h) { hits.push(c.brand + ": " + h); });
     });

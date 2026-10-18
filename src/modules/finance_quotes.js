@@ -19,7 +19,7 @@
     fi_q_total: ["Total", "Total"], fi_q_pack_line: ["pack", "pack"], fi_q_included: ["Included", "Inclus"],
     fi_q_need_line: ["Add at least one line with a description.", "Ajoutez au moins une ligne avec une désignation."], fi_q_need_total: ["The total must be above zero.", "Le total doit être supérieur à zéro."],
     fi_q_need_valid: ["Pick a validity date.", "Choisissez une date de validité."], fi_q_no_clients: ["Add a client first.", "Ajoutez d'abord un client."],
-    fi_q_founder: ["Only Heni can change quotes.", "Seul Heni peut modifier les devis."],
+    fi_q_founder: ["Only the owner can change quotes.", "Seul le fondateur peut modifier les devis."],
     fi_q_facts_pack: ["Pack", "Pack"], fi_q_facts_sent: ["Sent", "Envoyé le"], fi_q_facts_acc: ["Accepted", "Accepté le"], fi_q_facts_project: ["Project", "Projet"], fi_q_facts_inv: ["Invoices", "Factures"],
     fi_q_send: ["Send", "Envoyer"], fi_q_send_q: ["Send this quote?", "Envoyer ce devis ?"], fi_q_send_body: ["It gets number {no} and is valid until {d}. After this the lines and the total are locked.", "Il reçoit le numéro {no} et reste valable jusqu'au {d}. Ensuite les lignes et le total sont verrouillés."],
     fi_q_sent_toast: ["Quote {no} marked as sent. Copy the WhatsApp message to send it.", "Devis {no} marqué comme envoyé. Copiez le message WhatsApp pour l'envoyer."],

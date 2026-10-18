@@ -75,19 +75,22 @@
     swap: '<path d="M4 8h13l-3.5-3.5M20 16H7l3.5 3.5"/>', edit: '<path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
     dot: '<circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/>'
   };
-  ICONS.today = ICONS.home; ICONS.guide = '<circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>'; ICONS.docs = ICONS.file || ICONS.dot; ICONS.idea = ICONS.studio; ICONS.globe = ICONS.portal; ICONS.money = ICONS.finance; ICONS.chart = ICONS.dashboard;
+  ICONS.today = ICONS.home; ICONS.guide = '<circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>'; ICONS.docs = ICONS.file || ICONS.dot; ICONS.idea = ICONS.studio; ICONS.globe = ICONS.portal; ICONS.money = ICONS.finance; ICONS.chart = ICONS.dashboard; ICONS.shootday = ICONS.camera; ICONS.play = '<path d="M8 5.5v13l10.5-6.5z"/>'; ICONS.mvdown = '<path d="M12 5v14M6 13l6 6 6-6"/>'; ICONS.mvup = '<path d="M12 19V5M6 11l6-6 6 6"/>'; ICONS.edit = '<path d="M14.5 5.5l4 4L8 20H4v-4z"/><path d="M12.5 7.5l4 4"/>'; ICONS.megaphone = '<path d="M4 10v4h3l7 4V6L7 10z"/><path d="M17.5 9a4 4 0 0 1 0 6"/>'; ICONS.marketing = ICONS.megaphone;
   UI.ICONS = ICONS;
   /** icon(name, extraClass) -> inline SVG (24px grid, 1.6 stroke) that follows currentColor. Unknown names fall back to a dot. */
   UI.icon = function (n, cls) { return '<svg class="ic' + (cls ? " " + cls : "") + '" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + (ICONS[n] || ICONS.dot) + "</svg>"; };
 
   /** Sidebar groups (DESIGN.md §3). A view not listed here lands in Main. */
   UI.GROUPS = [
-    { id: "main", views: ["guide", "today", "tasks", "calendar", "inbox"] },
-    { id: "sell", views: ["pipeline", "clients"] },
-    { id: "make", views: ["projects", "production", "deliveries", "studio", "boards", "reports"] },
-    { id: "money", views: ["dashboard", "finance", "portal"] },
-    { id: "team", views: ["docs", "team", "activity", "settings"] }
+    { id: "main", views: ["guide", "today", "tasks", "calendar"] },
+    { id: "ceo", views: ["dashboard", "finance"] },
+    { id: "sales", views: ["pipeline", "clients"] },
+    { id: "prod", views: ["projects", "production", "deliveries", "studio", "boards", "reports"] },
+    { id: "mkt", views: ["marketing"] },
+    { id: "team", views: ["team", "docs", "activity", "settings"] }
   ];
+  /** Views reached from inside another page rather than the sidebar (the menu stays short). */
+  UI.NAV_PARENT = { production: "projects", deliveries: "projects", reports: "projects", boards: "projects", activity: "dashboard", guide: "today" };
   UI.groupOf = function (v) { for (var i = 0; i < UI.GROUPS.length; i++) if (UI.GROUPS[i].views.indexOf(v) > -1) return UI.GROUPS[i].id; return "main"; };
   /** Remembered sidebar state: {mini: icon rail} */
   UI.navPref = function () { var p = u.lsGet(NAV_KEY, null); return p && typeof p === "object" ? { mini: !!p.mini } : { mini: false }; };
@@ -321,9 +324,9 @@
   /** Shared status pills */
   UI.invPill = function (i) { var s = GK.m.invStatus(i); return UI.pill(t("inv_" + s), { paid: "done", overdue: "urgent", partial: "chroma", issued: "chroma", credited: "", credit: "", draft: "" }[s]); };
   /** Project stage: one dot colour per stage. Blocked by a gate shows urgent; closed shows green. */
-  var STAGE_DOT = { onboard: "", plan: "dot-yellow", shoot: "dot-pink", edit: "dot-blue", delivered: "dot-chroma", testing: "dot-gel", report: "dot-work", done: "" };
+  var STAGE_DOT = { onboarding: "", scripting: "dot-yellow", pre_production: "dot-yellow", shoot: "dot-pink", editing: "dot-blue", client_review: "dot-gel", revisions: "dot-gel", delivered: "dot-chroma", paid: "dot-work", retention: "" };
   UI.STAGE_DOT = STAGE_DOT;
-  UI.stagePill = function (p) { return UI.pill(t("st_" + p.stage), p.stage === "done" ? "green" : GK.m.gates(p).length ? "urgent" : STAGE_DOT[p.stage] || ""); };
+  UI.stagePill = function (p) { return UI.pill(t("st_" + p.stage), p.stage === "retention" ? "green" : GK.m.gates(p).length ? "urgent" : STAGE_DOT[p.stage] || ""); };
   /** Small coloured swatch for column headers. cls: a dot-* class. */
   UI.dot = function (cls) { return '<i class="sd ' + esc(cls || "") + '" aria-hidden="true"></i>'; };
   UI.filePill = function (s) { return UI.pill(t("s_" + (s || "todo")), { approved: "green", revise: "urgent", review: "yellow", edit: "blue" }[s] || ""); };
@@ -438,7 +441,7 @@
 
   // ---------- shell ----------
   function navItem(v) {
-    var c = UI.viewCount(v), on = UI.state.view === v, label = t("nav_" + v), gid = UI.groupOf(v), gi = 0;
+    var c = UI.viewCount(v), on = UI.state.view === v || UI.NAV_PARENT[UI.state.view] === v, label = t("nav_" + v), gid = UI.groupOf(v), gi = 0;
     UI.GROUPS.forEach(function (g, i) { if (g.id === gid) gi = i; });
     return '<button type="button" class="nv" data-a="nav" data-v="' + v + '"' + (on ? ' aria-current="page"' : "") + ' title="' + esc(label) + '">' +
       UI.icon(v) + '<span class="nl">' + esc(label) + "</span>" + (c !== "" && c != null && c !== 0 ? '<span class="cnt"' + tintStyle(UI.tint(gi)) + ">" + esc(c) + "</span>" : "") + "</button>";
@@ -458,21 +461,21 @@
     if (creates.length) h += '<div class="side-new"><button type="button" class="btn primary" data-a="sh-menu" data-m="quick" aria-haspopup="menu" aria-expanded="false" title="' + esc(t("ui_new")) + ' (N)">' + UI.icon("plus") + "<span>" + esc(t("ui_new")) + "</span></button></div>";
     h += '<nav class="side-nav" aria-label="GECKO Ops">';
     UI.GROUPS.forEach(function (g, gi) {
-      var vs = g.views.filter(function (v) { return nav.indexOf(v) > -1; });
+      var vs = g.views.filter(function (v) { return nav.indexOf(v) > -1 && !UI.NAV_PARENT[v]; });
       vs.forEach(function (v) { seen[v] = 1; });
-      if (gi === 0) nav.forEach(function (v) { if (!seen[v] && !UI.GROUPS.some(function (x) { return x.views.indexOf(v) > -1; })) { vs.push(v); seen[v] = 1; } });
+      if (gi === 0) nav.forEach(function (v) { if (!seen[v] && !UI.NAV_PARENT[v] && !UI.GROUPS.some(function (x) { return x.views.indexOf(v) > -1; })) { vs.push(v); seen[v] = 1; } });
       if (!vs.length) return;
       h += '<div class="grp" role="group" aria-label="' + esc(t("grp_" + g.id)) + '"><span class="grp-h" aria-hidden="true">' + esc(t("grp_" + g.id)) + "</span>" + vs.map(navItem).join("") + "</div>";
     });
     h += "</nav>";
     h += '<div class="side-foot"><button type="button" class="me-card" data-a="sh-menu" data-m="user" aria-haspopup="menu" aria-expanded="false" title="' + esc(me ? me.name : t("sh_user")) + '">' +
-      UI.avatar(me ? me.name : "?", { tone: "gel" }) + '<span class="mt"><b>' + esc(me ? me.name : t("sh_user")) + "</b><span>" + esc(me ? t("role_" + me.role).split(" · ")[0] : (GK.store.mode === "demo" ? t("mode_demo") : "")) + "</span></span>" + UI.icon("updown", "sm") + "</button></div>";
+      UI.avatar(me ? me.name : "?", { tone: "gel" }) + '<span class="mt"><b>' + esc(me ? me.name : t("sh_user")) + "</b><span>" + esc(me ? t("role_" + me.role).split(" · ")[0] : "") + "</span></span>" + UI.icon("updown", "sm") + "</button></div>";
     return h + "</aside>";
   }
   /** Phone bottom bar: 5 items + More (opens the full sidebar as a drawer). */
   function bottomHTML(nav) {
-    var pick = ["today", "tasks", "inbox", "calendar", "projects"].filter(function (v) { return nav.indexOf(v) > -1; });
-    nav.forEach(function (v) { if (pick.length < 5 && pick.indexOf(v) < 0) pick.push(v); });
+    var pick = ["today", "tasks", "calendar", "projects", "studio"].filter(function (v) { return nav.indexOf(v) > -1; });
+    nav.forEach(function (v) { if (pick.length < 5 && pick.indexOf(v) < 0 && !UI.NAV_PARENT[v]) pick.push(v); });
     var inMore = pick.indexOf(UI.state.view) < 0;
     return '<nav class="bnav" aria-label="GECKO Ops">' + pick.map(function (v) {
       var c = UI.viewCount(v);
@@ -527,6 +530,7 @@
     return h + "</section></div>";
   }
   /** Full render. Store updates arriving while someone types are held until they leave the field. */
+  var lastScreen = "";
   UI.render = function (force) {
     var app = document.getElementById("app");
     if (!app || !GK.store.ready) return;
@@ -569,6 +573,10 @@
     if (lastView === UI.state.view && scrolls[UI.state.view]) main.scrollTop = scrolls[UI.state.view];
     else main.scrollTop = 0;
     lastView = UI.state.view;
+    // Entrance motion only when the screen changes (view, record or tab), never on a data refresh.
+    var P0 = UI.p() || {}, screenKey = UI.state.view + "|" + (P0.id || "") + "|" + (P0.tab || "") + "|" + (P0.mode || "") + "|" + (P0.sub || "");
+    if (screenKey !== lastScreen) { var pg = document.getElementById("page"); if (pg) { pg.classList.add("enter"); setTimeout(function () { pg.classList.remove("enter"); }, 700); } }
+    lastScreen = screenKey;
     if (focusKey) {
       var parts = focusKey.split("|");
       var sel = '[data-a="' + parts[0] + '"]' + (parts[1] ? '[data-v="' + parts[1] + '"],[data-a="' + parts[0] + '"][data-id="' + parts[1] + '"]' : "");
@@ -582,7 +590,7 @@
   function flush() { if (deferred) UI.render(); }
 
   /** Theme: "dark" (default, total black), "light" or "auto" (follows the system). */
-  UI.theme = function () { var m = u.lsGet(THEME_KEY, "dark"); return m === "light" || m === "auto" ? m : "dark"; };
+  UI.theme = function () { return "light"; };
   function applyTheme() { document.documentElement.setAttribute("data-theme", UI.theme()); }
 
   // ---------- built-in flows ----------
@@ -612,7 +620,7 @@
   actions.drawer = function () { UI.state.drawer = !UI.state.drawer; UI.render(true); var f = UI.state.drawer && document.querySelector(".side .nv[aria-current]"); if (f) f.focus(); };
   actions.nav = function (el, ev) { if (ev) ev.preventDefault(); UI.go(el.getAttribute("data-v")); };
   actions.lang = function (el) { GK.i18n.setLang(el.getAttribute("data-l")); document.documentElement.lang = GK.i18n.lang(); UI.render(true); };
-  actions.theme = function (el) { u.lsSet(THEME_KEY, el.getAttribute("data-m")); applyTheme(); UI.render(true); };
+  actions.theme = function () { applyTheme(); };
   actions.close = function () { UI.closeModal(); };
   actions["confirm-yes"] = function () { var f = confirmFn; UI.closeModal(); if (f) f(); };
   actions["start-live"] = startLiveModal;

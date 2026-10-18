@@ -44,17 +44,17 @@
             title: t("sh_f_paid", { amt: u.money((+p.net || 0) + (+p.withheld || 0)) }), meta: m.brand(i.clientId) + (i.no ? " · " + i.no : "") });
         });
       });
-      S.all("projects").filter(function (p) { return p.stage !== "done"; }).forEach(function (p) {
+      S.all("projects").filter(function (p) { return p.stage !== "retention"; }).forEach(function (p) {
         var n = m.files(p).filter(function (f) { return f.item.status === "review"; }).length;
         if (n) out.push({ id: "rev:" + p.id + ":" + n, icon: "production", at: td, view: "production", params: { projectId: p.id }, title: t(n === 1 ? "sh_f_review_1" : "sh_f_review_n", { n: n }), meta: m.projectLabel(p) });
       });
     }
     if (founder || r === "sales") {
-      S.all("projects").filter(function (p) { return p.stage === "plan" && !p.planApproved; }).forEach(function (p) {
+      S.all("projects").filter(function (p) { return p.stage === "scripting" && !p.planApproved; }).forEach(function (p) {
         out.push({ id: "plan:" + p.id, icon: "projects", at: td, view: "projects", params: { id: p.id }, title: t("sh_f_plan"), meta: m.projectLabel(p) });
       });
       S.all("feedback").filter(function (f) { return (f.at || "").slice(0, 10) >= u.addDays(td, -10); }).forEach(function (f) {
-        out.push({ id: "fb:" + f.id, icon: "msg", tone: f.kind === "changes" ? "alert" : f.kind === "approve" ? "good" : "", at: (f.at || "").slice(0, 10), view: "portal", params: {},
+        out.push({ id: "fb:" + f.id, icon: "msg", tone: f.kind === "changes" ? "alert" : f.kind === "approve" ? "good" : "", at: (f.at || "").slice(0, 10), view: "clients", params: { id: f.clientId, tab: "approvals" },
           title: t("sh_f_fb", { brand: m.brand(f.clientId) }), meta: t("sh_f_fb_" + (f.kind || "comment")) + (f.text ? " · " + String(f.text).slice(0, 70) : "") });
       });
     }

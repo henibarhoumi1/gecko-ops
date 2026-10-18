@@ -25,12 +25,12 @@
   /* core words used by the shell, model and shared components */
   I.add({
     app_name: ["Gecko Ops", "Gecko Ops"],
-    nav_today: ["Home", "Accueil"], nav_pipeline: ["Sales pipeline", "Ventes"], nav_clients: ["Clients", "Clients"],
+    nav_today: ["Home", "Accueil"], nav_pipeline: ["Leads", "Prospects"], nav_clients: ["Clients", "Clients"],
     nav_projects: ["Projects", "Projets"], nav_production: ["Shoots and edits", "Tournages et montage"], nav_deliveries: ["Deliveries", "Livraisons"],
-    nav_reports: ["Ad results", "Résultats pubs"], nav_finance: ["Money", "Argent"], nav_portal: ["Client pages", "Pages client"],
-    nav_dashboard: ["Numbers", "Chiffres"], nav_studio: ["Ideas and scripts", "Idées et scripts"], nav_boards: ["Whiteboards", "Tableaux"], nav_team: ["Team", "Équipe"], nav_settings: ["Settings", "Réglages"],
+    nav_reports: ["Ad results", "Résultats pubs"], nav_finance: ["Finance", "Finance"], nav_portal: ["Client portals", "Portails client"],
+    nav_dashboard: ["CEO dashboard", "Tableau de bord"], nav_studio: ["Ideas and scripts", "Idées et scripts"], nav_boards: ["Whiteboards", "Tableaux"], nav_team: ["Team", "Équipe"], nav_settings: ["Settings", "Réglages"],
     nav_tasks: ["Tasks", "Tâches"], nav_calendar: ["Calendar", "Calendrier"], nav_inbox: ["Inbox", "Messages"], nav_activity: ["Activity", "Activité"], nav_guide: ["Start here", "Commencer ici"], nav_docs: ["Docs", "Docs"],
-    grp_main: ["Main", "Principal"], grp_sell: ["Sell", "Vendre"], grp_make: ["Make", "Produire"], grp_work: ["Work", "Travail"], grp_studio: ["Studio", "Studio"], grp_money: ["Money", "Argent"], grp_clients: ["Clients", "Clients"], grp_team: ["Team", "Équipe"],
+    grp_main: ["Main", "Principal"], grp_sell: ["Sell", "Vendre"], grp_make: ["Make", "Produire"], grp_work: ["Work", "Travail"], grp_studio: ["Studio", "Studio"], grp_money: ["Money", "Argent"], grp_clients: ["Clients", "Clients"], grp_team: ["Team", "Équipe"], grp_ceo: ["Company", "Direction"], grp_sales: ["Sales", "Ventes"], grp_prod: ["Production", "Production"], grp_mkt: ["Marketing", "Marketing"],
     sh_menu: ["Menu", "Menu"], sh_more: ["More", "Plus"], sh_expand: ["Expand the menu", "Déplier le menu"], sh_collapse: ["Collapse the menu", "Replier le menu"],
     undo: ["Undo", "Annuler"],
     working_as: ["Working as", "Connecté en tant que"], theme: ["Theme", "Thème"], language: ["Language", "Langue"],
@@ -47,7 +47,7 @@
     start_live_shared: ["You'll get an empty workspace shared with everyone you give access to this page. Existing local records remain in this browser.", "Vous obtenez un espace vide, partagé avec toutes les personnes qui ont accès à cette page. Les données locales existantes restent dans ce navigateur."],
     start_live_local: ["You'll get an empty workspace saved in this browser only. Sharing with the team comes when this page is shared or hosted.", "Vous obtenez un espace vide, enregistré dans ce navigateur seulement. Le partage avec l'équipe vient quand la page est partagée ou hébergée."],
     shared_note: ["Shared with the team", "Partagé avec l'équipe"], local_note: ["Saved in this browser", "Enregistré dans ce navigateur"],
-    read_only: ["You can view this page but not change it. Ask Heni for Contributor access.", "Vous pouvez consulter cette page mais pas la modifier. Demandez à Heni un accès Contributeur."],
+    read_only: ["You can view this page but not change it. Ask the owner for Contributor access.", "Vous pouvez consulter cette page mais pas la modifier. Demandez au fondateur un accès Contributeur."],
     write_failed: ["That change wasn't saved. Check your connection and try again.", "Cette modification n'a pas été enregistrée. Vérifiez la connexion et réessayez."],
     quota_full: ["The shared database is full. Delete old messages or tasks, then try again.", "La base partagée est pleine. Supprimez d'anciens messages ou tâches, puis réessayez."],
     join_title: ["Who are you on the team?", "Qui êtes-vous dans l'équipe ?"],
@@ -55,7 +55,7 @@
     your_name: ["Your name", "Votre nom"], your_role: ["Your role", "Votre rôle"], join: ["Join", "Rejoindre"],
     // roles
     role_founder: ["Founder · creative director", "Fondateur · directeur créatif"], role_sales: ["Client Lead", "Responsable clients"],
-    role_editor: ["Freelance editor", "Monteur freelance"], role_assistant: ["Freelance assistant", "Assistant freelance"],
+    role_editor: ["Freelance editor", "Monteur freelance"], role_assistant: ["Production", "Production"],
     // project stages (crm-pipeline.md, after won)
     st_onboarding: ["Onboarding", "Démarrage"], st_scripting: ["Scripting", "Scripts"], st_pre_production: ["Pre-production", "Préproduction"], st_shoot: ["Shoot", "Tournage"],
     st_editing: ["Editing", "Montage"], st_client_review: ["Client review", "Revue client"], st_revisions: ["Revisions", "Retouches"], st_delivered: ["Delivered", "Livré"],
@@ -94,9 +94,9 @@
     launch_price: ["Launch price", "Prix de lancement"], standard_price: ["Standard price", "Prix standard"],
     per_month: ["/ month", "/ mois"], sample_tag: ["Local", "Local"],
     orders_week: ["orders / week", "commandes / semaine"],
-    est_owner_days: ["Heni, director and camera ({n} day × {r})", "Heni, réalisation et image ({n} j × {r})"],
-    est_owner_project: ["Heni, director and camera (project)", "Heni, réalisation et image (projet)"],
-    est_owner_edit: ["Heni, editing ({n} reels)", "Heni, montage ({n} reels)"],
+    est_owner_days: ["Owner, director and camera ({n} day × {r})", "Fondateur, réalisation et image ({n} j × {r})"],
+    est_owner_project: ["Owner, director and camera (project)", "Fondateur, réalisation et image (projet)"],
+    est_owner_edit: ["Owner, editing ({n} reels)", "Fondateur, montage ({n} reels)"],
     est_camera: ["Camera rental ({n} day × {r})", "Location caméra ({n} j × {r})"], est_transport: ["Transport ({n} day × {r})", "Transport ({n} j × {r})"],
     est_food: ["Food and water on set ({n} day × {r})", "Repas sur le tournage ({n} j × {r})"], est_assistant: ["Assistant ({n} day × {r})", "Assistant ({n} j × {r})"]
   });

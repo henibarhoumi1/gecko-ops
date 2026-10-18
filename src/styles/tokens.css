@@ -1,147 +1,110 @@
 /* ==========================================================================
-   Gecko Ops · design tokens. Brand: gecko/brand/BRAND.md (direction 02, teal and orange).
-   Navy base with a faded teal glow and a warm orange glow, frosted glass surfaces.
-   Instrument Serif for headlines, Geist for everything else. One font per line.
-   Orange is the action colour (primary buttons). Teal is a fill and glow, never body text.
-   Dark is the default. Light (white paper, navy ink) is an explicit choice and is used for documents.
+   Gecko Ops · design tokens. Brand v5 (approved 17 Oct): gecko/brand/v5/.
+   Pink and butter yellow share the work half and half, on warm white, with ink for words.
+   No grey, no gradients, square edges. Bold grotesk headlines, typewriter labels.
+   Fonts fall back to system faces until the final font files land in gecko/brand/v5/.
+   Muted text is ink at lower opacity, never a separate grey.
    Legacy names (--gel, --chroma, --ink, --surface, --pill-*, --rail-*) are kept as aliases so every module keeps working.
    ========================================================================== */
-@font-face{font-family:"Geist";src:url(__FONT_geist-normal-latin__) format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:"Geist";src:url(__FONT_geist-normal-latin-ext__) format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1E00-1E9F,U+20A0-20AB,U+20AD-20C4,U+2C60-2C7F,U+A720-A7FF}
-@font-face{font-family:"Instrument Serif";src:url(__FONT_instrument-serif-normal-latin__) format("woff2");font-weight:400;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
-@font-face{font-family:"Instrument Serif";src:url(__FONT_instrument-serif-normal-latin-ext__) format("woff2");font-weight:400;font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1E00-1E9F,U+20A0-20AB,U+20AD-20C4,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:"Familjen Grotesk";src:url(__FONT_familjen-grotesk-latin__) format("woff2");font-weight:400 700;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Familjen Grotesk";src:url(__FONT_familjen-grotesk-latin-ext__) format("woff2");font-weight:400 700;font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1E00-1E9F,U+20A0-20AB,U+20AD-20C4,U+2C60-2C7F,U+A720-A7FF}
 
 :root{
-  /* brand constants (BRAND.md) */
-  --b-ink:#02040B;
-  --b-navy:#050D24;
-  --b-deep-blue:#0A1C47;
-  --b-teal:#4F8A87;
-  --b-orange:#F28A3C;
-  --b-cream:#F4F1EC;
-  --b-white:#FFFFFF;
-  --b-soft:#C5CCD6;
-  --on-orange:#1A0B02;
-  --b-paper:#FFFFFF;
-  --b-paper-warm:#F6F4EF;
-  --b-ink-text:#0A1430;
-  --b-ink-soft:#4A5470;
+  /* brand constants (v5 colour page) */
+  --b-white:#FCFAF5;--b-ink:#181614;--b-pink:#F4C1C4;--b-yellow:#F3DF9E;
+  /* old names kept for modules that still read them */
+  --b-black:var(--b-ink);--b-blue:var(--b-ink);--b-navy:var(--b-ink);--b-deep-blue:var(--b-ink);--b-teal:var(--b-yellow);--b-orange:var(--b-pink);--b-cream:var(--b-white);
+  --b-soft:rgba(252,250,245,.76);--on-orange:var(--b-ink);--b-paper:var(--b-white);--b-paper-warm:var(--b-white);--b-ink-text:var(--b-ink);--b-ink-soft:rgba(24,22,20,.74);
 
-  /* dark (default): navy glass */
-  --bg:var(--b-ink);
-  --bg-paint:radial-gradient(60vmax 50vmax at 0% 0%,rgba(79,138,135,.20),rgba(79,138,135,0) 70%),radial-gradient(60vmax 50vmax at 100% 100%,rgba(242,138,60,.13),rgba(242,138,60,0) 70%),linear-gradient(160deg,#071434 0%,#040A1C 55%,var(--b-ink) 100%);
-  --s1:rgba(255,255,255,.055);
-  --s2:rgba(255,255,255,.085);
-  --s3:rgba(255,255,255,.13);
-  --s-solid:#08122C;            /* opaque surface for menus, modals and panels that sit over content */
-  --line:rgba(255,255,255,.11);
-  --line-2:rgba(255,255,255,.22);
-  --tx:var(--b-white);
-  --tx-2:var(--b-soft);
-  --tx-3:rgba(197,204,214,.62);
-  --head:var(--b-cream);        /* headlines */
+  --bg:var(--b-white);--bg-paint:var(--b-white);
+  --s1:var(--b-white);--s2:rgba(24,22,20,.04);--s3:rgba(24,22,20,.08);--s-solid:var(--b-white);
+  --line:rgba(24,22,20,.16);--line-2:var(--b-ink);
+  --tx:var(--b-ink);--tx-2:rgba(24,22,20,.74);--tx-3:rgba(24,22,20,.55);--head:var(--b-ink);
+  --chroma:var(--b-yellow);--chroma-soft:var(--b-yellow);--chroma-tx:var(--b-ink);--on-chroma:var(--b-ink);
+  --gel:var(--b-pink);--gel-deep:var(--b-pink);--gel-soft:var(--b-pink);
+  --action:var(--b-ink);--on-action:var(--b-white);--link:var(--b-ink);
+  --c-work:rgba(24,22,20,.45);--c-blue:var(--b-ink);--c-pink:var(--b-pink);--c-yellow:var(--b-yellow);--c-green:var(--b-ink);
+  --c-work-soft:rgba(24,22,20,.06);--c-blue-soft:rgba(24,22,20,.08);--c-pink-soft:var(--b-pink);--c-yellow-soft:var(--b-yellow);--c-green-soft:var(--b-yellow);
+  --on-hi:var(--b-ink);--on-green:var(--b-white);--accent-word:var(--b-ink);
+  --glass-fill:var(--b-white);--glass-border:rgba(24,22,20,.16);--glass-shadow:none;--glass-blur:none;
+  --hero:var(--b-pink);--hero-tx:var(--b-ink);--scrim:rgba(24,22,20,.5);--shadow:none;--shadow-pop:0 0 0 1px var(--b-ink);
+  color-scheme:light;
 
-  /* roles (legacy names): chroma = positive / in progress (teal fill), gel = needs attention (orange) */
-  --chroma:var(--b-teal);
-  --chroma-soft:rgba(79,138,135,.20);
-  --chroma-tx:var(--b-white);   /* teal is never text: positive text stays white */
-  --on-chroma:var(--b-ink);
-  --gel:var(--b-orange);
-  --gel-deep:var(--b-orange);
-  --gel-soft:rgba(242,138,60,.16);
-  --action:var(--b-orange);
-  --on-action:var(--on-orange);
-  --link:var(--b-cream);
-
-  /* category accents: chips, dots and chart series. Derived from the brand five. */
-  --c-work:var(--b-soft);
-  --c-blue:#7C9BDA;             /* deep blue, lifted to read on navy */
-  --c-pink:#F2B58A;             /* orange, softened */
-  --c-yellow:var(--b-cream);
-  --c-green:var(--b-teal);
-  --c-work-soft:rgba(197,204,214,.14);
-  --c-blue-soft:rgba(124,155,218,.18);
-  --c-pink-soft:rgba(242,181,138,.18);
-  --c-yellow-soft:rgba(244,241,236,.14);
-  --c-green-soft:rgba(79,138,135,.20);
-  --on-hi:var(--b-ink);
-  --on-green:var(--b-ink);
-  --accent-word:var(--head);
-
-  /* glass */
-  --glass-fill:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.03));
-  --glass-border:rgba(255,255,255,.16);
-  --glass-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 10px 40px rgba(0,0,0,.35);
-  --glass-blur:blur(18px) saturate(140%);
-
-  --hero:radial-gradient(80% 120% at 0% 0%,rgba(79,138,135,.55) 0%,rgba(79,138,135,0) 60%),radial-gradient(90% 130% at 100% 100%,rgba(242,138,60,.42) 0%,rgba(242,138,60,0) 62%),linear-gradient(160deg,var(--b-deep-blue) 0%,var(--b-navy) 55%,var(--b-ink) 100%);
-  --hero-tx:var(--b-white);
-  --scrim:rgba(3,7,18,.66);
-  --shadow:none;
-  --shadow-pop:0 0 0 1px var(--line-2),0 24px 64px rgba(0,0,0,.55);
-
-  /* type */
-  --f-display:"Instrument Serif",Georgia,"Times New Roman",serif;
+  /* type: bold grotesk for headlines and text, typewriter for labels */
+  --f-display:"Familjen Grotesk","Helvetica Neue",Helvetica,Arial,sans-serif;
   --f-accent:var(--f-display);
-  --f-text:"Geist",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  --f-text:var(--f-display);
+  --f-type:"Courier Prime","Courier New",Courier,monospace;
   --f-derja:"Noto Naskh Arabic","Geeza Pro",serif;
-  --fs-12:12px;--fs-13:13px;--fs-14:14px;--fs-16:16px;--fs-20:20px;--fs-28:34px;--fs-40:44px;--fs-64:64px;
+  --fs-12:12px;--fs-13:13px;--fs-14:14px;--fs-16:16px;--fs-20:20px;--fs-28:34px;--fs-40:44px;--fs-64:60px;
 
   /* spacing (4px scale) */
   --sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-5:20px;--sp-6:24px;--sp-8:32px;--sp-12:48px;
 
-  /* radius: pills round, cards 20, large panels 28 */
-  --r-sm:10px;--r-md:14px;--r-lg:20px;--r-xl:28px;--r-pill:999px;
-  --r-box:12px;
+  /* square edges everywhere */
+  --r-sm:0;--r-md:0;--r-lg:0;--r-xl:0;--r-pill:0;--r-box:0;
 
   /* motion */
-  --ease:cubic-bezier(.2,.7,.2,1);--dur:180ms;--dur-reveal:420ms;
+  --ease:cubic-bezier(.2,.7,.2,1);--dur:160ms;--dur-reveal:320ms;
 
   /* layout */
-  --side-w:248px;--rail-w:72px;--top-h:64px;--page-max:1440px;--gutter:24px;
-
+  --side-w:240px;--rail-w:72px;--top-h:60px;--page-max:1440px;--gutter:24px;
+}
+/* an ink band inside a light page */
+.on-dark{
+  --bg:var(--b-ink);--bg-paint:var(--b-ink);
+  --s1:var(--b-ink);--s2:rgba(252,250,245,.06);--s3:rgba(252,250,245,.12);--s-solid:var(--b-ink);
+  --line:rgba(252,250,245,.18);--line-2:var(--b-white);
+  --tx:var(--b-white);--tx-2:rgba(252,250,245,.76);--tx-3:rgba(252,250,245,.56);--head:var(--b-white);
+  --chroma:var(--b-yellow);--chroma-soft:rgba(243,223,158,.22);--chroma-tx:var(--b-yellow);--on-chroma:var(--b-ink);
+  --gel:var(--b-pink);--gel-deep:var(--b-pink);--gel-soft:rgba(244,193,196,.22);
+  --action:var(--b-pink);--on-action:var(--b-ink);--link:var(--b-yellow);
+  --c-work:rgba(252,250,245,.5);--c-blue:var(--b-white);--c-pink:var(--b-pink);--c-yellow:var(--b-yellow);--c-green:var(--b-yellow);
+  --c-work-soft:rgba(252,250,245,.08);--c-blue-soft:rgba(252,250,245,.1);--c-pink-soft:rgba(244,193,196,.22);--c-yellow-soft:rgba(243,223,158,.22);--c-green-soft:rgba(243,223,158,.22);
+  --on-hi:var(--b-ink);--on-green:var(--b-ink);--accent-word:var(--b-white);
+  --glass-fill:var(--b-ink);--glass-border:rgba(252,250,245,.18);--glass-shadow:none;--glass-blur:none;
+  --hero:var(--b-pink);--hero-tx:var(--b-ink);--scrim:rgba(0,0,0,.7);--shadow:none;--shadow-pop:0 0 0 1px var(--b-white);
   color-scheme:dark;
 }
-/* light: white paper with navy ink text */
-@media (prefers-color-scheme: light){:root[data-theme="auto"]{
-  --bg:var(--b-paper-warm);--bg-paint:var(--b-paper-warm);
-  --s1:rgba(255,255,255,.72);--s2:rgba(10,20,48,.05);--s3:rgba(10,20,48,.09);--s-solid:#FFFFFF;--line:rgba(10,20,48,.12);--line-2:rgba(10,20,48,.22);
-  --tx:var(--b-ink-text);--tx-2:var(--b-ink-soft);--tx-3:rgba(74,84,112,.72);--head:var(--b-ink-text);
-  --chroma:#3F7F7C;--chroma-soft:rgba(79,138,135,.16);--chroma-tx:var(--b-ink);--on-chroma:#FFFFFF;--link:var(--b-ink-text);
-  --c-blue:#3B5BA8;--c-pink:#D9783A;--c-yellow:#B9AE98;--c-green:#3F7F7C;--c-work:#5B6475;--on-hi:#FFFFFF;--on-green:#FFFFFF;
-  --glass-fill:rgba(255,255,255,.72);--glass-border:rgba(10,20,48,.10);--glass-shadow:0 1px 2px rgba(10,20,48,.04),0 8px 24px rgba(10,20,48,.06);
-  --scrim:rgba(10,20,48,.32);--shadow-pop:0 0 0 1px var(--line),0 24px 64px rgba(10,20,48,.18);
-  color-scheme:light;
-}}
-:root[data-theme="light"]{
-  --bg:var(--b-paper-warm);--bg-paint:var(--b-paper-warm);
-  --s1:rgba(255,255,255,.72);--s2:rgba(10,20,48,.05);--s3:rgba(10,20,48,.09);--s-solid:#FFFFFF;--line:rgba(10,20,48,.12);--line-2:rgba(10,20,48,.22);
-  --tx:var(--b-ink-text);--tx-2:var(--b-ink-soft);--tx-3:rgba(74,84,112,.72);--head:var(--b-ink-text);
-  --chroma:#3F7F7C;--chroma-soft:rgba(79,138,135,.16);--chroma-tx:var(--b-ink);--on-chroma:#FFFFFF;--link:var(--b-ink-text);
-  --c-blue:#3B5BA8;--c-pink:#D9783A;--c-yellow:#B9AE98;--c-green:#3F7F7C;--c-work:#5B6475;--on-hi:#FFFFFF;--on-green:#FFFFFF;
-  --glass-fill:rgba(255,255,255,.72);--glass-border:rgba(10,20,48,.10);--glass-shadow:0 1px 2px rgba(10,20,48,.04),0 8px 24px rgba(10,20,48,.06);
-  --scrim:rgba(10,20,48,.32);--shadow-pop:0 0 0 1px var(--line),0 24px 64px rgba(10,20,48,.18);
-  color-scheme:light;
-}
 
-/* paper: printable documents (quotes, invoices, plans) stay cream in every theme */
+/* paper: printable documents (quotes, invoices, plans) stay warm white in every theme */
 .doc,.paper{
-  --bg:var(--b-paper);--s1:#FFFFFF;--s2:rgba(10,20,48,.05);--s3:rgba(10,20,48,.09);--s-solid:#FFFFFF;--line:rgba(10,20,48,.14);--line-2:rgba(10,20,48,.24);
-  --tx:var(--b-ink-text);--tx-2:var(--b-ink-soft);--tx-3:rgba(74,84,112,.72);--head:var(--b-ink-text);
-  --chroma:#3F7F7C;--chroma-soft:rgba(79,138,135,.14);--chroma-tx:var(--b-ink);--link:var(--b-ink-text);
-  --accent-word:var(--b-ink-text);--shadow:none;color-scheme:light;
+  --bg:var(--b-white);--bg-paint:var(--b-white);
+  --s1:var(--b-white);--s2:rgba(24,22,20,.04);--s3:rgba(24,22,20,.08);--s-solid:var(--b-white);
+  --line:rgba(24,22,20,.16);--line-2:var(--b-ink);
+  --tx:var(--b-ink);--tx-2:rgba(24,22,20,.74);--tx-3:rgba(24,22,20,.55);--head:var(--b-ink);
+  --chroma:var(--b-yellow);--chroma-soft:var(--b-yellow);--chroma-tx:var(--b-ink);--on-chroma:var(--b-ink);
+  --gel:var(--b-pink);--gel-deep:var(--b-pink);--gel-soft:var(--b-pink);
+  --action:var(--b-ink);--on-action:var(--b-white);--link:var(--b-ink);
+  --c-work:rgba(24,22,20,.45);--c-blue:var(--b-ink);--c-pink:var(--b-pink);--c-yellow:var(--b-yellow);--c-green:var(--b-ink);
+  --c-work-soft:rgba(24,22,20,.06);--c-blue-soft:rgba(24,22,20,.08);--c-pink-soft:var(--b-pink);--c-yellow-soft:var(--b-yellow);--c-green-soft:var(--b-yellow);
+  --on-hi:var(--b-ink);--on-green:var(--b-white);--accent-word:var(--b-ink);
+  --glass-fill:var(--b-white);--glass-border:rgba(24,22,20,.16);--glass-shadow:none;--glass-blur:none;
+  --hero:var(--b-pink);--hero-tx:var(--b-ink);--scrim:rgba(24,22,20,.5);--shadow:none;--shadow-pop:0 0 0 1px var(--b-ink);
+  color-scheme:light;
 }
 .doc.slate{
-  --bg:var(--b-navy);--s1:var(--b-navy);--s2:rgba(255,255,255,.08);--s3:rgba(255,255,255,.13);--line:rgba(255,255,255,.16);--line-2:rgba(255,255,255,.26);
-  --tx:var(--b-white);--tx-2:var(--b-soft);--tx-3:rgba(197,204,214,.62);--head:var(--b-cream);--chroma-tx:var(--b-white);--link:var(--b-cream);--accent-word:var(--b-cream);color-scheme:dark;
+  --bg:var(--b-pink);--bg-paint:var(--b-pink);
+  --s1:var(--b-pink);--s2:rgba(24,22,20,.04);--s3:rgba(24,22,20,.08);--s-solid:var(--b-white);
+  --line:rgba(24,22,20,.16);--line-2:var(--b-ink);
+  --tx:var(--b-ink);--tx-2:rgba(24,22,20,.74);--tx-3:rgba(24,22,20,.55);--head:var(--b-ink);
+  --chroma:var(--b-yellow);--chroma-soft:var(--b-yellow);--chroma-tx:var(--b-ink);--on-chroma:var(--b-ink);
+  --gel:var(--b-pink);--gel-deep:var(--b-pink);--gel-soft:var(--b-pink);
+  --action:var(--b-ink);--on-action:var(--b-white);--link:var(--b-ink);
+  --c-work:rgba(24,22,20,.45);--c-blue:var(--b-ink);--c-pink:var(--b-pink);--c-yellow:var(--b-yellow);--c-green:var(--b-ink);
+  --c-work-soft:rgba(24,22,20,.06);--c-blue-soft:rgba(24,22,20,.08);--c-pink-soft:var(--b-pink);--c-yellow-soft:var(--b-yellow);--c-green-soft:var(--b-yellow);
+  --on-hi:var(--b-ink);--on-green:var(--b-white);--accent-word:var(--b-ink);
+  --glass-fill:var(--b-white);--glass-border:rgba(24,22,20,.16);--glass-shadow:none;--glass-blur:none;
+  --hero:var(--b-pink);--hero-tx:var(--b-ink);--scrim:rgba(24,22,20,.5);--shadow:none;--shadow-pop:0 0 0 1px var(--b-ink);
+  color-scheme:light;
 }
 
 /* legacy aliases: declared on every element that redefines the base tokens, so they resolve locally */
-:root,.doc,.paper,.doc.slate{
-  --slate:var(--b-ink);--bounce:var(--b-cream);
+:root,.doc,.paper,.doc.slate,.on-dark{
+  --slate:var(--b-black);--bounce:var(--tx);
   --ink:var(--tx);--ink-2:var(--tx-2);--ink-3:var(--tx-3);
   --surface:var(--s1);
-  --accent:var(--gel);--accent-2:var(--chroma);--on-accent:var(--on-orange);--on-accent-2:var(--b-white);
+  --accent:var(--gel);--accent-2:var(--chroma);--on-accent:var(--on-action);--on-accent-2:var(--b-white);
   --rail-bg:transparent;--rail-fg:var(--tx);--rail-mute:var(--tx-3);--rail-line:var(--line);
   --pill-todo-bg:var(--s2);--pill-todo-fg:var(--tx-2);--pill-todo-bd:var(--line);
   --pill-wip-bg:var(--chroma-soft);--pill-wip-fg:var(--tx);--pill-wip-bd:transparent;
