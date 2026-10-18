@@ -48,13 +48,15 @@ function makeGuide(options) {
     go: (view) => { ui.state.view = view; },
     head: () => "",
     btn: (label, action, config) => '<button data-a="' + action + '"' + (config && config.data ? ' data-i="' + config.data.i + '" data-v="' + config.data.v + '"' : "") + ">" + label + "</button>",
-    toast: () => {}
+    toast: () => {},
+    nav: () => options.nav || ["today", "pipeline", "clients", "projects", "studio", "calendar", "finance", "dashboard", "marketing", "team"],
+    icon: () => ""
   };
   const GK = {
     u: null,
     ui,
     store: { ready: true, backend: "local", localRecordCount: () => options.count || 0 },
-    i18n: { add: (words) => Object.assign(text, words) },
+    i18n: { add: (words) => Object.assign(text, words), lang: () => "en" },
     t: (key, vars) => {
       let out = text[key] ? text[key][0] : key;
       Object.keys(vars || {}).forEach((name) => { out = out.replace("{" + name + "}", vars[name]); });
@@ -64,14 +66,24 @@ function makeGuide(options) {
     act: (name, fn) => { actions[name] = fn; }
   };
   const window = { GK, addEventListener: () => {} };
+  const nodes = {};
+  const fakeEl = () => ({ style: {}, offsetHeight: 180, offsetWidth: 340, innerHTML: "", getAttribute: () => null, classList: { add() {}, remove() {}, toggle() {} } });
+  const document = {
+    addEventListener: () => {},
+    getElementById: (id) => nodes[id] || null,
+    querySelectorAll: () => [],
+    head: { appendChild: () => {} },
+    body: { appendChild: (el) => { el.firstChild = fakeEl(); el.lastChild = fakeEl(); el.parentNode = { removeChild: () => { delete nodes[el.id]; } }; nodes[el.id] = el; } },
+    createElement: () => fakeEl()
+  };
   const context = {
-    window, document: {}, localStorage: storage, console, Date, Math, Promise, JSON, Object, String, Number, RegExp,
+    window, document, localStorage: storage, innerWidth: 1280, innerHeight: 800, setInterval: () => 1, clearInterval: () => {}, console, Date, Math, Promise, JSON, Object, String, Number, RegExp,
     setTimeout: () => 0, clearTimeout: () => {}
   };
   vm.runInNewContext(source("src/core/util.js"), context);
   GK.u = window.GK.u;
   vm.runInNewContext(source("src/modules/guide.js"), context);
-  return { GK, ui, actions, views, storage, get modal() { return modal; } };
+  return { GK, ui, actions, views, storage, document, get modal() { return modal; } };
 }
 
 test("fresh local workspaces initialize empty without loading sample generators", () => {
@@ -146,24 +158,30 @@ test("first-time welcome reflects whether saved workspace records exist", () => 
   assert.match(oldRecords.modal.foot, /guide-welcome-clean/);
 });
 
-test("guided tour navigates, moves backward, skips, exits and can restart", () => {
+test("interactive tour follows the real screens, moves backward, skips, exits and can restart", () => {
   const app = makeGuide({ count: 0 });
   app.actions["guide-start"]();
   assert.equal(app.ui.state.view, "today");
-  assert.match(app.modal.label, /Step 1 of 10/);
-  app.actions["guide-next"]();
-  assert.equal(app.ui.state.view, "pipeline");
-  assert.match(app.modal.label, /Step 2 of 10/);
-  app.actions["guide-previous"]();
-  assert.equal(app.ui.state.view, "today");
+  const tour = () => app.document.getElementById("tour");
+  assert.match(tour().lastChild.innerHTML, /Step 1 of 13/);
+  app.actions["tour-next"](); app.actions["tour-next"](); app.actions["tour-next"]();
+  assert.match(tour().lastChild.innerHTML, /Click Leads|nav_pipeline/);
+  app.ui.state.view = "pipeline"; app.GK.guide.place();
+  assert.match(tour().lastChild.innerHTML, /convert it into a client/);
+  app.actions["tour-back"]();
+  assert.match(tour().lastChild.innerHTML, /Step 3 of 13/);
   app.actions["guide-skip"]();
-  assert.equal(app.modal, null);
   assert.equal(JSON.parse(app.storage.raw("gecko-ops-onboarding-v1")).status, "skipped");
   app.actions["guide-restart"]();
-  assert.match(app.modal.label, /Step 1 of 10/);
-  app.actions["guide-next"]();
-  app.actions["guide-exit"]();
+  assert.match(tour().lastChild.innerHTML, /Step 1 of 13/);
+  app.actions["tour-exit"]();
   assert.equal(JSON.parse(app.storage.raw("gecko-ops-onboarding-v1")).status, "dismissed");
+});
+
+test("tour leaves out areas the viewer cannot open", () => {
+  const app = makeGuide({ count: 0, nav: ["today", "tasks", "calendar", "projects", "studio"] });
+  app.actions["guide-start"]();
+  assert.match(app.document.getElementById("tour").lastChild.innerHTML, /Step 1 of 7/);
 });
 
 test("tour steps and contextual help only target registered application areas", () => {
