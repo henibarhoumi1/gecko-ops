@@ -530,6 +530,7 @@
     return h + "</section></div>";
   }
   /** Full render. Store updates arriving while someone types are held until they leave the field. */
+  var lastScreen = "";
   UI.render = function (force) {
     var app = document.getElementById("app");
     if (!app || !GK.store.ready) return;
@@ -572,6 +573,10 @@
     if (lastView === UI.state.view && scrolls[UI.state.view]) main.scrollTop = scrolls[UI.state.view];
     else main.scrollTop = 0;
     lastView = UI.state.view;
+    // Entrance motion only when the screen changes (view, record or tab), never on a data refresh.
+    var P0 = UI.p() || {}, screenKey = UI.state.view + "|" + (P0.id || "") + "|" + (P0.tab || "") + "|" + (P0.mode || "") + "|" + (P0.sub || "");
+    if (screenKey !== lastScreen) { var pg = document.getElementById("page"); if (pg) { pg.classList.add("enter"); setTimeout(function () { pg.classList.remove("enter"); }, 700); } }
+    lastScreen = screenKey;
     if (focusKey) {
       var parts = focusKey.split("|");
       var sel = '[data-a="' + parts[0] + '"]' + (parts[1] ? '[data-v="' + parts[1] + '"],[data-a="' + parts[0] + '"][data-id="' + parts[1] + '"]' : "");

@@ -713,3 +713,18 @@ a{color:var(--link)}
 
 .in,.field input,.field select,.field textarea,input.in,select.in,textarea.in{background:var(--bg);border-color:var(--line)}
 .in:focus,.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--line-2)}
+
+/* ---------- motion: calm, short, only on screen change ---------- */
+#page.enter>*{animation:pageIn .42s cubic-bezier(.2,.7,.2,1) both}
+#page.enter>*:nth-child(2){animation-delay:.04s}#page.enter>*:nth-child(3){animation-delay:.08s}#page.enter>*:nth-child(4){animation-delay:.12s}#page.enter>*:nth-child(n+5){animation-delay:.16s}
+@keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.btn{transition:background-color .15s ease,color .15s ease,border-color .15s ease,transform .12s ease}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.nv{transition:background-color .18s ease,color .18s ease,padding-left .18s ease}
+.shell:not(.mini) .nv:hover:not([aria-current="page"]){padding-left:16px}
+.tabs [role="tab"]{transition:background-color .18s ease,color .18s ease}
+.panel,.kpi,.card{transition:border-color .18s ease}
+.panel:hover{border-color:var(--line-2)}
+input.in,select.in,textarea.in{transition:border-color .15s ease,background-color .15s ease}
+input.in:focus,select.in:focus,textarea.in:focus{border-color:var(--tx)}
+@media (prefers-reduced-motion:reduce){#page.enter>*{animation:none!important}.shell:not(.mini) .nv:hover:not([aria-current="page"]){padding-left:12px}}

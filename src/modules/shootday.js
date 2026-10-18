@@ -314,7 +314,7 @@
   css.textContent =
     ".sd-tabs{margin-top:var(--sp-4)}" +
     ".sd-list{list-style:none;margin:var(--sp-4) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--sp-3)}" +
-    ".sd-item{border:1px solid var(--line);padding:var(--sp-4);display:flex;flex-direction:column;gap:var(--sp-3);animation:sdIn .35s cubic-bezier(.2,.7,.2,1) both}" +
+    ".sd-item{border:1px solid var(--line);padding:var(--sp-4);display:flex;flex-direction:column;gap:var(--sp-3)}.enter .sd-item{animation:sdIn .35s cubic-bezier(.2,.7,.2,1) both}" +
     ".sd-item:nth-child(2){animation-delay:.04s}.sd-item:nth-child(3){animation-delay:.08s}.sd-item:nth-child(n+4){animation-delay:.12s}" +
     ".sd-row{display:flex;align-items:center;gap:var(--sp-4);flex-wrap:wrap}.sd-meta{flex:1;min-width:180px;display:flex;flex-direction:column;gap:4px}" +
     ".sd-n{width:36px;height:36px;display:grid;place-items:center;background:var(--chroma);color:var(--b-ink);font-weight:700;font-family:var(--f-type)}" +
