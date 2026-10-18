@@ -989,7 +989,7 @@ window.GK = window.GK || {};
     your_name: ["Your name", "Votre nom"], your_role: ["Your role", "Votre rôle"], join: ["Join", "Rejoindre"],
     // roles
     role_founder: ["Founder · creative director", "Fondateur · directeur créatif"], role_sales: ["Client Lead", "Responsable clients"],
-    role_editor: ["Freelance editor", "Monteur freelance"], role_assistant: ["Production", "Production"],
+    role_editor: ["Freelance editor", "Monteur freelance"], role_assistant: ["Production manager", "Responsable production"],
     // project stages (crm-pipeline.md, after won)
     st_onboarding: ["Onboarding", "Démarrage"], st_scripting: ["Scripting", "Scripts"], st_pre_production: ["Pre-production", "Préproduction"], st_shoot: ["Shoot", "Tournage"],
     st_editing: ["Editing", "Montage"], st_client_review: ["Client review", "Revue client"], st_revisions: ["Revisions", "Retouches"], st_delivered: ["Delivered", "Livré"],
@@ -1043,7 +1043,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
 
 /* ---- assets/photos.js ---- */
 /* Team photos (160px, embedded). Keyed by first name; ui.avatar uses them when present. */
-(function(){window.GK=window.GK||{};GK.photos={Heni:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBAUEBAYFBQUGBgYHCQ4JCQgICRINDQoOFRIWFhUSFBQXGiEcFxgfGRQUHScdHyIjJSUlFhwpLCgkKyEkJST/2wBDAQYGBgkICREJCREkGBQYJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCT/wAARCACgAKADASIAAhEBAxEB/8QAHQABAAIDAQEBAQAAAAAAAAAAAAYHBAUIAwIBCf/EAEAQAAEDAwIDBQMKAwcFAAAAAAEAAgMEBRESIQYxQQcTIlFhCHGBFCMyQlJikaGx0RUk8BYlM0NyweFTgpKy8f/EABkBAQADAQEAAAAAAAAAAAAAAAABAwQCBf/EACMRAAIDAAICAgIDAAAAAAAAAAABAgMREiExUSJBBDITI0L/2gAMAwEAAhEDEQA/AOoERFACIiAIiIAiKPcX9oHDXAkMUvEN1iojNkxx6XPkeB1DWgnHryQEhRc68Ue1vDHN3fDFgEsRZnv7nIYzq9I2Z297t1Car2ou0CpZGyKS10paSXyRUgJcPLxEjA/FMJw7ARcj2n2qON6BpbWwWy6eIbyw924jruwgb+eFZXCXtS8P3WGFl+t1XbJneF80A76EOz5DxgYx0KYMLuRY9vuFJdaOGtoKmKpppmh8csTtTXAjOxWQhAREQBERAEREAREQBERAERUH2+9sz7a6o4SsMzmTAFldUxuw4ZH+E09Ofid8B1QJGd2pe0XBwzXSWfhiKlrqmMFs1bIdcUb/ALLGj6ZHU5wDtvuuYb3eay/V01wuNVUVVVM4udNNIXOdn38h+Xkv2KKWtkLpHax1dzx/WV7zWSp7t0jWO0BuC4jAAXLkkWKLNE8Pa06Q57cjxAdEMcjHPGktDdjjrle7qSSOXTodjbpgf1svVn829kYjMTicOfqOM5/ZOQ4mLTte6UMGlhPPbkM9V+GSSnnwHnnjLcjK2Tac0Uzhpe+DSRqHIOzuT1wsd9BLLUtDYXAY1Y6acZP6805E8SZ9nPaVfuA7l8qtlW+SmkINRSSu+an97eh+8N11j2edqVk7Q6T+Tf8AJ7hG3VLRSHxNGcamn6zfUcs7ri63Wd8paGeYaRgndbu21t14PuFPXW2eSmnp3a45Yz9EeXqCMgjG+U5JkODzTuhFDuy/tCpe0PhxlYDFHcYMR1tOz/LfvhwH2XAZHxHRTFdFYREQBERAEREAREQGh474kHCHB92vgDS+jp3PiDuTpDswf+RC4UuNbWXqvfNUyOlqJ5C+Rx5uc45JJ65/3XWntK1UsHZo+niJBqq6CI48gXOP/qFzNQ2bupY3PbktIJyOeT/wuXLCyEdJzwdwZFSUMcla1jpXEPA5geQUsPDlBXOaJYtYbyGMALwoZB3UX+kbKQ0IGAeq8m2x6evCCSwjNX2T2isY4wiSFzhgkHO3lvyWHP2L0T48RVEsTjuXNaAfgrRowHAA4C2IjjAA5/BIWT9lclH0UjF2JY7yN1xe6JzS05j8Ts+ZW6peym2Ujg9jqlzu67reT6vl6BWm6JnkF5mJnkF1KyfsRUV9Fe0/AVto3mSOAtJOeZOnbGAsa58F0ctHJEANWjSzI+jgbKf1AaBthaW4O68vVcwtenUoporTsev0/AfaFHFO9zKGtkFFVM+qNR8Dvg7HwJXWvJclXqxuqLpVvjaQXAuGPNdT2KqdW2S31T865qWKR2eeSwE/mvVhLktPKtjxZnIiLsrCIiAIiIAiIgK77c7U67cIU0TQC1ldG9wI6aXj9SFR0ljeM626Xadm/BdNcaUYreGq1haHaGiUDH2Tn9MqlKiBvfu1D3Ki54aKDV24SMZCDzxjHopVR5AGxytLE0CYHb0WzZdKCjwJ52NdyxqXmTi5Po9RSSRv6R7jyW0h1HCj1Jf7a6RrG1MZcemoKTUUkMzWkPbg8khBryVykj8cH9BkLze1xGy2YhZ9oLVXu922y075quojiYxpcS442HNWOtnCmYc8D9ytPcY3NbnnhQ669vNoZUOgp6eoJzhr5G6WuHmsKm7YqOrq46aspXhkjsCaPdrPeoX4013hP88fGkoZQMlkklP1gAcq8bDF3Fjt0RGNFNG3H/aFUFvjZUH5ohwkxpI6g8irsjjEUbIxyY0N/AYW+j9TD+R+x9IiLQZwiIgCIiAIiIDTXviK0W57qG4zOYJWYedBLWtcCN8Kk3VUdS9xicCA5zc+eOqnnahbc3OmroyWPfAWOPR2CcA+fMKtqKRk9VVFmA5pAc0dHdVjssbk4s310pQU0YHEFbV0dE6OhYXVE3gY7ONHmcqvq2wXSJ4L7wGyPOpweCT8MblW26hE8LpNIJaNtuRUHrrS43uOoukUklDnLoGHSZP9R6j7qqrs74l8q9XLyRaSzRQxh8vEEj5HHAjY1rMEb8g7/ZSrgu93m13CKCS999TPOWsnYQSPQ9V88KcFWiy8QNu4rXVFJA8zRUhpg2Qk8g524wP6AytterXAIpaiGmZSw1EoMFKzOYzzLhkDA8+i7tl1505phsu1hb1FVzVFD3urOAqk4+qYK2vfBKZaog47tp2yeWT5+isHhV889nbHITnRjIUUgt8lvvtTL4HVEcrpYWyRhzX55nnzACzVy19l0oZpXdNf7RI+OhiszZqgvMfdtpnO8QIGnfmd1ILRHaLtG+lbQU0WMtxGzToPUEcwR5FbKGyWq3cRfx2nszhXFxlMZlIhbJz1BvP1xnGVmUVjdW3eW7TRhlVLguc0Yz6FaJyil8X2VQjLfmuiScPufaqSnIb3pptOGuONQac4Vi8LcT3G9XmannEZhEbnnSMCM5GGjz59VAooSwFmObSph2fRYrpHtBDfk4znnnICVzk5RwrnCPGTaJ2iIt55wREQBERAEREBGePaNk9ojqHDeCUb+jtj+eFU9Q63/wAQd8icHFzNMnmHDp+qvO729t2tlTQuOkTxlod9k9D8DhURe6SotdW01UBiqIT3UriDl3v6eufVZLo/NSN1Fn9bgZFE4BxjPUrOltFPOAXMDs+a1cEoeWyMOxGVvKKbvmAHJ9FhmsZsi9WnjFa6OkYe6ha6Q/Va3JP7LU19qzUioqMF3kOTR5Kc0dLG7GAAtJxNSNfVwUwf3bSC97vMDojUmjuElyPvhs4iIAwF411C2S4ObIwEu8TSsrhyqtzfmjONMfhcYyHbr7rqqhqKsMjqY++hOrQXDVj3KePQcuzGFo7sbt1g9f8AhZENJHGNmgeey3j4md01w5EZWrrfm2kqHv2cbprJyGzOIHJpKmXZ26WWOsdMPHGI43HGBnBO35KB1Mzi4Bo8UjhGPTKtPg+hbR2ZjwS51Q4ykn8B+Q/Na6I9pmO+WRa9m7REW4whERAEREAREQBRPjnhCmvVJUXDvpoaiCBz8MALZdIJAcD7sbKWLxrYu/o6iH/qRPZ+LSFy0muyYyaeo5qZdfkVYyBx1Rvxy20qW2x42LSMHCqfiq9MhLe6lbqjyC4cwQcEfqtxwnxtGY4opHl2HCMkHlssF9TfyR6dU/8ALLfZc46SJznO5DZQDjnjK200TnVUuZWjwsjd4j6LQdoXF1ZQ1tJQ0edUzS4kdOQCjH8NoJx3t0ndPUSjPdRnJGx5u6eey4hDUnIt5ZLI+TYWfjn5RVz9/S9yPE5jovCSGjqRzysmy9olD/Fv7wpWwMMg0PB5EjHiPM/svGgrrdQt7qKxwyxgc305e7O2Dq5nkF8Vws12lfPcbYWOeMOmhYYyPXA2PxCucI+ieFq70uu08QRVsGGytkadgQV+XCfUMcx5qhJLxX8J3GkfSVbZ6SWQBrgfpjPIjzVlcWcUCgtby17WyFnU4wfIeqzyraaXs55p79YSLgl8d647gpjG2WnpI3yvDhlpIbt6cyFdAAaAAAANgAuffZlkqK68XmolOpkNO0Z+89/7NOV0GvSrjxjh5dsuUtCIisKwiIgCIiAIiIAgGSB5lF41ddTW+PvaueOBgycyODc432zz+CA4P47ZNbOJ7nTaiIzUyaS7qNRwVgcO17ornTAY0Zy4F2cgefwCk3a/Ta7o2tiY49485OduZ6KuYal0cLotOc9DgkH9t1UvnHovewl2WXfLpT3m52trBL30Q8UreWM9fNbyeSnpHhwLIScZwOfvVTwXOSGrZODHqb4Q71x5f/FYfDrrbW0b466oHeZ8UmvJ92eQ3ys84uGYbKbdbf2b+Dimw0zAyocHSl3Nh5+nJfU15tlQ0OjlaGnYNbuV5HhvhWhphJIHETuAc8v1FoJOPcM4G3osC5Wew2352GR+oksA1eFuADkhc89NLtnmNnxxOyCKno6/uxoZI12nr6bKP8W8RvuUbZdbcAaTEDgggg5+P7ryv98bLSCmL3vhaOWd245t9QCduuAoi2SSaTu9eQ/63XHr5q6qt+WYLre+jpX2SBVywcR1BBFGTAxo5jWNZxnnsD+a6HVedg/DNLw32c0HcN+drc1M7sAZcdgNugAG/VWGtJiCIiAIiIAiLAvN9tfDtG6tu9wpqCnb/mTyBoPu6k+gQGevGtraW3UstXW1MNNTxN1SSzPDGMHmSdgqS4y9qmw2wPpuGKGW7VHIVFRmGAeuPpu/BvvVBcbdr/FvG7v74uXe0jX6mUcTBHCw+jRzI6EklCcL77V/aUtVlpJrVwfUNr7k8Fhr2DMFP6tJ+m7y6D15KjeF+MBU3SsuFwqqipuVWMNqaiYyOA6gZPhzjJwq8qnucdQdqa/kVisqHRPyAee2FEo8lh1CXF6X/WUEHE1qdDLguc3LXc8FUjeqCa03OajkYWvYcOx9bfmpFwz2iVlm0RytFRCMAtdsQPQqSX678M8Y2yR2v5JcA3LXSM5nyLh0WSCnVLGtRtsdd0dTxlVgua7RnUQOWFsIbs+J/hcW5IOkYx/W6w6+jloKp7XHMm+NJBGDleG+A9pw7OcD3jBWvE0YdcWST+1sr2tZO572ABwZqxgg5BGOnvWPUcSSTvdh+WOyCeRx/QC0JLpNIcyNgbqPqfT15JTzBjACwbNI0kdc5UcEiXNs2T6p0mvdpBwNs7+Wyk3ZvFRy8V203FpdQCpZ3nQAE4z+aidvpJZy5zT4Gka3OHI+f5BTCximo6Noke1wEglDT1cD+6nUukSot9s70o6WnoaSGlpGNjp4WBkbW8g0cl7Kg+y3t3pKSKlsXELnNgy2KnrSRiIHk2T7ueTug57bq+mPZKxr2Oa9jhlrmnII8wVJXh9IiIAiIgOaON/acuksbqew0kVsadjK5wlmHx+i34A+9UVf+MLpxBWOqa+uqauYn/EmkL3D8Tt8FoZ55JydTiSV5h3dbDmdsqTo9nyuJO+5Oc5XwHEMII5LwMpyB1z1X61+p2SdkB8S+EEAAtPNvr6LxwSMsJcOo6he0rdydhlY7vC/Lcg9CEIPpryCsunrHREYPJYhkIHzjGv9RsUa6M/Rm0nykGD+KA20kkVYw97kuI5k7rDfb5QTokaWbYGBsF8RibSNLdQx0Of0Xt3kjAMtePeEB8OoKhjmv1NlIPXovttvDG6nHbmV+OrHAgnI/deRrXO6khRhOmwilZBFoj+scu9V7MrC5w5+4LTh8pOQxxH4LKimbq+cfv8AYZuT7/JTg03dFVF0ofKS2GI63u93T3qyezztw4h4KayJjm1tu1EuoJ3HS0E58DubDv7vRVEZ3StEQwyNu+hvn6+ayYJcscweWUJO3uBu2rhLjgRwQ1gt9xdt8irHBrnH7jvov+G/op6v50QVb43B2TjOTjz81afA3b1xVwmIoH1hulCBj5NWu16R91/0m/mPRRhzh2IirTgzt84U4pDIayU2asdgd3UuzG4/dk5fjhWU1zXtDmODmkZBByCEIP/Z",Mohamed:"data:image/jpeg;base64,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"};})();
+(function(){window.GK=window.GK||{};GK.photos={Heni:"data:image/jpeg;base64,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",Mohamed:"data:image/jpeg;base64,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"};})();
 
 /* ---- core/model.js ---- */
 /* Gecko Ops · business rules. Pure functions over store data.
@@ -3828,8 +3828,9 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
         (p ? '<br><span class="small muted">' + esc(m.projectLabel(p)) + "</span>" : "") + "</span></label>" +
         (late ? ui.pill(t("td_late") + " · " + dueLabel(x.due), "alert") : '<span class="small muted num" style="white-space:nowrap">' + esc(dueLabel(x.due)) + "</span>") + "</div>";
     }).join("") + "</div>" + (all.length > list.length ? '<p class="small faint">' + esc(t("td_more_tasks", { n: all.length - list.length })) + "</p>" : "") : ui.empty(t("td_no_tasks"));
-    return panel(t("td_my_tasks"), body, ui.btn(t("td_all_tasks"), "td-go", { cls: "ghost sm", data: { v: ui.nav().indexOf("tasks") > -1 ? "tasks" : "team" } }));
+    return tagged(panel(t("td_my_tasks"), body, ui.btn(t("td_all_tasks"), "td-go", { cls: "ghost sm", data: { v: ui.nav().indexOf("tasks") > -1 ? "tasks" : "team" } })), "td-tasks");
   }
+  function tagged(html, tag) { return html.replace("<section ", '<section data-tour="' + tag + '" '); }
   function shootsPanel(days, title, withChecklist) {
     var td = today(), end = days ? u.addDays(td, days) : "9999";
     var list = S.all("projects").filter(function (p) { return active(p) && p.shootDate && p.shootDate >= td && p.shootDate <= end; }).sort(u.by("shootDate")).slice(0, 8);
@@ -3842,7 +3843,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       var pill = m.canShoot(p) ? ui.pill(t("td_ready"), "done") : ui.pill(t("td_blocked"), "alert");
       return '<div class="li click" tabindex="0" data-a="td-go" data-v="projects" data-id="' + esc(p.id) + '"><div class="stack" style="gap:2px;min-width:0"><strong>' + esc(m.brand(p.clientId)) + '</strong><span class="m">' + esc(p.name) + " · " + meta + "</span></div>" + pill + "</div>";
     }).join("") + "</div>" : ui.empty(t("td_no_shoots"));
-    return panel(title, body);
+    return tagged(panel(title, body), "td-shoots");
   }
   function upcomingShootCount(days) {
     var td = today(), end = u.addDays(td, days);
@@ -3865,7 +3866,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
 
     // money in one quiet panel: this month's cash, what is owed, the pipeline
     var pct = goal ? cash / goal * 100 : 0;
-    var money = '<section class="card c5"><div class="card-h"><span class="lead">' + ui.icon("cash") + "<h2>" + esc(t("td_h_label", { m: u.fmtMonth(ym) })) + "</h2></span>" +
+    var money = '<section class="card c5" data-tour="td-money"><div class="card-h"><span class="lead">' + ui.icon("cash") + "<h2>" + esc(t("td_h_label", { m: u.fmtMonth(ym) })) + "</h2></span>" +
       ui.btn(t("td_h_open"), "td-go", { cls: "ghost sm", data: { v: "finance" } }) + "</div>" +
       '<div class="td-big num">' + esc(u.money(cash)) + "</div>" +
       (goal ? '<div class="stack" style="gap:6px"><div class="meter-lab"><span>' + esc(t("td_h_goal")) + "</span><span>" + esc(u.pct(Math.min(pct, 999))) + "</span></div>" + ui.meter(pct, { segments: 24, sm: true }) + "</div>" : "") +
@@ -3876,7 +3877,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     var h = "";
     // decisions: what is waiting, why, what to do, one button
     var all = !!ui.p("today").all, shown = all ? q : q.slice(0, 6);
-    var dec = '<section class="card c7"><div class="card-h"><span class="lead">' + ui.icon("sparkle") + "<h2>" + esc(t("td_needs", { name: me().name || founderName() })) + "</h2>" + (q.length ? '<span class="cnt hot">' + q.length + "</span>" : "") + "</span>" +
+    var dec = '<section class="card c7" data-tour="td-need"><div class="card-h"><span class="lead">' + ui.icon("sparkle") + "<h2>" + esc(t("td_needs", { name: me().name || founderName() })) + "</h2>" + (q.length ? '<span class="cnt hot">' + q.length + "</span>" : "") + "</span>" +
       (q.length > 6 ? ui.btn(all ? t("td_less") : t("td_all", { n: q.length }), "td-all", { cls: "ghost sm" }) : "") + "</div>" +
       (q.length ? '<div class="decs">' + shown.map(function (x, i) {
         return ui.decision({ title: x.main, why: x.meta, recommend: x.rec, icon: x.icon, tone: x.alert ? "urgent" : "", action: { label: x.label, a: "td-need", data: { i: i }, cls: x.alert ? "primary sm" : "sm" } });
@@ -3911,10 +3912,10 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     ]) + "</section>";
 
     var fl = followsDue(who.id);
-    var follows = panel(t("td_follows"), fl.length ? '<div class="list">' + fl.map(function (l) {
+    var follows = tagged(panel(t("td_follows"), fl.length ? '<div class="list">' + fl.map(function (l) {
       var late = l.nextDate < td;
       return line((late ? ui.pill(t("td_late"), "alert") + " " : "") + "<strong>" + esc(l.brand) + "</strong> · " + esc(t("ls_" + l.stage)), esc(l.next || "") + (l.next ? " · " : "") + esc(dueLabel(l.nextDate)), ui.btn(t("td_b_lead"), "td-go", { cls: "sm", data: { v: "pipeline", id: l.id } }));
-    }).join("") + "</div>" : ui.empty(t("td_no_follows")));
+    }).join("") + "</div>" : ui.empty(t("td_no_follows"))), "td-need");
 
     var props = S.all("leads").filter(function (l) { return l.stage === "proposal" && l.owner === who.id; });
     var propP = panel(t("td_props"), props.length ? '<div class="list">' + props.map(function (l) {
@@ -3946,7 +3947,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
           "</td><td>" + esc(m.projectLabel(r.p)) + "</td><td>" + ui.filePill(r.st) + "</td><td>" + (link ? '<a href="' + esc(link) + '" target="_blank" rel="noopener">' + esc(t("td_drive")) + "</a>" : "") + "</td></tr>";
       }).join("") + "</tbody></table></div>" + (rows.length > shown.length ? '<p class="small muted">' + esc(t("td_more_files", { n: rows.length - shown.length })) + "</p>" : "")
       : ui.empty(t("td_no_files"));
-    return panel(t("td_files"), body, ui.btn(t("td_open_prod"), "td-go", { cls: "primary sm", data: { v: "production" } })) +
+    return tagged(panel(t("td_files"), body, ui.btn(t("td_open_prod"), "td-go", { cls: "primary sm", data: { v: "production" } })), "td-need") +
       '<div class="grid2">' + tasksPanel() + shootsPanel(0, t("td_next_shoots")) + "</div>";
   }
 
@@ -11016,7 +11017,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   }
   function rolePayPanel() {
     var roles = m.ROLES;
-    var h = '<section class="panel"><div class="panel-h"><h2 class="sec">' + esc(t("tp_rp_h")) + '</h2></div><p class="small muted" style="margin:0 0 10px">' + esc(t("tp_rp_sub")) + '</p><div class="stack">';
+    var h = '<section class="panel" data-tour="tp-rolepay"><div class="panel-h"><h2 class="sec">' + esc(t("tp_rp_h")) + '</h2></div><p class="small muted" style="margin:0 0 10px">' + esc(t("tp_rp_sub")) + '</p><div class="stack">';
     roles.forEach(function (r) {
       var d = rolePay(r);
       h += '<div class="tp-rp"><div class="tp-rl"><span class="lab sm">' + esc(t("role_" + r)) + "</span></div>" +
@@ -12618,7 +12619,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
 (function (GK) {
   "use strict";
   var u = GK.u, t = GK.t, ui = GK.ui, S = GK.store, esc = u.esc;
-  var KEY = "gecko-ops-onboarding-v1", stepIndex = 0;
+  var KEY = "gecko-ops-onboarding-v1";
 
   GK.i18n.add({
     guide_title: ["Start with the workflow", "Commencer par le flux de travail"],
@@ -12636,6 +12637,25 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     guide_previous: ["Previous", "Précédent"], guide_next: ["Next", "Suivant"], guide_done: ["Finish tour", "Terminer"],
     guide_open: ["Open this area", "Ouvrir cette section"], guide_area_help: ["Walk me through this area", "Me guider dans cette section"],
     guide_progress: ["Step {n} of {total}", "Étape {n} sur {total}"], guide_complete: ["Tour complete. Restart it any time from Start here or the help menu.", "Visite terminée. Recommencez à tout moment depuis Commencer ici ou le menu d'aide."],
+    tr_why: ["Why it matters", "Pourquoi c'est important"], tr_try: ["Try it: ", "À vous : "], tr_nice: ["Done. Nice.", "Fait. Bien joué."],
+    tr_check: ["Quick check", "Petite vérification"], tr_right: ["Right.", "Exact."], tr_wrong: ["Not quite.", "Pas tout à fait."],
+    tr_finish: ["Finish lesson", "Terminer la leçon"], tr_learned: ["{x}: lesson done", "{x} : leçon terminée"],
+    tr_lessons: ["Learn each section", "Apprendre chaque section"], tr_lessons_sub: ["Short hands-on lessons. Each one points at the real screen, has you try the key moves and ends with a quick check.", "Des leçons courtes et pratiques. Chacune montre l'écran réel, vous fait essayer l'essentiel et se termine par une petite vérification."],
+    tr_start_lesson: ["Start lesson", "Commencer"], tr_redo: ["Do again", "Refaire"], tr_done_on: ["Done", "Terminée"], tr_steps: ["{n} steps", "{n} étapes"],
+    tr_click: ["Click {x} in the menu", "Cliquez sur {x} dans le menu"], tr_skip_step: ["Skip this step", "Passer cette étape"], tr_menu: ["Tap More, then {x}", "Touchez Plus, puis {x}"],
+    tr_home_t: ["Home", "Accueil"], tr_home_b: ["Your day starts here: what needs you, your tasks, cash coming in and the next shoot.", "Votre journée commence ici : ce qui vous attend, vos tâches, l'argent attendu et le prochain tournage."],
+    tr_search_t: ["Search everything", "Tout rechercher"], tr_search_b: ["Find any client, project, idea or invoice. Ctrl K (or ⌘K) opens it from any screen.", "Trouvez un client, un projet, une idée ou une facture. Ctrl K (ou ⌘K) l'ouvre depuis n'importe quel écran."],
+    tr_new_t: ["New", "Nouveau"], tr_new_b: ["Create a lead, client, project, task or invoice from wherever you are.", "Créez un prospect, un client, un projet, une tâche ou une facture où que vous soyez."],
+    tr_leads_t: ["Leads", "Prospects"], tr_leads_b: ["Every opportunity lives here, from the first message to a yes. When a lead signs, convert it into a client instead of typing it twice.", "Chaque opportunité vit ici, du premier message au oui. Quand un prospect signe, convertissez-le en client au lieu de tout ressaisir."],
+    tr_clients_t: ["Clients", "Clients"], tr_clients_b: ["Each client has a workspace: projects, files, approvals, invoices and their own portal link.", "Chaque client a son espace : projets, fichiers, validations, factures et son propre lien de portail."],
+    tr_projects_t: ["Projects", "Projets"], tr_projects_b: ["This is where the team works. Each project moves from prep to shoot to post. Open one to see its shoot plan, run order, edit lines and files.", "C'est ici que l'équipe travaille. Chaque projet passe de la préparation au tournage puis à la post-production. Ouvrez-en un pour voir le plan de tournage, l'ordre, les répliques et les fichiers."],
+    tr_studio_t: ["Ideas and scripts", "Idées et scripts"], tr_studio_b: ["Write hooks and scripts here. Once approved, a script flows into its project's shoot plan.", "Écrivez accroches et scripts ici. Une fois validé, le script rejoint le plan de tournage du projet."],
+    tr_calendar_t: ["Calendar", "Calendrier"], tr_calendar_b: ["Shoots, deadlines and meetings in one place.", "Tournages, échéances et rendez-vous au même endroit."],
+    tr_finance_t: ["Finance", "Finances"], tr_finance_b: ["Quotes, invoices, payments, expenses and the cash book. Record what really happened; the numbers follow.", "Devis, factures, paiements, dépenses et livre de caisse. Enregistrez ce qui s'est vraiment passé ; les chiffres suivent."],
+    tr_dashboard_t: ["CEO dashboard", "Tableau de bord"], tr_dashboard_b: ["The company at a glance: revenue, margin, cash and what to fix first.", "L'entreprise en un coup d'œil : chiffre d'affaires, marge, trésorerie et priorités."],
+    tr_marketing_t: ["Marketing", "Marketing"], tr_marketing_b: ["Gecko's own content plan, ads and what is working.", "Le plan de contenu de Gecko, ses publicités et ce qui marche."],
+    tr_team_t: ["Team", "Équipe"], tr_team_b: ["Who does what and their tasks. The owner also sees pay, history and performance here.", "Qui fait quoi et leurs tâches. Le responsable y voit aussi la rémunération, l'historique et la performance."],
+    tr_help_t: ["You're set", "C'est parti"], tr_help_b: ["Your account menu has the guide and can restart this tour any time. Each screen also has a help button at the top.", "Le menu de votre compte contient le guide et relance cette visite à tout moment. Chaque écran a aussi un bouton d'aide en haut."],
     guide_orient_title: ["Workspace orientation", "Repères dans l'espace"],
     guide_orient_body: ["Use the navigation to move between work areas. Search (⌘/Ctrl+K) finds records and actions; the top-right Create button starts common records. Home shows the work relevant to your role.", "Utilisez la navigation pour passer d'un espace à l'autre. La recherche (⌘/Ctrl+K) trouve les données et actions ; le bouton Créer lance les actions courantes. Accueil affiche le travail utile à votre rôle."],
     guide_orient_action: ["Open Home and explore navigation, search and Create. Nothing is created by this guide.", "Ouvrez Accueil et repérez la navigation, la recherche et Créer. Ce guide ne crée rien."],
@@ -12705,45 +12725,240 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       foot: foot
     });
   }
-  function tour(index) {
-    stepIndex = Math.max(0, Math.min(STEPS.length - 1, index));
-    var step = STEPS[stepIndex];
-    saveState({ status: "active", step: stepIndex });
-    if (ui.state.view !== step.view) ui.go(step.view);
-    var foot = "";
-    if (stepIndex > 0) foot += ui.btn(t("guide_previous"), "guide-previous", { cls: "ghost" });
-    foot += ui.btn(t("guide_skip"), "guide-skip", { cls: "ghost" });
-    foot += ui.btn(t("guide_exit"), "guide-exit", { cls: "ghost" });
-    foot += ui.btn(t(stepIndex === STEPS.length - 1 ? "guide_done" : "guide_next"), "guide-next", { cls: "primary" });
-    ui.modal({
-      label: t("guide_progress", { n: stepIndex + 1, total: STEPS.length }),
-      title: t(step.title),
-      body: '<p class="muted">' + esc(t(step.body)) + "</p>" +
-        '<p class="note strong" style="margin:0">' + esc(t(step.action)) + "</p>" +
-        '<div class="row">' + ui.btn(t("guide_open"), "guide-open-area", { cls: "ghost", data: { v: step.view } }) +
-        (step.view === "reports" ? ui.btn(t("nav_dashboard"), "guide-open-area", { cls: "ghost", data: { v: "dashboard" } }) : "") + "</div>",
-      foot: foot
-    });
+  // ---------- interactive tour: spotlights the real screen and waits for the real click ----------
+  var TOUR = [
+    { id: "home", spot: "nav:today", title: "tr_home_t", body: "tr_home_b" },
+    { id: "search", spot: ".topbar .srch", title: "tr_search_t", body: "tr_search_b" },
+    { id: "new", spot: ".side-new .btn", title: "tr_new_t", body: "tr_new_b" },
+    { id: "leads", go: "pipeline", title: "tr_leads_t", body: "tr_leads_b" },
+    { id: "clients", go: "clients", title: "tr_clients_t", body: "tr_clients_b" },
+    { id: "projects", go: "projects", title: "tr_projects_t", body: "tr_projects_b" },
+    { id: "studio", go: "studio", title: "tr_studio_t", body: "tr_studio_b" },
+    { id: "calendar", go: "calendar", title: "tr_calendar_t", body: "tr_calendar_b" },
+    { id: "finance", go: "finance", title: "tr_finance_t", body: "tr_finance_b" },
+    { id: "dashboard", go: "dashboard", title: "tr_dashboard_t", body: "tr_dashboard_b" },
+    { id: "marketing", go: "marketing", title: "tr_marketing_t", body: "tr_marketing_b" },
+    { id: "team", go: "team", title: "tr_team_t", body: "tr_team_b" },
+    { id: "help", spot: ".me-card", title: "tr_help_t", body: "tr_help_b" }
+  ];
+  var live = null, tick = null, lastKey = "";
+
+  var LEARN_KEY = "gecko-ops-learned-v1";
+  function track(view) { return GK.guideTracks && GK.guideTracks[view]; }
+  function learned() { var o = u.lsGet(LEARN_KEY, {}); return o && typeof o === "object" ? o : {}; }
+  function markLearned(view) { var o = learned(); o[view] = u.today(); u.lsSet(LEARN_KEY, o); }
+  /** Steps of what is running: the main tour (areas this viewer can open) or one section's lesson. */
+  function steps() {
+    var nav = ui.nav();
+    if (live && live.track) {
+      var tr = track(live.track);
+      return tr ? tr.steps.filter(function (s) { return (!s.go || nav.indexOf(s.go) > -1) && (!s.when || s.when()); }) : [];
+    }
+    return TOUR.filter(function (s) { return !s.go || nav.indexOf(s.go) > -1; });
   }
-  function start(index) {
-    tour(index == null ? 0 : index);
+  function shown(el) {
+    if (!el) return false;
+    var r = el.getBoundingClientRect();
+    return r.width > 0 && r.height > 0 && r.right > 0 && r.bottom > 0 && r.left < innerWidth && r.top < innerHeight;
   }
-  function stop(status) {
-    saveState({ status: status, step: stepIndex });
-    ui.closeModal(true);
+  function pick(list) {
+    for (var i = 0; i < list.length; i++) {
+      var els;
+      try { els = document.querySelectorAll(list[i]); } catch (e) { continue; }
+      for (var j = 0; j < els.length; j++) if (shown(els[j])) return els[j];
+      // present but scrolled away: bring the first one into view
+      if (els.length && els[0].getBoundingClientRect().height > 0 && els[0].scrollIntoView) { els[0].scrollIntoView({ block: "center", behavior: "smooth" }); return els[0]; }
+    }
+    return null;
+  }
+  /** The menu item for a view: sidebar, phone bar, or the phone's More button that opens the menu. */
+  function navTarget(v) {
+    return pick(['.side [data-a="nav"][data-v="' + v + '"]', '.bnav [data-a="nav"][data-v="' + v + '"]', '.bnav [data-a="drawer"]']);
+  }
+  function list(x) { return Array.isArray(x) ? x : String(x || "").split("|"); }
+  function target(step, waiting) {
+    if (waiting) return navTarget(step.go);
+    if (step.try && !live.done && step.try.click) { var c = pick(list(step.try.click)); if (c) return c; }
+    if (!step.spot) return step.go ? pick(["#page .head", "#page"]) : null;
+    if (step.spot.indexOf("nav:") === 0) return navTarget(step.spot.slice(4));
+    return pick(list(step.spot));
+  }
+  function tryDone(step) {
+    if (!step.try || live.done) return !!live.done;
+    if (step.try.until) { try { if (typeof step.try.until === "function" ? step.try.until() : pick(list(step.try.until))) live.done = true; } catch (e) {} }
+    return !!live.done;
+  }
+  function layer() {
+    var el = document.getElementById("tour");
+    if (el) return el;
+    el = document.createElement("div");
+    el.id = "tour";
+    el.innerHTML = '<div class="tour-spot"></div><div class="tour-pop" role="dialog" aria-modal="false" aria-live="polite"></div>';
+    document.body.appendChild(el);
+    return el;
+  }
+  function popHTML(steps, i, waiting, viaMenu) {
+    var step = steps[i], last = i === steps.length - 1, tr = live.track && track(live.track);
+    var pending = !!step.try && !live.done, q = step.quiz, answered = q && live.answer != null;
+    var h = '<div class="tp-top"><span class="tp-n">' + (tr ? esc(t(tr.title)) + " · " : "") + esc(t("guide_progress", { n: i + 1, total: steps.length })) + "</span>" +
+      '<button type="button" class="ib sm" data-a="tour-exit" aria-label="' + esc(t("guide_exit")) + '">' + ui.icon("x", "sm") + "</button></div>";
+    h += '<div class="tp-bar"><i style="width:' + Math.round((i + (waiting || pending || (q && !answered) ? 0.5 : 1)) / steps.length * 100) + '%"></i></div>';
+    h += "<h3>" + esc(t(step.title)) + "</h3>";
+    if (waiting) h += '<p class="tp-ask">' + ui.icon("arrow", "sm") + esc(t(viaMenu ? "tr_menu" : "tr_click", { x: t("nav_" + step.go) })) + "</p>";
+    else {
+      if (step.body) h += "<p>" + esc(t(step.body)) + "</p>";
+      if (step.why) h += '<div class="tp-why"><span class="tp-lab">' + esc(t("tr_why")) + "</span>" + esc(t(step.why)) + "</div>";
+      if (step.try) h += pending
+        ? '<p class="tp-ask">' + ui.icon("arrow", "sm") + '<span><span class="tp-lab">' + esc(t("tr_try")) + "</span>" + esc(t(step.try.text)) + "</span></p>"
+        : '<p class="tp-ok">' + ui.icon("check", "sm") + esc(t(step.try.done || "tr_nice")) + "</p>";
+      if (q) {
+        h += '<div class="tp-quiz"><b>' + esc(t(q.q)) + "</b>" +
+          q.options.map(function (o, k) {
+            var cls = answered ? (k === q.answer ? " tp-r" : k === live.answer ? " tp-w" : "") : "";
+            return '<button type="button" class="tp-opt' + cls + '" data-a="tour-quiz" data-k="' + k + '"' + (answered ? " disabled" : "") + ">" + esc(t(o)) + "</button>";
+          }).join("") + "</div>";
+        if (answered) h += '<p class="' + (live.answer === q.answer ? "tp-ok" : "tp-no") + '">' + esc(t(live.answer === q.answer ? "tr_right" : "tr_wrong")) + " " + esc(t(q.explain)) + "</p>";
+      }
+    }
+    var hold = waiting || pending || (q && !answered);
+    h += '<div class="tp-row">' + (i > 0 ? ui.btn(t("guide_previous"), "tour-back", { cls: "ghost sm" }) : "<span></span>") +
+      (hold ? '<button type="button" class="tp-skip" data-a="tour-next">' + esc(t("tr_skip_step")) + "</button>"
+        : ui.btn(t(last ? (tr ? "tr_finish" : "guide_done") : "guide_next"), "tour-next", { cls: "primary sm" })) + "</div>";
+    return h;
+  }
+  function place() {
+    if (!live) return;
+    var all = steps(), step = all[live.i];
+    if (!step) return finish();
+    var waiting = !!step.go && ui.state.view !== step.go;
+    live.waiting = waiting;
+    if (!waiting) tryDone(step);
+    var root = layer(), spot = root.firstChild, pop = root.lastChild;
+    var el = target(step, waiting), viaMenu = !!el && el.getAttribute("data-a") === "drawer";
+    var key = live.track + "|" + live.i + "|" + waiting + "|" + viaMenu + "|" + live.done + "|" + live.answer + "|" + GK.i18n.lang();
+    if (key !== lastKey) { pop.innerHTML = popHTML(all, live.i, waiting, viaMenu); lastKey = key; pop.classList.remove("tp-in"); void pop.offsetWidth; pop.classList.add("tp-in"); }
+    root.classList.toggle("ask", waiting || (!!step.try && !live.done));
+    var pad = 6, W = innerWidth, H = innerHeight;
+    var pw = Math.min(step.quiz ? 380 : 340, W - 32), ph = pop.offsetHeight || 180, x, y;
+    if (!el) {
+      spot.style.cssText = "opacity:0";
+      x = (W - pw) / 2; y = (H - ph) / 2;
+    } else {
+      var r = el.getBoundingClientRect();
+      if (r.height > H * 0.6) r = { left: r.left, top: r.top, right: r.right, bottom: r.top + Math.min(r.height, 160), width: r.width, height: Math.min(r.height, 160) };
+      spot.style.cssText = "opacity:1;left:" + (r.left - pad) + "px;top:" + (r.top - pad) + "px;width:" + (r.width + pad * 2) + "px;height:" + (r.height + pad * 2) + "px";
+      if (W < 640) {   // phone: the card sits on the opposite half of the screen
+        x = 16; y = r.top + r.height / 2 > H / 2 ? Math.max(16, r.top - ph - 18) : Math.min(H - ph - 16, r.bottom + 18);
+      } else if (r.right + 24 + pw < W && r.width < W / 2) {
+        x = r.right + 20; y = r.top + r.height / 2 - ph / 2;
+      } else if (r.bottom + 20 + ph < H) {
+        x = r.left; y = r.bottom + 20;
+      } else {
+        x = r.left; y = r.top - ph - 20;
+      }
+    }
+    x = Math.max(16, Math.min(W - pw - 16, x)); y = Math.max(16, Math.min(H - ph - 16, y));
+    pop.style.cssText = "width:" + pw + "px;left:" + x + "px;top:" + y + "px";
+  }
+  function go(i, view) {
+    var tr = view !== undefined ? view : live && live.track;
+    live = { i: Math.max(0, i), track: tr || null };
+    var all = steps();
+    if (live.i >= all.length) return finish();
+    lastKey = "";
+    var step = all[live.i];
+    if (!live.track) saveState({ status: "active", step: live.i });
+    if (ui.modalOpen()) ui.closeModal(true);
+    if (GK.shell && GK.shell.closeAll) GK.shell.closeAll();
+    if (live.track && ui.state.view !== live.track && !step.go) ui.go(live.track);
+    if (step.params) { ui.go(step.params.view || live.track, step.params.set); }
+    if (!live.track && !step.go && ui.state.view !== "today" && step.id === "home") ui.go("today");
+    if (ui.state.drawer && !(step.go && ui.state.view !== step.go)) { ui.state.drawer = false; ui.render(true); }
+    if (!tick) tick = setInterval(place, 120);
+    place();
+  }
+  function close(status) {
+    if (live && !live.track) saveState({ status: status, step: live.i });
+    live = null; lastKey = "";
+    if (tick) { clearInterval(tick); tick = null; }
+    var el = document.getElementById("tour");
+    if (el) { el.classList.add("out"); setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 220); }
+  }
+  function finish() {
+    var tr = live && live.track;
+    if (tr) { markLearned(tr); close("complete"); ui.toast(t("tr_learned", { x: t(track(tr).title) })); if (ui.state.view === "guide") ui.render(true); }
+    else { close("complete"); ui.toast(t("guide_complete")); }
+  }
+  /** Start the lesson for a section, or the main tour at that section. */
+  function startAt(view) {
+    if (track(view)) return go(0, view);
+    var all = TOUR.filter(function (s) { return !s.go || ui.nav().indexOf(s.go) > -1; }), i = 0;
+    all.forEach(function (s, k) { if (!i && (s.go === view)) i = k; });
+    go(i, null);
+  }
+  function start(index) { go(index == null ? 0 : index, null); }
+  function stop(status) { ui.closeModal(true); close(status); }
+
+  if (typeof document !== "undefined" && document.addEventListener) {
+    window.addEventListener("resize", place);
+    // a lesson step that asks for a click completes when that real control is clicked
+    document.addEventListener("click", function (ev) {
+      if (!live || live.done) return;
+      var step = steps()[live.i];
+      if (!step || !step.try || !step.try.click || step.try.until) return;
+      var hit = list(step.try.click).some(function (sel) { try { return ev.target.closest && ev.target.closest(sel); } catch (e) { return false; } });
+      if (hit) setTimeout(function () { if (live) { live.done = true; place(); } }, 60);
+    }, true);
+    document.addEventListener("keydown", function (ev) {
+      if (!live) return;
+      if (ev.key === "Escape") { ev.stopPropagation(); close("dismissed"); }
+      else if (ev.key === "ArrowRight" && !live.waiting && !/INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || "")) { go(live.i + 1); }
+    }, true);
+    if (!document.getElementById("gk-tour-css")) {
+      var css = document.createElement("style");
+      css.id = "gk-tour-css";
+      css.textContent =
+        "#tour{position:fixed;inset:0;z-index:9000;pointer-events:none}" +
+        "#tour .tour-spot{position:fixed;border:2px solid var(--b-yellow,#f3df9e);outline:200vmax solid rgba(24,22,20,.42);transition:left .32s var(--ease),top .32s var(--ease),width .32s var(--ease),height .32s var(--ease),opacity .2s;pointer-events:none}" +
+        "#tour .tour-spot::after{content:\"\";position:absolute;inset:-2px;border:2px solid var(--b-yellow,#f3df9e);opacity:0}" +
+        "#tour.ask .tour-spot::after{animation:tourPulse 1.4s var(--ease) infinite}" +
+        "@keyframes tourPulse{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.12)}}" +
+        "#tour .tour-pop{position:fixed;pointer-events:auto;background:var(--s-solid);color:var(--tx);border:1px solid var(--line-2);border-top:4px solid var(--b-pink,#f4c1c4);padding:14px 18px 14px;display:flex;flex-direction:column;gap:10px;transition:left .32s var(--ease),top .32s var(--ease)}" +
+        "#tour .tour-pop.tp-in{animation:tourIn .28s var(--ease)}" +
+        "@keyframes tourIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}" +
+        "#tour.out{opacity:0;transition:opacity .2s}" +
+        "#tour .tp-top{display:flex;align-items:center;justify-content:space-between;gap:8px}" +
+        "#tour .tp-n{font-family:var(--f-type);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx-3)}" +
+        "#tour .tp-bar{height:3px;background:var(--s3)}#tour .tp-bar i{display:block;height:100%;background:var(--tx);transition:width .32s var(--ease)}" +
+        "#tour h3{margin:0;font-size:18px;line-height:1.2}#tour p{margin:0;color:var(--tx-2);line-height:1.5;font-size:14px}" +
+        "#tour .tp-ask{display:flex;gap:8px;align-items:center;color:var(--tx);font-weight:600}" +
+        "#tour .tp-lab{display:block;font-family:var(--f-type);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx-3);margin-bottom:3px}" +
+        "#tour .tp-why{background:var(--c-yellow-soft,rgba(243,223,158,.35));padding:8px 10px;font-size:13px;line-height:1.45;color:var(--tx)}" +
+        "#tour .tp-ok,#tour .tp-no{display:flex;gap:6px;align-items:flex-start;font-size:13.5px}#tour .tp-ok{color:var(--tx)}#tour .tp-no{color:var(--tx-2)}" +
+        "#tour .tp-quiz{display:flex;flex-direction:column;gap:6px}#tour .tp-quiz b{font-size:14px;line-height:1.35;margin-bottom:2px}" +
+        "#tour .tp-opt{text-align:left;background:var(--s2);border:1px solid var(--line);padding:8px 10px;font:inherit;font-size:13.5px;color:var(--tx);cursor:pointer;transition:background .15s,border-color .15s}" +
+        "#tour .tp-opt:hover:not([disabled]){border-color:var(--line-2)}#tour .tp-opt.tp-r{background:var(--c-yellow-soft,rgba(243,223,158,.5));border-color:var(--line-2)}#tour .tp-opt.tp-w{background:var(--c-pink-soft,rgba(244,193,196,.4));text-decoration:line-through}" +
+        "#tour .tp-ask .tp-lab{display:inline;margin-right:4px}" +
+        "#tour .tp-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:4px}" +
+        "#tour .tp-skip{background:none;border:0;padding:4px 0;color:var(--tx-3);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer}" +
+        "@media (prefers-reduced-motion:reduce){#tour .tour-spot,#tour .tour-pop{transition:none;animation:none}}";
+      document.head.appendChild(css);
+    }
   }
 
   GK.guide = {
     steps: STEPS,
-    hasHelp: function (view) { return STEP_VIEWS[view] != null; },
+    hasHelp: function (view) { return !!track(view) || STEP_VIEWS[view] != null; },
+    learned: learned,
     maybeWelcome: function () {
       if (!S.ready || ui.modalOpen()) return;
-      if (S.backend !== "local") return;
       var state = readState();
       if (state && state.status === "active") start(state.step);
       else if (!state) welcome();
     },
     open: start,
+    startAt: startAt,
+    place: place,
     showHelp: function (view) {
       var index = STEP_VIEWS[view];
       if (index == null) return;
@@ -12766,10 +12981,19 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       h += '<section class="panel"><div class="panel-h"><h2 class="sec">' + esc(t("guide_welcome_flow")) + "</h2>" +
         ui.btn(t(state && state.status === "active" ? "guide_resume" : "guide_start"), action, { cls: "primary" }) + "</div>" +
         '<p class="small muted">' + esc(emptyWorkspace() ? t("guide_welcome_empty") : t("guide_welcome_existing", { n: S.localRecordCount ? S.localRecordCount() : 0 })) + "</p></section>";
-      h += '<div class="grid2">' + STEPS.map(function (step, index) {
-        return '<section class="card"><div class="card-h"><span class="lead"><span class="pill">' + (index + 1) + "</span><h2>" + esc(t(step.title)) + "</h2></span>" +
-          ui.btn(t("guide_open"), "guide-step", { cls: "ghost sm", data: { i: index } }) + "</div><p class=\"small muted\">" + esc(t(step.action)) + "</p></section>";
-      }).join("") + "</div>";
+      var nav = ui.nav(), done = learned(), order = (GK.guideTracks && GK.guideTracks._order) || [];
+      var lessons = order.filter(function (v) { return track(v) && nav.indexOf(v) > -1; });
+      if (lessons.length) {
+        h += '<section class="stack" style="gap:12px"><div><h2 class="sec" style="margin:0">' + esc(t("tr_lessons")) + "</h2>" +
+          '<p class="small muted" style="margin:4px 0 0">' + esc(t("tr_lessons_sub")) + "</p></div>";
+        h += '<div class="grid2">' + lessons.map(function (v, k) {
+          var tr = track(v), ok = !!done[v];
+          return '<section class="card"><div class="card-h"><span class="lead"><span class="pill">' + (ok ? ui.icon("check", "sm") : k + 1) + "</span><h2>" + esc(t(tr.title)) + "</h2></span>" +
+            ui.btn(t(ok ? "tr_redo" : "tr_start_lesson"), "guide-learn", { cls: (ok ? "ghost" : "primary") + " sm", data: { v: v } }) + "</div>" +
+            '<p class="small muted">' + esc(t(tr.intro)) + "</p>" +
+            '<p class="small muted" style="margin:0">' + esc(t("tr_steps", { n: tr.steps.length })) + (ok ? " · " + esc(t("tr_done_on")) + " " + esc(u.fmtDate ? u.fmtDate(done[v]) : done[v]) : "") + "</p></section>";
+        }).join("") + "</div></section>";
+      }
       return h;
     }
   });
@@ -12777,25 +13001,665 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   GK.act("guide-start", function () { start(0); });
   GK.act("guide-resume", function () { var state = readState(); start(state && state.status === "active" ? state.step : 0); });
   GK.act("guide-restart", function () { start(0); });
-  GK.act("guide-next", function () {
-    if (stepIndex >= STEPS.length - 1) {
-      saveState({ status: "complete", step: STEPS.length - 1 });
-      ui.closeModal(true); ui.toast(t("guide_complete"));
-      return;
-    }
-    tour(stepIndex + 1);
-  });
-  GK.act("guide-previous", function () { if (stepIndex > 0) tour(stepIndex - 1); });
+  GK.act("tour-next", function () { if (live) go(live.i + 1); });
+  GK.act("tour-back", function () { if (live) go(live.i - 1); });
+  GK.act("tour-exit", function () { close("dismissed"); });
+  GK.act("tour-quiz", function (el) { if (live && live.answer == null) { live.answer = +el.dataset.k; place(); } });
   GK.act("guide-skip", function () { stop("skipped"); });
-  GK.act("guide-exit", function () { stop("dismissed"); });
   GK.act("guide-open-area", function (el) { ui.go(el.dataset.v); });
-  GK.act("guide-step", function (el) { start(+el.dataset.i); });
-  GK.act("guide-help", function (el) { GK.guide.showHelp(el.dataset.v); });
-  GK.act("guide-help-start", function (el) { start(+el.dataset.i); });
+  GK.act("guide-step", function (el) { startAt(STEPS[+el.dataset.i].view); });
+  GK.act("guide-help", function (el) { if (track(el.dataset.v)) startAt(el.dataset.v); else GK.guide.showHelp(el.dataset.v); });
+  GK.act("guide-learn", function (el) { startAt(el.dataset.v); });
+  GK.act("guide-help-start", function (el) { ui.closeModal(true); startAt(STEPS[+el.dataset.i].view); });
   GK.act("guide-welcome-clean", function () {
     ui.closeModal(true);
     ui.go("settings", { tab: "data" });
   });
+})(window.GK);
+
+/* ---- modules/guide_tracks_a.js ---- */
+/* GECKO Ops · section lessons: daily work and sales (Home, Tasks, Calendar, Leads, Clients, Team).
+   Each lesson walks the real screen: it points at real controls, asks for safe clicks only (tabs, filters, view toggles)
+   and ends with one question. Text is written as [English, French] pairs and registered as ln_<view>_* i18n keys. */
+(function (GK) {
+  "use strict";
+  var S = GK.store, m = GK.m, ui = GK.ui, u = GK.u;
+  var T = GK.guideTracks = GK.guideTracks || {};
+  T._order = T._order || [];
+
+  /** Register a lesson: pairs become i18n keys ln_<view>_<n>_<field>; steps keep their selectors and guards. */
+  function lesson(view, title, intro, defs) {
+    var dict = {}, steps = [];
+    dict["ln_" + view + "_t"] = title;
+    dict["ln_" + view + "_i"] = intro;
+    defs.forEach(function (d, n) {
+      var p = "ln_" + view + "_" + (n + 1) + "_", s = {};
+      function key(f, v) { dict[p + f] = v; return p + f; }
+      Object.keys(d).forEach(function (k) {
+        if (k === "title" || k === "body" || k === "why") s[k] = key(k, d[k]);
+        else if (k === "try") {
+          s.try = { text: key("try", d.try.text), click: d.try.click };
+          if (d.try.until) s.try.until = d.try.until;
+          if (d.try.done) s.try.done = key("done", d.try.done);
+        } else if (k === "quiz") {
+          s.quiz = { q: key("q", d.quiz.q), options: d.quiz.options.map(function (o, i) { return key("o" + i, o); }), answer: d.quiz.answer, explain: key("x", d.quiz.explain) };
+        } else s[k] = d[k];
+      });
+      steps.push(s);
+    });
+    GK.i18n.add(dict);
+    T[view] = { title: "ln_" + view + "_t", intro: "ln_" + view + "_i", steps: steps };
+  }
+
+  function founder() { return m.isFounder(); }
+  function hasLeads() { return S.all("leads").some(m.isOpen); }
+  function canLeads() { return hasLeads() && m.can("leads"); }
+  function hasTeam() { return S.all("team").length > 0; }
+  function hasClients() { return S.all("clients").length > 0; }
+  function hasShoots() {
+    var td = u.today();
+    return S.all("projects").some(function (p) { return p.stage !== "retention" && p.shootDate && p.shootDate >= td; });
+  }
+
+  // ---------------------------------------------------------------- Home
+  lesson("today", ["Home", "Accueil"], ["Your day on one screen: what needs you, what is due, what is shooting.", "Votre journée sur un seul écran : ce qui vous attend, ce qui est dû, ce qui se tourne."], [
+    { title: ["Home is your morning screen", "L'accueil, c'est votre écran du matin"],
+      body: ["Open it first, every day. It shows only what concerns you, so you do not have to hunt through the menu.", "Ouvrez-le en premier chaque jour. Il n'affiche que ce qui vous concerne, sans fouiller le menu."],
+      why: ["Each role sees a different Home. Founder, sales, editor and production each get their own list.", "Chaque rôle a son accueil. Fondateur, commercial, monteur et production ont chacun leur liste."],
+      spot: "#page .head" },
+    { title: ["The list that needs you", "La liste qui vous attend"],
+      body: ["This is the most important block. Each line says what is waiting and gives one button to deal with it.", "C'est le bloc le plus important. Chaque ligne dit ce qui attend et donne un bouton pour s'en occuper."],
+      why: ["If this list is empty, nothing is blocked on you. Clear it before you start new work.", "Si cette liste est vide, rien n'est bloqué par vous. Videz-la avant de lancer du nouveau travail."],
+      spot: "[data-tour=\"td-need\"]" },
+    { title: ["Money at a glance", "L'argent en un coup d'œil"], when: founder,
+      body: ["Cash in is what clients actually paid this month, after withholding. Below it you see what clients still owe and the weighted pipeline.", "L'encaissé est ce que les clients ont réellement payé ce mois-ci, après retenue. En dessous : le reste dû et la prospection pondérée."],
+      why: ["Weighted means each lead counts by its chance of signing, so the number is honest, not hopeful.", "Pondéré veut dire que chaque prospect compte selon sa chance de signer. Le chiffre est honnête, pas optimiste."],
+      spot: "[data-tour=\"td-money\"]" },
+    { title: ["Your own tasks", "Vos tâches"],
+      body: ["Only the tasks assigned to you, oldest date first. A red Late tag means the date has passed. Tick the box when it is really done.", "Seulement vos tâches, la date la plus proche en premier. Une étiquette En retard veut dire que la date est passée. Cochez quand c'est vraiment fait."],
+      spot: "[data-tour=\"td-tasks\"]" },
+    { title: ["Open the full task list", "Ouvrir toute la liste de tâches"],
+      body: ["Home only shows your next few tasks. The full list lives in its own section.", "L'accueil ne montre que vos prochaines tâches. La liste complète vit dans sa propre section."],
+      try: { text: ["Click All tasks. You can come back to Home right after.", "Cliquez sur Toutes les tâches. Vous reviendrez à l'accueil juste après."], click: "[data-tour=\"td-tasks\"] [data-a=\"td-go\"]", done: ["That is how Home links to the rest of the app.", "Voilà comment l'accueil renvoie vers le reste de l'app."] },
+      spot: "[data-tour=\"td-tasks\"]" },
+    { title: ["Shoots coming up", "Les tournages à venir"], go: "today",
+      body: ["Each line is a shoot with its date and a status. Ready means scripts and deposit are in. Blocked means something must be fixed first.", "Chaque ligne est un tournage avec sa date et un statut. Prêt veut dire scripts et acompte reçus. Bloqué veut dire qu'il y a un point à régler d'abord."],
+      why: ["A blocked shoot a day before is expensive. Spot it here early and fix it.", "Un tournage bloqué la veille coûte cher. Repérez-le ici tôt et réglez-le."],
+      spot: "[data-tour=\"td-shoots\"]" },
+    { title: ["Open a shoot", "Ouvrir un tournage"], when: hasShoots,
+      body: ["A line on Home is a shortcut. Clicking it takes you straight to that project.", "Une ligne de l'accueil est un raccourci. Un clic vous mène directement à ce projet."],
+      try: { text: ["Click one shoot to jump to its project.", "Cliquez sur un tournage pour aller à son projet."], click: "[data-tour=\"td-shoots\"] [data-a=\"td-go\"]", done: ["Good. Nothing was changed, you only looked.", "Bien. Rien n'a été modifié, vous avez seulement regardé."] },
+      spot: "[data-tour=\"td-shoots\"]" },
+    { title: ["Check yourself", "Vérifiez"],
+      quiz: { q: ["Why can two teammates see different things on Home?", "Pourquoi deux collègues voient-ils des choses différentes sur l'accueil ?"],
+        options: [["Someone changed the settings by mistake", "Quelqu'un a modifié les réglages par erreur"], ["Home is built for each role, so you see what needs you", "L'accueil est conçu pour chaque rôle : vous voyez ce qui vous concerne"], ["Home only shows the newest records", "L'accueil n'affiche que les derniers enregistrements"]],
+        answer: 1,
+        explain: ["Home is shaped by role. Money is for the founder, follow-ups for sales, files for editors.", "L'accueil dépend du rôle. L'argent pour le fondateur, les relances pour le commercial, les fichiers pour les monteurs."] } }
+  ]);
+
+  // ---------------------------------------------------------------- Tasks
+  lesson("tasks", ["Tasks", "Tâches"], ["One list for everything the team has to do, with a person and a date on each task.", "Une seule liste pour tout ce que l'équipe doit faire, avec une personne et une date sur chaque tâche."], [
+    { title: ["One place for all tasks", "Un seul endroit pour toutes les tâches"],
+      body: ["Every task has a title, a person, a date and sometimes a project. If it is not here, nobody is on it.", "Chaque tâche a un titre, une personne, une date et parfois un projet. Si elle n'est pas ici, personne ne s'en occupe."],
+      spot: "#page .head" },
+    { title: ["Read the four numbers", "Lire les quatre chiffres"],
+      body: ["Open, late, due this week and done in the last 7 days. Late is the one to keep at zero.", "En cours, en retard, à faire cette semaine et faites sur 7 jours. En retard est celui à garder à zéro."],
+      why: ["The done count shows the real pace of the team, not the plan.", "Le nombre de tâches faites montre le vrai rythme de l'équipe, pas le plan."],
+      spot: "#page .kpis" },
+    { title: ["Filters narrow the list", "Les filtres réduisent la liste"],
+      body: ["Choose Everyone or only your tasks. Then filter by person, project or client to find what you need.", "Choisissez Tout le monde ou seulement vos tâches. Filtrez ensuite par personne, projet ou client."],
+      spot: "#page .gk-bar" },
+    { title: ["Show only your tasks", "Voir seulement vos tâches"],
+      body: ["This chip is the quickest way to answer: what do I have to do today?", "Cette pastille répond vite à : qu'ai-je à faire aujourd'hui ?"],
+      try: { text: ["Click My tasks.", "Cliquez sur Mes tâches."], click: "[data-a=\"tk-mine\"][data-v=\"1\"]", done: ["Now the list is only yours. Click Everyone to go back.", "La liste est maintenant la vôtre. Cliquez sur Tout le monde pour revenir."] },
+      spot: "[data-a=\"tk-mine\"][data-v=\"1\"]" },
+    { title: ["Switch to the board", "Passer au tableau"],
+      body: ["List groups tasks by date. Board groups them by progress, like a small kanban.", "La liste groupe par date. Le tableau groupe par avancement, comme un petit kanban."],
+      try: { text: ["Click Board.", "Cliquez sur Tableau."], click: "[data-a=\"tk-mode\"][data-v=\"board\"]", done: ["Same tasks, different view. Nothing changed.", "Mêmes tâches, autre vue. Rien n'a changé."] },
+      spot: "[data-a=\"tk-mode\"][data-v=\"board\"]" },
+    { title: ["To do, started, done", "À faire, commencée, faite"],
+      body: ["A task moves from To do to Started when someone begins it, then to Done. Click a task title to open its details.", "Une tâche passe de À faire à Commencée quand quelqu'un s'y met, puis à Faite. Cliquez sur un titre pour ouvrir le détail."],
+      why: ["Started tells the team who is already on it, so two people do not do the same work.", "Commencée dit à l'équipe qui s'en occupe déjà, pour éviter de faire le travail en double."],
+      spot: ".tk-board|#page .tk-grp" },
+    { title: ["Add a task in seconds", "Ajouter une tâche en quelques secondes"],
+      body: ["Type a title, choose who, the project and the date, then press Enter. Always give a date: a task without one never shows as late.", "Écrivez un titre, choisissez qui, le projet et la date, puis Entrée. Mettez toujours une date : sans date, une tâche n'est jamais en retard."],
+      spot: ".tk-add|#page .head" },
+    { title: ["Check yourself", "Vérifiez"],
+      quiz: { q: ["You give a task a date and a person. Where else does it appear?", "Vous donnez une date et une personne à une tâche. Où apparaît-elle aussi ?"],
+        options: [["Nowhere, tasks stay in this list", "Nulle part, elle reste dans cette liste"], ["On that person's Home and in the Calendar", "Sur l'accueil de cette personne et dans le Calendrier"], ["On the client's invoice", "Sur la facture du client"]],
+        answer: 1,
+        explain: ["Tasks feed Home and the Calendar. That is why the date and the person matter.", "Les tâches alimentent l'accueil et le Calendrier. C'est pour cela que la date et la personne comptent."] } }
+  ]);
+
+  // ---------------------------------------------------------------- Calendar
+  lesson("calendar", ["Calendar", "Calendrier"], ["Every date in the agency, shoots, tasks, invoices and follow-ups, on one calendar.", "Toutes les dates de l'agence, tournages, tâches, factures et relances, sur un seul calendrier."], [
+    { title: ["The calendar reads your other sections", "Le calendrier lit vos autres sections"],
+      body: ["You do not type dates here. Shoots, task dates, invoice due dates and lead follow-ups appear on their own.", "Vous ne saisissez pas de dates ici. Tournages, dates de tâches, échéances de factures et relances apparaissent seuls."],
+      why: ["One date, one place. Change it where it lives and the calendar follows.", "Une date, un seul endroit. Modifiez-la là où elle vit et le calendrier suit."],
+      spot: "#page .head" },
+    { title: ["Move through time", "Se déplacer dans le temps"],
+      body: ["The arrows go to the previous or next period. Today brings you back to now.", "Les flèches vont à la période précédente ou suivante. Aujourd'hui vous ramène à maintenant."],
+      spot: ".ca-nav" },
+    { title: ["Try the week view", "Essayer la vue semaine"],
+      body: ["Month shows the big picture. Week shows each day in detail. Agenda is a simple list, handy on a phone.", "Mois donne la vue d'ensemble. Semaine détaille chaque jour. Agenda est une simple liste, pratique sur téléphone."],
+      try: { text: ["Click Week.", "Cliquez sur Semaine."], click: "[data-a=\"ca-mode\"][data-v=\"week\"]", done: ["That is the same data, zoomed in.", "Ce sont les mêmes données, en plus près."] },
+      spot: "[data-a=\"ca-mode\"][data-v=\"week\"]" },
+    { title: ["Filter by type", "Filtrer par type"],
+      body: ["Each type has its own colour and icon: shoots, tasks, invoices due, deliveries, follow-ups. Switch a type off when the calendar gets crowded.", "Chaque type a sa couleur et son icône : tournages, tâches, factures, livraisons, relances. Désactivez un type quand le calendrier est chargé."],
+      try: { text: ["Click Tasks to hide them, then click it again to bring them back.", "Cliquez sur Tâches pour les masquer, puis encore pour les réafficher."], click: "[data-a=\"ca-type\"][data-v=\"task\"]", done: ["Hiding only changes your view. No task was touched.", "Masquer ne change que votre vue. Aucune tâche n'a été touchée."] },
+      spot: ".gk-chips" },
+    { title: ["Back to the month", "Retour au mois"],
+      body: ["Use Month to plan. You can see at a glance which days are heavy and which are free.", "Utilisez Mois pour planifier. On voit d'un coup d'œil les jours chargés et les jours libres."],
+      try: { text: ["Click Month.", "Cliquez sur Mois."], click: "[data-a=\"ca-mode\"][data-v=\"month\"]" },
+      spot: "[data-a=\"ca-mode\"][data-v=\"month\"]" },
+    { title: ["Click an item to open it", "Cliquer sur un élément pour l'ouvrir"],
+      body: ["Click any item to open its task, project, lead or invoice. You can also drag an item to another day to move its date.", "Cliquez sur un élément pour ouvrir sa tâche, son projet, son prospect ou sa facture. Vous pouvez aussi le glisser vers un autre jour pour changer sa date."],
+      why: ["Invoices due and follow-ups only show for the founder and sales. Editors and production see shoots and tasks.", "Les factures à échéance et les relances ne s'affichent que pour le fondateur et le commercial. Monteurs et production voient tournages et tâches."],
+      spot: "#c2|.c2-d|#page .ca-top" },
+    { title: ["Check yourself", "Vérifiez"],
+      quiz: { q: ["A shoot date is wrong on the calendar. Where is the right place to fix it?", "La date d'un tournage est fausse dans le calendrier. Où la corriger ?"],
+        options: [["Nowhere, the calendar is fixed", "Nulle part, le calendrier est figé"], ["On the project or item itself, or by dragging it to the right day", "Sur le projet lui-même, ou en le glissant sur le bon jour"], ["In the invoice", "Dans la facture"]],
+        answer: 1,
+        explain: ["The calendar shows dates that live elsewhere. Fix the source, or drag the item, and every screen stays in sync.", "Le calendrier montre des dates qui vivent ailleurs. Corrigez la source, ou glissez l'élément, et tous les écrans restent à jour."] } }
+  ]);
+
+  // ---------------------------------------------------------------- Leads
+  lesson("pipeline", ["Leads", "Prospects"], ["Follow each possible client from first message to signed deal, so no one is forgotten.", "Suivez chaque client potentiel du premier message à la signature, pour n'oublier personne."], [
+    { title: ["A lead is a possible client", "Un prospect est un client potentiel"],
+      body: ["A lead is a brand we want to work with but have not signed yet. This screen shows where each one stands.", "Un prospect est une marque avec qui nous voulons travailler mais qui n'a pas encore signé. Cet écran montre où en est chacun."],
+      why: ["The goal is simple: nobody sits waiting. Every open lead has a next step and a date.", "Le but est simple : personne ne reste dans l'attente. Chaque prospect ouvert a une prochaine étape et une date."],
+      spot: "#page .head" },
+    { title: ["Columns are stages", "Les colonnes sont des étapes"],
+      body: ["Read left to right: Prospect, Contacted, In conversation, Meeting booked, Qualified, Proposal sent, Negotiation, Offer accepted, Signed. The further right, the closer to a deal.", "Lisez de gauche à droite : Prospect, Contacté, En discussion, Rendez-vous fixé, Qualifié, Proposition envoyée, Négociation, Offre acceptée, Signé. Plus on va à droite, plus on se rapproche du contrat."],
+      why: ["A stage is a promise about what happened, not a hope. Move a lead only when the step is really done.", "Une étape décrit ce qui s'est passé, pas un espoir. Ne déplacez un prospect que lorsque l'étape est vraiment faite."],
+      spot: ".board" },
+    { title: ["Read a lead card", "Lire une carte de prospect"], when: hasLeads,
+      body: ["The brand, the pack in mind, the next step with its date, and the owner. The 3/4 badge counts qualification answers: four yes means the lead is worth a call.", "La marque, le pack visé, la prochaine étape avec sa date, et le responsable. Le badge 3/4 compte les réponses de qualification : quatre oui, ça vaut un appel."],
+      why: ["A red Late tag means the follow-up date passed. Those leads go cold fastest.", "Une étiquette rouge En retard veut dire que la date de relance est dépassée. Ces prospects refroidissent le plus vite."],
+      spot: ".board .card" },
+    { title: ["Moving a lead forward", "Faire avancer un prospect"], when: canLeads,
+      body: ["The small menu on each card moves it to another stage. Moving to Lost asks for the real reason, so we learn why we lose.", "Le petit menu de chaque carte la déplace vers une autre étape. Passer à Perdu demande la vraie raison, pour apprendre pourquoi on perd."],
+      why: ["Look but do not change it now. This lesson never edits your leads.", "Regardez sans modifier maintenant. Cette leçon ne change jamais vos prospects."],
+      spot: ".board .card select[data-c=\"pl-move\"]" },
+    { title: ["See the results", "Voir les résultats"],
+      body: ["Results turns the board into numbers: what we won, what we lost, and how many messages it took.", "Résultats transforme le tableau en chiffres : ce qu'on a gagné, perdu, et combien de messages il a fallu."],
+      try: { text: ["Click the Results tab.", "Cliquez sur l'onglet Résultats."], click: "[data-a=\"pl-mode\"][data-v=\"results\"]" },
+      spot: "[data-a=\"pl-mode\"][data-v=\"results\"]" },
+    { title: ["The numbers that matter", "Les chiffres qui comptent"],
+      body: ["Weighted pipeline counts each lead by its chance of signing. Win rate is signed against lost. Leads going cold is the list to keep at zero.", "La prospection pondérée compte chaque prospect selon sa chance de signer. Le taux de signature compare signés et perdus. Les prospects qui refroidissent sont à garder à zéro."],
+      why: ["The Why we lose list shows what to fix: pricing, timing, or simply no reply.", "La liste Pourquoi on perd montre quoi corriger : le prix, le moment, ou l'absence de réponse."],
+      spot: "#page .kpis|#page .grid3" },
+    { title: ["Compare by person", "Comparer par personne"],
+      body: ["The weekly funnel counts DMs, replies, calls, proposals and wins week by week. The Owner menu narrows it to one person.", "L'entonnoir hebdomadaire compte DM, réponses, appels, propositions et signatures semaine par semaine. Le menu Responsable le limite à une personne."],
+      try: { text: ["Open the Owner menu above the funnel table. You can close it without choosing.", "Ouvrez le menu Responsable au-dessus du tableau. Vous pouvez le fermer sans rien choisir."], click: "[data-c=\"pl-owner\"]" },
+      spot: "[data-c=\"pl-owner\"]" },
+    { title: ["Check yourself", "Vérifiez"],
+      quiz: { q: ["A lead has signed the contract. When does it count as Won?", "Un prospect a signé le contrat. Quand compte-t-il comme Gagné ?"],
+        options: [["As soon as it is signed", "Dès la signature"], ["When the required upfront payment is recorded", "Quand le paiement initial requis est enregistré"], ["When the proposal is sent", "Quand la proposition est envoyée"]],
+        answer: 1,
+        explain: ["Signed creates or links the client, but the lead stays Signed until the deposit is recorded. Won means money has moved.", "Signé crée ou relie le client, mais le prospect reste Signé jusqu'à l'enregistrement de l'acompte. Gagné veut dire que l'argent est arrivé."] } }
+  ]);
+
+  // ---------------------------------------------------------------- Clients
+  lesson("clients", ["Clients", "Clients"], ["Every brand we work with, and one workspace for each of them.", "Toutes les marques avec qui nous travaillons, et un espace de travail pour chacune."], [
+    { title: ["Clients are signed brands", "Les clients sont des marques signées"],
+      body: ["A lead becomes a client when the deal is signed. From then on everything about that brand lives in one file.", "Un prospect devient client quand le contrat est signé. Ensuite, tout ce qui concerne cette marque vit dans une seule fiche."],
+      why: ["One file per brand means projects, files, invoices and notes are never scattered.", "Une fiche par marque évite que projets, fichiers, factures et notes soient éparpillés."],
+      spot: "#page .head" },
+    { title: ["Read the health of your clients", "Lire la santé de vos clients"],
+      body: ["These tiles show active clients, how much one client weighs in your revenue, and who is at risk: a late payer, or a brand that went quiet.", "Ces tuiles montrent les clients actifs, le poids d'un client dans votre chiffre d'affaires, et qui est à risque : un mauvais payeur ou une marque silencieuse."],
+      why: ["If one client is most of your revenue, losing them hurts. The share tile warns you early.", "Si un seul client fait l'essentiel du chiffre d'affaires, le perdre fait mal. La tuile de part vous prévient tôt."],
+      spot: "#page .kpis|#page .head" },
+    { title: ["One card per brand", "Une carte par marque"], when: hasClients,
+      body: ["Each card shows active projects, what the client still owes and the last activity. A tag appears when the client is waiting on us.", "Chaque carte montre les projets actifs, ce que le client doit encore et la dernière activité. Une étiquette apparaît quand le client nous attend."],
+      spot: ".clh-card|.clh-cards" },
+    { title: ["Where clients come from", "D'où viennent les clients"],
+      body: ["Most clients are created from a signed lead in Leads. The Add client button is for the rare brand that did not come through a lead.", "La plupart des clients sont créés depuis un prospect signé dans Prospects. Le bouton Ajouter un client sert pour la marque qui n'est pas passée par un prospect."],
+      spot: "[data-a=\"cl-new\"]|#page .head" },
+    { title: ["Open a client", "Ouvrir un client"], when: hasClients,
+      body: ["Opening a client takes you into its workspace. Opening only reads, it changes nothing.", "Ouvrir un client vous mène à son espace de travail. Ouvrir ne fait que lire, rien ne change."],
+      try: { text: ["Click any client card.", "Cliquez sur une carte de client."], click: ".clh-card", until: ".clh-tabs" },
+      spot: ".clh-card|.clh-cards" },
+    { title: ["Tabs organise the file", "Les onglets organisent la fiche"], when: hasClients,
+      body: ["Overview gives the summary. Projects, Assets, Approvals, Performance, Invoices and Notes each hold one kind of information. Which tabs you see depends on your role.", "Vue d'ensemble donne le résumé. Projets, Fichiers, Validations, Résultats, Factures et Notes contiennent chacun un type d'information. Les onglets visibles dépendent de votre rôle."],
+      spot: ".clh-tabs|#page .head" },
+    { title: ["Try a tab", "Essayer un onglet"], when: hasClients,
+      body: ["Projects lists every job we did or are doing for this brand.", "Projets liste chaque travail fait ou en cours pour cette marque."],
+      try: { text: ["Click the Projects tab.", "Cliquez sur l'onglet Projets."], click: "[data-a=\"cl-tab\"][data-v=\"projects\"]" },
+      spot: "[data-a=\"cl-tab\"][data-v=\"projects\"]|.clh-tabs|#page .head" },
+    { title: ["Check yourself", "Vérifiez"],
+      quiz: { q: ["When does a lead become a client?", "Quand un prospect devient-il client ?"],
+        options: [["When we send the first message", "Quand nous envoyons le premier message"], ["When the deal is signed", "Quand le contrat est signé"], ["When they follow us on Instagram", "Quand ils nous suivent sur Instagram"]],
+        answer: 1,
+        explain: ["Signing is the line. Before it you have a lead to follow up. After it you have a client to serve and invoice.", "La signature est la frontière. Avant, c'est un prospect à relancer. Après, c'est un client à servir et à facturer."] } }
+  ]);
+
+  // ---------------------------------------------------------------- Team
+  lesson("team", ["Team", "Équipe"], ["Who does what, and how each person is doing.", "Qui fait quoi, et comment chacun avance."], [
+    { title: ["Team is about people and workload", "L'équipe, c'est les personnes et la charge"],
+      body: ["Here you see who is busy, who is late and who has room for more. Use it before you hand out new work.", "Ici, vous voyez qui est occupé, qui est en retard et qui a de la place. Regardez-le avant de donner du travail."],
+      spot: "#page .head" },
+    { title: ["The load in numbers", "La charge en chiffres"],
+      body: ["The tiles count open tasks and late ones, show who is busiest and lightest, and how many tasks were done in 7 days.", "Les tuiles comptent les tâches ouvertes et en retard, montrent le plus et le moins chargé, et les tâches faites sur 7 jours."],
+      why: ["One person with ten late tasks is a signal to rebalance, not to blame.", "Une personne avec dix tâches en retard est un signal pour rééquilibrer, pas pour blâmer."],
+      spot: "#page .kpis|#page .tabs" },
+    { title: ["Filter to your own work", "Filtrer sur votre travail"],
+      body: ["Everyone shows each person's open tasks side by side. Mine keeps only yours.", "Tout le monde montre côte à côte les tâches ouvertes de chacun. Les miennes ne garde que les vôtres."],
+      try: { text: ["Click Mine.", "Cliquez sur Les miennes."], click: "[data-a=\"tm-mine\"][data-v=\"1\"]", done: ["Click Everyone to see the whole team again.", "Cliquez sur Tout le monde pour revoir toute l'équipe."] },
+      spot: "[data-a=\"tm-mine\"][data-v=\"1\"]" },
+    { title: ["Open the People tab", "Ouvrir l'onglet Personnes"],
+      body: ["Tasks shows open work grouped by person. People shows the team, with a card for each person: role, active projects and open tasks.", "Tâches montre le travail ouvert groupé par personne. Personnes montre l'équipe, avec une carte par personne : rôle, projets actifs et tâches ouvertes."],
+      try: { text: ["Click People.", "Cliquez sur Personnes."], click: "[data-a=\"tm-tab\"][data-v=\"people\"]" },
+      spot: "[data-a=\"tm-tab\"][data-v=\"people\"]" },
+    { title: ["Default pay by role", "Paie par défaut selon le rôle"], when: founder,
+      body: ["Under the cards you set a default pay for each role. A new person takes it unless you set theirs. Only you, as founder, see this block.", "Sous les cartes, vous fixez une paie par défaut pour chaque rôle. Une nouvelle personne la reçoit sauf si vous en fixez une autre. Vous seul, fondateur, voyez ce bloc."],
+      why: ["Pay and rates stay out of chat and shared screens. These screens are the only place for them.", "La paie et les tarifs restent hors des discussions et des écrans partagés. Ces écrans sont le seul endroit prévu."],
+      spot: "[data-tour=\"tp-rolepay\"]|#page .tabs" },
+    { title: ["Open a profile", "Ouvrir un profil"], when: hasTeam,
+      body: ["A profile holds contact details, history and performance. You see the full profile for yourself. Other people are private.", "Un profil contient les coordonnées, l'historique et les résultats. Vous voyez votre profil complet. Les autres sont privés."],
+      try: { text: ["Click any person card.", "Cliquez sur une carte de personne."], click: ".tp-main", until: "[data-a=\"tp-back\"]" },
+      spot: ".tp-main|#page .tabs" },
+    { title: ["Pay tab on a profile", "Onglet Paie d'un profil"], when: function () { return founder() && hasTeam(); },
+      body: ["Inside a profile, the Pay tab holds amounts, rate type and payment history. Nobody except the founder can open it.", "Dans un profil, l'onglet Paie contient les montants, le type de tarif et l'historique de paiement. Personne d'autre que le fondateur ne peut l'ouvrir."],
+      spot: "[data-a=\"tp-sub\"][data-v=\"pay\"]|#page .tabs" },
+    { title: ["Check yourself", "Vérifiez"], when: founder,
+      quiz: { q: ["Who can open the Pay tab of a profile?", "Qui peut ouvrir l'onglet Paie d'un profil ?"],
+        options: [["Everyone on the team", "Toute l'équipe"], ["Only the founder", "Seulement le fondateur"], ["The person's own manager", "Le responsable direct de la personne"]],
+        answer: 1,
+        explain: ["Pay is founder-only by design. Others never see rates, not even their own colleagues' profiles.", "La paie est réservée au fondateur. Les autres ne voient jamais les tarifs, même sur les profils de leurs collègues."] } },
+    { title: ["Check yourself", "Vérifiez"], when: function () { return !founder(); },
+      quiz: { q: ["Where do you see the open tasks of the whole team?", "Où voit-on les tâches ouvertes de toute l'équipe ?"],
+        options: [["Team, Tasks tab, with Everyone selected", "Équipe, onglet Tâches, avec Tout le monde"], ["Only on Home", "Seulement sur l'accueil"], ["In the Calendar settings", "Dans les réglages du calendrier"]],
+        answer: 0,
+        explain: ["Everyone lists every open task grouped by person. Mine narrows it to yours.", "Tout le monde liste chaque tâche ouverte groupée par personne. Les miennes la limite aux vôtres."] } }
+  ]);
+
+  T._order.push("today", "tasks", "calendar", "pipeline", "clients", "team");
+})(window.GK);
+
+/* ---- modules/guide_tracks_b.js ---- */
+/* GECKO Ops · section lessons: production, money and the company.
+   Lessons for Projects, Studio, Finance, Dashboard and Marketing. The engine lives in guide.js (GK.guideTracks).
+   Each lesson is written once as [English, French] pairs; lesson() turns them into i18n keys ln_<view>_<n><x>. */
+(function (GK) {
+  "use strict";
+  var S = GK.store, m = GK.m, ui = GK.ui;
+
+  var T = GK.guideTracks = GK.guideTracks || {};
+  T._order = T._order || [];
+
+  /** Build one lesson and register its texts. Step fields: t title, b body, w why, x try text, d try done, q quiz, spot, when, click, until. */
+  function lesson(view, title, intro, defs) {
+    var words = {}, p = "ln_" + view + "_";
+    words[p + "t"] = title;
+    words[p + "i"] = intro;
+    var steps = defs.map(function (d, n) {
+      var k = p + (n + 1), s = {};
+      function word(suffix, pair) { words[k + suffix] = pair; return k + suffix; }
+      s.title = word("t", d.t);
+      if (d.b) s.body = word("b", d.b);
+      if (d.w) s.why = word("w", d.w);
+      if (d.spot) s.spot = d.spot;
+      if (d.when) s.when = d.when;
+      if (d.x) {
+        s.try = { text: word("x", d.x), click: d.click };
+        if (d.until) s.try.until = d.until;
+        if (d.d) s.try.done = word("d", d.d);
+      }
+      if (d.q) {
+        s.quiz = {
+          q: word("q", d.q.q), answer: d.q.a, explain: word("e", d.q.e),
+          options: d.q.o.map(function (o, j) { return word("o" + j, o); })
+        };
+      }
+      return s;
+    });
+    GK.i18n.add(words);
+    T[view] = { title: p + "t", intro: p + "i", steps: steps };
+  }
+
+  function has(coll) { return function () { return S.all(coll).length > 0; }; }
+  var hasProjects = has("projects"), hasIdeas = has("ideas"), hasInvoices = has("invoices");
+  function param(view, key) { return function () { return !!ui.p(view)[key]; }; }
+  function tabIs(view, tab) { return function () { return ui.p(view).tab === tab; }; }
+
+  // ---------------------------------------------------------------- Projects
+  lesson("projects", ["Projects", "Projets"],
+    ["Follow a job from the signed deal to the delivered files, and see what blocks it.", "Suivez un travail du contrat signé aux fichiers livrés, et voyez ce qui le bloque."], [
+    {
+      t: ["What this screen is for", "À quoi sert cet écran"],
+      b: ["Every video job lives here as one project. You see where each one is, what it is waiting for and who has tasks on it.", "Chaque travail vidéo vit ici sous forme de projet. Vous voyez où en est chacun, ce qu'il attend et qui a des tâches dessus."],
+      w: ["One shared view means nobody has to ask where a job stands.", "Une vue commune évite de demander où en est un travail."],
+      spot: "#page .head"
+    },
+    {
+      t: ["The board, in four phases", "Le tableau, en quatre phases"],
+      b: ["Cards sit in four columns: getting ready, shooting, editing and review, delivered. Behind them are ten stages, from onboarding to retention. Board and List show the same projects, and the search box finds a brand or a name.", "Les cartes sont rangées en quatre colonnes : préparation, tournage, montage et retours, livrés. Derrière, il y a dix étapes, du démarrage à la fidélisation. Tableau et Liste montrent les mêmes projets, et la recherche trouve une marque ou un nom."],
+      w: ["A line under a card, such as a missing payment or approval, means the project is blocked there. The team is not late.", "Une ligne sous une carte, comme un paiement ou une validation manquants, veut dire que le projet est bloqué là. L'équipe n'est pas en retard."],
+      spot: ".pj-phases"
+    },
+    {
+      t: ["Open a project", "Ouvrir un projet"],
+      b: ["A card shows the brand, the stage, the shoot date, the number of videos, open tasks and approved files. Click one to open its page.", "Une carte montre la marque, l'étape, la date de tournage, le nombre de vidéos, les tâches ouvertes et les fichiers validés. Cliquez sur l'une d'elles pour ouvrir sa page."],
+      spot: ".pj-phases|#page .head",
+      x: ["Click a project to open it.", "Cliquez sur un projet pour l'ouvrir."],
+      click: "[data-a=\"pj-open\"]", until: param("projects", "id"),
+      d: ["Opened. Everything about this job is on this one page.", "Ouvert. Tout ce qui concerne ce travail est sur cette page."],
+      when: hasProjects
+    },
+    {
+      t: ["Next step and the two gates", "Prochaine étape et les deux verrous"],
+      b: ["The Next step box says what blocks the project now, or what you can do next. The row of ten stages shows how far along it is.", "La boîte Prochaine étape dit ce qui bloque le projet maintenant, ou ce que vous pouvez faire ensuite. La ligne des dix étapes montre où il en est."],
+      w: ["Two gates protect the studio. No shoot until the scripts are approved and the deposit (or the month) is paid. No final files until the balance is paid.", "Deux verrous protègent le studio. Pas de tournage avant la validation des scripts et le paiement de l'acompte (ou du mois). Pas de fichiers finaux avant le paiement du solde."],
+      spot: ".pj-ov|.pj-hero",
+      when: hasProjects
+    },
+    {
+      t: ["The tabs follow the job", "Les onglets suivent le travail"],
+      b: ["Brief holds the angles and the client's approval of the plan. Scripts and Storyboard list the videos, Shoot is for the day itself and Edits holds the deliverables. Finance is for the owner.", "Brief contient les angles et la validation du plan par le client. Scripts et Storyboard listent les vidéos, Tournage sert pour le jour J et Montage regroupe les livrables. Finance est réservé au fondateur."],
+      spot: ".pj-tabs",
+      x: ["Open the Shoot tab.", "Ouvrez l'onglet Tournage."],
+      click: "[data-a=\"pj-tab\"][data-v=\"shoot\"]",
+      d: ["That is the shoot-day screen.", "Voici l'écran du jour de tournage."],
+      when: hasProjects
+    },
+    {
+      t: ["Run order and what each video needs", "Ordre de passage et besoins de chaque vidéo"],
+      b: ["The top numbers show the shoot date, videos, lines done and extra shots. Videos are listed in the order you will shoot them, with arrows to move them. Under each one, add the B-roll and hero shots it still needs and tick them off.", "Les chiffres du haut montrent la date, les vidéos, les lignes faites et les plans en plus. Les vidéos sont listées dans l'ordre de tournage, avec des flèches pour les déplacer. Sous chacune, ajoutez le B-roll et les plans héros qu'il lui faut encore et cochez-les."],
+      w: ["Shooting in a planned order and ticking off the extras means nothing is forgotten once the crew has gone home.", "Tourner dans un ordre prévu et cocher les plans en plus évite d'oublier quelque chose une fois l'équipe partie."],
+      spot: ".sd-list|.sd-panel|.pj-pane",
+      when: hasProjects
+    },
+    {
+      t: ["Shot list and changes on set", "Liste des plans et changements sur le plateau"],
+      b: ["Shot list groups every planned shot by location, so you can work place by place. When the actor changes a line, edit it from Read with the actor: the old and the new wording are both kept.", "La liste des plans regroupe chaque plan prévu par lieu, pour travailler endroit par endroit. Quand l'acteur change une phrase, modifiez-la depuis Lire avec l'acteur : l'ancienne et la nouvelle version sont gardées."],
+      w: ["A line changed on set is never lost or argued about later. You can see what changed and put it back.", "Une phrase changée sur le plateau n'est jamais perdue ni contestée plus tard. On voit ce qui a changé et on peut la rétablir."],
+      spot: ".sd-tabs|.sd-panel",
+      x: ["Click Changes on set.", "Cliquez sur Changements sur le plateau."],
+      click: "[data-a=\"sd-mode\"][data-v=\"log\"]",
+      d: ["Every on-set edit lands here, with the old line crossed out.", "Chaque modification sur le plateau arrive ici, avec l'ancienne phrase barrée."],
+      when: hasProjects
+    },
+    {
+      t: ["Files and delivery", "Fichiers et livraison"],
+      b: ["Edits counts reels, hook variations and carousels against the pack and flags anything over scope, so an extra can be invoiced. Edit files and Delivery lead to the editing board and the hand-over.", "Montage compte les reels, variations d'accroche et carrousels par rapport au pack et signale ce qui dépasse, pour facturer un extra. Fichiers de montage et Livraison mènent au suivi du montage et à la remise."],
+      w: ["Final files go out only once the balance (or the month) is paid. Until then the project shows the gate.", "Les fichiers finaux ne sortent qu'une fois le solde (ou le mois) payé. Jusque-là, le projet affiche le verrou."],
+      spot: ".pj-pane .panel|.pj-pane",
+      x: ["Open the Edits tab.", "Ouvrez l'onglet Montage."],
+      click: "[data-a=\"pj-tab\"][data-v=\"edits\"]",
+      when: hasProjects
+    },
+    {
+      t: ["Quick check", "Petite vérification"],
+      q: {
+        q: ["The scripts are approved but the deposit has not arrived. What can the team do?", "Les scripts sont validés mais l'acompte n'est pas arrivé. Que peut faire l'équipe ?"],
+        o: [["Shoot as planned and invoice later", "Tourner comme prévu et facturer plus tard"], ["Keep preparing, but the project cannot move to Shoot yet", "Continuer la préparation, mais le projet ne peut pas passer à Tournage"], ["Skip to editing and ask for the deposit at delivery", "Passer au montage et réclamer l'acompte à la livraison"]],
+        a: 1,
+        e: ["The shoot gate needs both the approved scripts and the paid deposit (or month). Preparation goes on, and the Move to button stays off and says why.", "Le verrou du tournage demande les scripts validés et l'acompte (ou le mois) payé. La préparation continue, et le bouton Passer à reste grisé en disant pourquoi."]
+      }
+    }
+  ]);
+
+  // ---------------------------------------------------------------- Studio
+  lesson("studio", ["Ideas and scripts", "Idées et scripts"],
+    ["Capture ideas, shape them into scripts, get them approved, then send them to a project.", "Notez des idées, transformez-les en scripts, faites-les valider, puis envoyez-les à un projet."], [
+    {
+      t: ["Where every video starts", "Là où commence chaque vidéo"],
+      b: ["Studio is the idea factory. A video begins here as a quick idea and grows into a script the owner approves.", "Studio est la fabrique d'idées. Une vidéo naît ici comme une idée rapide et devient un script que le fondateur valide."],
+      w: ["Production only receives approved work, so what you shoot is what was agreed.", "La production ne reçoit que du travail validé : ce qu'on tourne est ce qui a été convenu."],
+      spot: "#page .head"
+    },
+    {
+      t: ["The board is the pipeline", "Le tableau est le pipeline"],
+      b: ["Ideas move left to right: Idea, Concept, Script, Ready, Shot. Ready means the owner approved it, and Shot updates by itself once every hook of the reel is approved. Type a title in the Idea column to capture one in seconds.", "Les idées avancent de gauche à droite : Idée, Concept, Script, Prêt, Tourné. Prêt veut dire que le fondateur l'a validée, et Tourné se met à jour tout seul quand toutes les accroches du reel sont validées. Tapez un titre dans la colonne Idée pour en noter une en quelques secondes."],
+      w: ["A column that keeps piling up shows where the work is stuck. Capture first, polish later.", "Une colonne qui s'entasse montre où le travail est bloqué. Notez d'abord, peaufinez ensuite."],
+      spot: ".board"
+    },
+    {
+      t: ["Narrow the board", "Réduire le tableau"],
+      b: ["Filters cut the board by client, owner or angle, and the search finds a title, hook or tag. Use them when you only need one client's ideas.", "Les filtres réduisent le tableau par client, responsable ou angle, et la recherche trouve un titre, une accroche ou un tag. Servez-vous-en quand il ne vous faut que les idées d'un client."],
+      spot: "#st-fc|#page .form",
+      x: ["Open the Client filter.", "Ouvrez le filtre Client."],
+      click: "#st-fc",
+      d: ["Pick a client and the board shows only theirs. Clear filters brings everything back.", "Choisissez un client et le tableau n'affiche que les siennes. Effacer les filtres remet tout."]
+    },
+    {
+      t: ["Script bank and hook bank", "Banque de scripts et banque d'accroches"],
+      b: ["Script bank lists every written script, ready to copy or reuse for a new client. Hook bank lists every opening line, with the ones that already won on ads.", "La banque de scripts liste tous les scripts écrits, prêts à copier ou réutiliser pour un nouveau client. La banque d'accroches liste toutes les phrases d'ouverture, avec celles qui ont déjà gagné en pub."],
+      w: ["Good scripts and winning hooks are the studio's memory. Reuse them instead of starting from a blank page.", "Les bons scripts et les accroches gagnantes sont la mémoire du studio. Réutilisez-les plutôt que de repartir d'une page blanche."],
+      spot: "#page .tabs",
+      x: ["Click Script bank.", "Cliquez sur Banque de scripts."],
+      click: "[data-a=\"st-mode\"][data-v=\"scripts\"]"
+    },
+    {
+      t: ["Open an idea", "Ouvrir une idée"],
+      b: ["Everything about one video sits on its page: client, angle, hook, concept, scenes with shots, links and notes. Click an idea to open it.", "Tout ce qui concerne une vidéo est sur sa page : client, angle, accroche, concept, scènes avec plans, liens et notes. Cliquez sur une idée pour l'ouvrir."],
+      spot: "#page .tabs",
+      x: ["Click an idea to open it.", "Cliquez sur une idée pour l'ouvrir."],
+      click: "[data-a=\"st-open\"]", until: param("studio", "id"),
+      d: ["This is the idea page.", "Voici la page de l'idée."],
+      when: hasIdeas
+    },
+    {
+      t: ["Stage, gaps and approval", "Étape, manques et validation"],
+      b: ["The stage bar shows where the idea is. If something is missing, like a hook or a scene, a Missing list says what to add. A team member asks for review, and the owner approves with Mark ready.", "La barre d'étapes montre où en est l'idée. S'il manque quelque chose, comme une accroche ou une scène, une liste Manque dit quoi ajouter. Un membre de l'équipe demande la relecture, et le fondateur valide avec Marquer prêt."],
+      w: ["Ready is a promise. Approval saves that version, so later edits to the draft do not change what production receives.", "Prêt est une promesse. La validation enregistre cette version : les modifications ultérieures du brouillon ne changent pas ce que reçoit la production."],
+      spot: ".st-detail .stepper|.st-detail",
+      when: hasIdeas
+    },
+    {
+      t: ["Send it to a project", "L'envoyer à un projet"],
+      b: ["Only an approved idea can be sent. Send to a project creates the angle if it is missing, then a reel with this hook and script.", "Seule une idée validée peut être envoyée. Envoyer à un projet crée l'angle s'il manque, puis un reel avec cette accroche et ce script."],
+      w: ["The reel gets a file code and appears in production, so the video you approved is the one that gets edited.", "Le reel reçoit un code de fichier et apparaît en production : la vidéo validée est celle qui sera montée."],
+      spot: "[data-tour=\"st-send\"]|.st-detail",
+      when: hasIdeas
+    },
+    {
+      t: ["Quick check", "Petite vérification"],
+      q: {
+        q: ["The owner approved an idea, then a teammate edits the draft script. What does production receive?", "Le fondateur a validé une idée, puis un collègue modifie le brouillon du script. Que reçoit la production ?"],
+        o: [["The latest draft", "Le dernier brouillon"], ["The approved version, until a new revision is approved", "La version validée, jusqu'à la validation d'une nouvelle révision"], ["Nothing, the idea goes back to Script", "Rien, l'idée retourne à Script"]],
+        a: 1,
+        e: ["Approval saves a revision. Draft edits do not change it, so what was agreed is what gets shot. To use the new wording, the owner approves a new revision.", "La validation enregistre une révision. Les modifications du brouillon ne la changent pas : ce qui a été convenu est ce qui est tourné. Pour utiliser la nouvelle version, le fondateur valide une nouvelle révision."]
+      }
+    }
+  ]);
+
+  // ---------------------------------------------------------------- Finance
+  lesson("finance", ["Finance", "Finance"],
+    ["Invoices, cash, margins and the forecast, and how they differ.", "Factures, trésorerie, marges et prévision, et ce qui les distingue."], [
+    {
+      t: ["What this screen is for", "À quoi sert cet écran"],
+      b: ["Finance is where money is invoiced, collected and planned. Everyday tabs sit on top, and the planning and year-end screens sit behind More.", "Finance est l'endroit où l'argent est facturé, encaissé et prévu. Les onglets du quotidien sont en haut, et les écrans de planification et de fin d'année sont derrière Plus."],
+      w: ["Only the owner sees this screen, because it holds costs, margins and pay.", "Seul le fondateur voit cet écran, car il contient coûts, marges et paie."],
+      spot: "#page .head"
+    },
+    {
+      t: ["Retainers and runway", "Récurrent et autonomie"],
+      b: ["Monthly retainers is the repeating income of active monthly plans. Runway is how many months your cash lasts at the last three months' spending.", "Récurrent mensuel est le revenu qui revient des plans mensuels actifs. L'autonomie est le nombre de mois que dure la trésorerie au rythme des dépenses des trois derniers mois."],
+      w: ["Retainers tell you what is likely to come in. Runway tells you how long you can keep going if it stops.", "Le récurrent dit ce qui devrait rentrer. L'autonomie dit combien de temps on tient si cela s'arrête."],
+      spot: ".kpis|#page .panel"
+    },
+    {
+      t: ["Cash is not revenue", "Encaissé n'est pas facturé"],
+      b: ["On Invoices, the top numbers are what is left to collect, what is overdue, what was received this month and how much of the yearly cap is used. Received counts money that arrived, plus the tax clients withheld.", "Sur Factures, les chiffres du haut sont ce qu'il reste à encaisser, ce qui est en retard, ce qui a été reçu ce mois-ci et la part du plafond annuel utilisée. Reçu compte l'argent arrivé, plus la retenue des clients."],
+      w: ["Revenue is what you invoiced. Cash is what reached the bank. Rent and salaries are paid with cash.", "Le chiffre d'affaires est ce que vous avez facturé. La trésorerie est ce qui est arrivé en banque. Le loyer et les salaires se paient avec la trésorerie."],
+      spot: ".kpis",
+      x: ["Open the Invoices tab.", "Ouvrez l'onglet Factures."],
+      click: "[data-a=\"fi-tab\"][data-tab=\"invoices\"]"
+    },
+    {
+      t: ["Draft, issued, paid", "Brouillon, émise, payée"],
+      b: ["A draft has no number and can still be edited. Once issued, an invoice is numbered and locked, and a mistake is fixed with a credit note. The buttons filter by Open, All, Drafts and Overdue.", "Un brouillon n'a pas de numéro et peut encore être modifié. Une fois émise, une facture est numérotée et verrouillée, et une erreur se corrige par un avoir. Les boutons filtrent par Ouvertes, Toutes, Brouillons et En retard."],
+      w: ["Locked numbers keep the books clean for the accountant. Totals leave out drafts because a draft is not an invoice yet.", "Des numéros verrouillés gardent la comptabilité propre pour le comptable. Les totaux ignorent les brouillons, car un brouillon n'est pas encore une facture."],
+      spot: "[data-a=\"fi-filter\"]|.tbl",
+      x: ["Click All.", "Cliquez sur Toutes."],
+      click: "[data-a=\"fi-filter\"][data-f=\"all\"]",
+      when: hasInvoices
+    },
+    {
+      t: ["One invoice", "Une facture"],
+      b: ["Click a row to see the invoice: the amount, the stamp duty, the total, what you received net, what the client withheld and the balance left. Withheld is tax the client pays the tax office on your behalf.", "Cliquez sur une ligne pour voir la facture : le montant, le droit de timbre, le total, ce que vous avez reçu net, ce que le client a retenu et le reste à payer. La retenue est l'impôt que le client verse au fisc à votre place."],
+      spot: "[data-a=\"fi-open\"]|.tbl",
+      x: ["Click an invoice to open it.", "Cliquez sur une facture pour l'ouvrir."],
+      click: "[data-a=\"fi-open\"]", until: param("finance", "invoiceId"),
+      d: ["Opened. Paid counts money received plus tax withheld.", "Ouverte. Payé compte l'argent reçu plus la retenue."],
+      when: hasInvoices
+    },
+    {
+      t: ["Profit and margin", "Bénéfice et marge"],
+      b: ["Profitability shows each client and project: received, costs, profit and margin. Margin is profit as a share of what you received, so received minus costs, divided by received.", "Rentabilité montre chaque client et projet : reçu, coûts, bénéfice et marge. La marge est le bénéfice en pourcentage de ce que vous avez reçu, donc reçu moins coûts, divisé par reçu."],
+      w: ["A big client with a thin margin can earn you less than a small client with a fat one. Sort by margin or by still owed to see the difference.", "Un gros client à marge fine peut rapporter moins qu'un petit client à grosse marge. Triez par marge ou par reste dû pour voir la différence."],
+      spot: "#page .panel",
+      x: ["Click More, then Profitability.", "Cliquez sur Plus, puis sur Rentabilité."],
+      click: "[data-a=\"fi-tab\"][data-tab=\"profit\"]|[data-a=\"fi-more\"]", until: tabIs("finance", "profit")
+    },
+    {
+      t: ["The 13-week forecast", "La prévision à 13 semaines"],
+      b: ["The forecast starts from the cash you really have, then adds invoices due and known costs week by week. Booked uses only what is certain, and With pipeline adds open leads weighted by their odds.", "La prévision part de la trésorerie réelle, puis ajoute semaine après semaine les factures dues et les coûts connus. Acquis ne garde que le certain, et Avec pipeline ajoute les prospects ouverts pondérés par leurs chances."],
+      w: ["Fixing a cash dip six weeks early is cheap. The week it lands, it is not.", "Corriger un trou de trésorerie six semaines avant coûte peu. La semaine où il arrive, c'est trop tard."],
+      spot: "#page .panel",
+      x: ["Open Cash forecast.", "Ouvrez Prévision."],
+      click: "[data-a=\"fi-tab\"][data-tab=\"forecast\"]", until: tabIs("finance", "forecast")
+    },
+    {
+      t: ["Quick check", "Petite vérification"],
+      q: {
+        q: ["You issue a 3,200 TND invoice on 28 October and the client pays on 12 November. How much cash did you receive in October?", "Vous émettez une facture de 3 200 TND le 28 octobre et le client paie le 12 novembre. Combien avez-vous encaissé en octobre ?"],
+        o: [["3,200 TND, because it was invoiced", "3 200 TND, car elle est facturée"], ["Nothing yet, the cash arrives in November", "Rien encore, l'argent arrive en novembre"], ["Half, as a deposit", "La moitié, en acompte"]],
+        a: 1,
+        e: ["Invoiced money is revenue, and cash is what actually arrives. October shows 3,200 TND as to collect, and November shows it as received.", "L'argent facturé est du chiffre d'affaires, et la trésorerie est ce qui arrive vraiment. Octobre montre 3 200 TND à encaisser, et novembre les montre comme reçus."]
+      }
+    }
+  ]);
+
+  // ---------------------------------------------------------------- Dashboard
+  lesson("dashboard", ["Dashboard", "Tableau de bord"],
+    ["Read the company at a glance: how this month is going, what is slipping, and where the next money comes from.", "Lisez l'entreprise d'un coup d'œil : comment va le mois, ce qui glisse, et d'où vient le prochain argent."], [
+    {
+      t: ["Three questions", "Trois questions"],
+      b: ["The dashboard answers three things: are we okay this month, what is slipping, and where does the next money come from. Only the owner sees it.", "Le tableau de bord répond à trois choses : va-t-on bien ce mois-ci, qu'est-ce qui glisse, et d'où vient le prochain argent. Seul le fondateur le voit."],
+      w: ["Every number comes from the records of the other screens, so nothing here is typed twice.", "Chaque chiffre vient des données des autres écrans, donc rien n'est saisi deux fois."],
+      spot: "#page .head"
+    },
+    {
+      t: ["Look at this", "À regarder"],
+      b: ["This list is ranked by urgency: late invoices, the yearly cap nearly used, cash going below zero, quiet leads, projects blocked by a gate, commission owed. Each line has a button that takes you to the fix.", "Cette liste est classée par urgence : factures en retard, plafond annuel presque atteint, trésorerie sous zéro, prospects silencieux, projets bloqués par un verrou, commission due. Chaque ligne a un bouton qui mène à la solution."],
+      w: ["Start here each morning. If the list is empty, nothing is slipping.", "Commencez par ici chaque matin. Si la liste est vide, rien ne glisse."],
+      spot: ".db-look"
+    },
+    {
+      t: ["The tiles", "Les tuiles"],
+      b: ["Cash in is money received this month, net of tax withheld. Monthly retainers is repeating income, and Clients owe is invoiced but unpaid. Runway is how many months the cash lasts at current spending.", "Encaissé est l'argent reçu ce mois-ci, net de la retenue. Récurrent mensuel est le revenu qui revient, et Reste à encaisser est facturé mais non payé. L'autonomie est le nombre de mois que dure la trésorerie au rythme actuel des dépenses."],
+      w: ["Cash in and Clients owe are different numbers. Invoiced money is not yours to spend until it arrives.", "Encaissé et Reste à encaisser sont deux chiffres différents. L'argent facturé ne se dépense pas tant qu'il n'est pas arrivé."],
+      spot: ".db-tiles"
+    },
+    {
+      t: ["Money in and money out", "Argent entré et sorti"],
+      b: ["Bars compare money in with money out for each month, and a line marks your monthly goal. Money out is an estimate: expenses, salary, project costs and commissions.", "Les barres comparent l'argent entré et sorti de chaque mois, et une ligne marque votre objectif mensuel. Les sorties sont une estimation : dépenses, salaire, coûts projets et commissions."],
+      w: ["Longer periods show the trend. Short ones show where you stand now.", "Les périodes longues montrent la tendance. Les courtes montrent où vous en êtes maintenant."],
+      spot: "[data-tour=\"db-money\"]|.db-grid .panel",
+      x: ["Switch the period to 12 months.", "Passez la période à 12 mois."],
+      click: "[data-a=\"db-range\"][data-n=\"12\"]",
+      d: ["The charts now cover twelve months.", "Les graphiques couvrent maintenant douze mois."]
+    },
+    {
+      t: ["The next 13 weeks of cash", "Les 13 prochaines semaines de trésorerie"],
+      b: ["Booked uses invoices that are due and costs that are known. With pipeline adds open leads, weighted by how likely they are to close.", "Acquis utilise les factures dues et les coûts connus. Avec pipeline ajoute les prospects ouverts, pondérés par leur chance de se conclure."],
+      w: ["If a line dips below zero, that week is the one to plan for. Nothing here is a promise: it is an estimate.", "Si une ligne passe sous zéro, c'est cette semaine qu'il faut préparer. Rien ici n'est une promesse : c'est une estimation."],
+      spot: "[data-tour=\"db-fc\"]|.db-grid .panel"
+    },
+    {
+      t: ["Who owes you, and by how long", "Qui vous doit, et depuis combien de temps"],
+      b: ["This chart groups unpaid invoices by how late they are, and the line below says how many days clients take to pay on average. The profit by client chart further down shows margin against your target.", "Ce graphique regroupe les factures impayées selon leur retard, et la ligne dessous donne le nombre moyen de jours que mettent les clients à payer. Le graphique de bénéfice par client, plus bas, montre la marge face à votre objectif."],
+      w: ["Old unpaid invoices rarely pay themselves. The older the bar, the sooner you should call.", "Les vieilles factures impayées se paient rarement toutes seules. Plus la barre est ancienne, plus tôt il faut appeler."],
+      spot: "[data-tour=\"db-age\"]|.db-grid.w3 .panel"
+    },
+    {
+      t: ["Goals", "Objectifs"],
+      b: ["Goals feed the goal line on the chart and the tiles: a monthly revenue goal, DMs per day and a margin target. Changing them is up to you, and they are only saved when you press Save goals.", "Les objectifs alimentent la ligne d'objectif du graphique et les tuiles : un chiffre mensuel, des DM par jour et une marge visée. Les modifier vous revient, et ils ne sont enregistrés que si vous appuyez sur Enregistrer les objectifs."],
+      spot: "[data-tour=\"db-goals\"]|.db-grid.w3 .panel",
+      x: ["Click the revenue goal box. Nothing changes yet.", "Cliquez sur la case de l'objectif de chiffre. Rien ne change encore."],
+      click: "#db-g-rev"
+    },
+    {
+      t: ["Quick check", "Petite vérification"],
+      q: {
+        q: ["Cash in shows 6,200 TND and Clients owe shows 14,000 TND. What does that mean?", "Encaissé affiche 6 200 TND et Reste à encaisser affiche 14 000 TND. Que cela veut-il dire ?"],
+        o: [["We earned 6,200 TND this month and lost 14,000", "Nous avons gagné 6 200 TND ce mois-ci et perdu 14 000"], ["6,200 TND reached us this month, and 14,000 TND is invoiced but not paid yet", "6 200 TND nous sont arrivés ce mois-ci, et 14 000 TND sont facturés mais pas encore payés"], ["Both numbers are the same money counted twice", "Les deux chiffres sont le même argent compté deux fois"]],
+        a: 1,
+        e: ["Cash in is money that arrived. Clients owe is money that is invoiced and still on its way. It is worth chasing, but it cannot pay a bill yet.", "Encaissé est l'argent arrivé. Reste à encaisser est l'argent facturé qui est encore en route. Cela vaut la peine de relancer, mais cela ne peut pas encore payer une facture."]
+      }
+    }
+  ]);
+
+  // ---------------------------------------------------------------- Marketing
+  lesson("marketing", ["Marketing", "Marketing"],
+    ["The studio's own marketing: what we say, what we post, what we spend and what it brings back.", "Le marketing du studio : ce qu'on dit, ce qu'on publie, ce qu'on dépense et ce que cela rapporte."], [
+    {
+      t: ["Our own brand", "Notre propre marque"],
+      b: ["This is GECKO's own marketing, not a client's. Strategy says what we stand for, then Content, Ads, Showcase and Insights show the work and its results.", "Voici le marketing de GECKO lui-même, pas celui d'un client. La stratégie dit ce qu'on défend, puis Contenu, Pubs, Vitrine et Chiffres montrent le travail et ses résultats."],
+      w: ["A studio that sells ads that get tested should test its own.", "Un studio qui vend des pubs testées doit tester les siennes."],
+      spot: "#page .head"
+    },
+    {
+      t: ["Strategy: one page to write from", "Stratégie : une page pour écrire"],
+      b: ["Strategy holds who we target, the offers we push, this quarter's goals, the channels and the key messages. A grey note means the text is a suggestion from the plan until someone edits it.", "La stratégie contient qui on vise, les offres qu'on pousse, les objectifs du trimestre, les canaux et les messages clés. Une note grise veut dire que le texte est une suggestion du plan tant que personne ne l'a modifié."],
+      w: ["When everyone writes from the same page, posts, ads and DMs all say the same thing.", "Quand tout le monde écrit depuis la même page, les posts, les pubs et les DM disent la même chose."],
+      spot: ".mk-strat"
+    },
+    {
+      t: ["Content: the posting plan", "Contenu : le plan de publication"],
+      b: ["Content plans our posts on Instagram, TikTok and LinkedIn. Each post moves from idea to scripted, shot, edited and posted.", "Contenu planifie nos posts sur Instagram, TikTok et LinkedIn. Chaque post passe d'idée à scripté, tourné, monté puis publié."],
+      w: ["A column that keeps filling up is the first sign of a bottleneck. The plan is three reels a week.", "Une colonne qui se remplit sans cesse est le premier signe d'un goulot. Le plan est de trois reels par semaine."],
+      spot: ".mk-tabs",
+      x: ["Open the Content tab.", "Ouvrez l'onglet Contenu."],
+      click: "[data-a=\"mk-tab\"][data-v=\"content\"]"
+    },
+    {
+      t: ["Board or by month", "Tableau ou par mois"],
+      b: ["Board groups posts by status. By month lists them by date, which suits checking the calendar. Once a post is live, open it and add views, likes, saves, shares and DMs.", "Tableau groupe les posts par statut. Par mois les liste par date, ce qui convient pour vérifier le calendrier. Une fois le post en ligne, ouvrez-le et ajoutez vues, likes, enregistrements, partages et DM."],
+      w: ["Results turn posting into learning. You see which kind of post, such as proof, method or behind the scenes, really works.", "Les résultats transforment la publication en apprentissage. On voit quel type de post, preuve, méthode ou coulisses, marche vraiment."],
+      spot: ".mk-bar",
+      x: ["Click By month.", "Cliquez sur Par mois."],
+      click: "[data-a=\"mk-c-layout\"][data-v=\"list\"]"
+    },
+    {
+      t: ["Ads: what we spend", "Pubs : ce que nous dépensons"],
+      b: ["Ads logs our own campaigns: the objective, the channel, what each spent and how many leads or DMs it brought. Cost per lead is the amount spent divided by the leads. Budget and spend are shown to the owner only.", "Pubs enregistre nos propres campagnes : l'objectif, le canal, ce que chacune a dépensé et le nombre de prospects ou de DM obtenus. Le coût par prospect est le montant dépensé divisé par le nombre de prospects. Budget et dépenses ne sont visibles que par le fondateur."],
+      w: ["Spending only makes sense if it brings conversations. Cost per lead is the fair way to compare campaigns.", "Dépenser n'a de sens que si cela amène des conversations. Le coût par prospect est la façon juste de comparer les campagnes."],
+      spot: ".mk-tabs",
+      x: ["Open the Ads tab.", "Ouvrez l'onglet Pubs."],
+      click: "[data-a=\"mk-tab\"][data-v=\"ads\"]"
+    },
+    {
+      t: ["Showcase: proof we can show", "Vitrine : les preuves à montrer"],
+      b: ["Showcase lists delivered projects we could present as case studies. Tick that the client allows it only when they have said yes, and write a result line with real numbers.", "Vitrine liste les projets livrés que nous pourrions présenter comme études de cas. Cochez que le client l'autorise seulement quand il a dit oui, et écrivez une ligne de résultat avec de vrais chiffres."],
+      w: ["Showing a client's work without their yes is a risk. Real numbers are what make a case study believable. Costs are never shown here.", "Montrer le travail d'un client sans son accord est un risque. De vrais chiffres rendent une étude de cas crédible. Les coûts ne sont jamais affichés ici."],
+      spot: ".mk-tabs",
+      x: ["Open the Showcase tab.", "Ouvrez l'onglet Vitrine."],
+      click: "[data-a=\"mk-tab\"][data-v=\"showcase\"]"
+    },
+    {
+      t: ["Insights: what it brought", "Chiffres : ce que cela a rapporté"],
+      b: ["Insights turns what you logged into numbers: posts this month, views, engagement rate, followers and leads from social and ads. Log follower counts once a month so the growth line works.", "Chiffres transforme ce que vous avez saisi en indicateurs : posts du mois, vues, taux d'engagement, abonnés et prospects venus des réseaux et des pubs. Notez le nombre d'abonnés une fois par mois pour que la courbe de croissance fonctionne."],
+      w: ["Engagement rate is likes, saves and shares divided by views. It tells you if people cared, not only if they saw it.", "Le taux d'engagement est likes, enregistrements et partages divisés par les vues. Il dit si les gens se sont intéressés, pas seulement s'ils ont vu."],
+      spot: ".kpis|.mk-pane",
+      x: ["Open the Insights tab.", "Ouvrez l'onglet Chiffres."],
+      click: "[data-a=\"mk-tab\"][data-v=\"insights\"]"
+    },
+    {
+      t: ["Quick check", "Petite vérification"],
+      q: {
+        q: ["A campaign spent 240 TND and brought 30 DMs. What is its cost per lead?", "Une campagne a dépensé 240 TND et amené 30 DM. Quel est son coût par prospect ?"],
+        o: [["6 TND", "6 TND"], ["8 TND", "8 TND"], ["270 TND", "270 TND"]],
+        a: 1,
+        e: ["Cost per lead is spent divided by leads: 240 divided by 30 is 8 TND. A campaign with a lower number brings conversations more cheaply.", "Le coût par prospect est la dépense divisée par les prospects : 240 divisé par 30 fait 8 TND. Une campagne avec un chiffre plus bas amène des conversations à moindre coût."]
+      }
+    }
+  ]);
+
+  T._order.push("projects", "studio", "finance", "dashboard", "marketing");
 })(window.GK);
 
 /* ---- modules/dashboard.js ---- */
@@ -12942,26 +13806,26 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   }
 
   // ---------- charts ----------
-  function panel(inner) { return '<section class="panel">' + inner + "</section>"; }
+  function panel(inner, tour) { return '<section class="panel"' + (tour ? ' data-tour="' + tour + '"' : "") + ">" + inner + "</section>"; }
   function moneyChart(rows) {
     var g = goals(), net = u.sum(rows, function (r) { return r.net; }), best = rows.slice().sort(u.by("net", "desc"))[0];
     var ch = C.bars({ title: t("db_c_money"), sub: t("db_c_money_sub"), labels: rows.map(function (r) { return r.label; }),
       series: [{ name: t("db_s_in"), values: rows.map(function (r) { return Math.round(r.cashIn); }), c: 1 }, { name: t("db_s_out"), values: rows.map(function (r) { return Math.round(r.out); }), c: 2 }],
       goal: g.monthlyRevenue ? { value: g.monthlyRevenue, label: t("db_goal") + " " + C.compact(g.monthlyRevenue) } : null });
     var any = rows.some(function (r) { return r.cashIn || r.out; });
-    return panel(ch + (any ? '<p class="db-note">' + esc(t("db_net_line", { n: rows.length, a: fm(net), b: best ? best.label + " " + fm(best.net) : "—" })) + "</p>" : ""));
+    return panel(ch + (any ? '<p class="db-note">' + esc(t("db_net_line", { n: rows.length, a: fm(net), b: best ? best.label + " " + fm(best.net) : "—" })) + "</p>" : ""), "db-money");
   }
   function forecastChart(fc) {
     var r = m.rules();
     return panel(C.line({ title: t("db_c_fc"), sub: t("db_c_fc_sub"), labels: fc.map(function (w) { return w.label; }),
       series: [{ name: t("db_s_booked"), values: fc.map(function (w) { return Math.round(w.balance); }), c: 1 }, { name: t("db_s_pipe"), values: fc.map(function (w) { return Math.round(w.balanceWithPipeline); }), c: 2, dash: true }] }) +
-      (+r.openingCash > 0 ? "" : '<p class="db-note">' + esc(t("db_fc_set")) + "</p>"));
+      (+r.openingCash > 0 ? "" : '<p class="db-note">' + esc(t("db_fc_set")) + "</p>"), "db-fc");
   }
   function agingChart() {
     var a = X.aging(), d = X.dso();
     return panel(C.hbars({ title: t("db_c_age"), items: [
       { label: t("db_a_cur"), value: a.current, c: 1 }, { label: t("db_a_1"), value: a.d1_7, c: 2 }, { label: t("db_a_8"), value: a.d8_30, c: 2 }, { label: t("db_a_31"), value: a.d31, c: 3 }] }) +
-      (d != null ? '<p class="db-note">' + esc(t("db_dso", { n: d })) + "</p>" : ""));
+      (d != null ? '<p class="db-note">' + esc(t("db_dso", { n: d })) + "</p>" : ""), "db-age");
   }
   function funnelChart() {
     var ws = u.weekStart(u.today()), tot = { dms: 0, replies: 0, calls: 0, proposals: 0, won: 0 };
@@ -13006,7 +13870,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     var g = goals();
     return panel('<div class="panel-h"><div><h3 class="sec" style="margin:0">' + esc(t("db_goals")) + '</h3><p class="small muted" style="margin:2px 0 0">' + esc(t("db_goals_sub")) + "</p></div></div>" +
       '<div class="form">' + ui.field({ id: "db-g-rev", label: t("db_g_rev"), type: "number", value: g.monthlyRevenue || "" }) + ui.field({ id: "db-g-dm", label: t("db_g_dm"), type: "number", value: g.dmsPerDay || "" }) + ui.field({ id: "db-g-margin", label: t("db_g_margin"), type: "number", value: g.margin || "" }) + "</div>" +
-      '<div class="row">' + ui.btn(t("db_g_save"), "db-goals", { cls: "primary" }) + "</div>");
+      '<div class="row">' + ui.btn(t("db_g_save"), "db-goals", { cls: "primary" }) + "</div>", "db-goals");
   }
 
   GK.view("dashboard", {
@@ -14532,7 +15396,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
 
   function sendPanel(i) {
     var lr = H.linkedReel(i), revisions = H.approvedRevisions(i), selected = H.selectedRevision(i), founder = m.isFounder();
-    var h = '<section class="panel"><h2 class="sec">' + esc(t("st_d_send")) + "</h2>";
+    var h = '<section class="panel" data-tour="st-send"><h2 class="sec">' + esc(t("st_d_send")) + "</h2>";
     if (revisions.length) {
       h += ui.field({ id: "st-d-revision", label: t("st_d_rev_send"), type: "select", value: selected && selected.id || "",
         options: revisions.map(function (r, n) { return [r.id, t("st_revision_n", { n: n + 1, d: u.fmtDate(r.approvedOn || r.snapshot.approvedOn) })]; }),

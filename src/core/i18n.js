@@ -55,7 +55,7 @@
     your_name: ["Your name", "Votre nom"], your_role: ["Your role", "Votre rôle"], join: ["Join", "Rejoindre"],
     // roles
     role_founder: ["Founder · creative director", "Fondateur · directeur créatif"], role_sales: ["Client Lead", "Responsable clients"],
-    role_editor: ["Freelance editor", "Monteur freelance"], role_assistant: ["Production", "Production"],
+    role_editor: ["Freelance editor", "Monteur freelance"], role_assistant: ["Production manager", "Responsable production"],
     // project stages (crm-pipeline.md, after won)
     st_onboarding: ["Onboarding", "Démarrage"], st_scripting: ["Scripting", "Scripts"], st_pre_production: ["Pre-production", "Préproduction"], st_shoot: ["Shoot", "Tournage"],
     st_editing: ["Editing", "Montage"], st_client_review: ["Client review", "Revue client"], st_revisions: ["Revisions", "Retouches"], st_delivered: ["Delivered", "Livré"],

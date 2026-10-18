@@ -198,7 +198,7 @@
   }
   function rolePayPanel() {
     var roles = m.ROLES;
-    var h = '<section class="panel"><div class="panel-h"><h2 class="sec">' + esc(t("tp_rp_h")) + '</h2></div><p class="small muted" style="margin:0 0 10px">' + esc(t("tp_rp_sub")) + '</p><div class="stack">';
+    var h = '<section class="panel" data-tour="tp-rolepay"><div class="panel-h"><h2 class="sec">' + esc(t("tp_rp_h")) + '</h2></div><p class="small muted" style="margin:0 0 10px">' + esc(t("tp_rp_sub")) + '</p><div class="stack">';
     roles.forEach(function (r) {
       var d = rolePay(r);
       h += '<div class="tp-rp"><div class="tp-rl"><span class="lab sm">' + esc(t("role_" + r)) + "</span></div>" +

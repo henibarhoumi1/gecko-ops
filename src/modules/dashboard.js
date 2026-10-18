@@ -141,26 +141,26 @@
   }
 
   // ---------- charts ----------
-  function panel(inner) { return '<section class="panel">' + inner + "</section>"; }
+  function panel(inner, tour) { return '<section class="panel"' + (tour ? ' data-tour="' + tour + '"' : "") + ">" + inner + "</section>"; }
   function moneyChart(rows) {
     var g = goals(), net = u.sum(rows, function (r) { return r.net; }), best = rows.slice().sort(u.by("net", "desc"))[0];
     var ch = C.bars({ title: t("db_c_money"), sub: t("db_c_money_sub"), labels: rows.map(function (r) { return r.label; }),
       series: [{ name: t("db_s_in"), values: rows.map(function (r) { return Math.round(r.cashIn); }), c: 1 }, { name: t("db_s_out"), values: rows.map(function (r) { return Math.round(r.out); }), c: 2 }],
       goal: g.monthlyRevenue ? { value: g.monthlyRevenue, label: t("db_goal") + " " + C.compact(g.monthlyRevenue) } : null });
     var any = rows.some(function (r) { return r.cashIn || r.out; });
-    return panel(ch + (any ? '<p class="db-note">' + esc(t("db_net_line", { n: rows.length, a: fm(net), b: best ? best.label + " " + fm(best.net) : "—" })) + "</p>" : ""));
+    return panel(ch + (any ? '<p class="db-note">' + esc(t("db_net_line", { n: rows.length, a: fm(net), b: best ? best.label + " " + fm(best.net) : "—" })) + "</p>" : ""), "db-money");
   }
   function forecastChart(fc) {
     var r = m.rules();
     return panel(C.line({ title: t("db_c_fc"), sub: t("db_c_fc_sub"), labels: fc.map(function (w) { return w.label; }),
       series: [{ name: t("db_s_booked"), values: fc.map(function (w) { return Math.round(w.balance); }), c: 1 }, { name: t("db_s_pipe"), values: fc.map(function (w) { return Math.round(w.balanceWithPipeline); }), c: 2, dash: true }] }) +
-      (+r.openingCash > 0 ? "" : '<p class="db-note">' + esc(t("db_fc_set")) + "</p>"));
+      (+r.openingCash > 0 ? "" : '<p class="db-note">' + esc(t("db_fc_set")) + "</p>"), "db-fc");
   }
   function agingChart() {
     var a = X.aging(), d = X.dso();
     return panel(C.hbars({ title: t("db_c_age"), items: [
       { label: t("db_a_cur"), value: a.current, c: 1 }, { label: t("db_a_1"), value: a.d1_7, c: 2 }, { label: t("db_a_8"), value: a.d8_30, c: 2 }, { label: t("db_a_31"), value: a.d31, c: 3 }] }) +
-      (d != null ? '<p class="db-note">' + esc(t("db_dso", { n: d })) + "</p>" : ""));
+      (d != null ? '<p class="db-note">' + esc(t("db_dso", { n: d })) + "</p>" : ""), "db-age");
   }
   function funnelChart() {
     var ws = u.weekStart(u.today()), tot = { dms: 0, replies: 0, calls: 0, proposals: 0, won: 0 };
@@ -205,7 +205,7 @@
     var g = goals();
     return panel('<div class="panel-h"><div><h3 class="sec" style="margin:0">' + esc(t("db_goals")) + '</h3><p class="small muted" style="margin:2px 0 0">' + esc(t("db_goals_sub")) + "</p></div></div>" +
       '<div class="form">' + ui.field({ id: "db-g-rev", label: t("db_g_rev"), type: "number", value: g.monthlyRevenue || "" }) + ui.field({ id: "db-g-dm", label: t("db_g_dm"), type: "number", value: g.dmsPerDay || "" }) + ui.field({ id: "db-g-margin", label: t("db_g_margin"), type: "number", value: g.margin || "" }) + "</div>" +
-      '<div class="row">' + ui.btn(t("db_g_save"), "db-goals", { cls: "primary" }) + "</div>");
+      '<div class="row">' + ui.btn(t("db_g_save"), "db-goals", { cls: "primary" }) + "</div>", "db-goals");
   }
 
   GK.view("dashboard", {

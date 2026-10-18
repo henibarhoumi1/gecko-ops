@@ -147,8 +147,9 @@
         (p ? '<br><span class="small muted">' + esc(m.projectLabel(p)) + "</span>" : "") + "</span></label>" +
         (late ? ui.pill(t("td_late") + " · " + dueLabel(x.due), "alert") : '<span class="small muted num" style="white-space:nowrap">' + esc(dueLabel(x.due)) + "</span>") + "</div>";
     }).join("") + "</div>" + (all.length > list.length ? '<p class="small faint">' + esc(t("td_more_tasks", { n: all.length - list.length })) + "</p>" : "") : ui.empty(t("td_no_tasks"));
-    return panel(t("td_my_tasks"), body, ui.btn(t("td_all_tasks"), "td-go", { cls: "ghost sm", data: { v: ui.nav().indexOf("tasks") > -1 ? "tasks" : "team" } }));
+    return tagged(panel(t("td_my_tasks"), body, ui.btn(t("td_all_tasks"), "td-go", { cls: "ghost sm", data: { v: ui.nav().indexOf("tasks") > -1 ? "tasks" : "team" } })), "td-tasks");
   }
+  function tagged(html, tag) { return html.replace("<section ", '<section data-tour="' + tag + '" '); }
   function shootsPanel(days, title, withChecklist) {
     var td = today(), end = days ? u.addDays(td, days) : "9999";
     var list = S.all("projects").filter(function (p) { return active(p) && p.shootDate && p.shootDate >= td && p.shootDate <= end; }).sort(u.by("shootDate")).slice(0, 8);
@@ -161,7 +162,7 @@
       var pill = m.canShoot(p) ? ui.pill(t("td_ready"), "done") : ui.pill(t("td_blocked"), "alert");
       return '<div class="li click" tabindex="0" data-a="td-go" data-v="projects" data-id="' + esc(p.id) + '"><div class="stack" style="gap:2px;min-width:0"><strong>' + esc(m.brand(p.clientId)) + '</strong><span class="m">' + esc(p.name) + " · " + meta + "</span></div>" + pill + "</div>";
     }).join("") + "</div>" : ui.empty(t("td_no_shoots"));
-    return panel(title, body);
+    return tagged(panel(title, body), "td-shoots");
   }
   function upcomingShootCount(days) {
     var td = today(), end = u.addDays(td, days);
@@ -184,7 +185,7 @@
 
     // money in one quiet panel: this month's cash, what is owed, the pipeline
     var pct = goal ? cash / goal * 100 : 0;
-    var money = '<section class="card c5"><div class="card-h"><span class="lead">' + ui.icon("cash") + "<h2>" + esc(t("td_h_label", { m: u.fmtMonth(ym) })) + "</h2></span>" +
+    var money = '<section class="card c5" data-tour="td-money"><div class="card-h"><span class="lead">' + ui.icon("cash") + "<h2>" + esc(t("td_h_label", { m: u.fmtMonth(ym) })) + "</h2></span>" +
       ui.btn(t("td_h_open"), "td-go", { cls: "ghost sm", data: { v: "finance" } }) + "</div>" +
       '<div class="td-big num">' + esc(u.money(cash)) + "</div>" +
       (goal ? '<div class="stack" style="gap:6px"><div class="meter-lab"><span>' + esc(t("td_h_goal")) + "</span><span>" + esc(u.pct(Math.min(pct, 999))) + "</span></div>" + ui.meter(pct, { segments: 24, sm: true }) + "</div>" : "") +
@@ -195,7 +196,7 @@
     var h = "";
     // decisions: what is waiting, why, what to do, one button
     var all = !!ui.p("today").all, shown = all ? q : q.slice(0, 6);
-    var dec = '<section class="card c7"><div class="card-h"><span class="lead">' + ui.icon("sparkle") + "<h2>" + esc(t("td_needs", { name: me().name || founderName() })) + "</h2>" + (q.length ? '<span class="cnt hot">' + q.length + "</span>" : "") + "</span>" +
+    var dec = '<section class="card c7" data-tour="td-need"><div class="card-h"><span class="lead">' + ui.icon("sparkle") + "<h2>" + esc(t("td_needs", { name: me().name || founderName() })) + "</h2>" + (q.length ? '<span class="cnt hot">' + q.length + "</span>" : "") + "</span>" +
       (q.length > 6 ? ui.btn(all ? t("td_less") : t("td_all", { n: q.length }), "td-all", { cls: "ghost sm" }) : "") + "</div>" +
       (q.length ? '<div class="decs">' + shown.map(function (x, i) {
         return ui.decision({ title: x.main, why: x.meta, recommend: x.rec, icon: x.icon, tone: x.alert ? "urgent" : "", action: { label: x.label, a: "td-need", data: { i: i }, cls: x.alert ? "primary sm" : "sm" } });
@@ -230,10 +231,10 @@
     ]) + "</section>";
 
     var fl = followsDue(who.id);
-    var follows = panel(t("td_follows"), fl.length ? '<div class="list">' + fl.map(function (l) {
+    var follows = tagged(panel(t("td_follows"), fl.length ? '<div class="list">' + fl.map(function (l) {
       var late = l.nextDate < td;
       return line((late ? ui.pill(t("td_late"), "alert") + " " : "") + "<strong>" + esc(l.brand) + "</strong> · " + esc(t("ls_" + l.stage)), esc(l.next || "") + (l.next ? " · " : "") + esc(dueLabel(l.nextDate)), ui.btn(t("td_b_lead"), "td-go", { cls: "sm", data: { v: "pipeline", id: l.id } }));
-    }).join("") + "</div>" : ui.empty(t("td_no_follows")));
+    }).join("") + "</div>" : ui.empty(t("td_no_follows"))), "td-need");
 
     var props = S.all("leads").filter(function (l) { return l.stage === "proposal" && l.owner === who.id; });
     var propP = panel(t("td_props"), props.length ? '<div class="list">' + props.map(function (l) {
@@ -265,7 +266,7 @@
           "</td><td>" + esc(m.projectLabel(r.p)) + "</td><td>" + ui.filePill(r.st) + "</td><td>" + (link ? '<a href="' + esc(link) + '" target="_blank" rel="noopener">' + esc(t("td_drive")) + "</a>" : "") + "</td></tr>";
       }).join("") + "</tbody></table></div>" + (rows.length > shown.length ? '<p class="small muted">' + esc(t("td_more_files", { n: rows.length - shown.length })) + "</p>" : "")
       : ui.empty(t("td_no_files"));
-    return panel(t("td_files"), body, ui.btn(t("td_open_prod"), "td-go", { cls: "primary sm", data: { v: "production" } })) +
+    return tagged(panel(t("td_files"), body, ui.btn(t("td_open_prod"), "td-go", { cls: "primary sm", data: { v: "production" } })), "td-need") +
       '<div class="grid2">' + tasksPanel() + shootsPanel(0, t("td_next_shoots")) + "</div>";
   }
 
