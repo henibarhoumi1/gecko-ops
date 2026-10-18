@@ -195,9 +195,9 @@
         ? '<p class="tp-ask">' + ui.icon("arrow", "sm") + '<span><span class="tp-lab">' + esc(t("tr_try")) + "</span>" + esc(t(step.try.text)) + "</span></p>"
         : '<p class="tp-ok">' + ui.icon("check", "sm") + esc(t(step.try.done || "tr_nice")) + "</p>";
       if (q) {
-        h += '<div class="tp-quiz"><span class="tp-lab">' + esc(t("tr_check")) + "</span><b>" + esc(t(q.q)) + "</b>" +
+        h += '<div class="tp-quiz"><b>' + esc(t(q.q)) + "</b>" +
           q.options.map(function (o, k) {
-            var cls = answered ? (k === q.answer ? " right" : k === live.answer ? " wrong" : "") : "";
+            var cls = answered ? (k === q.answer ? " tp-r" : k === live.answer ? " tp-w" : "") : "";
             return '<button type="button" class="tp-opt' + cls + '" data-a="tour-quiz" data-k="' + k + '"' + (answered ? " disabled" : "") + ">" + esc(t(o)) + "</button>";
           }).join("") + "</div>";
         if (answered) h += '<p class="' + (live.answer === q.answer ? "tp-ok" : "tp-no") + '">' + esc(t(live.answer === q.answer ? "tr_right" : "tr_wrong")) + " " + esc(t(q.explain)) + "</p>";
@@ -320,7 +320,7 @@
         "#tour .tp-ok,#tour .tp-no{display:flex;gap:6px;align-items:flex-start;font-size:13.5px}#tour .tp-ok{color:var(--tx)}#tour .tp-no{color:var(--tx-2)}" +
         "#tour .tp-quiz{display:flex;flex-direction:column;gap:6px}#tour .tp-quiz b{font-size:14px;line-height:1.35;margin-bottom:2px}" +
         "#tour .tp-opt{text-align:left;background:var(--s2);border:1px solid var(--line);padding:8px 10px;font:inherit;font-size:13.5px;color:var(--tx);cursor:pointer;transition:background .15s,border-color .15s}" +
-        "#tour .tp-opt:hover:not([disabled]){border-color:var(--line-2)}#tour .tp-opt.right{background:var(--c-yellow-soft,rgba(243,223,158,.5));border-color:var(--line-2)}#tour .tp-opt.wrong{background:var(--c-pink-soft,rgba(244,193,196,.4));text-decoration:line-through}" +
+        "#tour .tp-opt:hover:not([disabled]){border-color:var(--line-2)}#tour .tp-opt.tp-r{background:var(--c-yellow-soft,rgba(243,223,158,.5));border-color:var(--line-2)}#tour .tp-opt.tp-w{background:var(--c-pink-soft,rgba(244,193,196,.4));text-decoration:line-through}" +
         "#tour .tp-ask .tp-lab{display:inline;margin-right:4px}" +
         "#tour .tp-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:4px}" +
         "#tour .tp-skip{background:none;border:0;padding:4px 0;color:var(--tx-3);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer}" +
