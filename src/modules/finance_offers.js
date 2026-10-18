@@ -11,7 +11,7 @@
     fi_of_c_direct: ["Direct cost", "Coût direct"], fi_of_c_owner: ["Owner pay", "Paie du fondateur"], fi_of_c_net_l: ["Net at launch", "Net au lancement"], fi_of_c_net_s: ["Net at standard", "Net au standard"], fi_of_c_margin: ["Margin", "Marge"],
     fi_of_month: ["/ month", "/ mois"], fi_of_none: ["no launch price", "pas de prix de lancement"], fi_of_min: ["min. {n} months", "min. {n} mois"],
     fi_of_reels: ["Reels: {n}", "Reels : {n}"], fi_of_hooks: ["Hooks and variations: {n}", "Hooks et variations : {n}"], fi_of_statics: ["Statics: {n}", "Visuels fixes : {n}"], fi_of_mashups: ["Mashups: {n}", "Mashups : {n}"],
-    fi_of_carousels: ["Carousels: {n}", "Carrousels : {n}"], fi_of_days: ["Shoot days: {n}", "Jours de tournage : {n}"], fi_of_day1: ["Shoot days: 1", "Jours de tournage : 1"], fi_of_budget: ["Fits an ad budget of {b}", "Pour un budget pub de {b}"],
+    fi_of_carousels: ["Carousels: {n}", "Carrousels : {n}"], fi_of_days: ["Shoot days: {n}", "Jours de tournage : {n}"], fi_of_day1: ["Shoot days: 1", "Jours de tournage : 1"],
     fi_of_ads: ["Ads management", "Gestion des pubs"], fi_of_nothing: ["The report only", "Le rapport seulement"],
     fi_of_rates: ["Cost rates used", "Tarifs de coûts utilisés"],
     fi_of_rates_l: ["Camera {c} per shoot day. Transport {tr} and food {fd} per shoot day. Assistant {as} per shoot day when the offer includes ads. Owner {ow} per shoot day. Owner editing {es} for up to 6 reels, {em} for 7 to 14, {el} for 15 or more. TND.", "Caméra {c} par jour de tournage. Transport {tr} et repas {fd} par jour de tournage. Assistant {as} par jour de tournage si l'offre inclut les pubs. Fondateur {ow} par jour de tournage. Montage du fondateur {es} jusqu'à 6 reels, {em} de 7 à 14, {el} à partir de 15. TND."],
@@ -35,7 +35,6 @@
     if (pk.carousels) o.push(t("fi_of_carousels", { n: pk.carousels }));
     if (pk.shootDays) o.push(pk.shootDays === 1 ? t("fi_of_day1") : t("fi_of_days", { n: pk.shootDays }));
     if (pk.ads) o.push(t("fi_of_ads"));
-    if (pk.budget) o.push(t("fi_of_budget", { b: pk.budget }));
     return o.length ? o : [t("fi_of_nothing")];
   }
   function netCell(net, base) {

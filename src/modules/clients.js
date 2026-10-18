@@ -292,7 +292,7 @@
       '<div class="row">' + ui.btn(t("cl_del"), "cl-del", { cls: "ghost", data: { id: c.id }, disabled: !founder || !!busy, title: !founder ? t("cl_del_founder") : busy ? t("cl_del_blocked") : "" }) + "</div>";
   }
   HUB.tab({ key: "overview", order: 10, label: function () { return t("cl_t_overview"); }, render: overviewTab });
-  HUB.tab({ key: "projects", order: 20, label: function () { return t("cl_t_projects"); }, render: projectsTab, count: function (c) { return activeProjects(c).length; } });
+  HUB.tab({ key: "projects", order: 20, label: function () { return t("cl_t_projects"); }, render: projectsTab });
   HUB.tab({ key: "invoices", order: 60, label: function () { return t("cl_t_invoices"); }, render: invoicesTab });
   HUB.tab({ key: "details", order: 100, label: function () { return t("cl_t_details"); }, render: detailsTab });
 
@@ -321,9 +321,9 @@
       var c = params.id ? S.get("clients", params.id) : null;
       return c ? detailView(c, params) : listView();
     },
-    after: function () {
+    after: function (main) {
       var p = ui.p("clients");
-      if (HUB.after) HUB.after(p);
+      if (HUB.after) HUB.after(p, main);
       // ui.go("clients", {new: true}) from another screen opens the Add-client modal once.
       if (!p.new) return;
       delete p.new;
