@@ -53,11 +53,17 @@
   function render() {
     var rs = rows(), p = P(), wk = Math.min(rs.length - 1, Math.max(0, +p.fcWeek || 0)), r = m.rules(), off = p.fcOff || {};
     var nb = firstNeg(rs, "bal"), np = firstNeg(rs, "balP");
-    var h = '<section class="panel"><div class="row" style="align-items:flex-end"><div style="min-width:240px;flex:1;max-width:340px">' +
-      ui.field({ id: "fi-fc-open", label: t("fi_fc_open"), type: "number", value: Math.round(+r.openingCash || 0), hint: t("fi_fc_open_h"), attrs: ' step="1"' }) + "</div>" +
-      F.wBtn(t("fi_fc_open_save"), "fi-fc-open-save", { cls: "primary" }) + "</div>";
-    if (!(+r.openingCash)) h += '<p class="note" style="margin:0">' + esc(t("fi_fc_open_zero")) + "</p>";
-    h += "</section>";
+    var h;
+    if (m.cashTotal && m.cashTotal() != null) {
+      h = '<section class="panel"><div class="row between"><p class="note strong" style="margin:0">' + esc(t("fi_cb_old_note")) + " " + esc(t("fi_cb_k_now")) + F.colon() + F.fm(r.openingCash) + "</p>" +
+        ui.btn(t("fi_cb_open_book"), "fi-tab", { cls: "ghost sm", data: { tab: "cash" } }) + "</div></section>";
+    } else {
+      h = '<section class="panel"><div class="row" style="align-items:flex-end"><div style="min-width:240px;flex:1;max-width:340px">' +
+        ui.field({ id: "fi-fc-open", label: t("fi_fc_open"), type: "number", value: Math.round(+r.openingCash || 0), hint: t("fi_fc_open_h"), attrs: ' step="1"' }) + "</div>" +
+        F.wBtn(t("fi_fc_open_save"), "fi-fc-open-save", { cls: "primary" }) + "</div>";
+      if (!(+r.openingCash)) h += '<p class="note" style="margin:0">' + esc(t("fi_fc_open_zero")) + "</p>";
+      h += "</section>";
+    }
 
     h += '<div class="stack" style="gap:6px"><p class="note strong" style="margin:0">' + esc(nb >= 0 ? t("fi_fc_neg_booked", { d: u.fmtDate(rs[nb].wk, { day: "numeric", month: "long" }), a: F.fm(rs[nb].bal) }) : t("fi_fc_ok_booked")) + "</p>" +
       '<p class="note' + (np >= 0 ? " strong" : "") + '" style="margin:0">' + esc(np >= 0 ? t("fi_fc_neg_pipe", { d: u.fmtDate(rs[np].wk, { day: "numeric", month: "long" }), a: F.fm(rs[np].balP) }) : t("fi_fc_ok_pipe")) + "</p></div>";
@@ -99,6 +105,7 @@
   GK.act("fi-fc-week", function (el) { P().fcWeek = +el.dataset.w; ui.render(true); });
   GK.change("fi-fc-lead", function (el) { var off = P().fcOff || (P().fcOff = {}); if (el.checked) delete off[el.dataset.b]; else off[el.dataset.b] = 1; ui.render(true); });
   GK.act("fi-fc-open-save", function () {
+    if (m.cashTotal && m.cashTotal() != null) return;
     if (!F.canW()) return ui.toast(t("fi_fc_founder"));
     var v = Math.round(u.numVal("fi-fc-open"));
     S.setConfig({ rules: Object.assign({}, m.rules(), { openingCash: v }) });

@@ -124,6 +124,7 @@
       ui.field({ id: "fi-ex-f-vendor", label: t("fi_ex_f_vendor"), value: e.vendor || "" }) +
       ui.field({ id: "fi-ex-f-project", label: t("fi_ex_f_project"), type: "select", value: e.projectId || "", options: [["", t("fi_ex_no_project")]].concat(projs.map(function (p) { return [p.id, m.projectLabel(p)]; })), attrs: ' data-c="fi-ex-project"' }) +
       ui.field({ id: "fi-ex-f-estimate", label: t("fi_ex_f_estimate"), type: "select", value: e.estimateId || "", options: estimateOptionPairs(e.projectId, e.recurring), hint: t("fi_ex_f_estimate_h") }) +
+      (FIN.accountField ? FIN.accountField("fi-ex-f-acct", t("fi_cb_exp_acct"), e.account) : "") +
       ui.field({ id: "fi-ex-f-link", label: t("fi_ex_f_link"), value: e.link || "", span: true, placeholder: "https://" }) +
       ui.field({ id: "fi-ex-f-note", label: t("fi_ex_f_note"), value: e.note || "", span: true }) + "</div>";
     ui.modal({ title: t(editing ? "fi_ex_edit_t" : "fi_ex_new_t"), accent: t(editing ? "fi_ex_edit_a" : "fi_ex_new_a"), body: body,
@@ -154,7 +155,7 @@
     if (estimateId && (!project || !(project.costs || []).some(function (c) { return c.id === estimateId; }))) {
       u.focus("fi-ex-f-estimate"); return ui.toast(t("required"));
     }
-    var fields = { date: date, label: label, category: u.val("fi-ex-f-cat"), amount: amount, recurring: rec, until: until, vendor: u.val("fi-ex-f-vendor").trim(), projectId: projectId, estimateId: estimateId, link: link, note: u.val("fi-ex-f-note").trim() };
+    var fields = { date: date, label: label, category: u.val("fi-ex-f-cat"), amount: amount, recurring: rec, until: until, vendor: u.val("fi-ex-f-vendor").trim(), projectId: projectId, estimateId: estimateId, account: u.val("fi-ex-f-acct") || "", link: link, note: u.val("fi-ex-f-note").trim() };
     var id = el.dataset.id, saved;
     if (id) { if (!S.get("expenses", id)) return ui.closeModal(); saved = S.patch("expenses", id, fields, { log: t("fi_log_ex_edited") }); }
     else saved = S.put("expenses", Object.assign({ log: [] }, fields), { log: t("fi_log_ex_created") });

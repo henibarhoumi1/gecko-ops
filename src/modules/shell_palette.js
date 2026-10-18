@@ -64,8 +64,6 @@
     if (th !== "light") add("sh_p_prefs", "sun", t("sh_p_light"), "", function () { ui.trigger("theme", { m: "light" }); }, "theme light clair");
     if (th !== "auto") add("sh_p_prefs", "theme", t("sh_p_auto"), "", function () { ui.trigger("theme", { m: "auto" }); }, "theme auto system systeme");
     add("sh_p_prefs", "sidebar", t("sh_p_rail"), "", function () { ui.trigger("rail-mini"); }, "sidebar menu rail");
-    if (S.mode === "demo" && S.hasLive()) add("sh_p_prefs", "swap", t("sh_p_live"), "", function () { ui.trigger("show-live"); }, "live");
-    if (S.mode !== "demo") add("sh_p_prefs", "swap", t("sh_p_sample"), "", function () { ui.trigger("show-demo"); }, "local workspace");
     add("sh_p_prefs", "keyboard", t("sh_p_help"), "", function () { SH.help(); }, "help aide shortcuts raccourcis keyboard clavier");
     return out;
   }

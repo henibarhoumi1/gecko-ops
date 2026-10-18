@@ -27,6 +27,7 @@ modules/finance_*.js
 modules/portal.js
 modules/portal_*.js
 modules/team.js
+modules/team_*.js
 modules/tasks.js
 modules/calendar.js
 modules/activity.js

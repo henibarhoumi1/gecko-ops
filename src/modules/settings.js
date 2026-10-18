@@ -138,8 +138,6 @@
     var mode = S.mode === "demo" ? t("mode_demo") : S.backend === "shared" ? t("shared_note") : t("local_note");
     var btns = "";
     if (S.mode === "live") btns += ui.btn(t("view_demo"), "show-demo", { cls: "" });
-    if (S.mode === "demo" && S.hasLive()) btns += ui.btn(t("back_live"), "show-live", { cls: "primary" });
-    if (S.mode === "demo" && !S.hasLive()) btns += ui.btn(t("start_live"), "start-live", { cls: "primary" });
     var records = S.localRecordCount ? S.localRecordCount() : S.COLLS.reduce(function (n, coll) { return n + S.all(coll).length; }, 0);
     var h = '<div class="grid2"><section class="panel"><div class="panel-h"><h2 class="sec">' + esc(t("se_data")) + "</h2>" + ui.pill(mode, S.mode === "demo" ? "" : "done") + "</div>" +
       '<p style="margin:0">' + esc(where) + (S.readOnly ? " " + esc(t("se_d_ro")) : "") + "</p>" +

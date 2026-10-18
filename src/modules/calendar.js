@@ -435,7 +435,7 @@
       var inv = S.get("invoices", id);
       if (nav.indexOf("finance") > -1) return ui.go("finance", { tab: "invoices", invoiceId: id });
       if (inv && inv.projectId && m.project(inv.projectId)) return ui.go("projects", { id: inv.projectId });
-      return ui.go("clients", { id: inv ? inv.clientId : "" });
+      return ui.go("clients", { id: inv ? inv.clientId : "", tab: "invoices" });
     }
   });
 })(window.GK);

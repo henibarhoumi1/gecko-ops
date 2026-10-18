@@ -84,7 +84,7 @@
   UI.GROUPS = [
     { id: "main", views: ["guide", "today", "tasks", "calendar"] },
     { id: "ceo", views: ["dashboard", "finance"] },
-    { id: "sales", views: ["pipeline", "clients", "portal"] },
+    { id: "sales", views: ["pipeline", "clients"] },
     { id: "prod", views: ["projects", "production", "deliveries", "studio", "boards", "reports"] },
     { id: "mkt", views: ["marketing"] },
     { id: "team", views: ["team", "docs", "activity", "settings"] }
@@ -469,7 +469,7 @@
     });
     h += "</nav>";
     h += '<div class="side-foot"><button type="button" class="me-card" data-a="sh-menu" data-m="user" aria-haspopup="menu" aria-expanded="false" title="' + esc(me ? me.name : t("sh_user")) + '">' +
-      UI.avatar(me ? me.name : "?", { tone: "gel" }) + '<span class="mt"><b>' + esc(me ? me.name : t("sh_user")) + "</b><span>" + esc(me ? t("role_" + me.role).split(" · ")[0] : (GK.store.mode === "demo" ? t("mode_demo") : "")) + "</span></span>" + UI.icon("updown", "sm") + "</button></div>";
+      UI.avatar(me ? me.name : "?", { tone: "gel" }) + '<span class="mt"><b>' + esc(me ? me.name : t("sh_user")) + "</b><span>" + esc(me ? t("role_" + me.role).split(" · ")[0] : "") + "</span></span>" + UI.icon("updown", "sm") + "</button></div>";
     return h + "</aside>";
   }
   /** Phone bottom bar: 5 items + More (opens the full sidebar as a drawer). */

@@ -195,10 +195,10 @@
   }
 
   // ---------- page ----------
-  var FIN = GK.fin = { tabs: {}, order: ["overview", "invoices", "quotes", "expenses", "forecast", "close", "profit", "cap", "commission", "export"] };
+  var FIN = GK.fin = { tabs: {}, order: ["overview", "cash", "invoices", "quotes", "expenses", "forecast", "offers", "close", "profit", "cap", "commission", "export"] };
   function liveTabs() { return FIN.order.filter(function (k) { return FIN.tabs[k]; }); }
-  var MAIN = ["overview", "invoices", "quotes", "expenses"];
-  /** Four everyday tabs; the planning and year-end screens sit behind "More". */
+  var MAIN = ["overview", "cash", "invoices", "quotes", "expenses"];
+  /** Five everyday tabs; the planning and year-end screens sit behind "More". */
   function tabsHTML(cur) {
     var live = liveTabs(), more = live.filter(function (k) { return MAIN.indexOf(k) < 0; }), inMore = more.indexOf(cur) > -1 || P().more;
     function tab(k, on, lab) { return '<button type="button" role="tab" data-a="fi-tab" data-tab="' + k + '" aria-selected="' + on + '">' + esc(lab || t("fi_tab_" + k)) + "</button>"; }
@@ -465,6 +465,7 @@
       ui.field({ id: "fi-p-net", label: t("fi_p_net"), type: "number", value: net, attrs: ' min="0" step="0.01"' }) +
       ui.field({ id: "fi-p-wh", label: t("fi_p_wh"), type: "number", value: wh, hint: c && c.taxId ? t("fi_p_wh_h", { p: r.withholding }) : t("fi_p_wh_none"), attrs: ' min="0" step="0.01"' }) +
       ui.field({ id: "fi-p-method", label: t("fi_p_method"), type: "select", value: "transfer", options: METHODS.map(function (k) { return [k, t("fi_m_" + k)]; }) }) +
+      (FIN.accountField ? FIN.accountField("fi-p-acct", t("fi_cb_pay_acct"), "") : "") +
       ui.field({ id: "fi-p-ref", label: t("fi_p_ref"), placeholder: t("fi_p_ref_ph"), span: true }) + "</div>";
     ui.modal({ title: t("fi_pay_title"), accent: t("fi_pay_accent"), body: body,
       foot: ui.btn(t("cancel"), "close", { cls: "ghost" }) + ui.btn(t("save"), "fi-pay-save", { cls: "primary", data: { id: i.id } }) });
@@ -476,7 +477,7 @@
     if (!date) return u.focus("fi-p-date");
     if (net < 0 || wh < 0 || net + wh <= 0) { u.focus("fi-p-net"); return ui.toast(t("fi_pay_zero")); }
     if (r3(net + wh) > bal + 0.0005) { u.focus("fi-p-net"); return ui.toast(t("fi_overpay", { b: fmP(bal) })); }
-    var pays = (i.payments || []).concat([{ date: date, net: net, withheld: wh, method: u.val("fi-p-method") || "transfer", ref: u.val("fi-p-ref").trim() }]);
+    var pays = (i.payments || []).concat([{ date: date, net: net, withheld: wh, method: u.val("fi-p-method") || "transfer", ref: u.val("fi-p-ref").trim(), account: u.val("fi-p-acct") || "" }]);
     var saved = S.patch("invoices", i.id, { payments: pays }, { log: t("fi_log_pay", { a: fmP(net + wh), d: u.fmtDate(date) }) });
     if (saved) syncLeadPayment(saved);
     ui.closeModal(true); ui.toast(t("fi_pay_saved"));

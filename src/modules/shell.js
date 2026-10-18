@@ -44,8 +44,6 @@
   };
 
   function sampleStrip() {
-    if (S.mode === "demo") return '<span class="sample" title="' + esc(t("demo_banner")) + '"><i aria-hidden="true"></i><span class="sl">' + esc(t("sh_sample_strip")) + '</span><span class="ss">' + esc(t("sample_tag")) + '</span><span class="st faint">· ' + esc(t("sh_sample_long")) + "</span>" +
-      '<button type="button" data-a="' + (S.hasLive() ? "show-live" : "start-live") + '">' + esc(S.hasLive() ? t("back_live") : t("start_live")) + "</button></span>";
     if (S.readOnly) return '<span class="sample ro" title="' + esc(t("read_only")) + '"><i aria-hidden="true"></i><span>' + esc(t("sh_read_only")) + "</span></span>";
     return "";
   }

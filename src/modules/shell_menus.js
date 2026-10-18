@@ -23,7 +23,6 @@
       h += '<div class="pop-s"><label for="sh-workas">' + esc(t("sh_working_as")) + '</label></div><select id="sh-workas" data-c="workas">' +
         team.map(function (p) { return '<option value="' + esc(p.id) + '"' + (x && x.id === p.id ? " selected" : "") + ">" + esc(p.name + " · " + t("role_" + p.role).split(" · ")[0]) + "</option>"; }).join("") + "</select>";
     }
-    h += seg(t("sh_workspace"), "sh-ws", [["demo", t("sh_use_sample")], ["live", t("sh_use_live")]], S.mode === "demo" ? "demo" : "live");
     h += seg(t("sh_lang"), "sh-lang", [["en", "English"], ["fr", "Français"]], lang);
     h += seg(t("sh_theme"), "sh-theme", [["dark", t("sh_theme_dark")], ["light", t("sh_theme_light")], ["auto", t("sh_theme_auto")]], theme);
     h += "<hr>" + ["guide", "activity"].filter(function (v) { return ui.nav().indexOf(v) > -1; }).map(function (v) {

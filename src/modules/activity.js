@@ -38,7 +38,7 @@
     contracts: { type: "project", label: function (x) { return m.brand(x.clientId) + " · " + m.pack(x.pack).name; }, open: function (x) { return ["clients", { id: x.clientId }]; } },
     leads: { type: "lead", label: function (x) { return x.brand; }, open: function (x) { return ["pipeline", { id: x.id }]; } },
     clients: { type: "client", label: function (x) { return x.brand; }, open: function (x) { return ["clients", { id: x.id }]; } },
-    shares: { type: "client", label: function (x) { return x.title || m.brand(x.clientId); }, open: function () { return ["portal", {}]; } },
+    shares: { type: "client", label: function (x) { return x.title || m.brand(x.clientId); }, open: function (x) { return ["clients", { id: x.clientId, tab: "portal" }]; } },
     invoices: { type: "money", label: function (x) { return (x.no || t("inv_draft")) + " · " + m.brand(x.clientId); }, open: function (x) { return ["finance", { tab: "invoices", invoiceId: x.id }]; } },
     quotes: { type: "money", label: function (x) { return (x.no || x.title || "") + " · " + m.brand(x.clientId); }, open: function (x) { return ["finance", { tab: "quotes", quoteId: x.id }]; } },
     expenses: { type: "money", label: function (x) { return x.label || ""; }, open: function () { return ["finance", { tab: "expenses" }]; } },

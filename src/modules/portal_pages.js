@@ -13,6 +13,8 @@
     po_f_title: ["Page title", "Titre de la page"], po_f_project: ["Which project", "Quel projet"], po_f_all: ["All current projects", "Tous les projets en cours"],
     po_sections: ["What the client sees", "Ce que voit le client"],
     po_sec_plan: ["Campaign plan", "Plan de campagne"], po_sec_scripts: ["Scripts", "Scripts"], po_sec_files: ["Files", "Fichiers"], po_sec_timeline: ["Timeline", "Calendrier"], po_sec_invoices: ["Invoices", "Factures"], po_sec_boards: ["Boards", "Tableaux"],
+    po_sec_assets: ["Brand assets", "Éléments de marque"], po_sec_results: ["Ad results", "Résultats pub"], po_sec_notes: ["Shared notes", "Notes partagées"], po_sec_extras: ["Talents, props and extras", "Talents, accessoires et extras"],
+    po_t_extra: ["Extra: {name}", "Extra : {name}"],
     po_no_pages: ["No client page for {brand} yet. Create one and send the link.", "Pas encore de page client pour {brand}. Créez-en une et envoyez le lien."],
     po_live: ["Live", "Active"], po_off: ["Switched off", "Désactivée"], po_enabled: ["Page is on", "Page active"],
     po_scope_all: ["All current projects", "Tous les projets en cours"],
@@ -67,11 +69,13 @@
   function when(stamp) { return stamp ? u.fmtDate(stamp, { day: "numeric", month: "short" }) + " " + String(stamp).slice(11, 16) : ""; }
   function scopeLabel(s) { var p = s.projectId && m.project(s.projectId); return p ? p.name : t("po_scope_all"); }
   function dirty(s) { return !!s.editedAt && (!s.publishedAt || s.editedAt > s.publishedAt); }
-  function secs(s) { return Object.assign({ plan: true, scripts: true, files: true, timeline: true, invoices: true, boards: true }, s.sections || {}); }
+  var SECS = ["plan", "scripts", "files", "timeline", "invoices", "boards", "assets", "results", "notes", "extras"];
+  function secs(s) { return Object.assign({ plan: true, scripts: true, files: true, timeline: true, invoices: true, boards: true, assets: true, results: true, notes: true, extras: true }, s.sections || {}); }
 
   function targetLabel(s, target) {
     if (target === "plan") return t("po_t_plan");
     var snap = s && s.snapshot, found = "";
+    if (/^extra:/.test(target || "") && snap) (snap.extras || []).forEach(function (x) { if (target === "extra:" + x.id) found = t("po_t_extra", { name: x.name }); });
     if (snap) (snap.projects || []).forEach(function (p) {
       (p.reels || []).forEach(function (r) { if (target === "reel:" + r.id || (r.ideaId && target === "idea:" + r.ideaId)) found = (r.angle || "") + " · " + t(r.mode === "Indirect" ? "po_indirect" : "po_direct"); });
       (p.ideas || []).forEach(function (i) { if (target === "idea:" + i.id) found = i.title; });
@@ -170,7 +174,7 @@
     if (dirty(s)) h += '<p class="note" style="margin:0">' + esc(t("po_unpub")) + "</p>";
     // sections
     h += '<div class="stack" style="gap:2px"><span class="lab sm">' + esc(t("po_sections")) + '</span><div class="form" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0 14px">' +
-      ["plan", "scripts", "files", "timeline", "invoices", "boards"].map(function (k) {
+      SECS.map(function (k) {
         return '<label class="check"><input type="checkbox" data-c="po-sec" data-id="' + esc(s.id) + '" data-k="' + k + '"' + (sec[k] ? " checked" : "") + dis + "><span>" + esc(t("po_sec_" + k)) + "</span></label>";
       }).join("") + "</div></div>";
     // scripts picker
@@ -221,20 +225,28 @@
     return h;
   }
 
-  /** The "Client pages" tab for one client. */
-  P.pagesHTML = function (c) {
+  /** The share panels for one client: create button, link, publish, preview, switch off. */
+  P.sharesHTML = function (c) {
     var shares = sharesOf(c), ed = can();
     var h = '<p class="note" style="margin:0">' + esc(t("po_pages_intro")) + "</p>";
     h += '<div class="row between"><h2 class="sec">' + esc(c.brand) + "</h2>" + ui.btn(t("po_new"), "po-new", { cls: "primary", data: { id: c.id }, disabled: !ed, title: ed ? "" : t("po_no_perm2") }) + "</div>";
     h += shares.length ? '<div class="grid2">' + shares.map(function (s) { return pagePanel(s, c); }).join("") + "</div>" : ui.empty(t("po_no_pages", { brand: c.brand }));
-    return h + inbox(c, shares);
+    return h;
   };
+  /** What the client said, with the buttons to apply it. */
+  P.inboxHTML = function (c) { return inbox(c, sharesOf(c)); };
+  /** The "Client pages" tab for one client. */
+  P.pagesHTML = function (c) { return P.sharesHTML(c) + P.inboxHTML(c); };
+  P.targetLabel = targetLabel;
+  P.sharesOf = sharesOf;
 
   // ---------- actions ----------
   function patchShare(id, partial) {
     var cur = S.get("shares", id); if (!cur) return;
     S.patch("shares", id, Object.assign({ editedAt: stampS() }, partial));
   }
+  /** The team changed something the client page shows (notes, extras, brand files): flag the pages as not yet published. */
+  P.markDirty = function (c) { sharesOf(c).forEach(function (s) { if (s.publishedAt) patchShare(s.id, {}); }); };
   GK.change("po-on", function (el) { if (!guard()) return render(); patchShare(el.getAttribute("data-id"), { enabled: el.checked }); });
   GK.change("po-sec", function (el) {
     if (!guard()) return render();
@@ -318,14 +330,14 @@
       body: '<div class="form">' + ui.field({ id: "po-n-title", label: t("po_f_title"), value: c.brand + " · " + t("po_tab_pages").toLowerCase(), span: true }) +
         ui.field({ id: "po-n-proj", label: t("po_f_project"), type: "select", value: "", options: [["", t("po_f_all")]].concat(ps.map(function (p) { return [p.id, p.name]; })), span: true }) + "</div>" +
         '<div class="stack" style="gap:0"><span class="lab sm">' + esc(t("po_sections")) + "</span>" +
-        ["plan", "scripts", "files", "timeline", "invoices", "boards"].map(function (k) { return ui.field({ id: "po-n-" + k, type: "checkbox", label: t("po_sec_" + k), value: k !== "boards" }); }).join("") + "</div>",
+        SECS.map(function (k) { return ui.field({ id: "po-n-" + k, type: "checkbox", label: t("po_sec_" + k), value: k !== "boards" }); }).join("") + "</div>",
       foot: ui.btn(t("cancel"), "close", { cls: "ghost" }) + ui.btn(t("save"), "po-new-save", { cls: "primary", data: { id: c.id } })
     });
   });
   GK.act("po-new-save", function (el) {
     var c = m.client(el.getAttribute("data-id")); if (!c) return;
     var title = u.val("po-n-title").trim(); if (!title) { u.focus("po-n-title"); return ui.toast(t("required")); }
-    var sec = {}; ["plan", "scripts", "files", "timeline", "invoices", "boards"].forEach(function (k) { sec[k] = u.checked("po-n-" + k); });
+    var sec = {}; SECS.forEach(function (k) { sec[k] = u.checked("po-n-" + k); });
     var boards = [];
     var share = { id: P.newToken(), clientId: c.id, projectId: u.val("po-n-proj"), title: title, enabled: true, sections: sec, boardIds: boards, snapshot: null, publishedAt: "", publishedBy: "", note: "", created: stampS(), editedAt: "" };
     ui.closeModal(true);

@@ -1,6 +1,6 @@
-/* GECKO Ops · module: portal ("Client pages"). Two tabs per client: the shared client pages (portal_pages.js, built by portal_snapshot.js,
-   opened by link through clientmode.js) and the quick update (a clean document to screen-share or send as a WhatsApp update).
-   Never shows internal costs, profit or commission. */
+/* GECKO Ops · module: portal helpers. The client pages live in the client workspace (clients_portal.js, built on portal_pages.js and
+   portal_snapshot.js, opened by link through clientmode.js). This file keeps the quick update: a clean document to screen-share or send as a
+   WhatsApp update. Never shows internal costs, profit or commission. */
 (function (GK) {
   "use strict";
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
@@ -182,27 +182,8 @@
     return L.join("\n");
   }
 
-  GK.view("portal", {
-    render: function () {
-      var list = clientsList(), c = current();
-      var picker = list.length ? '<label class="lab sm" for="po-pick">' + esc(t("po_pick")) + '</label><select id="po-pick" class="in inline" data-c="po-pick" style="max-width:100%">' +
-        list.map(function (x) { return '<option value="' + esc(x.id) + '"' + (c && x.id === c.id ? " selected" : "") + ">" + esc(x.brand) + "</option>"; }).join("") + "</select>" : "";
-      var can = m.can("portal");
-      var tab = ui.p("portal").tab === "quick" ? "quick" : "pages";
-      var h = ui.head({ label: t("nav_portal"), title: t("po_title"), accent: t("po_accent"), sub: esc(t("po_sub")), actions: picker + ui.sample() });
-      if (!c) return h + ui.empty(t("po_none"));
-      h += '<div class="tabs" role="tablist">' + ["pages", "quick"].map(function (k) {
-        return '<button type="button" role="tab" data-a="po-tab" data-t="' + k + '" aria-selected="' + (tab === k) + '">' + esc(t("po_tab_" + k)) + "</button>";
-      }).join("") + "</div>";
-      if (tab === "pages" && GK.portal && GK.portal.pagesHTML) return h + GK.portal.pagesHTML(c);
-      var copyBtn = ui.btn(t("po_copy"), "po-copy", { cls: "primary", data: { id: c.id }, disabled: !can, title: can ? "" : t("po_no_perm") });
-      h += '<p class="note" style="margin:0">' + esc(t("po_note")) + "</p>";
-      h += '<div class="row between"><h2 class="sec">' + esc(c.brand) + "</h2>" + copyBtn + "</div>";
-      h += docHTML(c);
-      return h;
-    },
-    count: function () { return ""; },
-    after: function (main) {
+  /** The quick update for one client: a clean document to screen-share, and the WhatsApp text. Shown from the client workspace (Portal tab). */
+  function quickAfter(main) {
       // On a phone the stepper scrolls sideways. Only when the current step is out of view, scroll so the step
       // before it starts exactly at the left edge (never mid-word). Where the stepper fits, nothing moves.
       main.querySelectorAll(".doc .stepper").forEach(function (st) {
@@ -213,11 +194,12 @@
         var anchor = now.previousElementSibling || now;
         st.scrollLeft += anchor.getBoundingClientRect().left - box.left;
       });
-    }
-  });
+  }
+  var PP = GK.portal = GK.portal || {};
+  PP.quickDoc = docHTML;
+  PP.quickText = whatsapp;
+  PP.quickAfter = quickAfter;
 
-  GK.act("po-tab", function (el) { ui.go("portal", { tab: el.getAttribute("data-t") }); });
-  GK.change("po-pick", function (el) { ui.go("portal", { clientId: el.value }); });
   GK.act("po-copy", function (el) {
     if (!m.can("portal")) return ui.toast(t("po_no_perm"));
     var c = m.client(el.getAttribute("data-id")); if (!c) return;

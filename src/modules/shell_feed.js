@@ -54,7 +54,7 @@
         out.push({ id: "plan:" + p.id, icon: "projects", at: td, view: "projects", params: { id: p.id }, title: t("sh_f_plan"), meta: m.projectLabel(p) });
       });
       S.all("feedback").filter(function (f) { return (f.at || "").slice(0, 10) >= u.addDays(td, -10); }).forEach(function (f) {
-        out.push({ id: "fb:" + f.id, icon: "msg", tone: f.kind === "changes" ? "alert" : f.kind === "approve" ? "good" : "", at: (f.at || "").slice(0, 10), view: "portal", params: {},
+        out.push({ id: "fb:" + f.id, icon: "msg", tone: f.kind === "changes" ? "alert" : f.kind === "approve" ? "good" : "", at: (f.at || "").slice(0, 10), view: "clients", params: { id: f.clientId, tab: "approvals" },
           title: t("sh_f_fb", { brand: m.brand(f.clientId) }), meta: t("sh_f_fb_" + (f.kind || "comment")) + (f.text ? " · " + String(f.text).slice(0, 70) : "") });
       });
     }

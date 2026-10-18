@@ -514,7 +514,23 @@
     } else if (S.sharedLive && db) { useSharedLive(); changed(); }
     else if (GK.ui) GK.ui.toast("Live workspace requires a configured Supabase backend. The local workspace remains available.");
   };
-  S.startLive = function () { S.showLive(); };
+  /** Go live. On claude.ai the workspace is the artifact's shared database (the owner becomes the founder);
+      with Supabase it is the signed-in workspace. */
+  S.startLive = function (name) {
+    if (GK.supabase && GK.supabase.configured()) return S.showLive();
+    if (!db || S.viewer.canWrite === false) return S.showLive();
+    writeLocal();
+    var conf = GK.m.defaultConfig();
+    u.lsSet(KEY.mode, "live");
+    S.mode = "live"; S.backend = "shared"; S.readOnly = false;
+    cfg = conf; S.sharedLive = true;
+    sharedWrite("config/app", u.clone(conf));
+    var me = { id: "m" + (S.viewer.id || "founder").replace(/[^A-Za-z0-9]/g, "").slice(-16), name: name || "Owner", role: "founder", userId: S.viewer.id };
+    sharedWrite("team/" + me.id, me);
+    cache.team[me.id] = me;
+    subscribeShared();
+    changed();
+  };
 
   /** Start up: render from what is known at once, then connect the shared store when the page runs on claude.ai. */
   S.boot = function (done) {
@@ -557,7 +573,11 @@
     }).then(function (shared) {
       clearTimeout(fallback);
       S.sharedLive = !!(shared && shared.live);
-      if (S.sharedLive && pref !== "demo") useSharedLive();
+      if (S.sharedLive) useSharedLive();
+      else if (db && S.viewer.isOwner && S.viewer.canWrite !== false) {
+        // First open by the owner: the shared workspace starts for real, no sample step.
+        return S.profileNames([S.viewer.id]).then(function (n) { S.startLive(n[S.viewer.id] || ""); if (!finished) finish(); });
+      }
       else if (!finished) useDemo();
       if (finished) changed(); else finish();
     }, function () {
