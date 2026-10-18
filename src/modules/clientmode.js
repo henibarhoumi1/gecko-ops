@@ -156,7 +156,8 @@
   function stWord(s) { return t("cm_st_" + (s || "todo")); }
   function stPill(s) { return ui.pill(stWord(s), { approved: "done", revise: "alert", review: "wip", edit: "wip" }[s] || ""); }
   function modeWord(x) { return t(x === "Indirect" ? "cm_indirect" : "cm_direct"); }
-  function stageWord(s) { return t("po_s_" + s); }
+  var FOLD = { onboarding: "onboard", scripting: "plan", pre_production: "plan", shoot: "shoot", editing: "edit", client_review: "edit", revisions: "edit", delivered: "delivered", paid: "done", retention: "done" };
+  function stageWord(s) { return t("po_s_" + (FOLD[s] || s)); }
   function safeLink(l) { return /^https?:\/\//i.test(l || "") ? l : ""; }
   function lines(s) { return String(s || "").split(/\r?\n+/).map(function (x) { return x.trim(); }).filter(Boolean); }
   /** The svg comes from the team's board; strip anything active before it goes into the page. */
@@ -214,11 +215,13 @@
   }
   function sectionHead(title, sub) { return "<header><h2 class=\"sec\" style=\"font-size:26px\">" + esc(title) + "</h2>" + (sub ? "<p>" + esc(sub) + "</p>" : "") + "</header>"; }
 
+  /** The client sees six plain steps; the team's ten stages fold into them. */
+  var CSTEPS = [["onboard", ["onboarding"]], ["plan", ["scripting", "pre_production"]], ["shoot", ["shoot"]], ["edit", ["editing", "client_review", "revisions"]], ["delivered", ["delivered"]], ["done", ["paid", "retention"]]];
   function stepper(p) {
-    var STG = ["onboard", "plan", "shoot", "edit", "delivered", "testing", "report", "done"];
-    return '<div class="stepper" role="list" aria-label="' + esc(t("cm_now")) + '">' + STG.map(function (s, i) {
-      var cls = p.stage === "retention" || i < p.stageIdx ? "done" : i === p.stageIdx ? "now" : "";
-      return '<div role="listitem" class="' + cls + '"' + (i === p.stageIdx ? ' aria-current="step"' : "") + ">" + esc(stageWord(s)) + "</div>";
+    var at = 0; CSTEPS.forEach(function (c, i) { if (c[1].indexOf(p.stage) > -1) at = i; });
+    return '<div class="stepper" role="list" aria-label="' + esc(t("cm_now")) + '">' + CSTEPS.map(function (c, i) {
+      var cls = p.stage === "retention" || i < at ? "done" : i === at ? "now" : "";
+      return '<div role="listitem" class="' + cls + '"' + (i === at ? ' aria-current="step"' : "") + ">" + esc(stageWord(c[0])) + "</div>";
     }).join("") + "</div>";
   }
 
@@ -525,7 +528,7 @@
     ["assets", assetsSec, function (s) { return s.sections.files || s.sections.boards || s.sections.assets; }],
     ["performance", performanceSec, function (s) { return s.sections.results; }],
     ["invoices", invoicesSec, function (s) { return s.sections.invoices; }],
-    ["notes", notesSec, function (s) { return s.sections.notes; }],
+    ["notes", notesSec, function (s) { return s.sections.updates; }],
     ["extras", extrasSec, function (s) { return s.sections.extras && (s.extras || []).length > 0; }, function (s) { return (s.extras || []).filter(function (x) { return x.status === "proposed" && !ST.sent["extra:" + x.id]; }).length; }]
   ];
   function waitingCountNoExtras(snap) {

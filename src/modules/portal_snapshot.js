@@ -135,7 +135,7 @@
       lang: GK.i18n.lang(),
       title: share.title || "",
       sections: { plan: !!sec.plan, scripts: !!sec.scripts, files: !!sec.files, timeline: !!sec.timeline, invoices: !!sec.invoices, boards: !!sec.boards,
-        assets: sec.assets !== false, results: sec.results !== false, notes: sec.notes !== false, extras: sec.extras !== false },
+        assets: sec.assets !== false, results: sec.results !== false, updates: sec.notes !== false, extras: sec.extras !== false },
       projects: [], invoices: [], boards: [], history: [], brandAssets: [], results: { hooks: [], reports: [] }, updates: [], extras: []
     };
     ps.forEach(function (p) {
@@ -207,7 +207,7 @@
       if (a && link(a.url)) snap.brandAssets.push({ id: a.id, name: String(a.name || ""), kind: String(a.kind || "other"), url: link(a.url) });
     });
     if (snap.sections.results) snap.results = resultsOf(c, share, ps);
-    if (snap.sections.notes && Array.isArray(c.notes)) c.notes.filter(function (n) { return n && n.shared && n.text; }).sort(u.by("at", "desc")).forEach(function (n) {
+    if (snap.sections.updates && Array.isArray(c.notes)) c.notes.filter(function (n) { return n && n.shared && n.text; }).sort(u.by("at", "desc")).forEach(function (n) {
       snap.updates.push({ id: n.id, at: n.at || "", text: String(n.text) });
     });
     if (snap.sections.extras) (c.extras || []).filter(function (x) { return x && (!share.projectId || !x.projectId || x.projectId === share.projectId); }).forEach(function (x) {
@@ -254,7 +254,7 @@
   P.selfTest = function () {
     var hits = [], n = 0;
     S.all("clients").forEach(function (c) {
-      var share = { clientId: c.id, projectId: "", sections: { plan: 1, scripts: 1, files: 1, timeline: 1, invoices: 1, boards: 1, assets: 1, results: 1, notes: 1, extras: 1 }, boardIds: S.all("boards").filter(function (b) { return b.clientId === c.id; }).map(function (b) { return b.id; }) };
+      var share = { clientId: c.id, projectId: "", sections: { plan: 1, scripts: 1, files: 1, timeline: 1, invoices: 1, boards: 1, assets: 1, results: 1, updates: 1, extras: 1 }, boardIds: S.all("boards").filter(function (b) { return b.clientId === c.id; }).map(function (b) { return b.id; }) };
       var s = P.buildSnapshot(share); if (!s) return;
       n++; P.check(s).forEach(function (h) { hits.push(c.brand + ": " + h); });
     });

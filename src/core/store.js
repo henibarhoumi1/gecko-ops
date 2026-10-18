@@ -276,7 +276,13 @@
     for (var k in partial) if (Object.prototype.hasOwnProperty.call(partial, k)) o[k] = u.clone(partial[k]);
     cfg = o;
     if (S.backend === "shared") sharedWrite("config/app", u.clone(o));
-    else if (S.backend === "supabase") rpc("set_workspace_config", { p_data: u.clone(o) }).then(changed, remoteError);
+    else if (S.backend === "supabase") {
+      // Non-founders see a trimmed config, so they save only the shared keys they own, one at a time.
+      if (S.workspaceRole && S.workspaceRole !== "founder") Object.keys(partial).forEach(function (k) {
+        rpc("set_workspace_config_key", { p_key: k, p_value: u.clone(partial[k]) }).then(changed, remoteError);
+      });
+      else rpc("set_workspace_config", { p_data: u.clone(o) }).then(changed, remoteError);
+    }
     else saveLocal();
     changed(); return o;
   };

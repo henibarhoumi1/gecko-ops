@@ -18,7 +18,7 @@
     po_kind: ["Client update", "Point client"],
     po_projects: ["Your projects", "Vos projets"],
     po_no_projects: ["No project running right now.", "Aucun projet en cours."],
-    po_s_onboard: ["Getting started", "Démarrage"], po_s_plan: ["Plan", "Plan"], po_s_shoot: ["Shoot", "Tournage"], po_s_edit: ["Editing", "Montage"],
+    po_s_onboard: ["Getting started", "Démarrage"], po_s_plan: ["Scripts", "Scripts"], po_s_shoot: ["Shoot", "Tournage"], po_s_edit: ["Editing", "Montage"],
     po_s_delivered: ["Delivered", "Livré"], po_s_testing: ["Testing", "En test"], po_s_report: ["Report", "Bilan"], po_s_done: ["Done", "Terminé"],
     po_now_at: ["Now: {stage}", "En ce moment : {stage}"],
     po_videos: ["{done} of {total} files approved", "{done} fichiers validés sur {total}"],

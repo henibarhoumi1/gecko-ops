@@ -86,19 +86,21 @@
   };
   K.linkHTML = function (url) {
     var h = K.link(url);
-    return h ? '<a class="mk-link" href="' + esc(h) + '" target="_blank" rel="noopener noreferrer" data-stop="1">' + ui.icon("globe", "sm") + "<span>" + esc(h.replace(/^https?:\/\/(www\.)?/, "").slice(0, 32)) + "</span></a>" : "";
+    return h ? '<a class="mk-link" href="' + esc(h) + '" target="_blank" rel="noopener noreferrer">' + ui.icon("globe", "sm") + "<span>" + esc(h.replace(/^https?:\/\/(www\.)?/, "").slice(0, 32)) + "</span></a>" : "";
   };
   /** Modal with a save button and, when editing, a delete button that asks first (no browser dialog). */
   K.formModal = function (o) {
     var foot = '<div class="mk-foot-main">' + ui.btn(t("mk_cancel"), "close", { cls: "ghost" }) + ui.btn(t("save"), o.save, { cls: "primary", data: o.data }) + "</div>";
     if (o.del) {
-      foot = '<div class="mk-foot-main" id="mk-foot-main">' + ui.btn(t("mk_del"), "mk-del-ask", { cls: "ghost", icon: "trash" }) + '<span class="mk-sp"></span>' + ui.btn(t("mk_cancel"), "close", { cls: "ghost" }) + ui.btn(t("save"), o.save, { cls: "primary", data: o.data }) + "</div>" +
+      foot = '<div class="mk-foot-main" id="mk-foot-main">' + ui.btn(t("mk_del"), "mk-del-ask", { cls: "ghost" }) + '<span class="mk-sp"></span>' + ui.btn(t("mk_cancel"), "close", { cls: "ghost" }) + ui.btn(t("save"), o.save, { cls: "primary", data: o.data }) + "</div>" +
         '<div class="mk-foot-ask" id="mk-foot-ask" hidden><span class="mk-q">' + esc(t("mk_del_q")) + '</span><span class="mk-sp"></span>' + ui.btn(t("mk_keep"), "mk-del-no", { cls: "ghost" }) + ui.btn(t("mk_del_yes"), o.del, { cls: "primary", data: o.data }) + "</div>";
     }
     ui.modal({ label: t("nav_marketing"), title: o.title, body: o.body, foot: foot });
   };
   GK.act("mk-del-ask", function () { var a = document.getElementById("mk-foot-main"), b = document.getElementById("mk-foot-ask"); if (a && b) { a.hidden = true; b.hidden = false; } });
   GK.act("mk-del-no", function () { var a = document.getElementById("mk-foot-main"), b = document.getElementById("mk-foot-ask"); if (a && b) { a.hidden = false; b.hidden = true; } });
+  /** True when the click was on a real link inside a clickable card (let the link work, do not open the editor). */
+  K.onLink = function (ev) { return !!(ev && ev.target && ev.target.closest && ev.target.closest("a")); };
   K.done = function () { ui.closeModal(true); ui.toast(t("saved")); };
   K.guard = function () { if (!K.canEdit()) { ui.toast(t("mk_no_perm")); return false; } return true; };
   K.btnEdit = function (label, a, data) { return ui.btn(label, a, { cls: "ghost sm", icon: "edit", data: data, disabled: !K.canEdit() }); };

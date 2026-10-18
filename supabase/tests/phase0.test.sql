@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(28);
+select extensions.plan(31);
 
 insert into auth.users (
   id, aud, role, email, encrypted_password, email_confirmed_at,
@@ -125,6 +125,19 @@ select extensions.throws_ok(
 select extensions.throws_ok(
   $$select public.set_workspace_config('10000000-0000-4000-8000-000000000001', '{}'::jsonb)$$,
   'P0001', 'forbidden', 'editor cannot change workspace settings'
+);
+select extensions.throws_ok(
+  $$select public.set_workspace_config_key('10000000-0000-4000-8000-000000000001', 'marketing', '{}'::jsonb)$$,
+  'P0001', 'forbidden', 'editor cannot change the marketing plan'
+);
+select extensions.throws_ok(
+  $$select public.set_workspace_config_key('10000000-0000-4000-8000-000000000001', 'teamPrivate', '{}'::jsonb)$$,
+  'P0001', 'forbidden', 'no shared key opens founder-only settings'
+);
+select public.set_workspace_config_key('10000000-0000-4000-8000-000000000001', 'creativeRefs', '[{"id":"r1"}]'::jsonb);
+select extensions.ok(
+  (select data->'creativeRefs'->0->>'id' = 'r1' and data->>'private' = 'founder-only' from public.workspace_settings where workspace_id = '10000000-0000-4000-8000-000000000001'),
+  'the creative team can save references without touching other settings'
 );
 
 select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000003', true);

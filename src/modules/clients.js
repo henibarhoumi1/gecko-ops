@@ -230,7 +230,7 @@
         : ui.btn(t("cl_wa_open"), "cl-wa", { data: { id: c.id }, disabled: true, title: t("cl_no_wa") }));
     var k = activeContract(c);
     var sub = '<span class="row">' + [c.sector, c.contact, c.whatsapp || c.phone].filter(Boolean).map(esc).join(" · ") + (k ? " " + ui.pill(m.pack(k.pack).name, "done") : "") + " " + portalPill(c) + "</span>";
-    var h = ui.head({ label: t("nav_clients"), title: c.brand || "—", accent: t("cl_file"), sub: sub, actions: actions });
+    var h = ui.head({ label: t("nav_clients"), title: c.brand || "—", accent: "", sub: sub, actions: actions });
     h += '<div class="tabs clh-tabs" role="tablist">' + tabs.map(function (x) {
       var n = x.count ? x.count(c) : 0;
       return '<button type="button" role="tab" data-a="cl-tab" data-v="' + x.key + '" aria-selected="' + (tab === x.key) + '">' + esc(x.label()) + (n ? '<span class="clh-bd">' + n + "</span>" : "") + "</button>";

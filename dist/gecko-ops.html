@@ -861,6 +861,21 @@ a{color:var(--link)}
 .in,.field input,.field select,.field textarea,input.in,select.in,textarea.in{background:var(--bg);border-color:var(--line)}
 .in:focus,.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--line-2)}
 
+/* ---------- motion: calm, short, only on screen change ---------- */
+#page.enter>*{animation:pageIn .42s cubic-bezier(.2,.7,.2,1) both}
+#page.enter>*:nth-child(2){animation-delay:.04s}#page.enter>*:nth-child(3){animation-delay:.08s}#page.enter>*:nth-child(4){animation-delay:.12s}#page.enter>*:nth-child(n+5){animation-delay:.16s}
+@keyframes pageIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.btn{transition:background-color .15s ease,color .15s ease,border-color .15s ease,transform .12s ease}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.nv{transition:background-color .18s ease,color .18s ease,padding-left .18s ease}
+.shell:not(.mini) .nv:hover:not([aria-current="page"]){padding-left:16px}
+.tabs [role="tab"]{transition:background-color .18s ease,color .18s ease}
+.panel,.kpi,.card{transition:border-color .18s ease}
+.panel:hover{border-color:var(--line-2)}
+input.in,select.in,textarea.in{transition:border-color .15s ease,background-color .15s ease}
+input.in:focus,select.in:focus,textarea.in:focus{border-color:var(--tx)}
+@media (prefers-reduced-motion:reduce){#page.enter>*{animation:none!important}.shell:not(.mini) .nv:hover:not([aria-current="page"]){padding-left:12px}}
+
 </style>
 <div id="app"></div>
 <script>
@@ -1589,9 +1604,9 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
 
   // ---------- roles ----------
   M.ROLE_NAV = {
-    founder: ["guide", "today", "tasks", "calendar", "activity", "dashboard", "pipeline", "clients", "projects", "production", "studio", "boards", "deliveries", "reports", "finance", "docs", "team", "settings"],
+    founder: ["guide", "today", "tasks", "calendar", "activity", "dashboard", "pipeline", "clients", "projects", "production", "studio", "boards", "deliveries", "reports", "finance", "marketing", "docs", "team", "settings"],
     // Client Lead: selling and client follow-up; no money screens
-    sales: ["guide", "today", "tasks", "calendar", "pipeline", "clients", "projects", "studio", "boards", "deliveries", "reports", "docs", "team"],
+    sales: ["guide", "today", "tasks", "calendar", "pipeline", "clients", "projects", "studio", "boards", "deliveries", "reports", "marketing", "docs", "team"],
     // Editors: only what they edit
     editor: ["guide", "today", "tasks", "calendar", "projects", "studio", "deliveries", "docs"],
     // Production (manager or assistant): shoots, scripts, boards
@@ -2066,7 +2081,13 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     for (var k in partial) if (Object.prototype.hasOwnProperty.call(partial, k)) o[k] = u.clone(partial[k]);
     cfg = o;
     if (S.backend === "shared") sharedWrite("config/app", u.clone(o));
-    else if (S.backend === "supabase") rpc("set_workspace_config", { p_data: u.clone(o) }).then(changed, remoteError);
+    else if (S.backend === "supabase") {
+      // Non-founders see a trimmed config, so they save only the shared keys they own, one at a time.
+      if (S.workspaceRole && S.workspaceRole !== "founder") Object.keys(partial).forEach(function (k) {
+        rpc("set_workspace_config_key", { p_key: k, p_value: u.clone(partial[k]) }).then(changed, remoteError);
+      });
+      else rpc("set_workspace_config", { p_data: u.clone(o) }).then(changed, remoteError);
+    }
     else saveLocal();
     changed(); return o;
   };
@@ -3481,6 +3502,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     return h + "</section></div>";
   }
   /** Full render. Store updates arriving while someone types are held until they leave the field. */
+  var lastScreen = "";
   UI.render = function (force) {
     var app = document.getElementById("app");
     if (!app || !GK.store.ready) return;
@@ -3523,6 +3545,10 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     if (lastView === UI.state.view && scrolls[UI.state.view]) main.scrollTop = scrolls[UI.state.view];
     else main.scrollTop = 0;
     lastView = UI.state.view;
+    // Entrance motion only when the screen changes (view, record or tab), never on a data refresh.
+    var P0 = UI.p() || {}, screenKey = UI.state.view + "|" + (P0.id || "") + "|" + (P0.tab || "") + "|" + (P0.mode || "") + "|" + (P0.sub || "");
+    if (screenKey !== lastScreen) { var pg = document.getElementById("page"); if (pg) { pg.classList.add("enter"); setTimeout(function () { pg.classList.remove("enter"); }, 700); } }
+    lastScreen = screenKey;
     if (focusKey) {
       var parts = focusKey.split("|");
       var sel = '[data-a="' + parts[0] + '"]' + (parts[1] ? '[data-v="' + parts[1] + '"],[data-a="' + parts[0] + '"][data-id="' + parts[1] + '"]' : "");
@@ -4998,7 +5024,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
         : ui.btn(t("cl_wa_open"), "cl-wa", { data: { id: c.id }, disabled: true, title: t("cl_no_wa") }));
     var k = activeContract(c);
     var sub = '<span class="row">' + [c.sector, c.contact, c.whatsapp || c.phone].filter(Boolean).map(esc).join(" · ") + (k ? " " + ui.pill(m.pack(k.pack).name, "done") : "") + " " + portalPill(c) + "</span>";
-    var h = ui.head({ label: t("nav_clients"), title: c.brand || "—", accent: t("cl_file"), sub: sub, actions: actions });
+    var h = ui.head({ label: t("nav_clients"), title: c.brand || "—", accent: "", sub: sub, actions: actions });
     h += '<div class="tabs clh-tabs" role="tablist">' + tabs.map(function (x) {
       var n = x.count ? x.count(c) : 0;
       return '<button type="button" role="tab" data-a="cl-tab" data-v="' + x.key + '" aria-selected="' + (tab === x.key) + '">' + esc(x.label()) + (n ? '<span class="clh-bd">' + n + "</span>" : "") + "</button>";
@@ -6487,7 +6513,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     ".pj-phases{display:grid;grid-template-columns:repeat(4,minmax(240px,1fr));gap:var(--sp-3);overflow-x:auto;padding-bottom:8px}" +
     ".pj-col{display:flex;flex-direction:column;gap:10px;min-width:0;border-top:3px solid var(--tx);padding-top:var(--sp-2)}" +
     ".pj-col:nth-child(1){border-color:var(--gel)}.pj-col:nth-child(2){border-color:var(--chroma)}.pj-col:nth-child(3){border-color:var(--tx)}.pj-col:nth-child(4){border-color:var(--line)}" +
-    ".card.pj-card{display:flex;flex-direction:column;gap:6px;text-align:left;padding:14px;border:1px solid var(--line);background:var(--bg);cursor:pointer;transition:transform .18s ease,border-color .18s ease;animation:pjIn .35s cubic-bezier(.2,.7,.2,1) both}" +
+    ".card.pj-card{display:flex;flex-direction:column;gap:6px;text-align:left;padding:14px;border:1px solid var(--line);background:var(--bg);cursor:pointer;transition:transform .18s ease,border-color .18s ease}.enter .card.pj-card{animation:pjIn .35s cubic-bezier(.2,.7,.2,1) both}" +
     ".card.pj-card:hover,.card.pj-card:focus-visible{border-color:var(--tx);transform:translateY(-2px)}" +
     ".pj-c-top{display:flex;justify-content:space-between;align-items:center;gap:8px}.pj-c-top .lab{font-size:11px;opacity:.7}" +
     ".pj-card .t{font-size:17px;font-weight:700;letter-spacing:-.01em}" +
@@ -6499,7 +6525,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     ".pj-table th{text-align:left;padding:10px 12px;border-bottom:1px solid var(--tx);font-size:11px}.pj-table td{padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}" +
     ".pj-table tbody tr{cursor:pointer;transition:background .15s}.pj-table tbody tr:hover{background:var(--chroma)}.pj-table td .pj-c-bar{width:90px}" +
     // detail
-    ".pj-hero{display:flex;flex-direction:column;gap:var(--sp-3);margin-bottom:var(--sp-4);animation:pjIn .35s ease both}" +
+    ".pj-hero{display:flex;flex-direction:column;gap:var(--sp-3);margin-bottom:var(--sp-4)}.enter .pj-hero{animation:pjIn .35s ease both}" +
     ".pj-crumbs{display:flex;align-items:center;gap:8px;font-family:var(--f-type);font-size:12px;letter-spacing:.06em;text-transform:uppercase}.pj-crumbs>span{opacity:.4}" +
     ".pj-crumb{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;opacity:.7}.pj-crumb:hover{opacity:1;text-decoration:underline}.pj-crumb .ic{width:14px;height:14px}" +
     ".pj-h1{margin:0;font-size:clamp(30px,4.4vw,52px);line-height:1;font-weight:700;letter-spacing:-.035em;text-wrap:balance}" +
@@ -6510,7 +6536,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     ".pj-tabbar{position:sticky;top:0;z-index:5;background:var(--bg);padding:6px 0;margin-bottom:var(--sp-4)}" +
     ".pj-tabs{overflow-x:auto;max-width:100%;flex-wrap:nowrap}.pj-tabs [role=tab]{white-space:nowrap;display:inline-flex;align-items:center;gap:6px}" +
     ".pj-tc{font-family:var(--f-type);font-size:10.5px;padding:0 5px;border:1px solid currentColor;line-height:16px;opacity:.75}" +
-    ".pj-pane{animation:pjIn .3s cubic-bezier(.2,.7,.2,1) both}" +
+    ".enter .pj-pane{animation:pjIn .3s cubic-bezier(.2,.7,.2,1) both}" +
     ".pj-ov{display:grid;grid-template-columns:minmax(220px,1fr) 3fr;gap:var(--sp-4);margin-bottom:var(--sp-4)}.pj-ov>.panel{margin:0}" +
     ".panel.pj-next{background:var(--chroma);color:var(--b-ink);border-color:var(--chroma);display:flex;flex-direction:column;gap:8px}.pj-next-t{margin:0;font-size:19px;font-weight:700;letter-spacing:-.01em;line-height:1.25}" +
     "@keyframes pjIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}@keyframes pjPulse{0%,100%{opacity:1}50%{opacity:.45}}" +
@@ -9752,7 +9778,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     po_kind: ["Client update", "Point client"],
     po_projects: ["Your projects", "Vos projets"],
     po_no_projects: ["No project running right now.", "Aucun projet en cours."],
-    po_s_onboard: ["Getting started", "Démarrage"], po_s_plan: ["Plan", "Plan"], po_s_shoot: ["Shoot", "Tournage"], po_s_edit: ["Editing", "Montage"],
+    po_s_onboard: ["Getting started", "Démarrage"], po_s_plan: ["Scripts", "Scripts"], po_s_shoot: ["Shoot", "Tournage"], po_s_edit: ["Editing", "Montage"],
     po_s_delivered: ["Delivered", "Livré"], po_s_testing: ["Testing", "En test"], po_s_report: ["Report", "Bilan"], po_s_done: ["Done", "Terminé"],
     po_now_at: ["Now: {stage}", "En ce moment : {stage}"],
     po_videos: ["{done} of {total} files approved", "{done} fichiers validés sur {total}"],
@@ -10528,7 +10554,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       lang: GK.i18n.lang(),
       title: share.title || "",
       sections: { plan: !!sec.plan, scripts: !!sec.scripts, files: !!sec.files, timeline: !!sec.timeline, invoices: !!sec.invoices, boards: !!sec.boards,
-        assets: sec.assets !== false, results: sec.results !== false, notes: sec.notes !== false, extras: sec.extras !== false },
+        assets: sec.assets !== false, results: sec.results !== false, updates: sec.notes !== false, extras: sec.extras !== false },
       projects: [], invoices: [], boards: [], history: [], brandAssets: [], results: { hooks: [], reports: [] }, updates: [], extras: []
     };
     ps.forEach(function (p) {
@@ -10600,7 +10626,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       if (a && link(a.url)) snap.brandAssets.push({ id: a.id, name: String(a.name || ""), kind: String(a.kind || "other"), url: link(a.url) });
     });
     if (snap.sections.results) snap.results = resultsOf(c, share, ps);
-    if (snap.sections.notes && Array.isArray(c.notes)) c.notes.filter(function (n) { return n && n.shared && n.text; }).sort(u.by("at", "desc")).forEach(function (n) {
+    if (snap.sections.updates && Array.isArray(c.notes)) c.notes.filter(function (n) { return n && n.shared && n.text; }).sort(u.by("at", "desc")).forEach(function (n) {
       snap.updates.push({ id: n.id, at: n.at || "", text: String(n.text) });
     });
     if (snap.sections.extras) (c.extras || []).filter(function (x) { return x && (!share.projectId || !x.projectId || x.projectId === share.projectId); }).forEach(function (x) {
@@ -10647,7 +10673,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   P.selfTest = function () {
     var hits = [], n = 0;
     S.all("clients").forEach(function (c) {
-      var share = { clientId: c.id, projectId: "", sections: { plan: 1, scripts: 1, files: 1, timeline: 1, invoices: 1, boards: 1, assets: 1, results: 1, notes: 1, extras: 1 }, boardIds: S.all("boards").filter(function (b) { return b.clientId === c.id; }).map(function (b) { return b.id; }) };
+      var share = { clientId: c.id, projectId: "", sections: { plan: 1, scripts: 1, files: 1, timeline: 1, invoices: 1, boards: 1, assets: 1, results: 1, updates: 1, extras: 1 }, boardIds: S.all("boards").filter(function (b) { return b.clientId === c.id; }).map(function (b) { return b.id; }) };
       var s = P.buildSnapshot(share); if (!s) return;
       n++; P.check(s).forEach(function (h) { hits.push(c.brand + ": " + h); });
     });
@@ -10919,11 +10945,20 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   function p() { return ui.p("team"); }
   function isOwner() { return m.isFounder() && m.can("*"); }
   function extra(id) { return ((m.cfg().teamExtra || {})[id]) || {}; }
+  var PRIV = ["private", "pay"];
+  /** Pay and credentials live in config.teamPrivate, which the server strips for everyone but the owner. */
+  function privX(id) { return ((m.cfg().teamPrivate || {})[id]) || {}; }
   function getX(mb, key) {
+    if (PRIV.indexOf(key) > -1) { var pv = privX(mb.id)[key]; if (pv && Object.keys(pv).length) return pv; }
     var own = mb[key], ex = extra(mb.id)[key];
     return (own && Object.keys(own).length ? own : ex) || {};
   }
   function saveX(mb, key, val) {
+    if (PRIV.indexOf(key) > -1) {
+      var pa = u.clone(m.cfg().teamPrivate || {}); pa[mb.id] = Object.assign({}, pa[mb.id] || {}); pa[mb.id][key] = val;
+      if (mb[key] && S.backend !== "supabase") { var clear = {}; clear[key] = null; S.patch("team", mb.id, clear, { log: "" }); }
+      return S.setConfig({ teamPrivate: pa });
+    }
     if (S.backend === "supabase") {
       var all = u.clone(m.cfg().teamExtra || {}); all[mb.id] = Object.assign({}, all[mb.id] || {}); all[mb.id][key] = val;
       return S.setConfig({ teamExtra: all });
@@ -13359,7 +13394,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   css.textContent =
     ".sd-tabs{margin-top:var(--sp-4)}" +
     ".sd-list{list-style:none;margin:var(--sp-4) 0 0;padding:0;display:flex;flex-direction:column;gap:var(--sp-3)}" +
-    ".sd-item{border:1px solid var(--line);padding:var(--sp-4);display:flex;flex-direction:column;gap:var(--sp-3);animation:sdIn .35s cubic-bezier(.2,.7,.2,1) both}" +
+    ".sd-item{border:1px solid var(--line);padding:var(--sp-4);display:flex;flex-direction:column;gap:var(--sp-3)}.enter .sd-item{animation:sdIn .35s cubic-bezier(.2,.7,.2,1) both}" +
     ".sd-item:nth-child(2){animation-delay:.04s}.sd-item:nth-child(3){animation-delay:.08s}.sd-item:nth-child(n+4){animation-delay:.12s}" +
     ".sd-row{display:flex;align-items:center;gap:var(--sp-4);flex-wrap:wrap}.sd-meta{flex:1;min-width:180px;display:flex;flex-direction:column;gap:4px}" +
     ".sd-n{width:36px;height:36px;display:grid;place-items:center;background:var(--chroma);color:var(--b-ink);font-weight:700;font-family:var(--f-type)}" +
@@ -13409,7 +13444,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   GK.i18n.add({
     st_title: ["Ideas and scripts", "Idées et scripts"], st_accent: ["", ""],
     st_sub: ["Capture an idea in five seconds, shape it, get the owner's go, send it to the project.", "Notez une idée en cinq secondes, travaillez-la, obtenez le feu vert du fondateur, envoyez-la au projet."],
-    st_board: ["Board", "Tableau"], st_bank: ["Hook bank", "Banque d'accroches"], st_scripts: ["Script bank", "Banque de scripts"],
+    st_board: ["Board", "Tableau"], st_tools: ["Toolkit", "Boîte à outils"], st_bank: ["Hook bank", "Banque d'accroches"], st_scripts: ["Script bank", "Banque de scripts"],
     st_sb_sub: ["Every written script, ready to copy or reuse for a new client.", "Tous les scripts écrits, prêts à copier ou réutiliser pour un nouveau client."],
     st_sb_none: ["No written scripts yet. Scripts appear here once they have lines.", "Aucun script écrit. Ils apparaissent ici dès qu'ils ont des lignes."],
     st_sb_copy: ["Copy script", "Copier le script"], st_sb_reuse: ["Reuse", "Réutiliser"], st_sb_won: ["Winning hook", "Accroche gagnante"],
@@ -13804,7 +13839,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   GK.view("studio", {
     render: function (params) {
       if (params.id && S.get("ideas", params.id)) return GK.studio.detail(S.get("ideas", params.id), params);
-      var mode = ["bank", "scripts"].indexOf(params.mode) > -1 ? params.mode : "board";
+      var mode = ["bank", "scripts", "tools"].indexOf(params.mode) > -1 ? params.mode : "board";
       var all = S.all("ideas"), f = filters(params);
       var ideas = all.filter(function (i) { return pass(i, f); });
       var live = all.filter(function (i) { return i.stage !== "parked" && effStage(i) !== "shot"; });
@@ -13813,9 +13848,10 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
         actions: can() ? ui.btn(t("st_new"), "st-new", { cls: "primary" }) : ""
       });
       h += GK.insight.studio();
-      h += '<div class="row between"><div class="tabs" role="tablist">' + ["board", "scripts", "bank"].map(function (v) {
+      h += '<div class="row between"><div class="tabs" role="tablist">' + ["board", "scripts", "bank", "tools"].map(function (v) {
         return '<button type="button" role="tab" data-a="st-mode" data-v="' + v + '" aria-selected="' + (mode === v) + '">' + esc(t("st_" + v)) + "</button>";
       }).join("") + "</div>" + ui.sample() + "</div>";
+      if (mode === "tools" && GK.studioTools) return h + GK.studioTools.html();
       h += filterRow(params, f);
       if (!all.length && !can()) return h + ui.empty(t("st_nodata"));
       h += mode === "scripts" ? scriptsHTML(ideas) : mode === "bank" ? (ideas.length ? bankHTML(ideas, f, params) : winnersPanel(f.c) + ui.empty(t("st_nothing"))) : boardHTML(ideas, f, params);
@@ -14863,6 +14899,560 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       foot: ui.btn(t("st_d_copy_code"), "st-copy-text", { cls: "ghost", data: { text: code } }) + ui.btn(t("st_d_open_prod"), "st-open-prod", { cls: "primary", data: { p: np.id } })
     });
   });
+})(window.GK);
+
+/* ---- modules/studio_tools.js ---- */
+/* GECKO Ops · studio toolkit: hook builder, script timer, angle finder, B-roll ideas, reference library, caption helper.
+   Rendered by studio.js in mode "tools". Pure templates, no AI call. Reference links live in config.creativeRefs. */
+(function (GK) {
+  "use strict";
+  var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
+
+  GK.i18n.add({
+    ct_tools: ["Toolkit", "Boîte à outils"],
+    ct_t_hooks: ["Hook builder", "Accroches"], ct_t_timer: ["Script timer", "Chrono du script"], ct_t_angles: ["Angle finder", "Angles"],
+    ct_t_broll: ["B-roll and hero shots", "Plans de coupe"], ct_t_refs: ["Reference library", "Références"], ct_t_caps: ["Caption helper", "Légendes"],
+    ct_copy_all: ["Copy all", "Tout copier"], ct_save_idea: ["Save to an idea", "Ajouter à une idée"],
+    ct_p_product: ["product", "produit"], ct_p_pain: ["problem", "problème"], ct_p_benefit: ["benefit", "bénéfice"], ct_p_audience: ["audience", "audience"],
+    ct_f_product: ["Product", "Produit"], ct_f_pain: ["Pain or problem", "Problème"], ct_f_benefit: ["Benefit", "Bénéfice"], ct_f_audience: ["Audience", "Audience"],
+    ct_ph_product: ["Vitamin C serum", "Sérum vitamine C"], ct_ph_pain: ["dull skin", "un teint terne"], ct_ph_benefit: ["glow in a week", "retrouver l'éclat en une semaine"],
+    ct_ph_audience: ["women over 25", "femmes de plus de 25 ans"],
+    ct_lang: ["Language", "Langue"], ct_l_en: ["English", "Anglais"], ct_l_fr: ["French", "Français"], ct_l_both: ["Both", "Les deux"],
+    ct_h_note: ["Fill the fields, the hooks write themselves. Words in brackets are still empty.", "Remplissez les champs, les accroches s'écrivent. Les mots entre crochets sont encore vides."],
+    ct_hook_n: ["{n} hooks", "{n} accroches"], ct_copied: ["Copied", "Copié"], ct_no_rights: ["You can't change this here.", "Vous ne pouvez pas modifier ceci ici."],
+    ct_hs_title: ["Save hook", "Enregistrer l'accroche"], ct_hs_accent: ["to an idea", "dans une idée"], ct_hs_new: ["New idea", "Nouvelle idée"],
+    ct_hs_idea: ["Idea", "Idée"], ct_hs_title_f: ["Title of the new idea", "Titre de la nouvelle idée"], ct_hs_do: ["Save", "Enregistrer"],
+    ct_hs_set: ["Hook set on the idea", "Accroche ajoutée à l'idée"], ct_hs_note: ["Added to the notes of the idea", "Ajoutée aux notes de l'idée"],
+    ct_hs_created: ["New idea created", "Idée créée"], ct_hs_opt: ["Hook option: {h}", "Option d'accroche : {h}"],
+    ct_hs_log: ["Hook added from the toolkit", "Accroche ajoutée depuis la boîte à outils"],
+    // timer
+    ct_tm_pick: ["Load a script from an idea", "Charger le script d'une idée"], ct_tm_none: ["Paste a script below", "Collez un script ci-dessous"],
+    ct_tm_text: ["Script, one line per beat", "Script, une ligne par temps fort"], ct_tm_ph: ["Type or paste lines. Darija works too.", "Tapez ou collez les lignes. Le darija marche aussi."],
+    ct_tm_pace: ["Speaking pace", "Rythme de parole"], ct_tm_slow: ["Slow, 2.2 words a second", "Lent, 2,2 mots par seconde"],
+    ct_tm_normal: ["Normal, 2.6 words a second", "Normal, 2,6 mots par seconde"], ct_tm_fast: ["Fast, 3.0 words a second", "Rapide, 3,0 mots par seconde"],
+    ct_tm_words: ["words", "mots"], ct_tm_secs: ["seconds", "secondes"], ct_tm_lines: ["lines", "lignes"],
+    ct_tm_ok: ["Fits a 30 second reel", "Tient dans un reel de 30 secondes"],
+    ct_tm_w30: ["Over 30 seconds. Cut it for a short reel.", "Plus de 30 secondes. Coupez pour un reel court."],
+    ct_tm_w45: ["Over 45 seconds. Watch the drop-off.", "Plus de 45 secondes. Attention à l'abandon."],
+    ct_tm_w60: ["Over 60 seconds. Too long for most Meta placements.", "Plus de 60 secondes. Trop long pour la plupart des placements Meta."],
+    ct_tm_empty: ["Nothing to time yet.", "Rien à chronométrer pour l'instant."], ct_tm_at: ["at {s}s", "à {s}s"],
+    // angles
+    ct_an_note: ["Tick the angles worth testing. Each one is a different reason to watch.", "Cochez les angles à tester. Chacun est une raison différente de regarder."],
+    ct_an_sel: ["{n} selected", "{n} choisis"], ct_an_copy: ["Copy as a plan", "Copier comme plan"], ct_an_project: ["Project", "Projet"],
+    ct_an_add: ["Add to project angles", "Ajouter aux angles du projet"], ct_an_added: ["{n} angles added", "{n} angles ajoutés"], ct_an_dup: ["Already in the project", "Déjà dans le projet"],
+    ct_an_no_pj: ["No project yet", "Pas encore de projet"], ct_an_pick: ["Choose a project", "Choisissez un projet"],
+    ct_an_plan: ["Angle plan for {p}", "Plan d'angles pour {p}"], ct_an_the_product: ["the product", "le produit"],
+    // broll
+    ct_br_type: ["Product type", "Type de produit"], ct_br_hero: ["Hero shots", "Plans héros"], ct_br_broll: ["B-roll", "Plans de coupe"],
+    ct_br_sel: ["{n} ticked", "{n} cochés"], ct_br_video: ["Video (idea)", "Vidéo (idée)"], ct_br_add: ["Add to a video", "Ajouter à une vidéo"],
+    ct_br_added: ["{n} shots added to the shoot list", "{n} plans ajoutés à la liste de tournage"], ct_br_none: ["No ideas yet. Capture one first.", "Pas encore d'idées. Notez-en une d'abord."],
+    ct_br_pick: ["Choose a video", "Choisissez une vidéo"], ct_br_dup: ["Those shots are already on the video", "Ces plans sont déjà sur la vidéo"],
+    ct_ty_food: ["Food", "Alimentaire"], ct_ty_beauty: ["Cosmetics and skincare", "Cosmétique et soin"], ct_ty_fashion: ["Fashion", "Mode"],
+    ct_ty_tech: ["Tech and gadgets", "Tech et gadgets"], ct_ty_home: ["Home", "Maison"], ct_ty_resto: ["Restaurant and café", "Restaurant et café"],
+    ct_ty_service: ["Services and personal brand", "Services et marque personnelle"],
+    // refs
+    ct_rf_add: ["Add a reference", "Ajouter une référence"], ct_rf_empty: ["No references yet. Save ads and reels worth learning from.", "Aucune référence. Gardez les pubs et reels dont s'inspirer."],
+    ct_rf_url: ["Link", "Lien"], ct_rf_url_ph: ["https://www.tiktok.com/…", "https://www.tiktok.com/…"], ct_rf_note: ["Why it works", "Pourquoi ça marche"],
+    ct_rf_tags: ["Tags, separated by commas", "Tags, séparés par des virgules"], ct_rf_format: ["Format", "Format"], ct_rf_angle: ["Angle it shows", "Angle illustré"],
+    ct_rf_all: ["All", "Tous"], ct_rf_open: ["Open link", "Ouvrir le lien"], ct_rf_del: ["Delete", "Supprimer"],
+    ct_rf_bad: ["Add a link that starts with http.", "Ajoutez un lien qui commence par http."], ct_rf_saved: ["Reference saved", "Référence enregistrée"],
+    ct_rf_deleted: ["Reference deleted", "Référence supprimée"], ct_rf_del_t: ["Delete this reference?", "Supprimer cette référence ?"],
+    ct_rf_del_b: ["The link is removed from the library for everyone.", "Le lien est retiré de la bibliothèque pour tout le monde."],
+    ct_rf_n: ["{n} saved", "{n} gardées"], ct_rf_new_t: ["New", "Nouvelle"], ct_rf_new_a: ["reference", "référence"],
+    ct_fm_reel: ["Reel or TikTok", "Reel ou TikTok"], ct_fm_ad: ["Meta ad", "Pub Meta"], ct_fm_story: ["Story", "Story"], ct_fm_yt: ["YouTube", "YouTube"], ct_fm_other: ["Other", "Autre"],
+    // captions
+    ct_cp_idea: ["Idea", "Idée"], ct_cp_manual: ["Write by hand", "Écrire à la main"], ct_cp_hook: ["Hook", "Accroche"], ct_cp_body: ["Main point", "Message principal"],
+    ct_cp_cta: ["Call to action", "Appel à l'action"], ct_cp_cta_d: ["Order now, link in bio", "Commandez maintenant, lien en bio"],
+    ct_cp_emoji: ["Use emojis", "Utiliser des emojis"], ct_cp_tags: ["Hashtags", "Hashtags"], ct_cp_tags_hint: ["Edit freely. Keep 3 to 8.", "Modifiez librement. Gardez 3 à 8."],
+    ct_cp_short: ["Short", "Court"], ct_cp_mid: ["With a main point", "Avec un message"], ct_cp_list: ["Line by line", "Ligne par ligne"],
+    ct_cp_copy: ["Copy caption", "Copier la légende"], ct_cp_copy_t: ["Copy with hashtags", "Copier avec hashtags"], ct_cp_empty: ["Add a hook to get drafts.", "Ajoutez une accroche pour obtenir des brouillons."]
+  });
+
+  // ---------- content ----------
+  // Hook formulas: [id, English, French]. Tokens: {product} {pain} {benefit} {audience}
+  var HOOKS = [
+    ["tried", "I tried {product} so you don't have to", "J'ai testé {product} pour que vous n'ayez pas à le faire"],
+    ["stop", "Stop putting up with {pain}", "Arrêtez de subir {pain}"],
+    ["three", "3 reasons {audience} love {product}", "3 raisons pour lesquelles {audience} adorent {product}"],
+    ["pov", "POV: you finally found a fix for {pain}", "POV : vous avez enfin trouvé la solution contre {pain}"],
+    ["sign", "This is your sign to try {product}", "C'est le signe qu'il faut essayer {product}"],
+    ["nobody", "Nobody tells {audience} this about {pain}", "Personne ne dit ça à {audience} sur {pain}"],
+    ["qpain", "Still dealing with {pain}?", "Encore confronté à {pain} ?"],
+    ["qben", "What if you could get {benefit}?", "Et si vous pouviez obtenir {benefit} ?"],
+    ["ba", "Before {product}: {pain}. After: {benefit}.", "Avant {product} : {pain}. Après : {benefit}."],
+    ["price", "{product} costs less than your daily coffee", "{product} coûte moins cher que votre café quotidien"],
+    ["over", "You are overpaying for {benefit}. Here is why.", "Vous payez trop cher pour {benefit}. Voici pourquoi."],
+    ["secret", "The secret {audience} use to get {benefit}", "Le secret de {audience} pour obtenir {benefit}"],
+    ["mistake", "The number one mistake {audience} make with {pain}", "L'erreur numéro un de {audience} face à {pain}"],
+    ["wait", "Wait for it. {product} changes everything.", "Attendez la fin. {product} change tout."],
+    ["honest", "Honest review: {product} after 30 days", "Avis honnête : {product} après 30 jours"],
+    ["dont", "Don't buy {product} before you watch this", "N'achetez pas {product} avant d'avoir vu ça"],
+    ["myth", "Myth: {pain} is normal. It is not.", "Mythe : {pain}, c'est normal. Faux."],
+    ["asked", "You asked, so here it is: how to get {benefit}", "Vous l'avez demandé : comment obtenir {benefit}"],
+    ["three_s", "In 3 seconds I'll show you how to get {benefit}", "En 3 secondes, je vous montre comment obtenir {benefit}"],
+    ["call", "If you are {audience}, stop scrolling", "Si vous êtes {audience}, arrêtez de scroller"],
+    ["hack", "The {pain} hack nobody talks about", "L'astuce contre {pain} dont personne ne parle"],
+    ["tell", "Tell me you need {product} without telling me", "Dites que vous avez besoin de {product} sans le dire"],
+    ["rank", "I tested every option for {pain}. {product} won.", "J'ai testé toutes les options contre {pain}. {product} a gagné."],
+    ["almost", "I almost gave up on {pain}, then I found {product}", "J'allais abandonner à cause de {pain}, puis j'ai trouvé {product}"],
+    ["days", "{benefit} in 7 days? I tested it.", "{benefit} en 7 jours ? Je l'ai testé."],
+    ["only", "Made for {audience} only: {product}", "Fait uniquement pour {audience} : {product}"]
+  ];
+  var ANGLES = [
+    ["problem", "Problem and solution", "Problème et solution", "Open on the pain of {p}, then show {p} solving it.", "Ouvrez sur la douleur, puis montrez {p} qui la résout."],
+    ["proof", "Social proof", "Preuve sociale", "Stack reviews, numbers and real messages about {p}.", "Empilez avis, chiffres et vrais messages sur {p}."],
+    ["demo", "Demo", "Démonstration", "Show {p} working in one unbroken take.", "Montrez {p} en action en un seul plan continu."],
+    ["compare", "Comparison", "Comparaison", "Put {p} next to the usual option and let the difference show.", "Mettez {p} à côté de l'option habituelle et laissez la différence parler."],
+    ["objection", "Objection handling", "Réponse aux objections", "Name the doubt people have about {p} and answer it in one scene.", "Nommez le doute sur {p} et répondez-y en une scène."],
+    ["ugc", "UGC testimonial", "Témoignage UGC", "A real customer talks to camera about {p}, no script feel.", "Un vrai client parle à la caméra de {p}, sans effet de script."],
+    ["unbox", "Unboxing", "Déballage", "First touch, first reaction, first use of {p}.", "Premier contact, première réaction, première utilisation de {p}."],
+    ["bts", "Behind the scenes", "Coulisses", "Show how {p} is made, packed or prepared.", "Montrez comment {p} est fabriqué, emballé ou préparé."],
+    ["founder", "Founder story", "Histoire du fondateur", "The founder says why {p} exists, in their own words.", "Le fondateur explique pourquoi {p} existe, avec ses mots."],
+    ["price", "Price and value", "Prix et valeur", "Break down what you get for the price of {p}.", "Détaillez ce que l'on obtient pour le prix de {p}."],
+    ["routine", "Routine", "Routine", "Fit {p} into a real morning or evening routine.", "Intégrez {p} dans une vraie routine du matin ou du soir."],
+    ["myth", "Myth busting", "Idées reçues", "Take a common belief about {p} and prove it wrong.", "Prenez une idée reçue sur {p} et prouvez qu'elle est fausse."]
+  ];
+  // Shot ideas by product type: [broll[], hero[]] in [en, fr]
+  var SHOTS = {
+    food: {
+      b: [["Steam rising from the dish", "Vapeur qui monte du plat"], ["Hands tearing or breaking the food", "Mains qui déchirent ou cassent le plat"], ["Slow pour of sauce or syrup", "Sauce ou sirop versé au ralenti"], ["Chopping and prep close-up", "Gros plan sur la découpe"], ["Packaging being opened", "Ouverture de l'emballage"], ["Sizzle in the pan", "Grésillement dans la poêle"], ["Table full of shared plates", "Table remplie de plats à partager"], ["First bite reaction", "Réaction à la première bouchée"]],
+      h: [["Hero plate on a clean surface, top-down", "Plat héros sur surface propre, vue du dessus"], ["Cross-section showing the inside", "Coupe montrant l'intérieur"], ["Pack shot with ingredients around it", "Packshot entouré des ingrédients"], ["Hand lifting the product toward camera", "Main qui tend le produit vers la caméra"], ["Cheese pull or crunch close-up", "Gros plan sur le fromage qui s'étire ou le croustillant"]]
+    },
+    beauty: {
+      b: [["Texture swipe on the back of the hand", "Texture étalée sur le dos de la main"], ["Drop falling from the dropper", "Goutte qui tombe de la pipette"], ["Applying in the mirror", "Application devant le miroir"], ["Shelf or bathroom counter flat lay", "Flat lay étagère ou salle de bain"], ["Skin close-up in natural light", "Gros plan de la peau en lumière naturelle"], ["Cap twist and pump sound", "Bouchon et pompe en son direct"], ["Hair or face being touched after use", "Visage ou cheveux touchés après usage"], ["Morning routine montage", "Montage de routine du matin"]],
+      h: [["Bottle on a clean colored backdrop", "Flacon sur fond uni coloré"], ["Before and after side by side", "Avant et après côte à côte"], ["Product held up next to the face", "Produit tenu à côté du visage"], ["Texture macro with light glint", "Macro de la texture avec reflet de lumière"], ["Full range lined up", "Toute la gamme alignée"]]
+    },
+    fashion: {
+      b: [["Fabric detail and stitching close-up", "Gros plan sur le tissu et les coutures"], ["Walking shot, feet to head", "Plan en marchant, des pieds à la tête"], ["Getting dressed, mirror check", "Habillage et coup d'oeil au miroir"], ["Tag and label detail", "Détail de l'étiquette"], ["Folding or hanging the piece", "Pièce pliée ou accrochée"], ["Twirl or movement shot", "Plan en mouvement"], ["Accessories laid out", "Accessoires disposés"], ["Packing an order", "Préparation d'une commande"]],
+      h: [["Full outfit on a plain wall", "Tenue complète sur mur uni"], ["Three ways to style one piece", "Trois façons de porter une même pièce"], ["Fit check from the front, side and back", "Essayage de face, de côté et de dos"], ["Close-up of the key detail", "Gros plan sur le détail clé"], ["Model holding the piece to camera", "Modèle qui présente la pièce"]]
+    },
+    tech: {
+      b: [["Hand pressing the button or switch", "Main qui appuie sur le bouton"], ["Plugging in and powering on", "Branchement et allumage"], ["Screen close-up while in use", "Gros plan de l'écran en usage"], ["Unboxing and cable reveal", "Déballage et câbles"], ["Product next to a coin or hand for scale", "Produit à côté d'une pièce ou d'une main pour l'échelle"], ["Desk setup flat lay", "Flat lay du bureau"], ["Using it on the go", "Utilisation en déplacement"], ["Before: the old clumsy way", "Avant : l'ancienne façon compliquée"]],
+      h: [["Product floating on a dark backdrop", "Produit sur fond sombre"], ["The one feature shown in 5 seconds", "La fonction clé montrée en 5 secondes"], ["Side by side with a competitor", "Côte à côte avec un concurrent"], ["Exploded view or parts laid out", "Vue éclatée ou pièces alignées"], ["Result shot: the problem solved", "Plan résultat : le problème résolu"]]
+    },
+    home: {
+      b: [["Room before and after tidy", "Pièce avant et après rangement"], ["Hand wiping or placing the item", "Main qui essuie ou pose l'objet"], ["Morning light across the room", "Lumière du matin dans la pièce"], ["Item in daily use by family", "Objet utilisé au quotidien en famille"], ["Texture and material close-up", "Gros plan matière et texture"], ["Setting the table or arranging shelves", "Mise de table ou rangement d'étagères"], ["Pet or child reacting", "Réaction d'un animal ou d'un enfant"], ["Assembly in time-lapse", "Montage en accéléré"]],
+      h: [["Item styled in a real living room", "Objet mis en scène dans un vrai salon"], ["Dimensions shown with a hand or tape", "Dimensions montrées avec une main ou un mètre"], ["Problem versus fixed side by side", "Problème et solution côte à côte"], ["Top-down flat lay of the set", "Flat lay du lot vu du dessus"], ["Product in its best spot at golden hour", "Produit à sa meilleure place à l'heure dorée"]]
+    },
+    resto: {
+      b: [["Chef at work in the kitchen", "Le chef au travail en cuisine"], ["Coffee pour or latte art", "Café versé ou latte art"], ["Door opening, first guests in", "Porte qui s'ouvre, premiers clients"], ["Menu board and counter details", "Ardoise et détails du comptoir"], ["Plates leaving the pass", "Plats qui sortent du passe"], ["Friends laughing at the table", "Amis qui rient à table"], ["Terrace and street atmosphere", "Ambiance de la terrasse et de la rue"], ["Staff greeting a guest", "Accueil d'un client par l'équipe"]],
+      h: [["Signature dish, top-down and side", "Plat signature, vue du dessus et de côté"], ["The place at its busiest hour", "Le lieu à l'heure de pointe"], ["Order to table in 15 seconds", "De la commande à la table en 15 secondes"], ["Owner presenting the best seller", "Le patron qui présente le best-seller"], ["Wide shot of the room with warm light", "Plan large de la salle en lumière chaude"]]
+    },
+    service: {
+      b: [["Typing, notes or sketching at the desk", "Écriture, notes ou croquis au bureau"], ["Client meeting handshake", "Poignée de main avec un client"], ["Phone ringing or message notifications", "Appels ou notifications de messages"], ["Walking into the workplace", "Entrée dans le lieu de travail"], ["Whiteboard or screen with the process", "Tableau ou écran avec le process"], ["Tools of the trade laid out", "Outils du métier disposés"], ["Result delivered to a happy client", "Résultat livré à un client satisfait"], ["Coffee and early morning prep", "Café et préparation tôt le matin"]],
+      h: [["Talking head: who you help and how", "Face caméra : qui vous aidez et comment"], ["Before and after of a client result", "Avant et après d'un résultat client"], ["Three steps of the process on screen", "Les trois étapes du process à l'écran"], ["Client quote over a real photo", "Citation client sur une vraie photo"], ["You in action doing the work", "Vous en pleine action"]]
+    }
+  };
+  var TYPE_ORDER = ["food", "beauty", "fashion", "tech", "home", "resto", "service"];
+  var PACES = { slow: 2.2, normal: 2.6, fast: 3.0 };
+  var FORMATS = ["reel", "ad", "story", "yt", "other"];
+
+  // ---------- state (kept while the page re-renders) ----------
+  var T = {
+    hk: { product: "", pain: "", benefit: "", audience: "", lang: "" },
+    tm: { idea: "", text: "", pace: "normal" },
+    an: { product: "", sel: {}, project: "" },
+    br: { type: "food", sel: {}, idea: "" },
+    rf: { tag: "" },
+    cp: { idea: "", hook: "", body: "", cta: "", emoji: false, tags: "", seeded: "" }
+  };
+  var pending = { hook: "", del: "" };
+  var TOOLS = ["hooks", "timer", "angles", "broll", "refs", "caps"];
+
+  function can() { return m.can("ideas"); }
+  function lang() { return GK.i18n && GK.i18n.lang ? GK.i18n.lang() : "en"; }
+  function li() { return lang() === "fr" ? 1 : 0; }
+  function words(s) { return (String(s || "").trim().match(/\S+/g) || []).length; }
+  function ideasSorted() { return S.all("ideas").slice().sort(function (a, b) { return String(a.title || "").localeCompare(String(b.title || "")); }); }
+  function ideaLabel(i) { return (i.clientId && m.client(i.clientId) ? m.brand(i.clientId) + " · " : "") + (i.title || "—"); }
+  function ideaOptions(first) { return [["", first]].concat(ideasSorted().map(function (i) { return [i.id, ideaLabel(i)]; })); }
+  function copy(text) { u.copy(text).then(function (ok) { ui.toast(ok ? t("ct_copied") : t("write_failed")); }); }
+  function curTool() { var k = ui.p("studio").tool; return TOOLS.indexOf(k) > -1 ? k : "hooks"; }
+  function sec(title, note) { return '<div class="stack" style="gap:2px"><h3 class="sec" style="margin:0">' + esc(title) + "</h3>" + (note ? '<span class="small muted">' + esc(note) + "</span>" : "") + "</div>"; }
+  function fld(tool, k, label, o) {
+    o = o || {};
+    var isSel = o.type === "select";
+    return ui.field({ id: "ct-" + tool + "-" + k, label: label, type: o.type, rows: o.rows, value: T[tool][k], options: o.options, placeholder: o.ph, span: o.span, hint: o.hint,
+      attrs: (isSel ? ' data-c="ct-f"' : ' data-i="ct-f"') + ' data-t="' + tool + '" data-k="' + k + '"' + (o.full ? ' data-full="1"' : "") + (o.dir ? ' dir="auto"' : "") });
+  }
+
+  // ---------- 1. hook builder ----------
+  function hookVals() {
+    var h = T.hk, i = li();
+    return { product: h.product.trim(), pain: h.pain.trim(), benefit: h.benefit.trim(), audience: h.audience.trim(), ph: ["product", "pain", "benefit", "audience"].reduce(function (o, k) { o[k] = "[" + t("ct_p_" + k) + "]"; return o; }, {}), i: i };
+  }
+  function fill(tpl, v, html) {
+    return tpl.replace(/\{(product|pain|benefit|audience)\}/g, function (_, k) {
+      var val = v[k];
+      if (val) return html ? esc(val) : val;
+      return html ? '<i class="ct-ph">' + esc(v.ph[k]) + "</i>" : v.ph[k];
+    });
+  }
+  function hookRows() {
+    var l = T.hk.lang || lang(), rows = [];
+    HOOKS.forEach(function (h) {
+      if (l !== "fr") rows.push({ id: h[0], l: "en", tpl: h[1] });
+      if (l !== "en") rows.push({ id: h[0], l: "fr", tpl: h[2] });
+    });
+    return rows;
+  }
+  function hooksOut() {
+    var v = hookVals(), rows = hookRows();
+    return '<div class="row between" style="flex-wrap:wrap;gap:var(--sp-2)"><span class="lab sm muted">' + esc(t("ct_hook_n", { n: rows.length })) + "</span>" +
+      ui.btn(t("ct_copy_all"), "ct-h-copyall", { cls: "ghost sm", icon: "copy" }) + '</div><div class="list">' +
+      rows.map(function (r, n) {
+        return '<div class="li ct-li"><div class="stack" style="gap:2px;flex:1 1 220px;min-width:0"><span class="ct-txt">' + fill(r.tpl, v, true) + '</span><span class="lab sm faint">' + r.l.toUpperCase() + "</span></div>" +
+          '<div class="row" style="gap:6px;flex:none">' + ui.btn(t("copy"), "ct-h-copy", { cls: "ghost sm", data: { n: n } }) +
+          (can() ? ui.btn(t("ct_save_idea"), "ct-h-save", { cls: "sm", data: { n: n } }) : "") + "</div></div>";
+      }).join("") + "</div>";
+  }
+  function hooksTool() {
+    var h = T.hk;
+    return sec(t("ct_t_hooks"), t("ct_h_note")) +
+      '<div class="form ct-form">' + fld("hk", "product", t("ct_f_product"), { ph: t("ct_ph_product") }) + fld("hk", "pain", t("ct_f_pain"), { ph: t("ct_ph_pain") }) +
+      fld("hk", "benefit", t("ct_f_benefit"), { ph: t("ct_ph_benefit") }) + fld("hk", "audience", t("ct_f_audience"), { ph: t("ct_ph_audience") }) +
+      fld("hk", "lang", t("ct_lang"), { type: "select", full: true, options: [["en", t("ct_l_en")], ["fr", t("ct_l_fr")], ["both", t("ct_l_both")]] }) + "</div>" +
+      '<div id="ct-out" class="stack">' + hooksOut() + "</div>";
+  }
+  GK.act("ct-h-copyall", function () { var v = hookVals(); copy(hookRows().map(function (r) { return fill(r.tpl, v, false); }).join("\n")); });
+  GK.act("ct-h-copy", function (el) { var r = hookRows()[+el.dataset.n]; if (r) copy(fill(r.tpl, hookVals(), false)); });
+  GK.act("ct-h-save", function (el) {
+    if (!can()) return ui.toast(t("ct_no_rights"));
+    var r = hookRows()[+el.dataset.n]; if (!r) return;
+    pending.hook = fill(r.tpl, hookVals(), false);
+    ui.modal({
+      title: t("ct_hs_title"), accent: t("ct_hs_accent"), label: t("ct_t_hooks"),
+      body: '<p style="margin:0">“' + esc(pending.hook) + "”</p>" +
+        ui.field({ id: "ct-hs-idea", label: t("ct_hs_idea"), type: "select", value: "", options: ideaOptions(t("ct_hs_new")), attrs: ' data-c="ct-hs-sel"' }) +
+        '<div id="ct-hs-newbox">' + ui.field({ id: "ct-hs-title", label: t("ct_hs_title_f"), value: T.hk.product.trim() }) + "</div>",
+      foot: ui.btn(t("cancel"), "close", { cls: "ghost" }) + ui.btn(t("ct_hs_do"), "ct-h-save-do", { cls: "primary" })
+    });
+  });
+  GK.change("ct-hs-sel", function (el) { var b = document.getElementById("ct-hs-newbox"); if (b) b.hidden = !!el.value; });
+  GK.act("ct-h-save-do", function () {
+    if (!can()) return ui.toast(t("ct_no_rights"));
+    var id = u.val("ct-hs-idea"), hook = pending.hook;
+    if (id && S.get("ideas", id)) {
+      var i = S.get("ideas", id);
+      if (!String(i.hook || "").trim()) { S.patch("ideas", id, { hook: hook }, { log: t("ct_hs_log") }); ui.toast(t("ct_hs_set")); }
+      else {
+        var note = t("ct_hs_opt", { h: hook }), cur = String(i.notes || "").trim();
+        S.patch("ideas", id, { notes: cur ? cur + "\n" + note : note }, { log: t("ct_hs_log") }); ui.toast(t("ct_hs_note"));
+      }
+    } else {
+      var title = u.val("ct-hs-title").trim();
+      if (!title) { u.focus("ct-hs-title"); return ui.toast(t("required")); }
+      var me = GK.me();
+      S.put("ideas", {
+        title: title, stage: "idea", clientId: "", projectId: "", angleId: "", angle: "", objective: "", audience: T.hk.audience.trim(), creativeType: "brand",
+        offer: "", objection: "", proof: "", cta: "", hook: hook, concept: "", script: "", scenes: [], mode: "D", format: "9x16",
+        refs: [], boardId: "", owner: me ? me.id : "", tags: [], priority: 2, reelId: "", created: u.today(), shareOk: false, reviewAsked: false, notes: ""
+      }, { log: t("ct_hs_log") });
+      ui.toast(t("ct_hs_created"));
+    }
+    ui.closeModal(true);
+  });
+
+  // ---------- 2. script timer ----------
+  function ideaLines(i) {
+    var out = [];
+    (i.scenes || []).forEach(function (s) { if (!s.silent && String(s.x || "").trim()) out.push(String(s.x).trim()); if (String(s.xd || "").trim()) out.push(String(s.xd).trim()); });
+    String(i.script || "").split("\n").forEach(function (l) { if (l.trim()) out.push(l.trim()); });
+    String(i.scriptDarija || "").split("\n").forEach(function (l) { if (l.trim()) out.push(l.trim()); });
+    return out;
+  }
+  function timerOut() {
+    var rate = PACES[T.tm.pace] || 2.6, lines = T.tm.text.split("\n").map(function (l) { return l.trim(); }).filter(Boolean);
+    if (!lines.length) return ui.empty(t("ct_tm_empty"));
+    var total = 0, rows = lines.map(function (l) { var w = words(l), s = w / rate, at = total; total += s; return { l: l, w: w, s: s, at: at }; });
+    var secs = Math.round(total), w = u.sum(rows, function (r) { return r.w; });
+    var lvl = secs > 60 ? "60" : secs > 45 ? "45" : secs > 30 ? "30" : "ok";
+    var pct = Math.min(100, Math.round(total / 60 * 100));
+    return '<div class="ct-stats"><div><span class="lab sm muted">' + esc(t("ct_tm_secs")) + '</span><b class="big num">' + secs + '</b></div><div><span class="lab sm muted">' + esc(t("ct_tm_words")) +
+      '</span><b class="big num">' + w + '</b></div><div><span class="lab sm muted">' + esc(t("ct_tm_lines")) + '</span><b class="big num">' + rows.length + "</b></div></div>" +
+      '<div class="ct-meter" role="img" aria-label="' + secs + 's"><i class="' + (lvl === "ok" ? "" : "warn") + '" style="width:' + pct + '%"></i><s style="left:50%"></s><s style="left:75%"></s></div>' +
+      '<div class="ct-scale small faint"><span>0</span><span style="left:50%">30s</span><span style="left:75%">45s</span><span style="left:100%">60s</span></div>' +
+      '<p class="ct-warn ' + (lvl === "ok" ? "ok" : "bad") + '">' + esc(t(lvl === "ok" ? "ct_tm_ok" : "ct_tm_w" + lvl)) + "</p>" +
+      '<div class="list">' + rows.map(function (r) {
+        return '<div class="li ct-li"><span class="ct-txt" dir="auto" style="flex:1 1 200px;min-width:0">' + esc(r.l) + '</span><span class="small muted num" style="flex:none">' +
+          esc(t("ct_tm_at", { s: Math.round(r.at) })) + " · " + r.w + " · " + (Math.round(r.s * 10) / 10) + "s</span></div>";
+      }).join("") + "</div>";
+  }
+  function timerTool() {
+    return sec(t("ct_t_timer")) +
+      '<div class="form ct-form">' + ui.field({ id: "ct-tm-idea", label: t("ct_tm_pick"), type: "select", value: T.tm.idea, options: ideaOptions(t("ct_tm_none")), attrs: ' data-c="ct-tm-pick"' }) +
+      fld("tm", "pace", t("ct_tm_pace"), { type: "select", options: [["slow", t("ct_tm_slow")], ["normal", t("ct_tm_normal")], ["fast", t("ct_tm_fast")]] }) + "</div>" +
+      fld("tm", "text", t("ct_tm_text"), { type: "textarea", rows: 7, ph: t("ct_tm_ph"), dir: true }) +
+      '<div id="ct-out" class="stack">' + timerOut() + "</div>";
+  }
+  GK.change("ct-tm-pick", function (el) {
+    T.tm.idea = el.value;
+    var i = el.value && S.get("ideas", el.value);
+    if (i) T.tm.text = ideaLines(i).join("\n");
+    paint();
+  });
+
+  // ---------- 3. angle finder ----------
+  function angProduct() { return T.an.product.trim() || t("ct_an_the_product"); }
+  function angSelected() { return ANGLES.filter(function (a) { return T.an.sel[a[0]]; }); }
+  function angleOut() {
+    var sel = angSelected(), pj = S.all("projects").slice().sort(function (a, b) { return m.projectLabel(a).localeCompare(m.projectLabel(b)); });
+    return '<div class="row between" style="flex-wrap:wrap;gap:var(--sp-2)"><span class="lab sm muted">' + esc(t("ct_an_sel", { n: sel.length })) + "</span>" +
+      ui.btn(t("ct_an_copy"), "ct-an-copy", { cls: "ghost sm", icon: "copy", disabled: !sel.length }) + "</div>" +
+      (m.can("projects.edit") ? (pj.length ? '<div class="form ct-form" style="align-items:end">' +
+        ui.field({ id: "ct-an-project", label: t("ct_an_project"), type: "select", value: T.an.project, options: [["", t("ct_an_pick")]].concat(pj.map(function (p) { return [p.id, m.projectLabel(p)]; })), attrs: ' data-c="ct-f" data-t="an" data-k="project" data-nopaint="1"' }) +
+        '<div class="field">' + ui.btn(t("ct_an_add"), "ct-an-add", { cls: "sm", disabled: !sel.length }) + "</div></div>" : '<p class="small muted" style="margin:0">' + esc(t("ct_an_no_pj")) + "</p>") : "");
+  }
+  function angleChecks() {
+    var p = angProduct(), i = li();
+    return '<div class="ct-grid">' + ANGLES.map(function (a) {
+      return '<label class="check ct-opt"><input type="checkbox" data-c="ct-chk" data-t="an" data-k="' + a[0] + '"' + (T.an.sel[a[0]] ? " checked" : "") + '><span><strong>' + esc(a[1 + i]) +
+        '</strong><br><span class="small muted" id="ct-an-p-' + a[0] + '">' + esc(a[3 + i].replace(/\{p\}/g, p)) + "</span></span></label>";
+    }).join("") + "</div>";
+  }
+  function anglePlan() {
+    var p = angProduct();
+    return t("ct_an_plan", { p: p }) + "\n\n" + angSelected().map(function (a, n) { return (n + 1) + ". " + a[1 + li()] + ": " + a[3 + li()].replace(/\{p\}/g, p); }).join("\n");
+  }
+  function anglesTool() {
+    return sec(t("ct_t_angles"), t("ct_an_note")) + '<div class="form ct-form">' + fld("an", "product", t("ct_f_product"), { ph: t("ct_ph_product") }) + "</div>" +
+      '<div id="ct-an-list">' + angleChecks() + '</div><div id="ct-out" class="stack">' + angleOut() + "</div>";
+  }
+  GK.act("ct-an-copy", function () { if (angSelected().length) copy(anglePlan()); });
+  GK.act("ct-an-add", function () {
+    if (!m.can("projects.edit")) return ui.toast(t("ct_no_rights"));
+    var p = T.an.project && S.get("projects", T.an.project);
+    if (!p) return ui.toast(t("ct_an_pick"));
+    var have = (p.angles || []).map(function (a) { return String(a.name || "").toLowerCase(); }), add = [];
+    angSelected().forEach(function (a) {
+      var name = a[1 + li()];
+      if (have.indexOf(name.toLowerCase()) < 0) add.push({ id: u.uid("a"), name: name, why: a[3 + li()].replace(/\{p\}/g, angProduct()) });
+    });
+    if (!add.length) return ui.toast(t("ct_an_dup"));
+    S.patch("projects", p.id, { angles: (p.angles || []).concat(add) }, { log: t("ct_an_added", { n: add.length }) });
+    ui.toast(t("ct_an_added", { n: add.length }));
+  });
+
+  // ---------- 4. B-roll and hero shots ----------
+  function brKey(kind, n) { return kind + n; }
+  function brPicked() {
+    var s = SHOTS[T.br.type] || SHOTS.food, out = [];
+    s.h.forEach(function (x, n) { if (T.br.sel[brKey("hero", n)]) out.push({ kind: "hero", text: x[li()] }); });
+    s.b.forEach(function (x, n) { if (T.br.sel[brKey("broll", n)]) out.push({ kind: "broll", text: x[li()] }); });
+    return out;
+  }
+  function brollOut() {
+    var n = brPicked().length;
+    if (!can()) return '<span class="lab sm muted">' + esc(t("ct_br_sel", { n: n })) + "</span>";
+    if (!S.all("ideas").length) return '<p class="small muted" style="margin:0">' + esc(t("ct_br_none")) + "</p>";
+    return '<span class="lab sm muted">' + esc(t("ct_br_sel", { n: n })) + '</span><div class="form ct-form" style="align-items:end">' +
+      ui.field({ id: "ct-br-idea", label: t("ct_br_video"), type: "select", value: T.br.idea, options: ideaOptions(t("ct_br_pick")), attrs: ' data-c="ct-f" data-t="br" data-k="idea" data-nopaint="1"' }) +
+      '<div class="field">' + ui.btn(t("ct_br_add"), "ct-br-add", { cls: "primary sm", disabled: !n }) + "</div></div>";
+  }
+  function brollList() {
+    var s = SHOTS[T.br.type] || SHOTS.food, i = li();
+    function group(label, kind, arr) {
+      return '<div class="stack" style="gap:2px"><span class="lab sm muted">' + esc(label) + "</span>" + arr.map(function (x, n) {
+        return '<label class="check ct-opt"><input type="checkbox" data-c="ct-chk" data-t="br" data-k="' + brKey(kind, n) + '"' + (T.br.sel[brKey(kind, n)] ? " checked" : "") + "><span>" + esc(x[i]) + "</span></label>";
+      }).join("") + "</div>";
+    }
+    return '<div class="ct-cols">' + group(t("ct_br_hero"), "hero", s.h) + group(t("ct_br_broll"), "broll", s.b) + "</div>";
+  }
+  function brollTool() {
+    return sec(t("ct_t_broll")) +
+      '<div class="form ct-form">' + ui.field({ id: "ct-br-type", label: t("ct_br_type"), type: "select", value: T.br.type, options: TYPE_ORDER.map(function (k) { return [k, t("ct_ty_" + k)]; }), attrs: ' data-c="ct-f" data-t="br" data-k="type" data-full="1" data-reset="1"' }) + "</div>" +
+      '<div id="ct-br-list">' + brollList() + '</div><div id="ct-out" class="stack">' + brollOut() + "</div>";
+  }
+  GK.act("ct-br-add", function () {
+    if (!can()) return ui.toast(t("ct_no_rights"));
+    var i = T.br.idea && S.get("ideas", T.br.idea);
+    if (!i) return ui.toast(t("ct_br_pick"));
+    var picked = brPicked(), needs = (i.needs || []).slice(), have = needs.map(function (x) { return x.kind + "|" + String(x.text).toLowerCase(); }), n = 0;
+    picked.forEach(function (p) {
+      if (have.indexOf(p.kind + "|" + p.text.toLowerCase()) > -1) return;
+      needs.push({ id: u.uid("nd"), kind: p.kind, text: p.text, done: false }); n++;
+    });
+    if (!n) return ui.toast(t("ct_br_dup"));
+    S.patch("ideas", i.id, { needs: needs }, { log: "" });
+    T.br.sel = {}; paint();
+    ui.toast(t("ct_br_added", { n: n }));
+  });
+
+  // ---------- 5. reference library ----------
+  function refs() { var c = S.config() || {}; return Array.isArray(c.creativeRefs) ? c.creativeRefs.filter(function (r) { return r && r.id; }) : []; }
+  function saveRefs(list) { return S.setConfig({ creativeRefs: list }); }
+  function hostOf(url) { try { return new URL(url).hostname.replace(/^www\./, ""); } catch (e) { return url; } }
+  function fmtName(k) { return t("ct_fm_" + (FORMATS.indexOf(k) > -1 ? k : "other")); }
+  function refsOut() {
+    var all = refs(), tags = {};
+    all.forEach(function (r) { (r.tags || []).forEach(function (g) { tags[g] = (tags[g] || 0) + 1; }); });
+    var tag = T.rf.tag && tags[T.rf.tag] ? T.rf.tag : "";
+    var rows = all.filter(function (r) { return !tag || (r.tags || []).indexOf(tag) > -1; });
+    var h = '<div class="ct-chips">' + ['<button type="button" class="ct-chip" data-a="ct-rf-tag" data-v="" aria-pressed="' + !tag + '">' + esc(t("ct_rf_all")) + " " + all.length + "</button>"]
+      .concat(Object.keys(tags).sort().map(function (g) { return '<button type="button" class="ct-chip" data-a="ct-rf-tag" data-v="' + esc(g) + '" aria-pressed="' + (tag === g) + '">#' + esc(g) + " " + tags[g] + "</button>"; })).join("") + "</div>";
+    if (!all.length) return h + ui.empty({ icon: "boards", text: t("ct_rf_empty") });
+    return h + '<div class="list">' + rows.map(function (r) {
+      var ok = /^https?:\/\/\S+$/i.test(r.url || "");
+      return '<div class="li ct-li"><div class="stack" style="gap:3px;flex:1 1 220px;min-width:0"><span class="ct-txt" style="overflow-wrap:anywhere">' + esc(r.note || hostOf(r.url)) + '</span>' +
+        '<span class="small muted" style="overflow-wrap:anywhere">' + esc([hostOf(r.url), fmtName(r.format), r.angle].filter(Boolean).join(" · ")) + "</span>" +
+        ((r.tags || []).length ? '<span class="small">' + r.tags.map(function (g) { return "#" + esc(g); }).join(" ") + "</span>" : "") + "</div>" +
+        '<div class="row" style="gap:6px;flex:none">' + (ok ? '<a class="btn ghost sm" href="' + esc(r.url) + '" target="_blank" rel="noopener noreferrer">' + esc(t("ct_rf_open")) + "</a>" : "") +
+        (can() ? ui.btn(t("ct_rf_del"), "ct-rf-del", { cls: "ghost sm", data: { id: r.id } }) : "") + "</div></div>";
+    }).join("") + "</div>";
+  }
+  function refsTool() {
+    return '<div class="row between" style="flex-wrap:wrap;gap:var(--sp-2)">' + sec(t("ct_t_refs"), t("ct_rf_n", { n: refs().length })) +
+      (can() ? ui.btn(t("ct_rf_add"), "ct-rf-add", { cls: "primary sm", icon: "plus" }) : "") + '</div><div id="ct-out" class="stack">' + refsOut() + "</div>";
+  }
+  GK.act("ct-rf-tag", function (el) { T.rf.tag = el.dataset.v || ""; outRepaint(); });
+  GK.act("ct-rf-add", function () {
+    if (!can()) return ui.toast(t("ct_no_rights"));
+    ui.modal({
+      title: t("ct_rf_new_t"), accent: t("ct_rf_new_a"), label: t("ct_t_refs"),
+      body: ui.field({ id: "ct-rf-url", label: t("ct_rf_url"), type: "url", placeholder: t("ct_rf_url_ph") }) +
+        ui.field({ id: "ct-rf-note", label: t("ct_rf_note"), type: "textarea", rows: 2 }) +
+        '<div class="form">' + ui.field({ id: "ct-rf-format", label: t("ct_rf_format"), type: "select", value: "reel", options: FORMATS.map(function (k) { return [k, fmtName(k)]; }) }) +
+        ui.field({ id: "ct-rf-angle", label: t("ct_rf_angle"), type: "select", value: "", options: [["", "—"]].concat(ANGLES.map(function (a) { return [a[1 + li()], a[1 + li()]]; })) }) + "</div>" +
+        ui.field({ id: "ct-rf-tags", label: t("ct_rf_tags"), placeholder: "ramadan, ugc, hook" }),
+      foot: ui.btn(t("cancel"), "close", { cls: "ghost" }) + ui.btn(t("save"), "ct-rf-save", { cls: "primary" })
+    });
+  });
+  GK.act("ct-rf-save", function () {
+    if (!can()) return ui.toast(t("ct_no_rights"));
+    var url = u.val("ct-rf-url").trim();
+    if (!/^https?:\/\/\S+$/i.test(url)) { u.focus("ct-rf-url"); return ui.toast(t("ct_rf_bad")); }
+    var tags = u.val("ct-rf-tags").split(",").map(function (s) { return s.trim().replace(/^#/, "").toLowerCase(); }).filter(Boolean).slice(0, 8);
+    var rec = { id: u.uid("rf"), url: url, note: u.val("ct-rf-note").trim(), tags: tags, format: u.val("ct-rf-format"), angle: u.val("ct-rf-angle"), added: u.today() };
+    if (!saveRefs([rec].concat(refs()))) return ui.toast(t("ct_no_rights"));
+    ui.closeModal(true); ui.toast(t("ct_rf_saved"));
+  });
+  GK.act("ct-rf-del", function (el) {
+    if (!can()) return ui.toast(t("ct_no_rights"));
+    pending.del = el.dataset.id;
+    ui.modal({
+      title: t("ct_rf_del_t"), label: t("ct_t_refs"), body: '<p class="muted" style="margin:0">' + esc(t("ct_rf_del_b")) + "</p>",
+      foot: ui.btn(t("cancel"), "close", { cls: "ghost" }) + ui.btn(t("ct_rf_del"), "ct-rf-del-yes", { cls: "primary" })
+    });
+  });
+  GK.act("ct-rf-del-yes", function () {
+    if (!can()) return ui.toast(t("ct_no_rights"));
+    if (!saveRefs(refs().filter(function (r) { return r.id !== pending.del; }))) return ui.toast(t("ct_no_rights"));
+    pending.del = ""; ui.closeModal(true); ui.toast(t("ct_rf_deleted"));
+  });
+
+  // ---------- 6. caption helper ----------
+  function slug(s) { return String(s || "").toLowerCase().replace(/[^a-z0-9À-ɏ]+/g, ""); }
+  function seedTags(i) {
+    var out = (i.tags || []).map(slug);
+    if (i.clientId && m.client(i.clientId)) out.push(slug(m.brand(i.clientId)));
+    out = out.concat(["tunisie", "reels"]);
+    return out.filter(function (x, n) { return x && out.indexOf(x) === n; }).slice(0, 6).map(function (x) { return "#" + x; }).join(" ");
+  }
+  function seedCaption(id) {
+    var i = id && S.get("ideas", id), c = T.cp;
+    c.idea = id; c.seeded = id;
+    if (i) {
+      c.hook = String(i.hook || i.title || "");
+      c.body = String(i.concept || (ideaLines(i)[0] || ""));
+      c.cta = String(i.cta || "") || c.cta;
+      c.tags = seedTags(i);
+    }
+  }
+  function captionDrafts() {
+    var c = T.cp, hook = c.hook.trim(), body = c.body.trim(), cta = c.cta.trim() || t("ct_cp_cta_d"), em = !!c.emoji;
+    if (!hook) return [];
+    var pre = em ? "✨ " : "", arrow = em ? "👇 " : "";
+    var i = c.idea && S.get("ideas", c.idea), lines = i ? ideaLines(i).slice(0, 3) : body.split("\n").filter(Boolean).slice(0, 3);
+    var out = [{ k: "ct_cp_short", text: pre + hook + "\n\n" + arrow + cta }];
+    if (body) out.push({ k: "ct_cp_mid", text: pre + hook + "\n\n" + body + "\n\n" + arrow + cta });
+    if (lines.length > 1) out.push({ k: "ct_cp_list", text: pre + hook + "\n\n" + lines.map(function (l) { return (em ? "• " : "- ") + l; }).join("\n") + "\n\n" + arrow + cta });
+    return out;
+  }
+  function captionsOut() {
+    var d = captionDrafts(), tags = T.cp.tags.trim();
+    if (!d.length) return ui.empty(t("ct_cp_empty"));
+    return d.map(function (x, n) {
+      return '<article class="panel ct-cap"><div class="row between" style="flex-wrap:wrap;gap:var(--sp-2)"><span class="lab sm muted">' + esc(t(x.k)) + '</span><span class="row" style="gap:6px">' +
+        ui.btn(t("ct_cp_copy"), "ct-cp-copy", { cls: "ghost sm", data: { n: n } }) + (tags ? ui.btn(t("ct_cp_copy_t"), "ct-cp-copy", { cls: "sm", data: { n: n, tags: 1 } }) : "") + '</span></div>' +
+        '<p class="ct-txt" dir="auto" style="white-space:pre-line;margin:0">' + esc(x.text) + (tags ? "\n\n" + esc(tags) : "") + "</p></article>";
+    }).join("");
+  }
+  function capsTool() {
+    var c = T.cp;
+    if (!c.seeded && !c.hook) seedCaption("");
+    return sec(t("ct_t_caps")) +
+      '<div class="form ct-form">' + ui.field({ id: "ct-cp-idea", label: t("ct_cp_idea"), type: "select", value: c.idea, options: ideaOptions(t("ct_cp_manual")), attrs: ' data-c="ct-cp-pick"' }) +
+      fld("cp", "cta", t("ct_cp_cta"), { ph: t("ct_cp_cta_d") }) + "</div>" +
+      fld("cp", "hook", t("ct_cp_hook"), { dir: true }) + fld("cp", "body", t("ct_cp_body"), { type: "textarea", rows: 2, dir: true }) +
+      ui.field({ id: "ct-cp-emoji", label: t("ct_cp_emoji"), type: "checkbox", value: c.emoji, attrs: ' data-c="ct-cp-emoji"' }) +
+      fld("cp", "tags", t("ct_cp_tags"), { type: "textarea", rows: 2, hint: t("ct_cp_tags_hint"), dir: true }) +
+      '<div id="ct-out" class="stack">' + captionsOut() + "</div>";
+  }
+  GK.change("ct-cp-pick", function (el) { seedCaption(el.value); paint(); });
+  GK.change("ct-cp-emoji", function (el) { T.cp.emoji = el.checked; outRepaint(); });
+  GK.act("ct-cp-copy", function (el) {
+    var d = captionDrafts()[+el.dataset.n]; if (!d) return;
+    copy(d.text + (el.dataset.tags && T.cp.tags.trim() ? "\n\n" + T.cp.tags.trim() : ""));
+  });
+
+  // ---------- shared plumbing ----------
+  var BODY = { hooks: hooksTool, timer: timerTool, angles: anglesTool, broll: brollTool, refs: refsTool, caps: capsTool };
+  var OUT = { hooks: hooksOut, timer: timerOut, angles: angleOut, broll: brollOut, refs: refsOut, caps: captionsOut };
+  function paint() { var r = document.getElementById("ct-root"); if (r) r.innerHTML = BODY[curTool()](); }
+  function outRepaint() { var o = document.getElementById("ct-out"); if (o) o.innerHTML = OUT[curTool()](); }
+  if (GK.input) GK.input("ct-f", function (el) {
+    var tl = el.dataset.t; if (!T[tl]) return;
+    T[tl][el.dataset.k] = el.value;
+    if (tl === "an" && el.dataset.k === "product") { var l = document.getElementById("ct-an-list"); if (l) l.innerHTML = angleChecks(); }
+    outRepaint();
+  });
+  GK.change("ct-f", function (el) {
+    var tl = el.dataset.t; if (!T[tl]) return;
+    T[tl][el.dataset.k] = el.value;
+    if (el.dataset.reset) T.br.sel = {};
+    if (el.dataset.nopaint) return;
+    if (el.dataset.full) paint(); else outRepaint();
+  });
+  GK.change("ct-chk", function (el) {
+    var tl = el.dataset.t; if (!T[tl]) return;
+    if (el.checked) T[tl].sel[el.dataset.k] = true; else delete T[tl].sel[el.dataset.k];
+    outRepaint();
+  });
+  GK.act("ct-tool", function (el) { ui.go("studio", { mode: "tools", tool: el.dataset.v, id: "" }); });
+
+  GK.studioTools = {
+    html: function () {
+      var tool = curTool();
+      return '<div class="ct-pick" role="tablist">' + TOOLS.map(function (k) {
+        return '<button type="button" role="tab" class="ct-tab" data-a="ct-tool" data-v="' + k + '" aria-selected="' + (tool === k) + '">' + esc(t("ct_t_" + k)) + "</button>";
+      }).join("") + '</div><section class="panel ct-root" id="ct-root">' + BODY[tool]() + "</section>";
+    },
+    HOOKS: HOOKS, ANGLES: ANGLES, SHOTS: SHOTS
+  };
+
+  if (typeof document === "undefined") return;
+  var css = document.createElement("style"); css.id = "gk-studio-tools-css";
+  css.textContent =
+    ".ct-pick{display:flex;flex-wrap:wrap;gap:6px}" +
+    ".ct-tab{font-family:var(--f-type);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:12px;min-height:40px;padding:0 12px;border:1px solid var(--line);background:transparent;color:var(--tx);cursor:pointer;border-radius:0}" +
+    ".ct-tab[aria-selected=true]{background:var(--chroma);color:var(--b-ink);border-color:var(--tx)}" +
+    ".ct-root{display:flex;flex-direction:column;gap:var(--sp-3);min-width:0;animation:rise .28s ease both}" +
+    ".ct-form{grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr))}" +
+    ".ct-li{flex-wrap:wrap;gap:var(--sp-2);align-items:center}.ct-txt{overflow-wrap:anywhere}" +
+    ".ct-ph{font-style:normal;color:var(--tx-2);border-bottom:1px dashed var(--line)}" +
+    ".ct-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:0 var(--sp-3)}" +
+    ".ct-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:var(--sp-3)}" +
+    ".ct-opt{border-bottom:1px solid var(--line);min-width:0;overflow-wrap:anywhere}" +
+    ".ct-stats{display:flex;gap:var(--sp-5);flex-wrap:wrap}.ct-stats div{display:flex;flex-direction:column}" +
+    ".ct-meter{position:relative;height:12px;border:1px solid var(--tx);background:transparent}.ct-meter i{display:block;height:100%;background:var(--chroma);transition:width .25s ease}.ct-meter i.warn{background:var(--gel)}" +
+    ".ct-meter s{position:absolute;top:0;bottom:0;width:1px;background:var(--tx);text-decoration:none}" +
+    ".ct-scale{position:relative;height:16px}.ct-scale span{position:absolute;transform:translateX(-50%);top:0}.ct-scale span:first-child{left:0;transform:none}.ct-scale span:last-child{transform:translateX(-100%)}" +
+    ".ct-warn{margin:0;padding:8px 10px;border:1px solid var(--line);border-left:4px solid var(--chroma)}.ct-warn.bad{border-left-color:var(--gel)}" +
+    ".ct-chips{display:flex;flex-wrap:wrap;gap:6px}.ct-chip{min-height:32px;padding:0 10px;border:1px solid var(--line);background:transparent;color:var(--tx);font-size:12px;cursor:pointer;border-radius:0}" +
+    ".ct-chip[aria-pressed=true]{background:var(--chroma);color:var(--b-ink);border-color:var(--tx)}" +
+    ".ct-cap{gap:var(--sp-2);min-width:0}" +
+    ".ct-root,.ct-root .field,.ct-root .in,.ct-root input,.ct-root select,.ct-root textarea{max-width:100%;min-width:0}";
+  document.head.appendChild(css);
 })(window.GK);
 
 /* ---- modules/boards.js ---- */
@@ -17711,7 +18301,8 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   function stWord(s) { return t("cm_st_" + (s || "todo")); }
   function stPill(s) { return ui.pill(stWord(s), { approved: "done", revise: "alert", review: "wip", edit: "wip" }[s] || ""); }
   function modeWord(x) { return t(x === "Indirect" ? "cm_indirect" : "cm_direct"); }
-  function stageWord(s) { return t("po_s_" + s); }
+  var FOLD = { onboarding: "onboard", scripting: "plan", pre_production: "plan", shoot: "shoot", editing: "edit", client_review: "edit", revisions: "edit", delivered: "delivered", paid: "done", retention: "done" };
+  function stageWord(s) { return t("po_s_" + (FOLD[s] || s)); }
   function safeLink(l) { return /^https?:\/\//i.test(l || "") ? l : ""; }
   function lines(s) { return String(s || "").split(/\r?\n+/).map(function (x) { return x.trim(); }).filter(Boolean); }
   /** The svg comes from the team's board; strip anything active before it goes into the page. */
@@ -17769,11 +18360,13 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   }
   function sectionHead(title, sub) { return "<header><h2 class=\"sec\" style=\"font-size:26px\">" + esc(title) + "</h2>" + (sub ? "<p>" + esc(sub) + "</p>" : "") + "</header>"; }
 
+  /** The client sees six plain steps; the team's ten stages fold into them. */
+  var CSTEPS = [["onboard", ["onboarding"]], ["plan", ["scripting", "pre_production"]], ["shoot", ["shoot"]], ["edit", ["editing", "client_review", "revisions"]], ["delivered", ["delivered"]], ["done", ["paid", "retention"]]];
   function stepper(p) {
-    var STG = ["onboard", "plan", "shoot", "edit", "delivered", "testing", "report", "done"];
-    return '<div class="stepper" role="list" aria-label="' + esc(t("cm_now")) + '">' + STG.map(function (s, i) {
-      var cls = p.stage === "retention" || i < p.stageIdx ? "done" : i === p.stageIdx ? "now" : "";
-      return '<div role="listitem" class="' + cls + '"' + (i === p.stageIdx ? ' aria-current="step"' : "") + ">" + esc(stageWord(s)) + "</div>";
+    var at = 0; CSTEPS.forEach(function (c, i) { if (c[1].indexOf(p.stage) > -1) at = i; });
+    return '<div class="stepper" role="list" aria-label="' + esc(t("cm_now")) + '">' + CSTEPS.map(function (c, i) {
+      var cls = p.stage === "retention" || i < at ? "done" : i === at ? "now" : "";
+      return '<div role="listitem" class="' + cls + '"' + (i === at ? ' aria-current="step"' : "") + ">" + esc(stageWord(c[0])) + "</div>";
     }).join("") + "</div>";
   }
 
@@ -18080,7 +18673,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     ["assets", assetsSec, function (s) { return s.sections.files || s.sections.boards || s.sections.assets; }],
     ["performance", performanceSec, function (s) { return s.sections.results; }],
     ["invoices", invoicesSec, function (s) { return s.sections.invoices; }],
-    ["notes", notesSec, function (s) { return s.sections.notes; }],
+    ["notes", notesSec, function (s) { return s.sections.updates; }],
     ["extras", extrasSec, function (s) { return s.sections.extras && (s.extras || []).length > 0; }, function (s) { return (s.extras || []).filter(function (x) { return x.status === "proposed" && !ST.sent["extra:" + x.id]; }).length; }]
   ];
   function waitingCountNoExtras(snap) {
@@ -18215,6 +18808,557 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     });
   });
   CM._waUrl = function (msg) { return WA + encodeURIComponent(msg); };
+})(window.GK);
+
+/* ---- modules/marketing.js ---- */
+/* GECKO Ops · module: marketing. GECKO's own marketing: strategy, content, ads, showcase, insights.
+   Data lives in config.marketing = {strategy:{}, posts:[], ads:[], showcase:[], followers:[]} (no new collection needed).
+   This file: shared helpers, the Strategy tab and the view. marketing_content.js, marketing_ads.js and marketing_insights.js add the other tabs. */
+(function (GK) {
+  "use strict";
+  var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
+
+  GK.i18n.add({
+    nav_marketing: ["Marketing", "Marketing"], grp_mkt: ["Marketing", "Marketing"],
+    mk_title: ["Marketing", "Marketing"], mk_accent: ["for GECKO", "pour GECKO"],
+    mk_sub: ["Our own brand: what we say, what we post, what we spend and what it brings in.", "Notre propre marque : ce qu'on dit, ce qu'on publie, ce qu'on dépense et ce que ça rapporte."],
+    mk_t_strategy: ["Strategy", "Stratégie"], mk_t_content: ["Content", "Contenu"], mk_t_ads: ["Ads", "Pubs"], mk_t_showcase: ["Showcase", "Vitrine"], mk_t_insights: ["Insights", "Chiffres"],
+    mk_edit: ["Edit", "Modifier"], mk_cancel: ["Cancel", "Annuler"], mk_del: ["Delete", "Supprimer"], mk_keep: ["Keep it", "Garder"],
+    mk_del_q: ["Delete this for good?", "Supprimer pour de bon ?"], mk_del_yes: ["Yes, delete", "Oui, supprimer"],
+    mk_no_perm: ["You can read this but not change it.", "Vous pouvez le lire mais pas le modifier."],
+    mk_dash: ["-", "-"],
+    // strategy
+    mk_s_positioning: ["Positioning", "Positionnement"], mk_s_targets: ["Who we target", "Qui on vise"], mk_s_offers: ["Offers we push", "Offres qu'on pousse"],
+    mk_s_goals: ["Goals for this quarter", "Objectifs du trimestre"], mk_s_channels: ["Channels", "Canaux"], mk_s_messages: ["Key messages", "Messages clés"],
+    mk_s_hint: ["One point per line.", "Un point par ligne."],
+    mk_s_suggested: ["Suggested from the plan. Edit it to make it yours.", "Proposé d'après le plan. Modifiez-le pour le faire vôtre."],
+    mk_s_edit_t: ["Edit {n}", "Modifier : {n}"],
+    mk_s_def_positioning: [
+      "Ads built to be tested.\nGecko is an ad creative studio that makes tested video ads for Tunisian brands that already advertise.\nWe are the creative partner of the brand, not only a production house.\nOne shoot day gives many ads, and the numbers show which one wins.",
+      "Ads built to be tested.\nGecko est un studio de création publicitaire qui fait des pubs vidéo testées pour les marques tunisiennes qui font déjà de la pub.\nNous sommes le partenaire créatif de la marque, pas seulement une maison de production.\nUn jour de tournage donne plusieurs pubs, et les chiffres montrent laquelle gagne."],
+    mk_s_def_targets: [
+      "E-commerce brands that already run ads: cosmetics, fashion, food, health and beauty, accessories, home.\nPersonal brands with money: founders, doctors and clinic owners, coaches, creators.\nHigh-end fashion campaigns and upscale restaurant branding, sold as a Campaign or a custom quote.\nThey already spend on ads, their videos are weak, and the decider can pay at least 2,500 TND a month.\nGulf and Europe: a quiet outreach in the background, a few touches a week.",
+      "Marques e-commerce qui font déjà de la pub : cosmétique, mode, alimentaire, santé et beauté, accessoires, maison.\nMarques personnelles qui ont les moyens : fondateurs, médecins et cliniques, coachs, créateurs.\nCampagnes mode haut de gamme et branding de restaurants haut de gamme, vendus en Campagne ou sur devis.\nIls dépensent déjà en pub, leurs vidéos sont faibles, et le décideur peut payer au moins 2 500 TND par mois.\nGolfe et Europe : une prospection discrète en arrière-plan, quelques contacts par semaine."],
+    mk_s_def_offers: [
+      "Ad Audit, 150 TND: a 20-minute video review plus 5 hook ideas. Credited if they book a Test Campaign within 30 days.\nTest Campaign: the first step. 3 angles, 3 reels, 6 hook variations.\nMonthly plans (Regular, Premier, Premium) once the test shows what works.\nCampaign for launches and big moments.\nEvery offer above 1,000 TND goes through a call.",
+      "Ad Audit, 150 TND : une revue vidéo de 20 minutes et 5 idées d'accroches. Déduit si la marque réserve un Test Campaign sous 30 jours.\nTest Campaign : la première étape. 3 angles, 3 reels, 6 variations d'accroche.\nPlans mensuels (Regular, Premier, Premium) quand le test montre ce qui marche.\nCampagne pour les lancements et les grands moments.\nToute offre au-dessus de 1 000 TND passe par un appel."],
+    mk_s_def_goals: [
+      "Publish 3 reels a week, the same reel on Instagram and TikTok.\nRun our own campaign: 15 TND a day for 14 days, then 450 to 900 TND a month.\nCost per conversation under 6 TND. One in 5 conversations qualifies. One in 3 qualified books a call.\nShow 4 to 5 case studies with real ad results by the end of November.\nOutbound: 4 meetings booked per 50 first touches.",
+      "Publier 3 reels par semaine, le même reel sur Instagram et TikTok.\nLancer notre propre campagne : 15 TND par jour pendant 14 jours, puis 450 à 900 TND par mois.\nCoût par conversation sous 6 TND. Une conversation sur 5 est qualifiée. Une sur 3 qualifiées réserve un appel.\nMontrer 4 à 5 études de cas avec de vrais résultats pub d'ici fin novembre.\nProspection directe : 4 rendez-vous pour 50 premiers contacts."],
+    mk_s_def_channels: [
+      "Instagram: the main channel. Reels, DM the word TEST to start.\nTikTok: the same reels without the watermark. Check if ads are open to Tunisia.\nMeta ads: messages as the goal (Instagram DM and WhatsApp).\nLinkedIn and email: Gulf and Europe, a few touches a week.\nReferral partners and delivered clients: ask for 2 names after every project.",
+      "Instagram : le canal principal. Des reels, écrire TEST en DM pour commencer.\nTikTok : les mêmes reels sans le filigrane. Vérifier si les pubs sont ouvertes à la Tunisie.\nPubs Meta : objectif messages (DM Instagram et WhatsApp).\nLinkedIn et e-mail : Golfe et Europe, quelques contacts par semaine.\nPartenaires et clients livrés : demander 2 noms après chaque projet."],
+    mk_s_def_messages: [
+      "Stop guessing. Test.\nTunisian brands pay for ads but guess the creative. We test it.\nProof over claims: real numbers from real ad accounts, or no numbers.\nHook in the first 2 seconds. One call to action: DM TEST.\nContent mix: 40% proof, 30% method, 20% behind the scenes, 10% founder.",
+      "Stop guessing. Test.\nLes marques tunisiennes paient la pub mais devinent la création. Nous la testons.\nLa preuve avant les promesses : de vrais chiffres de vrais comptes pub, ou pas de chiffres.\nAccroche dans les 2 premières secondes. Un seul appel à l'action : DM TEST.\nMix de contenu : 40 % preuve, 30 % méthode, 20 % coulisses, 10 % fondateur."],
+    // shared labels
+    mk_ch_instagram: ["Instagram", "Instagram"], mk_ch_tiktok: ["TikTok", "TikTok"], mk_ch_linkedin: ["LinkedIn", "LinkedIn"], mk_ch_meta: ["Meta ads", "Pubs Meta"], mk_ch_other: ["Other", "Autre"],
+    mk_month_n: ["{m}", "{m}"]
+  });
+
+  var CHANNELS = ["instagram", "tiktok", "linkedin"];
+  var STRATEGY = ["positioning", "targets", "offers", "goals", "channels", "messages"];
+  var TABS = ["strategy", "content", "ads", "showcase", "insights"];
+  var K = { TABS: TABS, CHANNELS: CHANNELS, tabs: {}, STRATEGY: STRATEGY };
+
+  // ---------- data ----------
+  function raw() { var c = S.config() || {}; return c.marketing || {}; }
+  /** A copy of config.marketing with every list present. */
+  K.data = function () {
+    var d = u.clone(raw()) || {};
+    d.strategy = d.strategy || {};
+    ["posts", "ads", "showcase", "followers"].forEach(function (k) { if (!Array.isArray(d[k])) d[k] = []; });
+    return d;
+  };
+  /** save(fn): fn changes a copy of the data; the copy goes back into config. */
+  K.save = function (fn) {
+    var d = K.data(); fn(d);
+    var r = S.setConfig({ marketing: d });
+    return r !== null;
+  };
+  K.canEdit = function () { return m.can("ideas"); };
+  K.money = function () { return m.isFounder(); };
+  K.id = function () { return u.uid("mk"); };
+  K.num = function (id) { var v = parseFloat(String(u.val(id)).replace(",", ".")); return isFinite(v) && v > 0 ? v : 0; };
+  K.chLabel = function (c) { return t("mk_ch_" + c); };
+  K.opts = function (list, prefix) { return list.map(function (k) { return [k, t(prefix + k)]; }); };
+  K.mlabel = function (ym) {
+    var dt = new Date(ym + "-15T12:00:00");
+    return dt.toLocaleDateString(u.fr() ? "fr-FR" : "en-GB", { month: "short" });
+  };
+  K.lastMonths = function (n) {
+    var out = [], d = new Date(); d.setDate(15);
+    for (var i = n - 1; i >= 0; i--) { var x = new Date(d.getFullYear(), d.getMonth() - i, 15, 12); out.push(u.iso(x).slice(0, 7)); }
+    return out;
+  };
+  K.link = function (url) {
+    var s = String(url || "").trim();
+    if (!s) return "";
+    if (!/^https?:\/\//i.test(s)) s = "https://" + s;
+    return /^https?:\/\/[^\s"'<>]+$/i.test(s) ? s : "";
+  };
+  K.linkHTML = function (url) {
+    var h = K.link(url);
+    return h ? '<a class="mk-link" href="' + esc(h) + '" target="_blank" rel="noopener noreferrer">' + ui.icon("globe", "sm") + "<span>" + esc(h.replace(/^https?:\/\/(www\.)?/, "").slice(0, 32)) + "</span></a>" : "";
+  };
+  /** Modal with a save button and, when editing, a delete button that asks first (no browser dialog). */
+  K.formModal = function (o) {
+    var foot = '<div class="mk-foot-main">' + ui.btn(t("mk_cancel"), "close", { cls: "ghost" }) + ui.btn(t("save"), o.save, { cls: "primary", data: o.data }) + "</div>";
+    if (o.del) {
+      foot = '<div class="mk-foot-main" id="mk-foot-main">' + ui.btn(t("mk_del"), "mk-del-ask", { cls: "ghost" }) + '<span class="mk-sp"></span>' + ui.btn(t("mk_cancel"), "close", { cls: "ghost" }) + ui.btn(t("save"), o.save, { cls: "primary", data: o.data }) + "</div>" +
+        '<div class="mk-foot-ask" id="mk-foot-ask" hidden><span class="mk-q">' + esc(t("mk_del_q")) + '</span><span class="mk-sp"></span>' + ui.btn(t("mk_keep"), "mk-del-no", { cls: "ghost" }) + ui.btn(t("mk_del_yes"), o.del, { cls: "primary", data: o.data }) + "</div>";
+    }
+    ui.modal({ label: t("nav_marketing"), title: o.title, body: o.body, foot: foot });
+  };
+  GK.act("mk-del-ask", function () { var a = document.getElementById("mk-foot-main"), b = document.getElementById("mk-foot-ask"); if (a && b) { a.hidden = true; b.hidden = false; } });
+  GK.act("mk-del-no", function () { var a = document.getElementById("mk-foot-main"), b = document.getElementById("mk-foot-ask"); if (a && b) { a.hidden = false; b.hidden = true; } });
+  /** True when the click was on a real link inside a clickable card (let the link work, do not open the editor). */
+  K.onLink = function (ev) { return !!(ev && ev.target && ev.target.closest && ev.target.closest("a")); };
+  K.done = function () { ui.closeModal(true); ui.toast(t("saved")); };
+  K.guard = function () { if (!K.canEdit()) { ui.toast(t("mk_no_perm")); return false; } return true; };
+  K.btnEdit = function (label, a, data) { return ui.btn(label, a, { cls: "ghost sm", icon: "edit", data: data, disabled: !K.canEdit() }); };
+
+  // ---------- Strategy tab ----------
+  function stratText(k) {
+    var s = raw().strategy || {};
+    if (typeof s[k] === "string" && s[k].trim() !== "") return { text: s[k], own: true };
+    return { text: t("mk_s_def_" + k), own: false };
+  }
+  function lines(txt) { return String(txt || "").split(/\r?\n/).map(function (x) { return x.trim(); }).filter(Boolean); }
+  K.tabs.strategy = function () {
+    var h = '<div class="mk-strat">';
+    STRATEGY.forEach(function (k, i) {
+      var s = stratText(k);
+      h += '<section class="mk-block' + (k === "positioning" ? " wide" : "") + '" style="--i:' + i + '"><div class="mk-block-h"><h3 class="lab">' + esc(t("mk_s_" + k)) + "</h3>" + K.btnEdit(t("mk_edit"), "mk-s-edit", { k: k }) + "</div>" +
+        "<ul>" + lines(s.text).map(function (l) { return "<li>" + esc(l) + "</li>"; }).join("") + "</ul>" +
+        (s.own ? "" : '<p class="small muted mk-sug">' + esc(t("mk_s_suggested")) + "</p>") + "</section>";
+    });
+    return h + "</div>";
+  };
+  GK.act("mk-s-edit", function (el) {
+    if (!K.guard()) return;
+    var k = el.dataset.k;
+    K.formModal({ title: t("mk_s_edit_t", { n: t("mk_s_" + k) }), save: "mk-s-save", data: { k: k },
+      body: ui.field({ id: "mk-s-text", label: t("mk_s_" + k), type: "textarea", rows: 9, value: stratText(k).text, hint: t("mk_s_hint") }) });
+  });
+  GK.act("mk-s-save", function (el) {
+    if (!K.guard()) return;
+    var k = el.dataset.k, v = u.val("mk-s-text").trim();
+    if (K.save(function (d) { if (v) d.strategy[k] = v; else delete d.strategy[k]; })) K.done();
+  });
+
+  // ---------- view ----------
+  GK.view("marketing", {
+    render: function (params) {
+      var tab = TABS.indexOf(params.tab) > -1 ? params.tab : "strategy";
+      var h = ui.head({ label: t("nav_marketing"), title: t("mk_title"), accent: t("mk_accent"), sub: esc(t("mk_sub")) });
+      h += '<div class="mk-tabbar"><div class="tabs mk-tabs" role="tablist">' + TABS.map(function (k) {
+        return '<button type="button" role="tab" data-a="mk-tab" data-v="' + k + '" aria-selected="' + (tab === k) + '">' + esc(t("mk_t_" + k)) + "</button>";
+      }).join("") + "</div></div>";
+      var body = "";
+      try { body = K.tabs[tab] ? K.tabs[tab](params) : ""; } catch (e) { body = '<p class="err">' + esc(e && e.message) + "</p>"; }
+      return h + '<div class="mk-pane" data-tab="' + tab + '">' + body + "</div>";
+    }
+  });
+  GK.act("mk-tab", function (el) { ui.go("marketing", { tab: el.dataset.v }); });
+
+  GK.mk = K;
+
+  if (typeof document === "undefined") return;
+  var css = document.createElement("style"); css.id = "gk-marketing-css";
+  css.textContent =
+    ".mk-tabbar{position:sticky;top:0;z-index:5;background:var(--bg);padding:6px 0;margin-bottom:var(--sp-4)}.mk-tabs{overflow-x:auto;max-width:100%;flex-wrap:nowrap}.mk-tabs [role=tab]{white-space:nowrap}" +
+    ".mk-pane{animation:mkIn .3s cubic-bezier(.2,.7,.2,1) both;min-width:0}" +
+    ".mk-strat{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-4)}.mk-block{border:1px solid var(--line);border-top:3px solid var(--tx);padding:var(--sp-4);min-width:0;animation:mkIn .35s ease both;animation-delay:calc(var(--i) * 40ms)}" +
+    ".mk-block.wide{grid-column:1/-1;background:var(--chroma);color:var(--b-ink);border-color:var(--chroma)}.mk-block:nth-child(3n+2):not(.wide){border-top-color:var(--gel)}" +
+    ".mk-block-h{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}.mk-block-h h3{margin:0}" +
+    ".mk-block ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}.mk-block li{line-height:1.4;overflow-wrap:anywhere}.mk-sug{margin:10px 0 0}" +
+    ".mk-bar{display:flex;gap:var(--sp-3);align-items:center;flex-wrap:wrap;margin-bottom:var(--sp-4)}.mk-bar .mk-sp{flex:1}" +
+    ".mk-sp{flex:1}.mk-foot-main,.mk-foot-ask{display:flex;gap:8px;align-items:center;width:100%;flex-wrap:wrap}.mk-foot-ask[hidden],.mk-foot-main[hidden]{display:none}.mk-q{font-weight:700}" +
+    ".mk-cols{display:grid;grid-template-columns:repeat(5,minmax(200px,1fr));gap:var(--sp-3);overflow-x:auto;padding-bottom:8px}" +
+    ".mk-col{display:flex;flex-direction:column;gap:10px;min-width:0;border-top:3px solid var(--tx);padding-top:var(--sp-2)}.mk-col:nth-child(1){border-color:var(--gel)}.mk-col:nth-child(2){border-color:var(--chroma)}.mk-col:nth-child(5){border-color:var(--line)}" +
+    ".mk-col-h{display:flex;justify-content:space-between;align-items:center}.mk-card{display:flex;flex-direction:column;gap:6px;text-align:left;padding:12px;border:1px solid var(--line);background:var(--bg);cursor:pointer;transition:border-color .18s,transform .18s;animation:mkIn .35s both}" +
+    ".mk-card:hover,.mk-card:focus-visible{border-color:var(--tx);transform:translateY(-2px)}.mk-card .t{font-weight:700;font-size:15px;overflow-wrap:anywhere}.mk-card .row{gap:6px;flex-wrap:wrap}.mk-meta{font-size:12.5px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}" +
+    ".mk-link{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;text-decoration:underline;overflow-wrap:anywhere}.mk-link .ic{width:13px;height:13px}" +
+    ".mk-table{overflow-x:auto;border:1px solid var(--line);margin-bottom:var(--sp-4)}.mk-table table{width:100%;border-collapse:collapse;font-size:14px}.mk-table th{text-align:left;padding:10px 12px;border-bottom:1px solid var(--tx);font-size:11px;white-space:nowrap}" +
+    ".mk-table td{padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}.mk-table tbody tr[data-a]{cursor:pointer}.mk-table tbody tr[data-a]:hover{background:var(--chroma)}.mk-table td.r,.mk-table th.r{text-align:right}.mk-table td.w{white-space:normal;min-width:180px}" +
+    ".mk-month{margin:var(--sp-4) 0 8px}.mk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--sp-3)}" +
+    ".mk-res{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.mk-note-m{border-left:3px solid var(--chroma);padding-left:10px;margin:0}" +
+    ".mk-show{background:var(--chroma);color:var(--b-ink);padding:2px 6px;font-family:var(--f-type);font-size:11px;letter-spacing:.06em;text-transform:uppercase}.mk-quote{font-weight:700;font-size:16px;margin:0}" +
+    ".mk-charts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-4);margin-top:var(--sp-4)}.mk-charts>*{min-width:0;margin:0}" +
+    "@keyframes mkIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}" +
+    "@media (prefers-reduced-motion:reduce){.mk-pane,.mk-block,.mk-card{animation:none!important}.mk-card:hover{transform:none}}" +
+    "@media (max-width:900px){.mk-charts{grid-template-columns:1fr}}" +
+    "@media (max-width:700px){.mk-strat{grid-template-columns:1fr}.mk-cols{grid-template-columns:repeat(5,78vw)}.mk-res{grid-template-columns:repeat(2,minmax(0,1fr))}}";
+  document.head.appendChild(css);
+})(window.GK);
+
+/* ---- modules/marketing_ads.js ---- */
+/* GECKO Ops · marketing: Ads and Showcase tabs. Stored in config.marketing.ads and config.marketing.showcase. Budget, spend and cost per lead are for the founder only. */
+(function (GK) {
+  "use strict";
+  var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc, K = GK.mk;
+
+  GK.i18n.add({
+    mk_a_new: ["New campaign", "Nouvelle campagne"], mk_a_new_t: ["New ad campaign", "Nouvelle campagne pub"], mk_a_edit_t: ["Edit ad campaign", "Modifier la campagne pub"],
+    mk_a_hint: ["Our own ad campaigns. Log what each one spent and how many conversations it brought.", "Nos propres campagnes pub. Notez ce que chacune a dépensé et combien de conversations elle a apportées."],
+    mk_a_hint_sales: ["Our own ad campaigns and what they brought in. Budget and spend are for the owner.", "Nos propres campagnes pub et ce qu'elles ont rapporté. Budget et dépenses sont réservés au fondateur."],
+    mk_a_name: ["Name", "Nom"], mk_a_objective: ["Objective", "Objectif"], mk_a_channel: ["Channel", "Canal"], mk_a_budget: ["Budget (TND)", "Budget (TND)"],
+    mk_a_start: ["Start", "Début"], mk_a_end: ["End", "Fin"], mk_a_spend: ["Spent (TND)", "Dépensé (TND)"], mk_a_leads: ["Leads or DMs", "Prospects ou DM"],
+    mk_a_cpl: ["Cost per lead", "Coût par prospect"], mk_a_status: ["Status", "Statut"], mk_a_notes: ["Notes", "Notes"],
+    mk_ao_messages: ["Messages", "Messages"], mk_ao_traffic: ["Traffic", "Trafic"], mk_ao_awareness: ["Awareness", "Notoriété"], mk_ao_leads: ["Lead form", "Formulaire"],
+    mk_as_planned: ["Planned", "Prévue"], mk_as_running: ["Running", "En cours"], mk_as_paused: ["Paused", "En pause"], mk_as_done: ["Finished", "Terminée"],
+    mk_a_empty_t: ["No ad campaigns yet", "Aucune campagne pub"], mk_a_empty_b: ["Add the first one. Test phase: 15 TND a day for 14 days.", "Ajoutez la première. Phase de test : 15 TND par jour pendant 14 jours."],
+    mk_a_tot_spend: ["Spent", "Dépensé"], mk_a_tot_leads: ["Leads or DMs", "Prospects ou DM"], mk_a_tot_cpl: ["Cost per lead", "Coût par prospect"], mk_a_tot_run: ["Running now", "En cours"],
+    mk_a_unit_leads: ["{n} leads", "{n} prospects"],
+    // showcase
+    mk_w_hint: ["Delivered projects we can show. Only mark one when the client has said yes. Costs are never shown here.", "Projets livrés que nous pouvons montrer. Cochez seulement si le client a dit oui. Les coûts ne sont jamais affichés ici."],
+    mk_w_add: ["Add other case", "Ajouter un autre cas"], mk_w_new_t: ["Add a case study", "Ajouter une étude de cas"], mk_w_edit_t: ["Edit case study", "Modifier l'étude de cas"],
+    mk_w_title: ["Title or brand", "Titre ou marque"], mk_w_title_ph: ["Brand name and sector", "Nom de la marque et secteur"], mk_w_project: ["Project", "Projet"], mk_w_other: ["Not a project (our own campaign, partner)", "Pas un projet (notre campagne, partenaire)"],
+    mk_w_allowed: ["The client allows us to show it", "Le client nous autorise à le montrer"], mk_w_result: ["Result line", "Ligne de résultat"], mk_w_result_ph: ["Real numbers only, for example: cost per purchase down 32%", "Vrais chiffres seulement, par exemple : coût par achat en baisse de 32 %"],
+    mk_w_link: ["Link to the work", "Lien vers le travail"], mk_w_notes: ["Notes", "Notes"], mk_w_can: ["Can show", "Peut être montré"], mk_w_wait: ["Not cleared yet", "Pas encore autorisé"],
+    mk_w_ready: ["Ready to show", "Prêts à montrer"], mk_w_total: ["Delivered projects", "Projets livrés"], mk_w_noresult: ["No result line yet", "Pas encore de résultat"],
+    mk_w_empty_t: ["Nothing to show yet", "Rien à montrer pour l'instant"], mk_w_empty_b: ["Projects appear here once they are delivered. You can also add our own campaign as a case.", "Les projets apparaissent ici une fois livrés. Vous pouvez aussi ajouter notre propre campagne comme cas."],
+    mk_w_edit: ["Open", "Ouvrir"]
+  });
+
+  var OBJ = ["messages", "traffic", "awareness", "leads"], ST = ["planned", "running", "paused", "done"], CH = ["meta", "tiktok", "linkedin", "other"];
+  K.ads = function () { return K.data().ads; };
+  K.cpl = function (a) { return (+a.leads > 0 && +a.spend > 0) ? a.spend / a.leads : null; };
+
+  // ---------- Ads ----------
+  K.tabs.ads = function () {
+    var money = K.money(), ads = K.ads();
+    var h = '<div class="mk-bar"><p class="muted small" style="margin:0;flex:1;min-width:200px">' + esc(t(money ? "mk_a_hint" : "mk_a_hint_sales")) + "</p>" +
+      ui.btn(t("mk_a_new"), "mk-ad-new", { cls: "primary", icon: "plus", disabled: !K.canEdit(), title: K.canEdit() ? "" : t("mk_no_perm") }) + "</div>";
+    if (!ads.length) return h + ui.empty({ title: t("mk_a_empty_t"), text: t("mk_a_empty_b"), action: K.canEdit() ? { label: t("mk_a_new"), a: "mk-ad-new" } : null });
+    var spend = u.sum(ads, function (a) { return a.spend; }), leads = u.sum(ads, function (a) { return a.leads; });
+    var items = [{ lab: t("mk_a_tot_leads"), v: String(leads), n: "" }, { lab: t("mk_a_tot_run"), v: String(ads.filter(function (a) { return a.status === "running"; }).length), n: "" }];
+    if (money) items.unshift({ lab: t("mk_a_tot_spend"), v: u.money(spend), n: "" }, { lab: t("mk_a_tot_cpl"), v: leads && spend ? u.money(spend / leads, 1) : t("mk_dash"), n: "" });
+    h += ui.kpis(items);
+    var rows = ads.slice().sort(function (a, b) { return String(b.start || "").localeCompare(String(a.start || "")); });
+    h += '<div class="mk-table" style="margin-top:var(--sp-4)"><table><thead><tr><th>' + esc(t("mk_a_name")) + "</th><th>" + esc(t("mk_a_status")) + "</th><th>" + esc(t("mk_a_objective")) + "</th><th>" + esc(t("mk_a_channel")) + "</th><th>" + esc(t("mk_a_start")) + "</th><th>" + esc(t("mk_a_end")) + "</th>" +
+      (money ? '<th class="r">' + esc(t("mk_a_budget")) + '</th><th class="r">' + esc(t("mk_a_spend")) + "</th>" : "") + '<th class="r">' + esc(t("mk_a_leads")) + "</th>" + (money ? '<th class="r">' + esc(t("mk_a_cpl")) + "</th>" : "") + "</tr></thead><tbody>" +
+      rows.map(function (a) {
+        var c = K.cpl(a);
+        return '<tr data-a="mk-ad-edit" data-id="' + esc(a.id) + '"><td class="w"><b>' + esc(a.name) + "</b>" + (a.notes ? '<br><span class="small muted">' + esc(a.notes) + "</span>" : "") + "</td><td>" + ui.pill(t("mk_as_" + a.status), a.status === "running" ? "chroma" : a.status === "done" ? "done" : "") + "</td><td>" + esc(t("mk_ao_" + a.objective)) + "</td><td>" + esc(t("mk_ch_" + a.channel)) + "</td><td>" + esc(u.fmtDate(a.start)) + "</td><td>" + esc(u.fmtDate(a.end)) + "</td>" +
+          (money ? '<td class="r num">' + (a.budget ? esc(u.money(a.budget)) : esc(t("mk_dash"))) + '</td><td class="r num">' + (a.spend ? esc(u.money(a.spend)) : esc(t("mk_dash"))) + "</td>" : "") +
+          '<td class="r num">' + (a.leads ? esc(a.leads) : esc(t("mk_dash"))) + "</td>" + (money ? '<td class="r num">' + (c != null ? esc(u.money(c, 1)) : esc(t("mk_dash"))) + "</td>" : "") + "</tr>";
+      }).join("") + "</tbody></table></div>";
+    return h;
+  };
+  function adForm(a) {
+    var money = K.money();
+    return '<div class="form">' + ui.field({ id: "mk-a-name", label: t("mk_a_name"), value: a.name, span: true }) +
+      ui.field({ id: "mk-a-objective", label: t("mk_a_objective"), type: "select", value: a.objective, options: K.opts(OBJ, "mk_ao_") }) +
+      ui.field({ id: "mk-a-channel", label: t("mk_a_channel"), type: "select", value: a.channel, options: K.opts(CH, "mk_ch_") }) +
+      ui.field({ id: "mk-a-status", label: t("mk_a_status"), type: "select", value: a.status, options: K.opts(ST, "mk_as_") }) +
+      ui.field({ id: "mk-a-leads", label: t("mk_a_leads"), type: "number", value: a.leads || "" }) +
+      ui.field({ id: "mk-a-start", label: t("mk_a_start"), type: "date", value: a.start }) + ui.field({ id: "mk-a-end", label: t("mk_a_end"), type: "date", value: a.end }) +
+      (money ? ui.field({ id: "mk-a-budget", label: t("mk_a_budget"), type: "number", value: a.budget || "" }) + ui.field({ id: "mk-a-spend", label: t("mk_a_spend"), type: "number", value: a.spend || "" }) : "") +
+      ui.field({ id: "mk-a-notes", label: t("mk_a_notes"), type: "textarea", rows: 3, value: a.notes, span: true }) + "</div>";
+  }
+  function adOpen(a, isNew) {
+    if (!K.guard()) return;
+    K.formModal({ title: t(isNew ? "mk_a_new_t" : "mk_a_edit_t"), body: adForm(a), save: "mk-ad-save", del: isNew || !K.money() ? "" : "mk-ad-del", data: { id: a.id || "" } });
+  }
+  GK.act("mk-ad-new", function () { adOpen({ objective: "messages", channel: "meta", status: "planned", start: u.today() }, true); });
+  GK.act("mk-ad-edit", function (el) { var a = K.ads().find(function (x) { return x.id === el.dataset.id; }); if (a) adOpen(a, false); });
+  GK.act("mk-ad-save", function (el) {
+    if (!K.guard()) return;
+    var name = u.val("mk-a-name").trim();
+    if (!name) { u.focus("mk-a-name"); return ui.toast(t("required")); }
+    var rec = { name: name, objective: u.val("mk-a-objective"), channel: u.val("mk-a-channel"), status: u.val("mk-a-status"), start: u.val("mk-a-start"), end: u.val("mk-a-end"), leads: K.num("mk-a-leads"), notes: u.val("mk-a-notes").trim() };
+    if (K.money()) { rec.budget = K.num("mk-a-budget"); rec.spend = K.num("mk-a-spend"); }
+    var id = el.dataset.id;
+    if (K.save(function (d) { var old = id ? d.ads.find(function (x) { return x.id === id; }) : null; if (old) Object.assign(old, rec); else d.ads.push(Object.assign({ id: K.id(), budget: 0, spend: 0 }, rec)); })) K.done();
+  });
+  GK.act("mk-ad-del", function (el) {
+    if (!K.guard() || !K.money()) return;
+    if (K.save(function (d) { d.ads = d.ads.filter(function (x) { return x.id !== el.dataset.id; }); })) K.done();
+  });
+
+  // ---------- Showcase ----------
+  var DONE = ["delivered", "paid", "retention"];
+  function delivered() { return S.all("projects").filter(function (p) { return DONE.indexOf(p.stage) > -1; }); }
+  function entryFor(d, pid) { return d.showcase.find(function (e) { return e.projectId === pid; }); }
+  function brandOf(p) { var c = p && p.clientId ? m.client(p.clientId) : null; return c ? c.brand : ""; }
+  function wCard(title, sub, e, attrs, i) {
+    var ok = e && e.allowed;
+    return '<div class="mk-card" role="button" tabindex="0" data-a="mk-w-edit"' + attrs + ' style="animation-delay:' + Math.min(i, 8) * 30 + 'ms"><span class="row" style="justify-content:space-between;flex-wrap:nowrap"><span class="t">' + esc(title) + "</span>" + (ok ? '<span class="mk-show">' + esc(t("mk_w_can")) + "</span>" : ui.pill(t("mk_w_wait"))) + "</span>" +
+      (sub ? '<span class="small muted">' + esc(sub) + "</span>" : "") +
+      (e && e.result ? '<p class="mk-quote">' + esc(e.result) + "</p>" : '<span class="small muted">' + esc(t("mk_w_noresult")) + "</span>") + K.linkHTML(e && e.link) + "</div>";
+  }
+  K.tabs.showcase = function () {
+    var d = K.data(), ps = delivered(), others = d.showcase.filter(function (e) { return !e.projectId; });
+    var h = '<div class="mk-bar"><p class="muted small" style="margin:0;flex:1;min-width:200px">' + esc(t("mk_w_hint")) + "</p>" + ui.btn(t("mk_w_add"), "mk-w-new", { cls: "primary", icon: "plus", disabled: !K.canEdit(), title: K.canEdit() ? "" : t("mk_no_perm") }) + "</div>";
+    if (!ps.length && !others.length) return h + ui.empty({ title: t("mk_w_empty_t"), text: t("mk_w_empty_b") });
+    var ready = d.showcase.filter(function (e) { return e.allowed; }).length;
+    h += ui.kpis([{ lab: t("mk_w_ready"), v: String(ready), n: "" }, { lab: t("mk_w_total"), v: String(ps.length), n: "" }]);
+    var i = 0;
+    h += '<div class="mk-grid" style="margin-top:var(--sp-4)">' + ps.map(function (p) {
+      var e = entryFor(d, p.id), c = m.pack(p.pack);
+      return wCard(brandOf(p) || p.name, [p.name, c.name].filter(Boolean).join(" · "), e, ' data-pid="' + esc(p.id) + '"', i++);
+    }).join("") + others.map(function (e) { return wCard(e.title || t("mk_c_untitled"), "", e, ' data-id="' + esc(e.id) + '"', i++); }).join("") + "</div>";
+    return h;
+  };
+  function wForm(e, p) {
+    return '<div class="form">' +
+      (p ? '<p style="grid-column:1/-1;margin:0"><b>' + esc(brandOf(p) || p.name) + "</b> · " + esc(p.name) + "</p>" : ui.field({ id: "mk-w-title", label: t("mk_w_title"), value: e.title, placeholder: t("mk_w_title_ph"), span: true })) +
+      ui.field({ id: "mk-w-allowed", label: t("mk_w_allowed"), type: "checkbox", value: e.allowed }) +
+      ui.field({ id: "mk-w-result", label: t("mk_w_result"), value: e.result, placeholder: t("mk_w_result_ph"), span: true }) +
+      ui.field({ id: "mk-w-link", label: t("mk_w_link"), value: e.link, placeholder: "https://", span: true }) +
+      ui.field({ id: "mk-w-notes", label: t("mk_w_notes"), type: "textarea", rows: 3, value: e.notes, span: true }) + "</div>";
+  }
+  function wOpen(e, p, isNew) {
+    if (!K.guard()) return;
+    K.formModal({ title: t(isNew ? "mk_w_new_t" : "mk_w_edit_t"), body: wForm(e, p), save: "mk-w-save", del: e.id && !p ? "mk-w-del" : "", data: { id: e.id || "", pid: p ? p.id : "" } });
+  }
+  GK.act("mk-w-new", function () { wOpen({}, null, true); });
+  GK.act("mk-w-edit", function (el, ev) {
+    if (K.onLink(ev)) return;
+    var d = K.data(), pid = el.dataset.pid;
+    if (pid) return wOpen(entryFor(d, pid) || { projectId: pid }, m.project(pid), false);
+    var e = d.showcase.find(function (x) { return x.id === el.dataset.id; }); if (e) wOpen(e, null, false);
+  });
+  GK.act("mk-w-save", function (el) {
+    if (!K.guard()) return;
+    var pid = el.dataset.pid, id = el.dataset.id, rec = { allowed: u.checked("mk-w-allowed"), result: u.val("mk-w-result").trim(), link: u.val("mk-w-link").trim(), notes: u.val("mk-w-notes").trim() };
+    if (!pid) { rec.title = u.val("mk-w-title").trim(); if (!rec.title) { u.focus("mk-w-title"); return ui.toast(t("required")); } }
+    if (K.save(function (d) {
+      var old = pid ? entryFor(d, pid) : (id ? d.showcase.find(function (x) { return x.id === id; }) : null);
+      if (old) Object.assign(old, rec); else d.showcase.push(Object.assign({ id: K.id(), projectId: pid || "" }, rec));
+    })) K.done();
+  });
+  GK.act("mk-w-del", function (el) {
+    if (!K.guard()) return;
+    if (K.save(function (d) { d.showcase = d.showcase.filter(function (x) { return x.id !== el.dataset.id; }); })) K.done();
+  });
+})(window.GK);
+
+/* ---- modules/marketing_content.js ---- */
+/* GECKO Ops · marketing: Content tab. Our own posts, idea to posted, with results after posting. Stored in config.marketing.posts. */
+(function (GK) {
+  "use strict";
+  var u = GK.u, t = GK.t, ui = GK.ui, S = GK.store, esc = u.esc, K = GK.mk;
+
+  GK.i18n.add({
+    mk_c_new: ["New post", "Nouveau post"], mk_c_board: ["Board", "Tableau"], mk_c_list: ["By month", "Par mois"],
+    mk_c_hint: ["Our own posts on Instagram, TikTok and LinkedIn. Move each one from idea to posted, then add the numbers.", "Nos propres posts sur Instagram, TikTok et LinkedIn. Faites avancer chacun de l'idée à publié, puis ajoutez les chiffres."],
+    mk_st_idea: ["Idea", "Idée"], mk_st_scripted: ["Scripted", "Scénarisé"], mk_st_shot: ["Shot", "Tourné"], mk_st_edited: ["Edited", "Monté"], mk_st_posted: ["Posted", "Publié"],
+    mk_fm_reel: ["Reel", "Reel"], mk_fm_carousel: ["Carousel", "Carrousel"], mk_fm_static: ["Static", "Image"], mk_fm_story: ["Story", "Story"],
+    mk_c_title: ["Title", "Titre"], mk_c_title_ph: ["Hook or working title", "Accroche ou titre de travail"], mk_c_channel: ["Channel", "Canal"], mk_c_format: ["Format", "Format"],
+    mk_c_date: ["Post date", "Date de publication"], mk_c_status: ["Status", "Statut"], mk_c_link: ["Link to the post", "Lien du post"], mk_c_notes: ["Notes", "Notes"],
+    mk_c_pillar: ["Pillar", "Pilier"], mk_pl_none: ["None", "Aucun"], mk_pl_proof: ["Proof", "Preuve"], mk_pl_method: ["Method", "Méthode"], mk_pl_bts: ["Behind the scenes", "Coulisses"], mk_pl_founder: ["Founder", "Fondateur"],
+    mk_c_results: ["Results after posting", "Résultats après publication"],
+    mk_r_views: ["Views", "Vues"], mk_r_likes: ["Likes", "J'aime"], mk_r_saves: ["Saves", "Enregistrements"], mk_r_shares: ["Shares", "Partages"], mk_r_follows: ["New follows", "Nouveaux abonnés"], mk_r_dms: ["DMs", "DM"],
+    mk_c_edit_t: ["Edit post", "Modifier le post"], mk_c_new_t: ["New post", "Nouveau post"],
+    mk_c_empty_t: ["No posts yet", "Aucun post pour l'instant"], mk_c_empty_b: ["Add the first idea. Three reels a week is the plan.", "Ajoutez la première idée. Le plan : trois reels par semaine."],
+    mk_c_nodate: ["No date yet", "Pas encore de date"], mk_c_next: ["Move to {s}", "Passer à {s}"], mk_c_untitled: ["Untitled post", "Post sans titre"],
+    mk_c_th_date: ["Date", "Date"]
+  });
+
+  var STATUS = ["idea", "scripted", "shot", "edited", "posted"];
+  var FORMATS = ["reel", "carousel", "static", "story"];
+  var PILLARS = ["", "proof", "method", "bts", "founder"];
+  var RES = ["views", "likes", "saves", "shares", "follows", "dms"];
+
+  K.posts = function () { return K.data().posts; };
+  K.interactions = function (p) { return (+p.likes || 0) + (+p.saves || 0) + (+p.shares || 0); };
+
+  function card(p, i) {
+    var si = STATUS.indexOf(p.status), nxt = STATUS[si + 1];
+    return '<div class="mk-card" role="button" tabindex="0" data-a="mk-post-edit" data-id="' + esc(p.id) + '" style="animation-delay:' + Math.min(i, 8) * 30 + 'ms">' +
+      '<span class="t">' + esc(p.title || t("mk_c_untitled")) + "</span>" +
+      '<span class="mk-meta">' + ui.chip(K.chLabel(p.channel), p.channel) + '<span class="muted">' + esc(t("mk_fm_" + p.format)) + "</span>" + (p.date ? "<span>" + esc(u.fmtDate(p.date)) + "</span>" : "") + "</span>" +
+      (p.status === "posted" && p.views ? '<span class="mk-meta"><b class="num">' + esc(GK.charts.compact(p.views)) + "</b> " + esc(t("mk_r_views").toLowerCase()) + " · <b class=\"num\">" + esc(K.interactions(p)) + "</b></span>" : "") +
+      K.linkHTML(p.link) +
+      (nxt && K.canEdit() ? '<span class="row"><button type="button" class="btn ghost sm" data-a="mk-post-move" data-id="' + esc(p.id) + '" title="' + esc(t("mk_c_next", { s: t("mk_st_" + nxt) })) + '">' + esc(t("mk_c_next", { s: t("mk_st_" + nxt) })) + "</button></span>" : "") + "</div>";
+  }
+  function board(posts) {
+    return '<div class="mk-cols">' + STATUS.map(function (s) {
+      var list = posts.filter(function (p) { return p.status === s; }).sort(function (a, b) { return String(a.date || "9999").localeCompare(String(b.date || "9999")); });
+      return '<section class="mk-col" aria-label="' + esc(t("mk_st_" + s)) + '"><div class="mk-col-h"><h3 class="lab">' + esc(t("mk_st_" + s)) + '</h3><span class="pill">' + list.length + "</span></div>" + list.map(card).join("") + "</section>";
+    }).join("") + "</div>";
+  }
+  function list(posts) {
+    var groups = {}, keys = [];
+    posts.slice().sort(function (a, b) { return String(b.date || "0000").localeCompare(String(a.date || "0000")); }).forEach(function (p) {
+      var k = p.date ? u.month(p.date) : "none"; if (!groups[k]) { groups[k] = []; keys.push(k); } groups[k].push(p);
+    });
+    return keys.map(function (k) {
+      var g = groups[k], posted = g.filter(function (p) { return p.status === "posted"; }).length;
+      return '<h3 class="lab mk-month">' + esc(k === "none" ? t("mk_c_nodate") : u.fmtMonth(k)) + " · " + g.length + "</h3>" +
+        '<div class="mk-table"><table><thead><tr><th>' + esc(t("mk_c_th_date")) + "</th><th>" + esc(t("mk_c_title")) + "</th><th>" + esc(t("mk_c_channel")) + "</th><th>" + esc(t("mk_c_format")) + "</th><th>" + esc(t("mk_c_status")) + "</th>" +
+        RES.map(function (r) { return '<th class="r">' + esc(t("mk_r_" + r)) + "</th>"; }).join("") + "</tr></thead><tbody>" +
+        g.map(function (p) {
+          return '<tr data-a="mk-post-edit" data-id="' + esc(p.id) + '"><td>' + esc(u.fmtDate(p.date)) + '</td><td class="w">' + esc(p.title || t("mk_c_untitled")) + "</td><td>" + esc(K.chLabel(p.channel)) + "</td><td>" + esc(t("mk_fm_" + p.format)) + "</td><td>" + ui.pill(t("mk_st_" + p.status), p.status === "posted" ? "done" : "") + "</td>" +
+            RES.map(function (r) { return '<td class="r num">' + (p.status === "posted" && p[r] ? esc(p[r]) : esc(t("mk_dash"))) + "</td>"; }).join("") + "</tr>";
+        }).join("") + "</tbody></table></div>";
+    }).join("");
+  }
+
+  K.tabs.content = function (params) {
+    var layout = params.clayout === "list" ? "list" : "board", posts = K.posts();
+    var h = '<div class="mk-bar"><p class="muted small" style="margin:0;flex:1;min-width:200px">' + esc(t("mk_c_hint")) + "</p>" +
+      '<div class="tabs" role="tablist">' + [["board", "mk_c_board"], ["list", "mk_c_list"]].map(function (x) {
+        return '<button type="button" role="tab" data-a="mk-c-layout" data-v="' + x[0] + '" aria-selected="' + (layout === x[0]) + '">' + esc(t(x[1])) + "</button>";
+      }).join("") + "</div>" + ui.btn(t("mk_c_new"), "mk-post-new", { cls: "primary", icon: "plus", disabled: !K.canEdit(), title: K.canEdit() ? "" : t("mk_no_perm") }) + "</div>";
+    if (!posts.length) return h + ui.empty({ title: t("mk_c_empty_t"), text: t("mk_c_empty_b"), action: K.canEdit() ? { label: t("mk_c_new"), a: "mk-post-new" } : null });
+    return h + (layout === "list" ? list(posts) : board(posts));
+  };
+  GK.act("mk-c-layout", function (el) { ui.go("marketing", { tab: "content", clayout: el.dataset.v }); });
+
+  function form(p) {
+    return '<div class="form">' +
+      ui.field({ id: "mk-p-title", label: t("mk_c_title"), value: p.title, placeholder: t("mk_c_title_ph"), span: true }) +
+      ui.field({ id: "mk-p-channel", label: t("mk_c_channel"), type: "select", value: p.channel, options: K.CHANNELS.map(function (c) { return [c, K.chLabel(c)]; }) }) +
+      ui.field({ id: "mk-p-format", label: t("mk_c_format"), type: "select", value: p.format, options: K.opts(FORMATS, "mk_fm_") }) +
+      ui.field({ id: "mk-p-status", label: t("mk_c_status"), type: "select", value: p.status, options: K.opts(STATUS, "mk_st_") }) +
+      ui.field({ id: "mk-p-date", label: t("mk_c_date"), type: "date", value: p.date }) +
+      ui.field({ id: "mk-p-pillar", label: t("mk_c_pillar"), type: "select", value: p.pillar || "", options: PILLARS.map(function (x) { return [x, x ? t("mk_pl_" + x) : t("mk_pl_none")]; }) }) +
+      ui.field({ id: "mk-p-link", label: t("mk_c_link"), value: p.link, placeholder: "https://" }) +
+      ui.field({ id: "mk-p-notes", label: t("mk_c_notes"), type: "textarea", rows: 3, value: p.notes, span: true }) +
+      '<h3 class="lab" style="grid-column:1/-1;margin:6px 0 0">' + esc(t("mk_c_results")) + "</h3>" +
+      RES.map(function (r) { return ui.field({ id: "mk-p-" + r, label: t("mk_r_" + r), type: "number", value: p[r] || "" }); }).join("") + "</div>";
+  }
+  function open(p, isNew) {
+    if (!K.guard()) return;
+    K.formModal({ title: t(isNew ? "mk_c_new_t" : "mk_c_edit_t"), body: form(p), save: "mk-post-save", del: isNew ? "" : "mk-post-del", data: { id: p.id || "" } });
+  }
+  GK.act("mk-post-new", function () { open({ channel: "instagram", format: "reel", status: "idea", date: "" }, true); });
+  GK.act("mk-post-edit", function (el, ev) {
+    if (K.onLink(ev)) return;
+    var p = K.posts().find(function (x) { return x.id === el.dataset.id; }); if (p) open(p, false);
+  });
+  GK.act("mk-post-move", function (el, ev) {
+    if (ev && ev.stopPropagation) ev.stopPropagation();
+    if (!K.guard()) return;
+    K.save(function (d) { var p = d.posts.find(function (x) { return x.id === el.dataset.id; }); if (p) { var i = STATUS.indexOf(p.status); if (i < STATUS.length - 1) p.status = STATUS[i + 1]; if (p.status === "posted" && !p.date) p.date = u.today(); } });
+  });
+  GK.act("mk-post-save", function (el) {
+    if (!K.guard()) return;
+    var title = u.val("mk-p-title").trim();
+    if (!title) { u.focus("mk-p-title"); return ui.toast(t("required")); }
+    var rec = { title: title, channel: u.val("mk-p-channel"), format: u.val("mk-p-format"), status: u.val("mk-p-status"), date: u.val("mk-p-date"), pillar: u.val("mk-p-pillar"), link: u.val("mk-p-link").trim(), notes: u.val("mk-p-notes").trim() };
+    RES.forEach(function (r) { rec[r] = K.num("mk-p-" + r); });
+    var id = el.dataset.id;
+    if (K.save(function (d) {
+      var old = id ? d.posts.find(function (x) { return x.id === id; }) : null;
+      if (old) Object.assign(old, rec); else d.posts.push(Object.assign({ id: K.id() }, rec));
+    })) K.done();
+  });
+  GK.act("mk-post-del", function (el) {
+    if (!K.guard()) return;
+    if (K.save(function (d) { d.posts = d.posts.filter(function (x) { return x.id !== el.dataset.id; }); })) K.done();
+  });
+})(window.GK);
+
+/* ---- modules/marketing_insights.js ---- */
+/* GECKO Ops · marketing: Insights tab. KPIs and charts from our posts, follower counts, leads and ads. */
+(function (GK) {
+  "use strict";
+  var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc, K = GK.mk, C = GK.charts;
+
+  GK.i18n.add({
+    mk_i_hint: ["Numbers from the posts, ads and leads logged here. Log follower counts once a month.", "Chiffres tirés des posts, pubs et prospects notés ici. Notez les abonnés une fois par mois."],
+    mk_i_log: ["Log followers", "Noter les abonnés"], mk_i_posts_m: ["Posts this month", "Posts ce mois"], mk_i_views: ["Views, last 3 months", "Vues, 3 derniers mois"],
+    mk_i_eng: ["Engagement rate", "Taux d'engagement"], mk_i_fol: ["Followers now", "Abonnés aujourd'hui"], mk_i_social_leads: ["Leads from social and ads", "Prospects venus du social et des pubs"],
+    mk_i_cpl: ["Ad cost per lead", "Coût pub par prospect"],
+    mk_i_c_posts: ["Posts per month", "Posts par mois"], mk_i_c_posts_s: ["Posted, last 6 months", "Publiés, 6 derniers mois"], mk_i_c_views: ["Views per month", "Vues par mois"], mk_i_c_views_s: ["Posts marked posted, by post date", "Posts publiés, par date de post"],
+    mk_i_c_eng: ["Likes, saves and shares per month", "J'aime, enregistrements et partages par mois"], mk_i_c_fol: ["Follower growth", "Croissance des abonnés"], mk_i_c_fol_s: ["One count a month for each channel", "Un relevé par mois et par canal"],
+    mk_i_c_leads: ["Leads by source", "Prospects par source"], mk_i_c_leads_s: ["All leads in the pipeline", "Tous les prospects de la prospection"], mk_i_c_cpl: ["Cost per lead by campaign", "Coût par prospect et par campagne"],
+    mk_i_c_none: ["Nothing to chart yet.", "Rien à tracer pour l'instant."], mk_i_c_posts_none: ["Mark posts as posted with a date to see this.", "Marquez des posts comme publiés avec une date pour voir ceci."],
+    mk_i_c_fol_none: ["Log follower counts for at least two months.", "Notez les abonnés sur au moins deux mois."], mk_i_c_leads_none: ["No leads yet. Fill the source when you add a lead.", "Aucun prospect. Renseignez la source en ajoutant un prospect."],
+    mk_i_c_cpl_none: ["Add spend and leads to a campaign.", "Ajoutez dépenses et prospects à une campagne."], mk_i_c_views_none: ["Add views to posted posts.", "Ajoutez les vues aux posts publiés."],
+    mk_s_likes: ["Likes", "J'aime"], mk_s_saves: ["Saves", "Enregistrements"], mk_s_shares: ["Shares", "Partages"], mk_s_views: ["Views", "Vues"], mk_s_posts: ["Posts", "Posts"],
+    mk_i_f_title: ["Log follower count", "Noter les abonnés"], mk_i_f_edit: ["Edit follower count", "Modifier le relevé"], mk_i_f_month: ["Month", "Mois"], mk_i_f_channel: ["Channel", "Canal"], mk_i_f_count: ["Followers", "Abonnés"],
+    mk_i_f_list: ["Follower counts", "Relevés d'abonnés"],
+    mk_src_ig_organic: ["Instagram organic", "Instagram organique"], mk_src_tiktok_organic: ["TikTok organic", "TikTok organique"], mk_src_ig_ads: ["Instagram ads", "Pubs Instagram"], mk_src_tiktok_ads: ["TikTok ads", "Pubs TikTok"],
+    mk_src_website_form: ["Website form", "Formulaire du site"], mk_src_referral_client: ["Client referral", "Recommandation client"], mk_src_referral_personal: ["Personal network", "Réseau personnel"],
+    mk_src_outbound_dm: ["Outbound DM", "DM sortant"], mk_src_outbound_visit: ["Outbound visit", "Visite"], mk_src_outbound_email: ["Outbound email", "E-mail sortant"], mk_src_event: ["Event", "Événement"],
+    mk_src_international_platform: ["International platform", "Plateforme internationale"], mk_src_other: ["Other", "Autre"]
+  });
+
+  var SOCIAL = ["ig_organic", "tiktok_organic", "ig_ads", "tiktok_ads"];
+  function monthTotals(posts, months, key) { return months.map(function (mo) { return u.sum(posts.filter(function (p) { return p.status === "posted" && p.date && u.month(p.date) === mo; }), function (p) { return key === "n" ? 1 : key === "int" ? K.interactions(p) : p[key]; }); }); }
+  function followerSeries(fol, months) {
+    return K.CHANNELS.map(function (ch, i) {
+      var last = null, vals = months.map(function (mo) { var e = fol.find(function (f) { return f.channel === ch && f.month === mo; }); if (e) last = +e.count; return e ? +e.count : null; });
+      return { name: K.chLabel(ch), values: vals, c: i + 1, has: vals.some(function (v) { return v != null; }) };
+    }).filter(function (s) { return s.has; });
+  }
+  function latestFollowers(fol) {
+    var tot = 0;
+    K.CHANNELS.forEach(function (ch) { var l = fol.filter(function (f) { return f.channel === ch; }).sort(u.by("month", "desc"))[0]; if (l) tot += +l.count || 0; });
+    return tot;
+  }
+
+  K.tabs.insights = function () {
+    var d = K.data(), posts = d.posts, fol = d.followers, ads = d.ads, money = K.money();
+    var months6 = K.lastMonths(6), labels6 = months6.map(K.mlabel), cur = months6[5];
+    var leads = S.all("leads"), social = leads.filter(function (l) { return SOCIAL.indexOf(l.source || l.channel) > -1; }).length;
+    var views3 = u.sum(monthTotals(posts, months6.slice(3), "views")), int3 = u.sum(monthTotals(posts, months6.slice(3), "int"));
+    var tot = latestFollowers(fol), spend = u.sum(ads, function (a) { return a.spend; }), adLeads = u.sum(ads, function (a) { return a.leads; });
+    var items = [
+      { lab: t("mk_i_posts_m"), v: String(monthTotals(posts, [cur], "n")[0]), n: "" },
+      { lab: t("mk_i_views"), v: views3 ? C.compact(views3) : t("mk_dash"), n: "" },
+      { lab: t("mk_i_eng"), v: views3 ? u.dec(int3 / views3 * 100, 1) + (u.fr() ? " %" : "%") : t("mk_dash"), n: "" },
+      { lab: t("mk_i_fol"), v: tot ? C.compact(tot) : t("mk_dash"), n: "" },
+      { lab: t("mk_i_social_leads"), v: String(social), n: "" }
+    ];
+    if (money) items.push({ lab: t("mk_i_cpl"), v: spend && adLeads ? u.money(spend / adLeads, 1) : t("mk_dash"), n: "" });
+    var h = '<div class="mk-bar"><p class="muted small" style="margin:0;flex:1;min-width:200px">' + esc(t("mk_i_hint")) + "</p>" + ui.btn(t("mk_i_log"), "mk-f-new", { cls: "primary", icon: "plus", disabled: !K.canEdit(), title: K.canEdit() ? "" : t("mk_no_perm") }) + "</div>" + ui.kpis(items);
+
+    var byS = {}; leads.forEach(function (l) { var s = l.source || l.channel || "other"; byS[s] = (byS[s] || 0) + 1; });
+    var srcItems = Object.keys(byS).sort(function (a, b) { return byS[b] - byS[a]; }).map(function (s) { return { label: t("mk_src_" + s) === "mk_src_" + s ? s : t("mk_src_" + s), value: byS[s], c: SOCIAL.indexOf(s) > -1 ? 1 : 2 }; });
+    var fs = followerSeries(fol, K.lastMonths(12));
+    var cplItems = ads.filter(function (a) { return K.cpl(a) != null; }).map(function (a) { return { label: a.name, value: Math.round(K.cpl(a) * 10) / 10 }; });
+    var charts = [
+      C.bars({ title: t("mk_i_c_posts"), sub: t("mk_i_c_posts_s"), labels: labels6, series: [{ name: t("mk_s_posts"), values: monthTotals(posts, months6, "n") }], fmt: function (v) { return String(v); }, empty: t("mk_i_c_posts_none") }),
+      C.bars({ title: t("mk_i_c_views"), sub: t("mk_i_c_views_s"), labels: labels6, series: [{ name: t("mk_s_views"), values: monthTotals(posts, months6, "views") }], fmt: function (v) { return String(Math.round(v)); }, empty: t("mk_i_c_views_none") }),
+      C.bars({ title: t("mk_i_c_eng"), labels: labels6, series: ["likes", "saves", "shares"].map(function (k, i) { return { name: t("mk_s_" + k), values: monthTotals(posts, months6, k), c: i + 1 }; }), fmt: function (v) { return String(Math.round(v)); }, empty: t("mk_i_c_views_none") }),
+      C.line({ title: t("mk_i_c_fol"), sub: t("mk_i_c_fol_s"), labels: K.lastMonths(12).map(K.mlabel), series: fs, fmt: function (v) { return String(Math.round(v)); }, empty: t("mk_i_c_fol_none") }),
+      C.hbars({ title: t("mk_i_c_leads"), sub: t("mk_i_c_leads_s"), items: srcItems, fmt: function (v) { return String(v); }, empty: t("mk_i_c_leads_none") })
+    ];
+    if (money) charts.push(C.hbars({ title: t("mk_i_c_cpl"), items: cplItems, fmt: function (v) { return u.money(v, 1); }, empty: t("mk_i_c_cpl_none") }));
+    h += '<div class="mk-charts">' + charts.join("") + "</div>";
+
+    if (fol.length) {
+      h += '<h3 class="lab mk-month">' + esc(t("mk_i_f_list")) + '</h3><div class="mk-table"><table><thead><tr><th>' + esc(t("mk_i_f_month")) + "</th><th>" + esc(t("mk_i_f_channel")) + '</th><th class="r">' + esc(t("mk_i_f_count")) + "</th></tr></thead><tbody>" +
+        fol.slice().sort(function (a, b) { return String(b.month).localeCompare(String(a.month)) || String(a.channel).localeCompare(b.channel); }).map(function (f) {
+          return '<tr data-a="mk-f-edit" data-id="' + esc(f.id) + '"><td>' + esc(u.fmtMonth(f.month)) + "</td><td>" + esc(K.chLabel(f.channel)) + '</td><td class="r num">' + esc(f.count) + "</td></tr>";
+        }).join("") + "</tbody></table></div>";
+    }
+    return h;
+  };
+
+  function fForm(f) {
+    return '<div class="form">' + ui.field({ id: "mk-f-month", label: t("mk_i_f_month"), type: "month", value: f.month }) +
+      ui.field({ id: "mk-f-channel", label: t("mk_i_f_channel"), type: "select", value: f.channel, options: K.CHANNELS.map(function (c) { return [c, K.chLabel(c)]; }) }) +
+      ui.field({ id: "mk-f-count", label: t("mk_i_f_count"), type: "number", value: f.count || "" }) + "</div>";
+  }
+  function fOpen(f, isNew) {
+    if (!K.guard()) return;
+    K.formModal({ title: t(isNew ? "mk_i_f_title" : "mk_i_f_edit"), body: fForm(f), save: "mk-f-save", del: isNew ? "" : "mk-f-del", data: { id: f.id || "" } });
+  }
+  GK.act("mk-f-new", function () { fOpen({ month: u.today().slice(0, 7), channel: "instagram" }, true); });
+  GK.act("mk-f-edit", function (el) { var f = K.data().followers.find(function (x) { return x.id === el.dataset.id; }); if (f) fOpen(f, false); });
+  GK.act("mk-f-save", function (el) {
+    if (!K.guard()) return;
+    var month = u.val("mk-f-month"), ch = u.val("mk-f-channel"), n = K.num("mk-f-count");
+    if (!/^\d{4}-\d{2}$/.test(month)) { u.focus("mk-f-month"); return ui.toast(t("required")); }
+    if (!n) { u.focus("mk-f-count"); return ui.toast(t("required")); }
+    var id = el.dataset.id;
+    if (K.save(function (d) {
+      var old = id ? d.followers.find(function (x) { return x.id === id; }) : d.followers.find(function (x) { return x.month === month && x.channel === ch; });
+      if (old) Object.assign(old, { month: month, channel: ch, count: n }); else d.followers.push({ id: K.id(), month: month, channel: ch, count: n });
+    })) K.done();
+  });
+  GK.act("mk-f-del", function (el) {
+    if (!K.guard()) return;
+    if (K.save(function (d) { d.followers = d.followers.filter(function (x) { return x.id !== el.dataset.id; }); })) K.done();
+  });
 })(window.GK);
 
 /* ---- modules/shell.js ---- */

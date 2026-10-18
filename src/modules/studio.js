@@ -6,7 +6,7 @@
   GK.i18n.add({
     st_title: ["Ideas and scripts", "Idées et scripts"], st_accent: ["", ""],
     st_sub: ["Capture an idea in five seconds, shape it, get the owner's go, send it to the project.", "Notez une idée en cinq secondes, travaillez-la, obtenez le feu vert du fondateur, envoyez-la au projet."],
-    st_board: ["Board", "Tableau"], st_bank: ["Hook bank", "Banque d'accroches"], st_scripts: ["Script bank", "Banque de scripts"],
+    st_board: ["Board", "Tableau"], st_tools: ["Toolkit", "Boîte à outils"], st_bank: ["Hook bank", "Banque d'accroches"], st_scripts: ["Script bank", "Banque de scripts"],
     st_sb_sub: ["Every written script, ready to copy or reuse for a new client.", "Tous les scripts écrits, prêts à copier ou réutiliser pour un nouveau client."],
     st_sb_none: ["No written scripts yet. Scripts appear here once they have lines.", "Aucun script écrit. Ils apparaissent ici dès qu'ils ont des lignes."],
     st_sb_copy: ["Copy script", "Copier le script"], st_sb_reuse: ["Reuse", "Réutiliser"], st_sb_won: ["Winning hook", "Accroche gagnante"],
@@ -401,7 +401,7 @@
   GK.view("studio", {
     render: function (params) {
       if (params.id && S.get("ideas", params.id)) return GK.studio.detail(S.get("ideas", params.id), params);
-      var mode = ["bank", "scripts"].indexOf(params.mode) > -1 ? params.mode : "board";
+      var mode = ["bank", "scripts", "tools"].indexOf(params.mode) > -1 ? params.mode : "board";
       var all = S.all("ideas"), f = filters(params);
       var ideas = all.filter(function (i) { return pass(i, f); });
       var live = all.filter(function (i) { return i.stage !== "parked" && effStage(i) !== "shot"; });
@@ -410,9 +410,10 @@
         actions: can() ? ui.btn(t("st_new"), "st-new", { cls: "primary" }) : ""
       });
       h += GK.insight.studio();
-      h += '<div class="row between"><div class="tabs" role="tablist">' + ["board", "scripts", "bank"].map(function (v) {
+      h += '<div class="row between"><div class="tabs" role="tablist">' + ["board", "scripts", "bank", "tools"].map(function (v) {
         return '<button type="button" role="tab" data-a="st-mode" data-v="' + v + '" aria-selected="' + (mode === v) + '">' + esc(t("st_" + v)) + "</button>";
       }).join("") + "</div>" + ui.sample() + "</div>";
+      if (mode === "tools" && GK.studioTools) return h + GK.studioTools.html();
       h += filterRow(params, f);
       if (!all.length && !can()) return h + ui.empty(t("st_nodata"));
       h += mode === "scripts" ? scriptsHTML(ideas) : mode === "bank" ? (ideas.length ? bankHTML(ideas, f, params) : winnersPanel(f.c) + ui.empty(t("st_nothing"))) : boardHTML(ideas, f, params);

@@ -2,7 +2,7 @@
 const { chromium } = require('playwright');
 const path = require('path');
 const OUT = process.argv[2] || '/tmp/gk-shots';
-const VIEWS = ['today','tasks','calendar','activity','dashboard','pipeline','clients','projects','production','studio','boards','deliveries','reports','finance','team','settings'];
+const VIEWS = ['today','tasks','calendar','activity','dashboard','pipeline','clients','projects','production','studio','boards','deliveries','reports','finance','marketing','team','settings'];
 (async () => {
   require('fs').mkdirSync(OUT, { recursive: true });
   const browser = await chromium.launch();

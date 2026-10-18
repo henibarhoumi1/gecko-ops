@@ -526,9 +526,9 @@
 
   // ---------- roles ----------
   M.ROLE_NAV = {
-    founder: ["guide", "today", "tasks", "calendar", "activity", "dashboard", "pipeline", "clients", "projects", "production", "studio", "boards", "deliveries", "reports", "finance", "docs", "team", "settings"],
+    founder: ["guide", "today", "tasks", "calendar", "activity", "dashboard", "pipeline", "clients", "projects", "production", "studio", "boards", "deliveries", "reports", "finance", "marketing", "docs", "team", "settings"],
     // Client Lead: selling and client follow-up; no money screens
-    sales: ["guide", "today", "tasks", "calendar", "pipeline", "clients", "projects", "studio", "boards", "deliveries", "reports", "docs", "team"],
+    sales: ["guide", "today", "tasks", "calendar", "pipeline", "clients", "projects", "studio", "boards", "deliveries", "reports", "marketing", "docs", "team"],
     // Editors: only what they edit
     editor: ["guide", "today", "tasks", "calendar", "projects", "studio", "deliveries", "docs"],
     // Production (manager or assistant): shoots, scripts, boards

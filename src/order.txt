@@ -44,6 +44,8 @@ modules/boards.js
 modules/boards_*.js
 modules/clientmode.js
 modules/clientmode_*.js
+modules/marketing.js
+modules/marketing_*.js
 modules/shell.js
 modules/shell_*.js
 core/main.js
