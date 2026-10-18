@@ -20,6 +20,11 @@
     guide_previous: ["Previous", "Précédent"], guide_next: ["Next", "Suivant"], guide_done: ["Finish tour", "Terminer"],
     guide_open: ["Open this area", "Ouvrir cette section"], guide_area_help: ["Walk me through this area", "Me guider dans cette section"],
     guide_progress: ["Step {n} of {total}", "Étape {n} sur {total}"], guide_complete: ["Tour complete. Restart it any time from Start here or the help menu.", "Visite terminée. Recommencez à tout moment depuis Commencer ici ou le menu d'aide."],
+    tr_why: ["Why it matters", "Pourquoi c'est important"], tr_try: ["Try it: ", "À vous : "], tr_nice: ["Done. Nice.", "Fait. Bien joué."],
+    tr_check: ["Quick check", "Petite vérification"], tr_right: ["Right.", "Exact."], tr_wrong: ["Not quite.", "Pas tout à fait."],
+    tr_finish: ["Finish lesson", "Terminer la leçon"], tr_learned: ["{x}: lesson done", "{x} : leçon terminée"],
+    tr_lessons: ["Learn each section", "Apprendre chaque section"], tr_lessons_sub: ["Short hands-on lessons. Each one points at the real screen, has you try the key moves and ends with a quick check.", "Des leçons courtes et pratiques. Chacune montre l'écran réel, vous fait essayer l'essentiel et se termine par une petite vérification."],
+    tr_start_lesson: ["Start lesson", "Commencer"], tr_redo: ["Do again", "Refaire"], tr_done_on: ["Done", "Terminée"], tr_steps: ["{n} steps", "{n} étapes"],
     tr_click: ["Click {x} in the menu", "Cliquez sur {x} dans le menu"], tr_skip_step: ["Skip this step", "Passer cette étape"], tr_menu: ["Tap More, then {x}", "Touchez Plus, puis {x}"],
     tr_home_t: ["Home", "Accueil"], tr_home_b: ["Your day starts here: what needs you, your tasks, cash coming in and the next shoot.", "Votre journée commence ici : ce qui vous attend, vos tâches, l'argent attendu et le prochain tournage."],
     tr_search_t: ["Search everything", "Tout rechercher"], tr_search_b: ["Find any client, project, idea or invoice. Ctrl K (or ⌘K) opens it from any screen.", "Trouvez un client, un projet, une idée ou une facture. Ctrl K (ou ⌘K) l'ouvre depuis n'importe quel écran."],
@@ -121,8 +126,17 @@
   ];
   var live = null, tick = null, lastKey = "";
 
+  var LEARN_KEY = "gecko-ops-learned-v1";
+  function track(view) { return GK.guideTracks && GK.guideTracks[view]; }
+  function learned() { var o = u.lsGet(LEARN_KEY, {}); return o && typeof o === "object" ? o : {}; }
+  function markLearned(view) { var o = learned(); o[view] = u.today(); u.lsSet(LEARN_KEY, o); }
+  /** Steps of what is running: the main tour (areas this viewer can open) or one section's lesson. */
   function steps() {
     var nav = ui.nav();
+    if (live && live.track) {
+      var tr = track(live.track);
+      return tr ? tr.steps.filter(function (s) { return (!s.go || nav.indexOf(s.go) > -1) && (!s.when || s.when()); }) : [];
+    }
     return TOUR.filter(function (s) { return !s.go || nav.indexOf(s.go) > -1; });
   }
   function shown(el) {
@@ -132,8 +146,11 @@
   }
   function pick(list) {
     for (var i = 0; i < list.length; i++) {
-      var els = document.querySelectorAll(list[i]);
+      var els;
+      try { els = document.querySelectorAll(list[i]); } catch (e) { continue; }
       for (var j = 0; j < els.length; j++) if (shown(els[j])) return els[j];
+      // present but scrolled away: bring the first one into view
+      if (els.length && els[0].getBoundingClientRect().height > 0 && els[0].scrollIntoView) { els[0].scrollIntoView({ block: "center", behavior: "smooth" }); return els[0]; }
     }
     return null;
   }
@@ -141,11 +158,18 @@
   function navTarget(v) {
     return pick(['.side [data-a="nav"][data-v="' + v + '"]', '.bnav [data-a="nav"][data-v="' + v + '"]', '.bnav [data-a="drawer"]']);
   }
+  function list(x) { return Array.isArray(x) ? x : String(x || "").split("|"); }
   function target(step, waiting) {
     if (waiting) return navTarget(step.go);
-    if (step.go) return pick(["#page .head", "#page"]);
+    if (step.try && !live.done && step.try.click) { var c = pick(list(step.try.click)); if (c) return c; }
+    if (!step.spot) return step.go ? pick(["#page .head", "#page"]) : null;
     if (step.spot.indexOf("nav:") === 0) return navTarget(step.spot.slice(4));
-    return pick([step.spot]);
+    return pick(list(step.spot));
+  }
+  function tryDone(step) {
+    if (!step.try || live.done) return !!live.done;
+    if (step.try.until) { try { if (typeof step.try.until === "function" ? step.try.until() : pick(list(step.try.until))) live.done = true; } catch (e) {} }
+    return !!live.done;
   }
   function layer() {
     var el = document.getElementById("tour");
@@ -156,34 +180,49 @@
     document.body.appendChild(el);
     return el;
   }
-  function popHTML(list, i, waiting, viaMenu) {
-    var step = list[i], last = i === list.length - 1;
-    var h = '<div class="tp-top"><span class="tp-n">' + esc(t("guide_progress", { n: i + 1, total: list.length })) + "</span>" +
+  function popHTML(steps, i, waiting, viaMenu) {
+    var step = steps[i], last = i === steps.length - 1, tr = live.track && track(live.track);
+    var pending = !!step.try && !live.done, q = step.quiz, answered = q && live.answer != null;
+    var h = '<div class="tp-top"><span class="tp-n">' + (tr ? esc(t(tr.title)) + " · " : "") + esc(t("guide_progress", { n: i + 1, total: steps.length })) + "</span>" +
       '<button type="button" class="ib sm" data-a="tour-exit" aria-label="' + esc(t("guide_exit")) + '">' + ui.icon("x", "sm") + "</button></div>";
-    h += '<div class="tp-bar"><i style="width:' + Math.round((i + (waiting ? 0.5 : 1)) / list.length * 100) + '%"></i></div>';
+    h += '<div class="tp-bar"><i style="width:' + Math.round((i + (waiting || pending || (q && !answered) ? 0.5 : 1)) / steps.length * 100) + '%"></i></div>';
     h += "<h3>" + esc(t(step.title)) + "</h3>";
-    h += waiting
-      ? '<p class="tp-ask">' + ui.icon("arrow", "sm") + esc(t(viaMenu ? "tr_menu" : "tr_click", { x: t("nav_" + step.go) })) + "</p>"
-      : "<p>" + esc(t(step.body)) + "</p>";
+    if (waiting) h += '<p class="tp-ask">' + ui.icon("arrow", "sm") + esc(t(viaMenu ? "tr_menu" : "tr_click", { x: t("nav_" + step.go) })) + "</p>";
+    else {
+      if (step.body) h += "<p>" + esc(t(step.body)) + "</p>";
+      if (step.why) h += '<div class="tp-why"><span class="tp-lab">' + esc(t("tr_why")) + "</span>" + esc(t(step.why)) + "</div>";
+      if (step.try) h += pending
+        ? '<p class="tp-ask">' + ui.icon("arrow", "sm") + '<span><span class="tp-lab">' + esc(t("tr_try")) + "</span>" + esc(t(step.try.text)) + "</span></p>"
+        : '<p class="tp-ok">' + ui.icon("check", "sm") + esc(t(step.try.done || "tr_nice")) + "</p>";
+      if (q) {
+        h += '<div class="tp-quiz"><span class="tp-lab">' + esc(t("tr_check")) + "</span><b>" + esc(t(q.q)) + "</b>" +
+          q.options.map(function (o, k) {
+            var cls = answered ? (k === q.answer ? " right" : k === live.answer ? " wrong" : "") : "";
+            return '<button type="button" class="tp-opt' + cls + '" data-a="tour-quiz" data-k="' + k + '"' + (answered ? " disabled" : "") + ">" + esc(t(o)) + "</button>";
+          }).join("") + "</div>";
+        if (answered) h += '<p class="' + (live.answer === q.answer ? "tp-ok" : "tp-no") + '">' + esc(t(live.answer === q.answer ? "tr_right" : "tr_wrong")) + " " + esc(t(q.explain)) + "</p>";
+      }
+    }
+    var hold = waiting || pending || (q && !answered);
     h += '<div class="tp-row">' + (i > 0 ? ui.btn(t("guide_previous"), "tour-back", { cls: "ghost sm" }) : "<span></span>") +
-      (waiting ? '<button type="button" class="tp-skip" data-a="tour-next">' + esc(t("tr_skip_step")) + "</button>"
-        : ui.btn(t(last ? "guide_done" : "guide_next"), "tour-next", { cls: "primary sm" })) + "</div>";
+      (hold ? '<button type="button" class="tp-skip" data-a="tour-next">' + esc(t("tr_skip_step")) + "</button>"
+        : ui.btn(t(last ? (tr ? "tr_finish" : "guide_done") : "guide_next"), "tour-next", { cls: "primary sm" })) + "</div>";
     return h;
   }
   function place() {
     if (!live) return;
-    var list = steps(), step = list[live.i];
+    var all = steps(), step = all[live.i];
     if (!step) return finish();
     var waiting = !!step.go && ui.state.view !== step.go;
-    if (live.waiting && !waiting) live.arrived = true;
     live.waiting = waiting;
+    if (!waiting) tryDone(step);
     var root = layer(), spot = root.firstChild, pop = root.lastChild;
     var el = target(step, waiting), viaMenu = !!el && el.getAttribute("data-a") === "drawer";
-    var key = live.i + "|" + waiting + "|" + viaMenu + "|" + GK.i18n.lang();
-    if (key !== lastKey) { pop.innerHTML = popHTML(list, live.i, waiting, viaMenu); lastKey = key; pop.classList.remove("tp-in"); void pop.offsetWidth; pop.classList.add("tp-in"); }
-    root.classList.toggle("ask", waiting);
+    var key = live.track + "|" + live.i + "|" + waiting + "|" + viaMenu + "|" + live.done + "|" + live.answer + "|" + GK.i18n.lang();
+    if (key !== lastKey) { pop.innerHTML = popHTML(all, live.i, waiting, viaMenu); lastKey = key; pop.classList.remove("tp-in"); void pop.offsetWidth; pop.classList.add("tp-in"); }
+    root.classList.toggle("ask", waiting || (!!step.try && !live.done));
     var pad = 6, W = innerWidth, H = innerHeight;
-    var pw = Math.min(340, W - 32), ph = pop.offsetHeight || 180, x, y;
+    var pw = Math.min(step.quiz ? 380 : 340, W - 32), ph = pop.offsetHeight || 180, x, y;
     if (!el) {
       spot.style.cssText = "opacity:0";
       x = (W - pw) / 2; y = (H - ph) / 2;
@@ -204,39 +243,55 @@
     x = Math.max(16, Math.min(W - pw - 16, x)); y = Math.max(16, Math.min(H - ph - 16, y));
     pop.style.cssText = "width:" + pw + "px;left:" + x + "px;top:" + y + "px";
   }
-  function go(i) {
-    var list = steps();
-    if (i >= list.length) return finish();
-    live = { i: Math.max(0, i) };
+  function go(i, view) {
+    var tr = view !== undefined ? view : live && live.track;
+    live = { i: Math.max(0, i), track: tr || null };
+    var all = steps();
+    if (live.i >= all.length) return finish();
     lastKey = "";
-    var step = list[live.i];
-    saveState({ status: "active", step: live.i });
+    var step = all[live.i];
+    if (!live.track) saveState({ status: "active", step: live.i });
     if (ui.modalOpen()) ui.closeModal(true);
     if (GK.shell && GK.shell.closeAll) GK.shell.closeAll();
-    if (!step.go && ui.state.view !== "today" && step.id === "home") ui.go("today");
+    if (live.track && ui.state.view !== live.track && !step.go) ui.go(live.track);
+    if (step.params) { ui.go(step.params.view || live.track, step.params.set); }
+    if (!live.track && !step.go && ui.state.view !== "today" && step.id === "home") ui.go("today");
     if (ui.state.drawer && !(step.go && ui.state.view !== step.go)) { ui.state.drawer = false; ui.render(true); }
     if (!tick) tick = setInterval(place, 120);
     place();
   }
   function close(status) {
-    if (live) saveState({ status: status, step: live.i });
+    if (live && !live.track) saveState({ status: status, step: live.i });
     live = null; lastKey = "";
     if (tick) { clearInterval(tick); tick = null; }
     var el = document.getElementById("tour");
     if (el) { el.classList.add("out"); setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 220); }
   }
-  function finish() { close("complete"); ui.toast(t("guide_complete")); }
-  /** Start at the first tour step for a view, or at the beginning. */
-  function startAt(view) {
-    var list = steps(), i = 0;
-    list.forEach(function (s, k) { if (!i && (s.go === view)) i = k; });
-    go(i);
+  function finish() {
+    var tr = live && live.track;
+    if (tr) { markLearned(tr); close("complete"); ui.toast(t("tr_learned", { x: t(track(tr).title) })); if (ui.state.view === "guide") ui.render(true); }
+    else { close("complete"); ui.toast(t("guide_complete")); }
   }
-  function start(index) { go(index == null ? 0 : index); }
+  /** Start the lesson for a section, or the main tour at that section. */
+  function startAt(view) {
+    if (track(view)) return go(0, view);
+    var all = TOUR.filter(function (s) { return !s.go || ui.nav().indexOf(s.go) > -1; }), i = 0;
+    all.forEach(function (s, k) { if (!i && (s.go === view)) i = k; });
+    go(i, null);
+  }
+  function start(index) { go(index == null ? 0 : index, null); }
   function stop(status) { ui.closeModal(true); close(status); }
 
   if (typeof document !== "undefined" && document.addEventListener) {
     window.addEventListener("resize", place);
+    // a lesson step that asks for a click completes when that real control is clicked
+    document.addEventListener("click", function (ev) {
+      if (!live || live.done) return;
+      var step = steps()[live.i];
+      if (!step || !step.try || !step.try.click || step.try.until) return;
+      var hit = list(step.try.click).some(function (sel) { try { return ev.target.closest && ev.target.closest(sel); } catch (e) { return false; } });
+      if (hit) setTimeout(function () { if (live) { live.done = true; place(); } }, 60);
+    }, true);
     document.addEventListener("keydown", function (ev) {
       if (!live) return;
       if (ev.key === "Escape") { ev.stopPropagation(); close("dismissed"); }
@@ -260,6 +315,13 @@
         "#tour .tp-bar{height:3px;background:var(--s3)}#tour .tp-bar i{display:block;height:100%;background:var(--tx);transition:width .32s var(--ease)}" +
         "#tour h3{margin:0;font-size:18px;line-height:1.2}#tour p{margin:0;color:var(--tx-2);line-height:1.5;font-size:14px}" +
         "#tour .tp-ask{display:flex;gap:8px;align-items:center;color:var(--tx);font-weight:600}" +
+        "#tour .tp-lab{display:block;font-family:var(--f-type);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx-3);margin-bottom:3px}" +
+        "#tour .tp-why{background:var(--c-yellow-soft,rgba(243,223,158,.35));padding:8px 10px;font-size:13px;line-height:1.45;color:var(--tx)}" +
+        "#tour .tp-ok,#tour .tp-no{display:flex;gap:6px;align-items:flex-start;font-size:13.5px}#tour .tp-ok{color:var(--tx)}#tour .tp-no{color:var(--tx-2)}" +
+        "#tour .tp-quiz{display:flex;flex-direction:column;gap:6px}#tour .tp-quiz b{font-size:14px;line-height:1.35;margin-bottom:2px}" +
+        "#tour .tp-opt{text-align:left;background:var(--s2);border:1px solid var(--line);padding:8px 10px;font:inherit;font-size:13.5px;color:var(--tx);cursor:pointer;transition:background .15s,border-color .15s}" +
+        "#tour .tp-opt:hover:not([disabled]){border-color:var(--line-2)}#tour .tp-opt.right{background:var(--c-yellow-soft,rgba(243,223,158,.5));border-color:var(--line-2)}#tour .tp-opt.wrong{background:var(--c-pink-soft,rgba(244,193,196,.4));text-decoration:line-through}" +
+        "#tour .tp-ask .tp-lab{display:inline;margin-right:4px}" +
         "#tour .tp-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:4px}" +
         "#tour .tp-skip{background:none;border:0;padding:4px 0;color:var(--tx-3);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer}" +
         "@media (prefers-reduced-motion:reduce){#tour .tour-spot,#tour .tour-pop{transition:none;animation:none}}";
@@ -269,7 +331,8 @@
 
   GK.guide = {
     steps: STEPS,
-    hasHelp: function (view) { return STEP_VIEWS[view] != null; },
+    hasHelp: function (view) { return !!track(view) || STEP_VIEWS[view] != null; },
+    learned: learned,
     maybeWelcome: function () {
       if (!S.ready || ui.modalOpen()) return;
       var state = readState();
@@ -301,10 +364,19 @@
       h += '<section class="panel"><div class="panel-h"><h2 class="sec">' + esc(t("guide_welcome_flow")) + "</h2>" +
         ui.btn(t(state && state.status === "active" ? "guide_resume" : "guide_start"), action, { cls: "primary" }) + "</div>" +
         '<p class="small muted">' + esc(emptyWorkspace() ? t("guide_welcome_empty") : t("guide_welcome_existing", { n: S.localRecordCount ? S.localRecordCount() : 0 })) + "</p></section>";
-      h += '<div class="grid2">' + STEPS.map(function (step, index) {
-        return '<section class="card"><div class="card-h"><span class="lead"><span class="pill">' + (index + 1) + "</span><h2>" + esc(t(step.title)) + "</h2></span>" +
-          ui.btn(t("guide_open"), "guide-step", { cls: "ghost sm", data: { i: index } }) + "</div><p class=\"small muted\">" + esc(t(step.action)) + "</p></section>";
-      }).join("") + "</div>";
+      var nav = ui.nav(), done = learned(), order = (GK.guideTracks && GK.guideTracks._order) || [];
+      var lessons = order.filter(function (v) { return track(v) && nav.indexOf(v) > -1; });
+      if (lessons.length) {
+        h += '<section class="stack" style="gap:12px"><div><h2 class="sec" style="margin:0">' + esc(t("tr_lessons")) + "</h2>" +
+          '<p class="small muted" style="margin:4px 0 0">' + esc(t("tr_lessons_sub")) + "</p></div>";
+        h += '<div class="grid2">' + lessons.map(function (v, k) {
+          var tr = track(v), ok = !!done[v];
+          return '<section class="card"><div class="card-h"><span class="lead"><span class="pill">' + (ok ? ui.icon("check", "sm") : k + 1) + "</span><h2>" + esc(t(tr.title)) + "</h2></span>" +
+            ui.btn(t(ok ? "tr_redo" : "tr_start_lesson"), "guide-learn", { cls: (ok ? "ghost" : "primary") + " sm", data: { v: v } }) + "</div>" +
+            '<p class="small muted">' + esc(t(tr.intro)) + "</p>" +
+            '<p class="small muted" style="margin:0">' + esc(t("tr_steps", { n: tr.steps.length })) + (ok ? " · " + esc(t("tr_done_on")) + " " + esc(u.fmtDate ? u.fmtDate(done[v]) : done[v]) : "") + "</p></section>";
+        }).join("") + "</div></section>";
+      }
       return h;
     }
   });
@@ -315,10 +387,12 @@
   GK.act("tour-next", function () { if (live) go(live.i + 1); });
   GK.act("tour-back", function () { if (live) go(live.i - 1); });
   GK.act("tour-exit", function () { close("dismissed"); });
+  GK.act("tour-quiz", function (el) { if (live && live.answer == null) { live.answer = +el.dataset.k; place(); } });
   GK.act("guide-skip", function () { stop("skipped"); });
   GK.act("guide-open-area", function (el) { ui.go(el.dataset.v); });
   GK.act("guide-step", function (el) { startAt(STEPS[+el.dataset.i].view); });
-  GK.act("guide-help", function (el) { GK.guide.showHelp(el.dataset.v); });
+  GK.act("guide-help", function (el) { if (track(el.dataset.v)) startAt(el.dataset.v); else GK.guide.showHelp(el.dataset.v); });
+  GK.act("guide-learn", function (el) { startAt(el.dataset.v); });
   GK.act("guide-help-start", function (el) { ui.closeModal(true); startAt(STEPS[+el.dataset.i].view); });
   GK.act("guide-welcome-clean", function () {
     ui.closeModal(true);
