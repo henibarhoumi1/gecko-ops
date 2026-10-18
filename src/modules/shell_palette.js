@@ -58,11 +58,8 @@
       var k = GO.filter(function (g) { return g[1] === v; })[0];
       out.push({ g: "sh_p_go", icon: v, title: t("nav_" + v), sub: "", hay: t("nav_" + v) + " " + v, key: k ? "G " + k[0].toUpperCase() : "", run: function () { ui.go(v); } });
     });
-    var fr = GK.i18n.lang() === "fr", th = ui.theme();
+    var fr = GK.i18n.lang() === "fr";
     add("sh_p_prefs", "lang", t("sh_p_lang"), "", function () { ui.trigger("lang", { l: fr ? "en" : "fr" }); }, "language langue english francais");
-    if (th !== "dark") add("sh_p_prefs", "moon", t("sh_p_dark"), "", function () { ui.trigger("theme", { m: "dark" }); }, "theme dark noir sombre");
-    if (th !== "light") add("sh_p_prefs", "sun", t("sh_p_light"), "", function () { ui.trigger("theme", { m: "light" }); }, "theme light clair");
-    if (th !== "auto") add("sh_p_prefs", "theme", t("sh_p_auto"), "", function () { ui.trigger("theme", { m: "auto" }); }, "theme auto system systeme");
     add("sh_p_prefs", "sidebar", t("sh_p_rail"), "", function () { ui.trigger("rail-mini"); }, "sidebar menu rail");
     add("sh_p_prefs", "keyboard", t("sh_p_help"), "", function () { SH.help(); }, "help aide shortcuts raccourcis keyboard clavier");
     return out;

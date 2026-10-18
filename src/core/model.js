@@ -48,9 +48,9 @@
   M.PACKS_DEFAULT = {
     audit:      { name: "Ad Audit",        market: "tunisia", currency: "TND", price: 150,  launch: null, monthly: false, upfront: "full",    shootDays: 0, angles: 0, reels: 0,  variations: 0,  carousels: 0, cost: 0 },
     test:       { name: "Test Campaign",   market: "tunisia", currency: "TND", price: 1500, launch: 1000, monthly: false, upfront: "deposit", shootDays: 1, angles: 3, reels: 3,  variations: 6,  carousels: 1, statics: 0,  mashups: 0, cost: 380 },
-    regular:    { name: "Regular",          market: "tunisia", currency: "TND", price: 2200, launch: null, monthly: true,  upfront: "month",   shootDays: 1, angles: 3, reels: 10, variations: 20, carousels: 1, statics: 4,  mashups: 0, cost: 380, minMonths: 3, rev: 3 },
-    premier:    { name: "Pro",              market: "tunisia", currency: "TND", price: 3200, launch: null, monthly: true,  upfront: "month",   shootDays: 1, angles: 4, reels: 15, variations: 30, carousels: 2, statics: 6,  mashups: 2, cost: 380, minMonths: 3 },
-    premium:    { name: "Creative Partner", market: "tunisia", currency: "TND", price: 4800, launch: null, monthly: true,  upfront: "month",   shootDays: 1, angles: 4, reels: 20, variations: 60, carousels: 2, statics: 10, mashups: 4, cost: 500, minMonths: 3, ads: true, from: true, note: "20 reels and up, sized to the volume the brand needs; full VIP treatment and support" },
+    regular:    { name: "Regular",          market: "tunisia", currency: "TND", price: 3200, launch: 2200, monthly: true,  upfront: "month",   shootDays: 1, angles: 3, reels: 10, variations: 20, carousels: 1, statics: 4,  mashups: 0, cost: 380, minMonths: 3, rev: 4 },
+    premier:    { name: "Pro",              market: "tunisia", currency: "TND", price: 3900, launch: 3200, monthly: true,  upfront: "month",   shootDays: 1, angles: 4, reels: 15, variations: 30, carousels: 2, statics: 6,  mashups: 2, cost: 380, minMonths: 3 },
+    premium:    { name: "Creative Partner", market: "tunisia", currency: "TND", price: 4800, launch: null, monthly: true,  upfront: "month",   shootDays: 1, angles: 4, reels: 20, variations: 60, carousels: 2, statics: 10, mashups: 4, cost: 500, minMonths: 3, ads: true, from: true, note: "20 reels and up, sized to the volume the brand needs; VIP: priority dates, a direct line, Meta ads run by Gecko" },
     campaign:   { name: "Campaign",        market: "tunisia", currency: "TND", price: 4800, launch: 3600, monthly: false, upfront: "deposit", shootDays: 2, angles: 4, reels: 10, variations: 10, carousels: 2, cost: 760 },
     remote_edit:{ name: "Remote Ad Edit Pack", market: "international", currency: "USD", price: 700, launch: null, monthly: true, upfront: "month", shootDays: 0, angles: 0, reels: 8, variations: 16, carousels: 0, cost: 240 },
     gulf_trip:  { name: "Gulf Shoot Trip", market: "international", currency: "USD", price: 3500, launch: null, monthly: false, upfront: "deposit", shootDays: 2, angles: 4, reels: 8, variations: 16, carousels: 0, cost: 0 },
@@ -109,7 +109,7 @@
   function S() { return GK.store; }
   M.cfg = function () { return S().config() || M.defaultConfig(); };
   /** Saved offers from before Regular, Pro and Creative Partner (18 Oct 2026) fall back to the defaults. */
-  function packsCfg() { var c = M.cfg(); return c.version >= 2 && c.packs && c.packs.regular && c.packs.regular.rev === 3 ? c.packs : M.PACKS_DEFAULT; }
+  function packsCfg() { var c = M.cfg(); return c.version >= 2 && c.packs && c.packs.regular && c.packs.regular.rev === 4 ? c.packs : M.PACKS_DEFAULT; }
   M.pack = function (k) { if (M.OLD && M.OLD.pack[k]) k = M.OLD.pack[k]; var p = packsCfg()[k] || M.PACKS_DEFAULT[k]; return p ? Object.assign({ currency: "TND", launch: null, upfront: p && p.monthly ? "month" : "deposit", market: "tunisia" }, p) : { name: k || "—", currency: "TND", price: 0, launch: null, monthly: false, upfront: "deposit", reels: 0, variations: 0, carousels: 0, angles: 0, shootDays: 0, cost: 0 }; };
   M.packKeys = function (market) { var ps = packsCfg(); return Object.keys(ps).filter(function (k) { return !market || (ps[k].market || "tunisia") === market; }); };
   M.addons = function () { return M.ADDONS_DEFAULT; };

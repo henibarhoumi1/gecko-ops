@@ -24,7 +24,6 @@
         team.map(function (p) { return '<option value="' + esc(p.id) + '"' + (x && x.id === p.id ? " selected" : "") + ">" + esc(p.name + " · " + t("role_" + p.role).split(" · ")[0]) + "</option>"; }).join("") + "</select>";
     }
     h += seg(t("sh_lang"), "sh-lang", [["en", "English"], ["fr", "Français"]], lang);
-    h += seg(t("sh_theme"), "sh-theme", [["dark", t("sh_theme_dark")], ["light", t("sh_theme_light")], ["auto", t("sh_theme_auto")]], theme);
     h += "<hr>" + ["guide", "activity"].filter(function (v) { return ui.nav().indexOf(v) > -1; }).map(function (v) {
       return '<button type="button" class="mi" role="menuitem" data-a="nav" data-v="' + v + '">' + ui.icon(v) + "<span>" + esc(t("nav_" + v)) + "</span></button>";
     }).join("");

@@ -53,36 +53,6 @@
   /* layout */
   --side-w:240px;--rail-w:72px;--top-h:60px;--page-max:1440px;--gutter:24px;
 }
-@media (prefers-color-scheme: dark){:root[data-theme="auto"]{
-  --bg:var(--b-ink);--bg-paint:var(--b-ink);
-  --s1:var(--b-ink);--s2:rgba(252,250,245,.06);--s3:rgba(252,250,245,.12);--s-solid:var(--b-ink);
-  --line:rgba(252,250,245,.18);--line-2:var(--b-white);
-  --tx:var(--b-white);--tx-2:rgba(252,250,245,.76);--tx-3:rgba(252,250,245,.56);--head:var(--b-white);
-  --chroma:var(--b-yellow);--chroma-soft:rgba(243,223,158,.22);--chroma-tx:var(--b-yellow);--on-chroma:var(--b-ink);
-  --gel:var(--b-pink);--gel-deep:var(--b-pink);--gel-soft:rgba(244,193,196,.22);
-  --action:var(--b-pink);--on-action:var(--b-ink);--link:var(--b-yellow);
-  --c-work:rgba(252,250,245,.5);--c-blue:var(--b-white);--c-pink:var(--b-pink);--c-yellow:var(--b-yellow);--c-green:var(--b-yellow);
-  --c-work-soft:rgba(252,250,245,.08);--c-blue-soft:rgba(252,250,245,.1);--c-pink-soft:rgba(244,193,196,.22);--c-yellow-soft:rgba(243,223,158,.22);--c-green-soft:rgba(243,223,158,.22);
-  --on-hi:var(--b-ink);--on-green:var(--b-ink);--accent-word:var(--b-white);
-  --glass-fill:var(--b-ink);--glass-border:rgba(252,250,245,.18);--glass-shadow:none;--glass-blur:none;
-  --hero:var(--b-pink);--hero-tx:var(--b-ink);--scrim:rgba(0,0,0,.7);--shadow:none;--shadow-pop:0 0 0 1px var(--b-white);
-  color-scheme:dark;
-}}
-:root[data-theme="dark"]{
-  --bg:var(--b-ink);--bg-paint:var(--b-ink);
-  --s1:var(--b-ink);--s2:rgba(252,250,245,.06);--s3:rgba(252,250,245,.12);--s-solid:var(--b-ink);
-  --line:rgba(252,250,245,.18);--line-2:var(--b-white);
-  --tx:var(--b-white);--tx-2:rgba(252,250,245,.76);--tx-3:rgba(252,250,245,.56);--head:var(--b-white);
-  --chroma:var(--b-yellow);--chroma-soft:rgba(243,223,158,.22);--chroma-tx:var(--b-yellow);--on-chroma:var(--b-ink);
-  --gel:var(--b-pink);--gel-deep:var(--b-pink);--gel-soft:rgba(244,193,196,.22);
-  --action:var(--b-pink);--on-action:var(--b-ink);--link:var(--b-yellow);
-  --c-work:rgba(252,250,245,.5);--c-blue:var(--b-white);--c-pink:var(--b-pink);--c-yellow:var(--b-yellow);--c-green:var(--b-yellow);
-  --c-work-soft:rgba(252,250,245,.08);--c-blue-soft:rgba(252,250,245,.1);--c-pink-soft:rgba(244,193,196,.22);--c-yellow-soft:rgba(243,223,158,.22);--c-green-soft:rgba(243,223,158,.22);
-  --on-hi:var(--b-ink);--on-green:var(--b-ink);--accent-word:var(--b-white);
-  --glass-fill:var(--b-ink);--glass-border:rgba(252,250,245,.18);--glass-shadow:none;--glass-blur:none;
-  --hero:var(--b-pink);--hero-tx:var(--b-ink);--scrim:rgba(0,0,0,.7);--shadow:none;--shadow-pop:0 0 0 1px var(--b-white);
-  color-scheme:dark;
-}
 /* an ink band inside a light page */
 .on-dark{
   --bg:var(--b-ink);--bg-paint:var(--b-ink);
@@ -1126,9 +1096,9 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   M.PACKS_DEFAULT = {
     audit:      { name: "Ad Audit",        market: "tunisia", currency: "TND", price: 150,  launch: null, monthly: false, upfront: "full",    shootDays: 0, angles: 0, reels: 0,  variations: 0,  carousels: 0, cost: 0 },
     test:       { name: "Test Campaign",   market: "tunisia", currency: "TND", price: 1500, launch: 1000, monthly: false, upfront: "deposit", shootDays: 1, angles: 3, reels: 3,  variations: 6,  carousels: 1, statics: 0,  mashups: 0, cost: 380 },
-    regular:    { name: "Regular",          market: "tunisia", currency: "TND", price: 2200, launch: null, monthly: true,  upfront: "month",   shootDays: 1, angles: 3, reels: 10, variations: 20, carousels: 1, statics: 4,  mashups: 0, cost: 380, minMonths: 3, rev: 3 },
-    premier:    { name: "Pro",              market: "tunisia", currency: "TND", price: 3200, launch: null, monthly: true,  upfront: "month",   shootDays: 1, angles: 4, reels: 15, variations: 30, carousels: 2, statics: 6,  mashups: 2, cost: 380, minMonths: 3 },
-    premium:    { name: "Creative Partner", market: "tunisia", currency: "TND", price: 4800, launch: null, monthly: true,  upfront: "month",   shootDays: 1, angles: 4, reels: 20, variations: 60, carousels: 2, statics: 10, mashups: 4, cost: 500, minMonths: 3, ads: true, from: true, note: "20 reels and up, sized to the volume the brand needs; full VIP treatment and support" },
+    regular:    { name: "Regular",          market: "tunisia", currency: "TND", price: 3200, launch: 2200, monthly: true,  upfront: "month",   shootDays: 1, angles: 3, reels: 10, variations: 20, carousels: 1, statics: 4,  mashups: 0, cost: 380, minMonths: 3, rev: 4 },
+    premier:    { name: "Pro",              market: "tunisia", currency: "TND", price: 3900, launch: 3200, monthly: true,  upfront: "month",   shootDays: 1, angles: 4, reels: 15, variations: 30, carousels: 2, statics: 6,  mashups: 2, cost: 380, minMonths: 3 },
+    premium:    { name: "Creative Partner", market: "tunisia", currency: "TND", price: 4800, launch: null, monthly: true,  upfront: "month",   shootDays: 1, angles: 4, reels: 20, variations: 60, carousels: 2, statics: 10, mashups: 4, cost: 500, minMonths: 3, ads: true, from: true, note: "20 reels and up, sized to the volume the brand needs; VIP: priority dates, a direct line, Meta ads run by Gecko" },
     campaign:   { name: "Campaign",        market: "tunisia", currency: "TND", price: 4800, launch: 3600, monthly: false, upfront: "deposit", shootDays: 2, angles: 4, reels: 10, variations: 10, carousels: 2, cost: 760 },
     remote_edit:{ name: "Remote Ad Edit Pack", market: "international", currency: "USD", price: 700, launch: null, monthly: true, upfront: "month", shootDays: 0, angles: 0, reels: 8, variations: 16, carousels: 0, cost: 240 },
     gulf_trip:  { name: "Gulf Shoot Trip", market: "international", currency: "USD", price: 3500, launch: null, monthly: false, upfront: "deposit", shootDays: 2, angles: 4, reels: 8, variations: 16, carousels: 0, cost: 0 },
@@ -1187,7 +1157,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   function S() { return GK.store; }
   M.cfg = function () { return S().config() || M.defaultConfig(); };
   /** Saved offers from before Regular, Pro and Creative Partner (18 Oct 2026) fall back to the defaults. */
-  function packsCfg() { var c = M.cfg(); return c.version >= 2 && c.packs && c.packs.regular && c.packs.regular.rev === 3 ? c.packs : M.PACKS_DEFAULT; }
+  function packsCfg() { var c = M.cfg(); return c.version >= 2 && c.packs && c.packs.regular && c.packs.regular.rev === 4 ? c.packs : M.PACKS_DEFAULT; }
   M.pack = function (k) { if (M.OLD && M.OLD.pack[k]) k = M.OLD.pack[k]; var p = packsCfg()[k] || M.PACKS_DEFAULT[k]; return p ? Object.assign({ currency: "TND", launch: null, upfront: p && p.monthly ? "month" : "deposit", market: "tunisia" }, p) : { name: k || "—", currency: "TND", price: 0, launch: null, monthly: false, upfront: "deposit", reels: 0, variations: 0, carousels: 0, angles: 0, shootDays: 0, cost: 0 }; };
   M.packKeys = function (market) { var ps = packsCfg(); return Object.keys(ps).filter(function (k) { return !market || (ps[k].market || "tunisia") === market; }); };
   M.addons = function () { return M.ADDONS_DEFAULT; };
@@ -3551,7 +3521,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   function flush() { if (deferred) UI.render(); }
 
   /** Theme: "dark" (default, total black), "light" or "auto" (follows the system). */
-  UI.theme = function () { var m = u.lsGet(THEME_KEY, "light"); return m === "dark" || m === "auto" ? m : "light"; };
+  UI.theme = function () { return "light"; };
   function applyTheme() { document.documentElement.setAttribute("data-theme", UI.theme()); }
 
   // ---------- built-in flows ----------
@@ -3581,7 +3551,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   actions.drawer = function () { UI.state.drawer = !UI.state.drawer; UI.render(true); var f = UI.state.drawer && document.querySelector(".side .nv[aria-current]"); if (f) f.focus(); };
   actions.nav = function (el, ev) { if (ev) ev.preventDefault(); UI.go(el.getAttribute("data-v")); };
   actions.lang = function (el) { GK.i18n.setLang(el.getAttribute("data-l")); document.documentElement.lang = GK.i18n.lang(); UI.render(true); };
-  actions.theme = function (el) { u.lsSet(THEME_KEY, el.getAttribute("data-m")); applyTheme(); UI.render(true); };
+  actions.theme = function () { applyTheme(); };
   actions.close = function () { UI.closeModal(); };
   actions["confirm-yes"] = function () { var f = confirmFn; UI.closeModal(); if (f) f(); };
   actions["start-live"] = startLiveModal;
@@ -12465,7 +12435,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     se_coll_feedback: ["client feedback", "retours client"], se_coll_expenses: ["expenses", "dépenses"], se_coll_quotes: ["quotes", "devis"],
     se_sharing: ["Sharing with the team", "Partager avec l'équipe"],
     se_share_body: ["To let the team and freelancers work in GECKO Ops, share this page with them as Contributor. Viewers can only read. The first time they open it, each person picks their name and role.", "Pour que l'équipe et les freelances travaillent dans GECKO Ops, partagez cette page avec eux en Contributeur. Les Lecteurs peuvent seulement consulter. À la première ouverture, chacun choisit son nom et son rôle."],
-    se_lang_note: ["Language and theme are at the bottom of the menu.", "La langue et le thème sont en bas du menu."]
+    se_lang_note: ["Language is at the bottom of the menu.", "La langue est en bas du menu."]
   });
 
   var RATE_KEYS = ["heniDay", "reel", "gear", "assistant", "transport", "recut", "carousel", "report"];
@@ -19548,7 +19518,6 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
         team.map(function (p) { return '<option value="' + esc(p.id) + '"' + (x && x.id === p.id ? " selected" : "") + ">" + esc(p.name + " · " + t("role_" + p.role).split(" · ")[0]) + "</option>"; }).join("") + "</select>";
     }
     h += seg(t("sh_lang"), "sh-lang", [["en", "English"], ["fr", "Français"]], lang);
-    h += seg(t("sh_theme"), "sh-theme", [["dark", t("sh_theme_dark")], ["light", t("sh_theme_light")], ["auto", t("sh_theme_auto")]], theme);
     h += "<hr>" + ["guide", "activity"].filter(function (v) { return ui.nav().indexOf(v) > -1; }).map(function (v) {
       return '<button type="button" class="mi" role="menuitem" data-a="nav" data-v="' + v + '">' + ui.icon(v) + "<span>" + esc(t("nav_" + v)) + "</span></button>";
     }).join("");
@@ -19698,11 +19667,8 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       var k = GO.filter(function (g) { return g[1] === v; })[0];
       out.push({ g: "sh_p_go", icon: v, title: t("nav_" + v), sub: "", hay: t("nav_" + v) + " " + v, key: k ? "G " + k[0].toUpperCase() : "", run: function () { ui.go(v); } });
     });
-    var fr = GK.i18n.lang() === "fr", th = ui.theme();
+    var fr = GK.i18n.lang() === "fr";
     add("sh_p_prefs", "lang", t("sh_p_lang"), "", function () { ui.trigger("lang", { l: fr ? "en" : "fr" }); }, "language langue english francais");
-    if (th !== "dark") add("sh_p_prefs", "moon", t("sh_p_dark"), "", function () { ui.trigger("theme", { m: "dark" }); }, "theme dark noir sombre");
-    if (th !== "light") add("sh_p_prefs", "sun", t("sh_p_light"), "", function () { ui.trigger("theme", { m: "light" }); }, "theme light clair");
-    if (th !== "auto") add("sh_p_prefs", "theme", t("sh_p_auto"), "", function () { ui.trigger("theme", { m: "auto" }); }, "theme auto system systeme");
     add("sh_p_prefs", "sidebar", t("sh_p_rail"), "", function () { ui.trigger("rail-mini"); }, "sidebar menu rail");
     add("sh_p_prefs", "keyboard", t("sh_p_help"), "", function () { SH.help(); }, "help aide shortcuts raccourcis keyboard clavier");
     return out;

@@ -590,7 +590,7 @@
   function flush() { if (deferred) UI.render(); }
 
   /** Theme: "dark" (default, total black), "light" or "auto" (follows the system). */
-  UI.theme = function () { var m = u.lsGet(THEME_KEY, "light"); return m === "dark" || m === "auto" ? m : "light"; };
+  UI.theme = function () { return "light"; };
   function applyTheme() { document.documentElement.setAttribute("data-theme", UI.theme()); }
 
   // ---------- built-in flows ----------
@@ -620,7 +620,7 @@
   actions.drawer = function () { UI.state.drawer = !UI.state.drawer; UI.render(true); var f = UI.state.drawer && document.querySelector(".side .nv[aria-current]"); if (f) f.focus(); };
   actions.nav = function (el, ev) { if (ev) ev.preventDefault(); UI.go(el.getAttribute("data-v")); };
   actions.lang = function (el) { GK.i18n.setLang(el.getAttribute("data-l")); document.documentElement.lang = GK.i18n.lang(); UI.render(true); };
-  actions.theme = function (el) { u.lsSet(THEME_KEY, el.getAttribute("data-m")); applyTheme(); UI.render(true); };
+  actions.theme = function () { applyTheme(); };
   actions.close = function () { UI.closeModal(); };
   actions["confirm-yes"] = function () { var f = confirmFn; UI.closeModal(); if (f) f(); };
   actions["start-live"] = startLiveModal;

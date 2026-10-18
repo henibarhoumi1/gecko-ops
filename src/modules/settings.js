@@ -64,7 +64,7 @@
     se_coll_feedback: ["client feedback", "retours client"], se_coll_expenses: ["expenses", "dépenses"], se_coll_quotes: ["quotes", "devis"],
     se_sharing: ["Sharing with the team", "Partager avec l'équipe"],
     se_share_body: ["To let the team and freelancers work in GECKO Ops, share this page with them as Contributor. Viewers can only read. The first time they open it, each person picks their name and role.", "Pour que l'équipe et les freelances travaillent dans GECKO Ops, partagez cette page avec eux en Contributeur. Les Lecteurs peuvent seulement consulter. À la première ouverture, chacun choisit son nom et son rôle."],
-    se_lang_note: ["Language and theme are at the bottom of the menu.", "La langue et le thème sont en bas du menu."]
+    se_lang_note: ["Language is at the bottom of the menu.", "La langue est en bas du menu."]
   });
 
   var RATE_KEYS = ["heniDay", "reel", "gear", "assistant", "transport", "recut", "carousel", "report"];
