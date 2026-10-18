@@ -75,7 +75,7 @@
     swap: '<path d="M4 8h13l-3.5-3.5M20 16H7l3.5 3.5"/>', edit: '<path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
     dot: '<circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/>'
   };
-  ICONS.today = ICONS.home; ICONS.guide = '<circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>'; ICONS.docs = ICONS.file || ICONS.dot; ICONS.idea = ICONS.studio; ICONS.globe = ICONS.portal; ICONS.money = ICONS.finance; ICONS.chart = ICONS.dashboard; ICONS.shootday = ICONS.camera; ICONS.play = '<path d="M8 5.5v13l10.5-6.5z"/>'; ICONS.mvdown = '<path d="M12 5v14M6 13l6 6 6-6"/>'; ICONS.mvup = '<path d="M12 19V5M6 11l6-6 6 6"/>';
+  ICONS.today = ICONS.home; ICONS.guide = '<circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>'; ICONS.docs = ICONS.file || ICONS.dot; ICONS.idea = ICONS.studio; ICONS.globe = ICONS.portal; ICONS.money = ICONS.finance; ICONS.chart = ICONS.dashboard; ICONS.shootday = ICONS.camera; ICONS.play = '<path d="M8 5.5v13l10.5-6.5z"/>'; ICONS.mvdown = '<path d="M12 5v14M6 13l6 6 6-6"/>'; ICONS.mvup = '<path d="M12 19V5M6 11l6-6 6 6"/>'; ICONS.edit = '<path d="M14.5 5.5l4 4L8 20H4v-4z"/><path d="M12.5 7.5l4 4"/>'; ICONS.megaphone = '<path d="M4 10v4h3l7 4V6L7 10z"/><path d="M17.5 9a4 4 0 0 1 0 6"/>'; ICONS.marketing = ICONS.megaphone;
   UI.ICONS = ICONS;
   /** icon(name, extraClass) -> inline SVG (24px grid, 1.6 stroke) that follows currentColor. Unknown names fall back to a dot. */
   UI.icon = function (n, cls) { return '<svg class="ic' + (cls ? " " + cls : "") + '" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + (ICONS[n] || ICONS.dot) + "</svg>"; };
@@ -83,10 +83,11 @@
   /** Sidebar groups (DESIGN.md §3). A view not listed here lands in Main. */
   UI.GROUPS = [
     { id: "main", views: ["guide", "today", "tasks", "calendar"] },
-    { id: "sell", views: ["pipeline", "clients"] },
-    { id: "make", views: ["projects", "shootday", "production", "deliveries", "studio", "boards", "reports"] },
-    { id: "money", views: ["dashboard", "finance", "portal"] },
-    { id: "team", views: ["docs", "team", "activity", "settings"] }
+    { id: "ceo", views: ["dashboard", "finance"] },
+    { id: "sales", views: ["pipeline", "clients", "portal"] },
+    { id: "prod", views: ["projects", "production", "deliveries", "studio", "boards", "reports"] },
+    { id: "mkt", views: ["marketing"] },
+    { id: "team", views: ["team", "docs", "activity", "settings"] }
   ];
   /** Views reached from inside another page rather than the sidebar (the menu stays short). */
   UI.NAV_PARENT = { production: "projects", deliveries: "projects", reports: "projects", boards: "projects", activity: "dashboard", guide: "today" };
@@ -473,7 +474,7 @@
   }
   /** Phone bottom bar: 5 items + More (opens the full sidebar as a drawer). */
   function bottomHTML(nav) {
-    var pick = ["today", "tasks", "calendar", "shootday", "projects"].filter(function (v) { return nav.indexOf(v) > -1; });
+    var pick = ["today", "tasks", "calendar", "projects", "studio"].filter(function (v) { return nav.indexOf(v) > -1; });
     nav.forEach(function (v) { if (pick.length < 5 && pick.indexOf(v) < 0 && !UI.NAV_PARENT[v]) pick.push(v); });
     var inMore = pick.indexOf(UI.state.view) < 0;
     return '<nav class="bnav" aria-label="GECKO Ops">' + pick.map(function (v) {

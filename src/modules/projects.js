@@ -34,11 +34,11 @@
     pj_add_client: ["Add a new client", "Ajouter un nouveau client"], pj_no_client: ["No client yet. Add the client, then come back.", "Aucun client. Ajoutez le client, puis revenez."],
     pj_new_hint_once: ["Creates the project at onboarding and two invoice drafts: 50% deposit and 50% balance.", "Crée le projet au démarrage et deux brouillons de facture : acompte 50 % et solde 50 %."],
     pj_new_hint_month: ["Creates the month at onboarding (inside the client's monthly contract) and its invoice draft, full price, paid before the shoot.", "Crée le mois au démarrage (dans le contrat mensuel du client) et son brouillon de facture, prix complet, payé avant le tournage."],
-    pj_create: ["Create project", "Créer le projet"], pj_created: ["Project created. Invoice drafts are in Money.", "Projet créé. Les brouillons de facture sont dans Argent."],
+    pj_create: ["Create project", "Créer le projet"], pj_created: ["Project created. Invoice drafts are in Finance.", "Projet créé. Les brouillons de facture sont dans Finance."],
     // detail
     pj_back: ["All projects", "Tous les projets"], pj_to_prod: ["Edit files", "Fichiers de montage"],
     pj_t_overview: ["Overview", "Vue d'ensemble"], pj_t_brief: ["Brief", "Brief"], pj_t_scripts: ["Scripts", "Scripts"], pj_t_board: ["Storyboard", "Storyboard"],
-    pj_t_shoot: ["Shoot day", "Tournage"], pj_t_edits: ["Edits", "Montage"], pj_t_money: ["Money", "Argent"],
+    pj_t_shoot: ["Shoot", "Tournage"], pj_t_edits: ["Edits", "Montage"], pj_t_money: ["Finance", "Finance"],
     pj_new_script: ["New script", "Nouveau script"], pj_no_scripts: ["No scripts for this project yet.", "Aucun script pour ce projet."], pj_script_n: ["Script {n}", "Script {n}"],
     pj_scenes_n: ["{n} scenes", "{n} scènes"], pj_no_board: ["Write scenes in a script first. Each scene becomes a frame.", "Écrivez d'abord des scènes dans un script. Chaque scène devient une image."],
     pj_shots: ["Shots done", "Plans faits"], pj_open_shootday: ["Open shoot day", "Ouvrir le tournage"], pj_set_date: ["Set a shoot date below.", "Fixez une date de tournage ci-dessous."],
@@ -64,7 +64,7 @@
     pj_delete: ["Delete project", "Supprimer le projet"],
     pj_del_q: ["Delete this project?", "Supprimer ce projet ?"],
     pj_del_body: ["The project, its draft invoices and its tasks go. This can't be undone.", "Le projet, ses brouillons de facture et ses tâches seront supprimés. Impossible d'annuler."],
-    pj_del_issued: ["An invoice is already issued. Cancel it with a credit note in Money first.", "Une facture est déjà émise. Annulez-la d'abord avec un avoir dans Argent."],
+    pj_del_issued: ["An invoice is already issued. Cancel it with a credit note in Finance first.", "Une facture est déjà émise. Annulez-la d'abord avec un avoir dans Finance."],
     pj_deleted: ["Project deleted.", "Projet supprimé."],
     // plan
     pj_plan: ["Creative plan", "Plan créatif"], pj_angles_n: ["Angles {a} / {b} in the pack", "Angles {a} / {b} dans le pack"],
@@ -114,7 +114,7 @@
     pj_add_cost: ["Add cost line", "Ajouter une ligne"], pj_fill_est: ["Fill from the pack estimate", "Remplir avec l'estimation du pack"],
     pj_no_costs: ["No cost lines yet.", "Aucune ligne de coût."], pj_total: ["Total", "Total"],
     pj_invoices: ["Invoices", "Factures"], pj_no_inv: ["No invoices for this project.", "Aucune facture pour ce projet."],
-    pj_draft_no: ["draft", "brouillon"], pj_open_fin: ["Open in Money", "Ouvrir dans Argent"],
+    pj_draft_no: ["draft", "brouillon"], pj_open_fin: ["Open in Finance", "Ouvrir dans Finance"],
     pj_gates: ["The two gates", "Les deux verrous"], pj_gate_ok: ["clear", "levé"], pj_gate_no: ["closed", "fermé"],
     pj_gate_files_m: ["No files until this month is paid.", "Pas de fichiers avant le paiement du mois."],
     pj_per_month: ["per month", "par mois"], pj_linked_exp: ["Project-linked expense", "Dépense liée au projet"],
@@ -470,17 +470,7 @@
       return '<div class="stack" style="gap:var(--sp-2)"><h3 class="sec" style="margin:0">' + esc(i.title) + "</h3>" + GK.studio.boardPanel(i) + "</div>";
     }).join("");
   }
-  function shootTab(p) {
-    var list = ideasOf(p), shots = GK.studio.shotsOf ? GK.studio.shotsOf(list) : [];
-    var h = '<section class="panel"><div class="panel-h"><h2 class="sec">' + esc(t("pj_t_shoot")) + "</h2></div>";
-    h += ui.kpis([
-      { lab: t("pj_shoot"), v: p.shootDate ? u.fmtDate(p.shootDate) : "—" },
-      { lab: t("pj_t_scripts"), v: String(list.length) },
-      { lab: t("pj_shots"), v: shots.length ? shots.filter(function (x) { return x.shot.done; }).length + " / " + shots.length : "0" }
-    ]);
-    h += '<div class="row">' + (p.shootDate ? ui.btn(t("pj_open_shootday"), "pj-shootday", { cls: "primary", icon: "camera" }) : '<span class="small muted">' + esc(t("pj_set_date")) + "</span>") + "</div>";
-    return h + "</section>" + detailsPanel(p);
-  }
+  function shootTab(p) { return GK.shootday.panel(p) + detailsPanel(p); }
   function editsTab(p) {
     var links = [["pj_to_prod", "pj-prod"], ["pj_to_deliv", "pj-deliv"]];
     if (GK.ui.nav().indexOf("reports") > -1) links.push(["pj_to_results", "pj-results"]);
@@ -636,7 +626,6 @@
     }, { log: "" });
     ui.go("studio", { id: rec.id });
   });
-  GK.act("pj-shootday", function () { var p = cur(); if (p) { ui.p("shootday").day = p.shootDate; ui.go("shootday"); } });
   GK.act("pj-deliv", function () { ui.go("deliveries"); });
   GK.act("pj-results", function () { var p = cur(); ui.go("reports", { projectId: p ? p.id : null }); });
   GK.act("pj-boards", function () { ui.go("boards"); });

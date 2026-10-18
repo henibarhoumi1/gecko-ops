@@ -5,7 +5,7 @@
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    fi_title: ["Money", "Argent"], fi_accent: ["", ""],
+    fi_title: ["Finance", "Finance"], fi_accent: ["", ""],
     fi_sub: ["Cash, invoices, quotes, overheads, the 13-week forecast, the month close and the yearly cap.", "Trésorerie, factures, devis, charges, prévision à 13 semaines, clôture du mois et plafond annuel."],
     fi_tab_overview: ["Overview", "Vue d'ensemble"], fi_tab_more: ["More", "Plus"], fi_tab_invoices: ["Invoices", "Factures"], fi_tab_quotes: ["Quotes", "Devis"], fi_tab_expenses: ["Expenses", "Dépenses"],
     fi_tab_forecast: ["Cash forecast", "Prévision"], fi_tab_close: ["Month close", "Clôture du mois"], fi_tab_profit: ["Profitability", "Rentabilité"],

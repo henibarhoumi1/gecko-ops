@@ -12,7 +12,7 @@
     ac_sub: ["{n} changes in the last {d} days, newest first.", "{n} changements ces {d} derniers jours, du plus récent au plus ancien."],
     ac_founder_only: ["The activity timeline is for the owner.", "Le fil d'activité est réservé au fondateur."],
     ac_types: ["Show", "Afficher"], ac_person: ["Person", "Personne"], ac_anyone: ["Everyone", "Tout le monde"], ac_system: ["No one named", "Personne de nommé"],
-    ac_t_project: ["Projects", "Projets"], ac_t_lead: ["Leads", "Prospects"], ac_t_client: ["Clients", "Clients"], ac_t_money: ["Money", "Argent"],
+    ac_t_project: ["Projects", "Projets"], ac_t_lead: ["Leads", "Prospects"], ac_t_client: ["Clients", "Clients"], ac_t_money: ["Finance", "Finance"],
     ac_t_task: ["Tasks", "Tâches"], ac_t_message: ["Messages", "Messages"], ac_t_studio: ["Studio", "Studio"],
     ac_k_changes: ["Changes, last 7 days", "Changements, 7 jours"], ac_k_changes_n: ["{d} vs the 7 days before ({p})", "{d} par rapport aux 7 jours d'avant ({p})"],
     ac_k_cash: ["Cash received, 7 days", "Encaissé, 7 jours"], ac_k_cash_n: ["{n} payments · {p} the week before", "{n} paiements · {p} la semaine d'avant"], ac_k_cash_n1: ["1 payment · {p} the week before", "1 paiement · {p} la semaine d'avant"],

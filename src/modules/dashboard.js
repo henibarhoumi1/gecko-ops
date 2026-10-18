@@ -4,7 +4,7 @@
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, X = GK.x, C = GK.charts, esc = u.esc;
 
   GK.i18n.add({
-    db_title: ["Numbers", "Chiffres"], db_accent: ["", ""],
+    db_title: ["CEO dashboard", "Tableau de bord"], db_accent: ["", ""],
     db_sub: ["Are we okay this month, what is slipping, where the next money comes from.", "On va bien ce mois-ci, ce qui glisse, d'où vient le prochain argent."],
     db_founder_only: ["The dashboard is for the owner only.", "Le tableau de bord est réservé au fondateur."],
     db_range: ["Period", "Période"], db_r3: ["3 months", "3 mois"], db_r6: ["6 months", "6 mois"], db_r12: ["12 months", "12 mois"],
@@ -19,7 +19,7 @@
     db_l_comm: ["Commission owed: {a}", "Commission due : {a}"],
     db_l_cash: ["Set your opening cash in Settings to see the cash forecast and runway.", "Indiquez votre trésorerie de départ dans Réglages pour voir la prévision et l'autonomie."],
     db_b_invoices: ["Open invoices", "Voir les factures"], db_b_cap: ["See the cap", "Voir le plafond"], db_b_pipeline: ["Open pipeline", "Voir le pipeline"],
-    db_b_project: ["Open project", "Voir le projet"], db_b_forecast: ["See Money", "Voir l'argent"], db_b_comm: ["Pay it", "Payer"], db_b_settings: ["Open Settings", "Ouvrir Réglages"],
+    db_b_project: ["Open project", "Voir le projet"], db_b_forecast: ["See Finance", "Voir la finance"], db_b_comm: ["Pay it", "Payer"], db_b_settings: ["Open Settings", "Ouvrir Réglages"],
     // tiles
     db_t_cash: ["Cash in this month", "Encaissé ce mois"], db_t_cash_n: ["goal {g}", "objectif {g}"], db_t_cash_n0: ["net, after withholding", "net, après retenue"],
     db_d_vs: ["{s}{p} vs last month", "{s}{p} vs mois dernier"], db_d_new: ["First money in", "Premiers encaissements"],
