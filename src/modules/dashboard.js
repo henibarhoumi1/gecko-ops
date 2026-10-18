@@ -17,9 +17,9 @@
     db_l_gate_1: ["1 project is blocked by a gate: {b}", "1 projet est bloqué par une étape : {b}"], db_l_gate_n: ["{n} projects are blocked by a gate: {b}", "{n} projets sont bloqués par une étape : {b}"],
     db_l_neg: ["Cash goes below zero in the week of {w} ({a})", "La trésorerie passe sous zéro la semaine du {w} ({a})"],
     db_l_comm: ["Commission owed: {a}", "Commission due : {a}"],
-    db_l_cash: ["Set your opening cash in Settings to see the cash forecast and runway.", "Indiquez votre trésorerie de départ dans Réglages pour voir la prévision et l'autonomie."],
+    db_l_cash: ["Add your bank and cash accounts in the cash book to see the forecast and runway.", "Ajoutez vos comptes dans la trésorerie pour voir la prévision et l'autonomie."],
     db_b_invoices: ["Open invoices", "Voir les factures"], db_b_cap: ["See the cap", "Voir le plafond"], db_b_pipeline: ["Open pipeline", "Voir le pipeline"],
-    db_b_project: ["Open project", "Voir le projet"], db_b_forecast: ["See Finance", "Voir la finance"], db_b_comm: ["Pay it", "Payer"], db_b_settings: ["Open Settings", "Ouvrir Réglages"],
+    db_b_project: ["Open project", "Voir le projet"], db_b_forecast: ["See Finance", "Voir la finance"], db_b_comm: ["Pay it", "Payer"], db_b_settings: ["Open the cash book", "Ouvrir la trésorerie"],
     // tiles
     db_t_cash: ["Cash in this month", "Encaissé ce mois"], db_t_cash_n: ["goal {g}", "objectif {g}"], db_t_cash_n0: ["net, after withholding", "net, après retenue"],
     db_d_vs: ["{s}{p} vs last month", "{s}{p} vs mois dernier"], db_d_new: ["First money in", "Premiers encaissements"],
@@ -27,7 +27,7 @@
     db_t_owed: ["Clients owe", "Reste à encaisser"], db_t_owed_n: ["{a} overdue", "{a} en retard"], db_t_owed_0: ["Nothing overdue", "Rien en retard"],
     db_t_cap: ["Yearly cap used", "Plafond annuel utilisé"], db_t_cap_s: ["{a} of {b}", "{a} sur {b}"],
     db_t_run: ["Cash runway", "Autonomie de trésorerie"], db_t_run_m: ["{n} months", "{n} mois"], db_t_run_n: ["at {b} a month out", "à {b} de sorties par mois"],
-    db_t_run_set: ["Set your opening cash in Settings", "Indiquez votre trésorerie de départ dans Réglages"], db_t_run_na: ["No burn yet", "Pas encore de sorties"],
+    db_t_run_set: ["Add your accounts in the cash book", "Ajoutez vos comptes dans la trésorerie"], db_t_run_na: ["No burn yet", "Pas encore de sorties"],
     db_t_win: ["Win rate", "Taux de succès"], db_t_win_n: ["won of closed leads", "gagnés sur prospects clos"], db_t_win_na: ["No closed lead yet", "Aucun prospect clos"],
     db_t_dm: ["DM reply rate", "Taux de réponse DM"], db_t_dm_n: ["{n} a day vs {g} goal, last 4 weeks", "{n} par jour pour {g} visés, 4 dernières semaines"], db_t_dm_n0: ["{n} a day, last 4 weeks", "{n} par jour, 4 dernières semaines"],
     db_t_dm_na: ["No DMs logged yet", "Aucun DM saisi"],
@@ -36,7 +36,7 @@
     db_s_in: ["Money in", "Entrées"], db_s_out: ["Money out", "Sorties"], db_goal: ["Goal", "Objectif"],
     db_net_line: ["Net over {n} months: {a}. Best month {b}.", "Net sur {n} mois : {a}. Meilleur mois : {b}."],
     db_c_fc: ["Next 13 weeks of cash", "Trésorerie des 13 prochaines semaines"], db_c_fc_sub: ["Estimate. Booked = invoices due and costs known. With pipeline adds weighted leads.", "Estimation. Acquis = factures dues et coûts connus. Avec pipeline ajoute les prospects pondérés."],
-    db_s_booked: ["Booked", "Acquis"], db_s_pipe: ["With pipeline", "Avec pipeline"], db_fc_set: ["Set your opening cash in Settings so the line starts from the real balance.", "Indiquez votre trésorerie de départ dans Réglages pour partir du vrai solde."],
+    db_s_booked: ["Booked", "Acquis"], db_s_pipe: ["With pipeline", "Avec pipeline"], db_fc_set: ["Add your accounts in the cash book so the line starts from the real balance.", "Ajoutez vos comptes dans la trésorerie pour partir du vrai solde."],
     db_c_age: ["What clients owe, by age", "Ce que les clients doivent, par ancienneté"], db_a_cur: ["Not due yet", "Pas encore dû"], db_a_1: ["1 to 7 days late", "1 à 7 jours de retard"], db_a_8: ["8 to 30 days late", "8 à 30 jours de retard"], db_a_31: ["Over 30 days late", "Plus de 30 jours de retard"],
     db_dso: ["Clients take {n} days on average to pay.", "Les clients paient en {n} jours en moyenne."],
     db_c_fun: ["Sales funnel, last 4 weeks", "Entonnoir de vente, 4 dernières semaines"], db_f_dms: ["DMs", "DM"], db_f_rep: ["Replies", "Réponses"], db_f_calls: ["Calls", "Appels"], db_f_prop: ["Proposals", "Propositions"], db_f_won: ["Won", "Gagnés"],
@@ -86,7 +86,7 @@
     if (+r.openingCash > 0) {
       var neg = fc.filter(function (w) { return w.balance < 0; })[0];
       if (neg) out.push({ w: 90, text: t("db_l_neg", { w: u.fmtDate(neg.wk), a: fm(neg.balance) }), btn: "db_b_forecast", view: "finance", params: { tab: "forecast", invoiceId: "" } });
-    } else out.push({ w: 10, text: t("db_l_cash"), btn: "db_b_settings", view: "settings", params: {} });
+    } else out.push({ w: 10, text: t("db_l_cash"), btn: "db_b_settings", view: "finance", params: { tab: "cash", more: false } });
     var quiet = S.all("leads").filter(function (l) { return ["dm", "replied", "call", "proposal"].indexOf(l.stage) > -1 && l.nextDate && u.daysBetween(l.nextDate, today) >= 3; });
     if (quiet.length) out.push({ w: 60, text: t(quiet.length === 1 ? "db_l_quiet_1" : "db_l_quiet_n", { n: quiet.length, b: names(quiet, function (l) { return l.brand; }) }), btn: "db_b_pipeline", view: "pipeline", params: quiet.length === 1 ? { id: quiet[0].id } : {} });
     var gated = S.all("projects").filter(function (p) { return p.stage !== "retention" && m.gates(p).length; });
