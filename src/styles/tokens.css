@@ -11,30 +11,30 @@
 
 :root{
   /* brand constants (v5 colour page) */
-  --b-white:#FCFAF5;--b-ink:#181614;--b-pink:#F4C1C4;--b-yellow:#F3DF9E;
+  --b-white:#FFFFFF;--b-ink:#000000;--b-ink-2:#5E5953;--b-pink-soft:#FBE3E4;--b-yellow-soft:#FAF0CF;--b-pink:#F4C1C4;--b-yellow:#F3DF9E;
   /* old names kept for modules that still read them */
   --b-black:var(--b-ink);--b-blue:var(--b-ink);--b-navy:var(--b-ink);--b-deep-blue:var(--b-ink);--b-teal:var(--b-yellow);--b-orange:var(--b-pink);--b-cream:var(--b-white);
   --b-soft:rgba(252,250,245,.76);--on-orange:var(--b-ink);--b-paper:var(--b-white);--b-paper-warm:var(--b-white);--b-ink-text:var(--b-ink);--b-ink-soft:rgba(24,22,20,.74);
 
   --bg:var(--b-white);--bg-paint:var(--b-white);
-  --s1:var(--b-white);--s2:rgba(24,22,20,.04);--s3:rgba(24,22,20,.08);--s-solid:var(--b-white);
-  --line:rgba(24,22,20,.16);--line-2:var(--b-ink);
-  --tx:var(--b-ink);--tx-2:rgba(24,22,20,.74);--tx-3:rgba(24,22,20,.55);--head:var(--b-ink);
+  --s1:var(--b-white);--s2:rgba(0,0,0,.035);--s3:rgba(0,0,0,.07);--s-solid:var(--b-white);
+  --line:rgba(0,0,0,.14);--line-2:var(--b-ink);
+  --tx:var(--b-ink);--tx-2:var(--b-ink-2);--tx-3:#75706A;--head:var(--b-ink);
   --chroma:var(--b-yellow);--chroma-soft:var(--b-yellow);--chroma-tx:var(--b-ink);--on-chroma:var(--b-ink);
   --gel:var(--b-pink);--gel-deep:var(--b-pink);--gel-soft:var(--b-pink);
   --action:var(--b-ink);--on-action:var(--b-white);--link:var(--b-ink);
   --c-work:rgba(24,22,20,.45);--c-blue:var(--b-ink);--c-pink:var(--b-pink);--c-yellow:var(--b-yellow);--c-green:var(--b-ink);
   --c-work-soft:rgba(24,22,20,.06);--c-blue-soft:rgba(24,22,20,.08);--c-pink-soft:var(--b-pink);--c-yellow-soft:var(--b-yellow);--c-green-soft:var(--b-yellow);
   --on-hi:var(--b-ink);--on-green:var(--b-white);--accent-word:var(--b-ink);
-  --glass-fill:var(--b-white);--glass-border:rgba(24,22,20,.16);--glass-shadow:none;--glass-blur:none;
-  --hero:var(--b-pink);--hero-tx:var(--b-ink);--scrim:rgba(24,22,20,.5);--shadow:none;--shadow-pop:0 0 0 1px var(--b-ink);
+  --glass-fill:var(--b-white);--glass-border:var(--b-ink);--glass-shadow:none;--glass-blur:none;
+  --hero:var(--b-pink);--hero-tx:var(--b-ink);--scrim:rgba(0,0,0,.45);--shadow:none;--shadow-pop:5px 5px 0 var(--b-ink);
   color-scheme:light;
 
   /* type: bold grotesk for headlines and text, typewriter for labels */
-  --f-display:"Familjen Grotesk","Helvetica Neue",Helvetica,Arial,sans-serif;
+  --f-display:"Helvetica Neue",Helvetica,Arial,sans-serif;
   --f-accent:var(--f-display);
   --f-text:var(--f-display);
-  --f-type:"Courier Prime","Courier New",Courier,monospace;
+  --f-type:var(--f-display);
   --f-derja:"Noto Naskh Arabic","Geeza Pro",serif;
   --fs-12:12px;--fs-13:13px;--fs-14:14px;--fs-16:16px;--fs-20:20px;--fs-28:34px;--fs-40:44px;--fs-64:60px;
 
@@ -42,7 +42,7 @@
   --sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-5:20px;--sp-6:24px;--sp-8:32px;--sp-12:48px;
 
   /* square edges everywhere */
-  --r-sm:0;--r-md:0;--r-lg:0;--r-xl:0;--r-pill:0;--r-box:0;
+  --r-sm:10px;--r-md:10px;--r-lg:14px;--r-xl:14px;--r-pill:999px;--r-box:14px;
 
   /* motion */
   --ease:cubic-bezier(.2,.7,.2,1);--dur:160ms;--dur-reveal:320ms;

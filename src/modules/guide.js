@@ -5,14 +5,14 @@
   var KEY = "gecko-ops-onboarding-v1";
 
   GK.i18n.add({
-    guide_title: ["Start with the workflow", "Commencer par le flux de travail"],
+    guide_title: ["Start with the workflow,", "Commencer par le flux de travail,"],
     guide_accent: ["not a blank page", "pas une page vide"],
     guide_sub: ["A practical path through GECKO Ops. This guide never creates or changes business records.", "Un parcours pratique de GECKO Ops. Ce guide ne crée ni ne modifie aucune donnée métier."],
     guide_help: ["Screen help", "Aide de l'écran"], guide_restart: ["Restart guided tour", "Recommencer la visite guidée"],
     guide_start: ["Start the guided tour", "Démarrer la visite guidée"], guide_resume: ["Resume the guided tour", "Reprendre la visite guidée"],
     guide_welcome: ["Welcome to GECKO Ops", "Bienvenue dans GECKO Ops"],
     guide_welcome_body: ["GECKO Ops connects sales, clients, projects, creative development, production, delivery and financial tracking for a small creative team.", "GECKO Ops relie les ventes, les clients, les projets, la création, la production, la livraison et le suivi financier d'une petite équipe créative."],
-    guide_welcome_flow: ["Opportunity → client → project → approved creative → production → delivery → finance and results.", "Opportunité → client → projet → création validée → production → livraison → finances et résultats."],
+    guide_welcome_flow: ["A lead becomes a client, the client gets a project, the creative is approved, then it is shot, edited, delivered and paid.", "Un prospect devient client, le client a un projet, la création est validée, puis on tourne, on monte, on livre et on encaisse."],
     guide_welcome_empty: ["This workspace is empty. Add your own records as you test the workflow.", "Cet espace est vide. Ajoutez vos propres données pour tester le flux."],
     guide_welcome_existing: ["This browser still has {n} saved records. They were left untouched; review or clear them in Settings → Data before starting fresh.", "Ce navigateur contient encore {n} éléments enregistrés. Ils n'ont pas été modifiés ; vérifiez ou effacez-les dans Réglages → Données avant de repartir de zéro."],
     guide_welcome_clean: ["Review workspace data", "Vérifier les données"],
@@ -302,24 +302,24 @@
       css.id = "gk-tour-css";
       css.textContent =
         "#tour{position:fixed;inset:0;z-index:9000;pointer-events:none}" +
-        "#tour .tour-spot{position:fixed;border:2px solid var(--b-yellow,#f3df9e);outline:200vmax solid rgba(24,22,20,.42);transition:left .32s var(--ease),top .32s var(--ease),width .32s var(--ease),height .32s var(--ease),opacity .2s;pointer-events:none}" +
+        "#tour .tour-spot{position:fixed;border:2px solid var(--b-yellow,#f3df9e);border-radius:12px;outline:200vmax solid rgba(0,0,0,.4);transition:left .32s var(--ease),top .32s var(--ease),width .32s var(--ease),height .32s var(--ease),opacity .2s;pointer-events:none}" +
         "#tour .tour-spot::after{content:\"\";position:absolute;inset:-2px;border:2px solid var(--b-yellow,#f3df9e);opacity:0}" +
         "#tour.ask .tour-spot::after{animation:tourPulse 1.4s var(--ease) infinite}" +
         "@keyframes tourPulse{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.12)}}" +
-        "#tour .tour-pop{position:fixed;pointer-events:auto;background:var(--s-solid);color:var(--tx);border:1px solid var(--line-2);border-top:4px solid var(--b-pink,#f4c1c4);padding:14px 18px 14px;display:flex;flex-direction:column;gap:10px;transition:left .32s var(--ease),top .32s var(--ease)}" +
+        "#tour .tour-pop{position:fixed;pointer-events:auto;background:var(--s-solid);color:var(--tx);border:1.5px solid var(--b-ink);border-radius:16px;box-shadow:6px 6px 0 var(--b-pink,#f4c1c4);padding:16px 18px 14px;display:flex;flex-direction:column;gap:10px;transition:left .32s var(--ease),top .32s var(--ease)}" +
         "#tour .tour-pop.tp-in{animation:tourIn .28s var(--ease)}" +
         "@keyframes tourIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}" +
         "#tour.out{opacity:0;transition:opacity .2s}" +
         "#tour .tp-top{display:flex;align-items:center;justify-content:space-between;gap:8px}" +
-        "#tour .tp-n{font-family:var(--f-type);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx-3)}" +
-        "#tour .tp-bar{height:3px;background:var(--s3)}#tour .tp-bar i{display:block;height:100%;background:var(--tx);transition:width .32s var(--ease)}" +
+        "#tour .tp-n{font-family:var(--f-type);font-size:11px;letter-spacing:0;text-transform:none;color:var(--tx-3)}" +
+        "#tour .tp-bar{height:4px;background:var(--s3);border-radius:4px;overflow:hidden}#tour .tp-bar i{display:block;height:100%;background:var(--tx);transition:width .32s var(--ease)}" +
         "#tour h3{margin:0;font-size:18px;line-height:1.2}#tour p{margin:0;color:var(--tx-2);line-height:1.5;font-size:14px}" +
         "#tour .tp-ask{display:flex;gap:8px;align-items:center;color:var(--tx);font-weight:600}" +
-        "#tour .tp-lab{display:block;font-family:var(--f-type);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx-3);margin-bottom:3px}" +
-        "#tour .tp-why{background:var(--c-yellow-soft,rgba(243,223,158,.35));padding:8px 10px;font-size:13px;line-height:1.45;color:var(--tx)}" +
+        "#tour .tp-lab{display:block;font-family:var(--f-type);font-size:10.5px;letter-spacing:0;text-transform:none;color:var(--tx-3);margin-bottom:3px}" +
+        "#tour .tp-why{border-radius:10px;background:var(--c-yellow-soft,rgba(243,223,158,.35));padding:8px 10px;font-size:13px;line-height:1.45;color:var(--tx)}" +
         "#tour .tp-ok,#tour .tp-no{display:flex;gap:6px;align-items:flex-start;font-size:13.5px}#tour .tp-ok{color:var(--tx)}#tour .tp-no{color:var(--tx-2)}" +
         "#tour .tp-quiz{display:flex;flex-direction:column;gap:6px}#tour .tp-quiz b{font-size:14px;line-height:1.35;margin-bottom:2px}" +
-        "#tour .tp-opt{text-align:left;background:var(--s2);border:1px solid var(--line);padding:8px 10px;font:inherit;font-size:13.5px;color:var(--tx);cursor:pointer;transition:background .15s,border-color .15s}" +
+        "#tour .tp-opt{text-align:left;border-radius:10px;background:var(--s2);border:1px solid var(--line);padding:8px 10px;font:inherit;font-size:13.5px;color:var(--tx);cursor:pointer;transition:background .15s,border-color .15s}" +
         "#tour .tp-opt:hover:not([disabled]){border-color:var(--line-2)}#tour .tp-opt.tp-r{background:var(--c-yellow-soft,rgba(243,223,158,.5));border-color:var(--line-2)}#tour .tp-opt.tp-w{background:var(--c-pink-soft,rgba(244,193,196,.4));text-decoration:line-through}" +
         "#tour .tp-ask .tp-lab{display:inline;margin-right:4px}" +
         "#tour .tp-row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:4px}" +

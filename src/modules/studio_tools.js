@@ -530,7 +530,7 @@
   var css = document.createElement("style"); css.id = "gk-studio-tools-css";
   css.textContent =
     ".ct-pick{display:flex;flex-wrap:wrap;gap:6px}" +
-    ".ct-tab{font-family:var(--f-type);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:12px;min-height:40px;padding:0 12px;border:1px solid var(--line);background:transparent;color:var(--tx);cursor:pointer;border-radius:0}" +
+    ".ct-tab{font-family:var(--f-type);font-weight:700;letter-spacing:0;text-transform:none;font-size:12px;min-height:40px;padding:0 12px;border:1px solid var(--line);background:transparent;color:var(--tx);cursor:pointer;border-radius:0}" +
     ".ct-tab[aria-selected=true]{background:var(--chroma);color:var(--b-ink);border-color:var(--tx)}" +
     ".ct-root{display:flex;flex-direction:column;gap:var(--sp-3);min-width:0;animation:rise .28s ease both}" +
     ".ct-form{grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr))}" +
