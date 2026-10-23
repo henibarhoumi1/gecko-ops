@@ -102,7 +102,7 @@
   // ---------- solid palette: avatars, KPI badges, count pills, category chips (DESIGN.md §2) ----------
   /** Rotating highlight palette: blue, pink, yellow, green, work (black). Text: #000 on blue/pink/yellow, #F7F6F2 on green and black. */
   var PALETTE = [
-    { bg: "var(--c-blue)", fg: "var(--on-hi)", bd: "transparent" },
+    { bg: "var(--c-blue)", fg: "var(--on-green)", bd: "transparent" },
     { bg: "var(--c-pink)", fg: "var(--on-hi)", bd: "transparent" },
     { bg: "var(--c-yellow)", fg: "var(--on-hi)", bd: "transparent" },
     { bg: "var(--c-green)", fg: "var(--on-green)", bd: "transparent" },

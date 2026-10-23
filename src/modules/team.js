@@ -61,7 +61,7 @@
     var h = '<div class="row between"><div class="row">' +
       ui.btn(t("tm_everyone"), "tm-mine", { cls: "sm" + (mine ? "" : " primary"), data: { v: "0" } }) +
       ui.btn(t("tm_mine"), "tm-mine", { cls: "sm" + (mine ? " primary" : ""), data: { v: "1" } }) + "</div>" +
-      ui.btn(t("tm_add_task"), "tm-task-new", { cls: "gel", disabled: !can, title: can ? "" : t("tm_no_tasks_right") }) + "</div>";
+      ui.btn(t("tm_add_task"), "tm-task-new", { cls: "primary", disabled: !can, title: can ? "" : t("tm_no_tasks_right") }) + "</div>";
     var groups = [];
     team.forEach(function (mb) { var l = open.filter(function (x) { return x.who === mb.id; }).sort(byDue); if (l.length) groups.push({ mb: mb, l: l }); });
     var ids = team.map(function (x) { return x.id; });

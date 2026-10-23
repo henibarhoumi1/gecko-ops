@@ -906,8 +906,8 @@
   css.textContent =
     // board
     ".pj-bar{display:flex;gap:var(--sp-3);align-items:center;flex-wrap:wrap;margin-bottom:var(--sp-4)}" +
-    ".pj-search{display:flex;align-items:center;gap:8px;flex:1;min-width:220px;border:1px solid var(--line);padding:0 10px;background:var(--bg)}.pj-search .in{border:0!important;background:transparent!important;padding-left:0}" +
-    ".pj-search:focus-within{border-color:var(--tx)}" +
+    ".pj-search{display:flex;align-items:center;gap:8px;flex:1;min-width:220px;border:1.5px solid var(--b-ink);border-radius:10px;padding:0 10px;background:var(--bg)}.pj-search .in{border:0!important;background:transparent!important;padding-left:0;box-shadow:none!important}" +
+    ".pj-search:focus-within{box-shadow:3px 3px 0 var(--b-yellow)}" +
     ".pj-phases{display:grid;grid-template-columns:repeat(4,minmax(240px,1fr));gap:var(--sp-3);overflow-x:auto;padding-bottom:8px}" +
     ".pj-col{display:flex;flex-direction:column;gap:10px;min-width:0;border-top:3px solid var(--tx);padding-top:var(--sp-2)}" +
     ".pj-col:nth-child(1){border-color:var(--gel)}.pj-col:nth-child(2){border-color:var(--chroma)}.pj-col:nth-child(3){border-color:var(--tx)}.pj-col:nth-child(4){border-color:var(--line)}" +
@@ -924,7 +924,7 @@
     ".pj-table tbody tr{cursor:pointer;transition:background .15s}.pj-table tbody tr:hover{background:var(--chroma)}.pj-table td .pj-c-bar{width:90px}" +
     // detail
     ".pj-hero{display:flex;flex-direction:column;gap:var(--sp-3);margin-bottom:var(--sp-4)}.enter .pj-hero{animation:pjIn .35s ease both}" +
-    ".pj-crumbs{display:flex;align-items:center;gap:8px;font-family:var(--f-type);font-size:12px;letter-spacing:.06em;text-transform:uppercase}.pj-crumbs>span{opacity:.4}" +
+    ".pj-crumbs{display:flex;align-items:center;gap:8px;font-family:var(--f-type);font-size:12px;letter-spacing:0;text-transform:none}.pj-crumbs>span{opacity:.4}" +
     ".pj-crumb{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:6px;opacity:.7}.pj-crumb:hover{opacity:1;text-decoration:underline}.pj-crumb .ic{width:14px;height:14px}" +
     ".pj-h1{margin:0;font-size:clamp(30px,4.4vw,52px);line-height:1;font-weight:700;letter-spacing:-.035em;text-wrap:balance}" +
     ".pj-tags{display:flex;gap:8px;align-items:center;flex-wrap:wrap}" +

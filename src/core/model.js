@@ -541,7 +541,7 @@
   // ---------- migration from the first version (old packs, stages and channels) ----------
   M.OLD = {
     pack: { GRIP: "test", SEASON: "campaign", SKIN10: "premier", SKIN20: "premium", monthly8: "premier", monthly12: "premium" },
-    packName: [[/SKIN 20/g, "Premium"], [/SKIN 10/g, "Premier"], [/Monthly 12/g, "Premium"], [/Monthly 8/g, "Premier"], [/\bSKIN\b/g, "Monthly"], [/\bGRIP\b/g, "Test Campaign"], [/\bSEASON\b/g, "Campaign"]],
+    packName: [[/SKIN 20/g, "Creative Partner"], [/SKIN 10/g, "Pro"], [/Monthly 12/g, "Creative Partner"], [/Monthly 8/g, "Pro"], [/\bSKIN\b/g, "Monthly"], [/\bGRIP\b/g, "Test Campaign"], [/\bSEASON\b/g, "Campaign"]],
     stage: { onboard: "onboarding", plan: "scripting", edit: "editing", testing: "delivered", report: "paid", done: "retention" },
     lead: { dm: "contacted", replied: "conversation", call: "meeting_booked", proposal: "proposal_sent" },
     source: { teardown_dm: "outbound_dm", media_buyer: "referral_personal", referral: "referral_client", warm: "referral_personal", inbound: "ig_organic" },
