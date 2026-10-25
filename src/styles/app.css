@@ -759,3 +759,43 @@ input.in:focus,select.in:focus,textarea.in:focus{border-color:var(--tx)}
 /* phone: when the help button is the only action, keep it beside the title instead of on its own row */
 @media (max-width:760px){.head{position:relative}.head:has(>.actions>[data-a="guide-help"]:only-child) .t{padding-right:44px}.head>.actions:has(>[data-a="guide-help"]:only-child){position:absolute;top:0;right:0}}
 .btn:disabled:hover,.btn[aria-disabled="true"]:hover{transform:none;box-shadow:none}
+
+/* ---------- website v2 (Oct 25): black sidebar, cutting-mat green for "selected" and "done", pink hover, more yellow ---------- */
+/* sidebar: ink panel like the website's app preview */
+.side{background:var(--b-ink);color:#fff;border-right:0}
+.side .logo{color:#fff}
+.side .grp-h{color:rgba(255,255,255,.5)}
+.side .nv{color:rgba(255,255,255,.72);font-weight:600}
+.side .nv .ic{color:inherit}
+.side .nv:hover:not([aria-current="page"]){background:rgba(255,255,255,.08);color:#fff}
+.side .nv[aria-current="page"]{background:var(--b-mat);color:#fff;box-shadow:none}
+.side .nv .cnt{background:var(--b-pink)!important;color:var(--b-ink)!important;font-weight:700}
+.side .nv .cnt.hot{background:var(--b-yellow)!important;color:var(--b-ink)!important}
+.side .ib,.side .side-tg,.side .side-x{color:#fff}
+.side .ib:hover{background:rgba(255,255,255,.1)}
+.side-new .btn.primary,.side-new .btn{background:var(--b-pink);border-color:var(--b-pink);color:var(--b-ink)}
+.side-new .btn:hover:not(:disabled){background:var(--b-yellow);border-color:var(--b-yellow);box-shadow:3px 3px 0 #fff}
+.side-foot{border-top:1px solid rgba(255,255,255,.16)}
+.side .me-card{color:#fff}
+.side .me-card:hover,.side .me-card[aria-expanded="true"]{background:rgba(255,255,255,.08)}
+.side .me-card .muted,.side .me-card small{color:rgba(255,255,255,.6)}
+.side .av{border-color:#fff}
+/* buttons: pink on hover, like the website */
+.btn:hover:not(:disabled){background:var(--b-pink)}
+.btn.primary:hover:not(:disabled){background:var(--b-ink);box-shadow:3px 3px 0 var(--b-pink)}
+.btn.ghost:hover:not(:disabled){background:var(--b-pink-soft)}
+/* tabs: the chosen one turns green and lifts */
+.tabs [role="tab"][aria-selected="true"],.seg [aria-pressed="true"],.seg [aria-selected="true"]{background:var(--b-mat);color:#fff}
+.tabs [role="tab"]:hover:not([aria-selected="true"]),.seg button:hover:not([aria-pressed="true"]):not([aria-selected="true"]){background:var(--b-pink-soft)}
+/* done and progress read green */
+.pill.done{background:var(--b-mat-soft);color:var(--b-mat-deep);border-color:transparent}
+.pill.done::before{border-color:var(--b-mat-deep)}
+.meter i{background:var(--b-mat)}
+/* small labels: bold caps, like the website's tile labels */
+.kpi .kh>span:last-child,.eyebrow,.meter-lab,th{text-transform:uppercase;letter-spacing:.06em;font-size:11px;color:var(--tx-2)}
+/* more yellow: the first number tile in a row, and the page title gets a yellow dot */
+.kpis>.kpi:first-child,.kpi-row>.kpi:first-child{background:var(--b-yellow-soft)}
+.head .hl{position:relative;isolation:isolate}
+.head .hl::before{content:"";position:absolute;z-index:-1;left:-.22em;top:-.06em;width:1.12em;height:1.12em;border-radius:50%;background:var(--b-yellow)}
+/* bottom bar on phones */
+.bnav button[aria-current="page"],.bnav button[aria-current="page"] .ic{color:var(--b-mat)}
