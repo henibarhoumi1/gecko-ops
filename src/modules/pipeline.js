@@ -4,7 +4,7 @@
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
-    pl_title: ["Leads", "Prospects"], pl_accent: ["", ""], pl_m_board: ["Leads", "Prospects"], pl_m_results: ["Results", "Résultats"],
+    pl_title: ["Leads", "Prospects"], pl_accent: ["", ""], pl_m_board: ["Board", "Tableau"], pl_m_results: ["Results", "Résultats"],
     pl_sub: ["{open} open · {due} to follow up today or late", "{open} en cours · {due} à relancer aujourd'hui ou en retard"],
     pl_add: ["Add lead", "Ajouter un prospect"], pl_new: ["New", "Nouveau"], pl_lead: ["lead", "prospect"],
     pl_no_edit: ["Only sales and the founder can change leads.", "Seuls le commercial et le fondateur peuvent modifier les prospects."],
@@ -49,10 +49,15 @@
     pl_moved: ["Moved to {s}", "Passé à {s}"], pl_del_q: ["Delete this lead?", "Supprimer ce prospect ?"],
     pl_del_body: ["It disappears from the board and the funnel. Clients and projects stay.", "Il disparaît du tableau et de l'entonnoir. Les clients et projets restent."],
     pl_deleted: ["Lead deleted", "Prospect supprimé"], pl_history: ["History", "Historique"],
+    pl_gap_owner: ["no owner", "pas de responsable"], pl_gap_next: ["no next step", "pas de prochaine étape"], pl_gap_date: ["no date", "pas de date"],
+    pl_needs: ["Needs: {g}", "Manque : {g}"],
+    pl_guard: ["An open lead needs an owner, a next step and a date. Add them, then move it.", "Un prospect en cours a besoin d'un responsable, d'une prochaine étape et d'une date. Ajoutez-les, puis déplacez-le."],
+    pl_guard_save: ["Add an owner, a next step and a date so this lead can't go quiet.", "Ajoutez un responsable, une prochaine étape et une date pour que ce prospect ne tombe pas dans l'oubli."],
+    pl_k_unsafe: ["Missing a next step", "Sans prochaine étape"],
     pl_client_note: ["From the pipeline · {h}", "Depuis la prospection · {h}"], pl_read: ["Read only", "Lecture seule"]
   });
 
-  var OPEN = m.OPEN_STAGES.slice();
+  var OPEN = m.LEAD_STEPS.slice();
   var LEAD_DOT = { prospect: "dot-blue", contacted: "dot-blue", conversation: "dot-yellow", meeting_booked: "dot-pink", qualified: "dot-chroma", proposal_sent: "dot-chroma", negotiation: "dot-pink", accepted: "dot-chroma", signed: "dot-chroma" };
   var QN = 4;
 
@@ -78,25 +83,30 @@
     }
     return '<div class="row" style="gap:6px"><span class="small">' + esc(l.next || "—") + "</span>" + date + "</div>";
   }
+  function chName(c) { var k = "mk_src_" + c; return t(k) !== k ? t(k) : t("pl_ch_" + c); }
+  function gapsHTML(l) {
+    var g = m.leadGaps(l);
+    return g.length ? '<span class="pl-gap">' + esc(t("pl_needs", { g: g.map(function (k) { return t("pl_gap_" + k); }).join(", ") })) + "</span>" : "";
+  }
   function stageSelect(l) {
     if (!canEdit()) return "";
     return '<select class="in inline small" data-c="pl-move" data-id="' + esc(l.id) + '" aria-label="' + esc(t("pl_move") + " · " + l.brand) + '">' +
-      m.LEAD_STAGES.map(function (s) { return '<option value="' + s + '"' + (s === m.leadStage(l) ? " selected" : "") + ">" + esc(t("ls_" + s)) + "</option>"; }).join("") + "</select>";
+      m.LEAD_PICK.map(function (s) { return '<option value="' + s + '"' + (s === m.leadStep(l) ? " selected" : "") + ">" + esc(t("ls_" + s)) + "</option>"; }).join("") + "</select>";
   }
   function card(l) {
     var n = qn(l), owner = m.member(l.owner);
-    return '<div class="card" tabindex="0" data-a="pl-open" data-id="' + esc(l.id) + '">' +
+    return '<div class="card' + (m.leadGaps(l).length ? " pl-unsafe" : "") + '" tabindex="0" data-a="pl-open" data-id="' + esc(l.id) + '">' +
       '<div class="row between" style="gap:6px;flex-wrap:nowrap"><span class="t">' + esc(l.brand || "—") + "</span>" +
       ui.pill(n + "/" + QN, n === QN ? "done" : "") + "</div>" +
-      '<div class="m">' + [l.handle, l.pack ? m.pack(l.pack).name : "", l.channel ? t("pl_ch_" + l.channel) : ""].filter(Boolean).map(esc).join(" · ") + "</div>" +
-      nextHTML(l) +
+      '<div class="m">' + [l.handle, l.pack ? m.pack(l.pack).name : "", l.channel ? chName(l.channel) : ""].filter(Boolean).map(esc).join(" · ") + "</div>" +
+      nextHTML(l) + gapsHTML(l) +
       '<div class="row between" style="gap:6px"><span class="row small muted" style="gap:6px">' + ui.av(owner.name) + esc(owner.name) + "</span>" + stageSelect(l) + "</div>" +
       "</div>";
   }
 
   function board(leads) {
     return '<div class="board">' + OPEN.map(function (s) {
-      var list = leads.filter(function (l) { return m.leadStage(l) === s; }).sort(byNext);
+      var list = leads.filter(function (l) { return m.leadStep(l) === s; }).sort(byNext);
       return '<section class="col" aria-label="' + esc(t("ls_" + s)) + '"><div class="col-h"><span class="lab">' + ui.dot(LEAD_DOT[s]) + esc(t("ls_" + s)) + '</span><span class="small muted num">' + list.length + "</span></div>" +
         (list.length ? list.map(card).join("") : '<p class="small faint" style="margin:0">—</p>') + "</section>";
     }).join("") + "</div>";
@@ -151,11 +161,12 @@
       var open = leads.filter(m.isOpen);
       var due = open.filter(function (l) { return l.nextDate && l.nextDate <= today; }).length;
       var qual = open.filter(m.qualified).length;
+      var unsafe = open.filter(function (l) { return m.leadGaps(l).length; }).length;
       var week = m.funnel(u.weekStart(today), owner);
       var add = ui.btn(t("pl_add"), "pl-new", { cls: "primary", disabled: !canEdit(), title: canEdit() ? "" : t("pl_no_edit") });
       var values = t("pl_won_value", { a: u.money(GK.x.wonOpportunityValue()) });
       if (m.isFounder()) values += " " + t("pl_confirmed_revenue", { r: u.money(GK.x.confirmedRevenue(u.year(today))) });
-      return ui.head({ label: t("nav_pipeline"), title: t("pl_title"), accent: t("pl_accent"), sub: esc(t("pl_sub", { open: open.length, due: due })) + " " + ui.sample(), actions: add }) +
+      return ui.head({ label: t("nav_pipeline"), title: t("pl_title"), accent: t("pl_accent"), sub: esc(t("pl_sub", { open: open.length, due: due })) + (unsafe ? " · " + esc(unsafe + " " + t("pl_k_unsafe").toLowerCase()) : "") + " " + ui.sample(), actions: add }) +
         '<div class="row between" style="flex-wrap:wrap"><div class="tabs" role="tablist">' + ["board", "results"].map(function (k) {
           return '<button type="button" role="tab" data-a="pl-mode" data-v="' + k + '" aria-selected="' + (mode === k) + '">' + esc(t("pl_m_" + k)) + "</button>";
         }).join("") + "</div></div>" +
@@ -172,7 +183,7 @@
     },
     count: function () {
       var today = u.today();
-      return S.all("leads").filter(function (l) { return m.isOpen(l) && l.nextDate && l.nextDate <= today; }).length || "";
+      return S.all("leads").filter(function (l) { return m.isOpen(l) && ((l.nextDate && l.nextDate <= today) || m.leadGaps(l).length); }).length || "";
     }
   });
 
@@ -266,6 +277,7 @@
     if (stage === "won") {
       return wonFlow(Object.assign({}, l, extra || {}), extra);
     }
+    if (m.STEP_OF[l.stage] && m.STEP_OF[l.stage] === stage) stage = l.stage;
     var patch = Object.assign({}, extra || {}), moved = stage !== l.stage;
     if (moved) {
       patch.stage = stage;
@@ -290,6 +302,10 @@
     if (!canEdit()) return ui.toast(t("pl_no_edit"));
     if (stage === "lost") { ui.render(true); return lostModal(id); }
     if (stage === "won") ui.render(true);
+    var lead = S.get("leads", id);
+    if (lead && m.OPEN_STAGES.indexOf(stage) > -1 && m.leadGaps(Object.assign({}, lead, { stage: stage })).length) {
+      ui.render(true); ui.toast(t("pl_guard")); return leadModal(Object.assign({}, lead, { stage: stage }));
+    }
     moveTo(id, stage);
   });
   GK.act("pl-lost-save", function (el) {
@@ -311,7 +327,7 @@
       ui.field({ id: "pl-brand", label: t("pl_brand"), value: l.brand, attrs: dis }) +
       ui.field({ id: "pl-contact", label: t("pl_contact"), value: l.contact, attrs: dis }) +
       ui.field({ id: "pl-handle", label: t("pl_handle"), value: l.handle, placeholder: "@brand", attrs: dis }) +
-      ui.field({ id: "pl-channel", label: t("pl_channel"), type: "select", value: l.channel, options: m.CHANNELS.map(function (c) { return [c, t("pl_ch_" + c)]; }), attrs: dis }) +
+      ui.field({ id: "pl-channel", label: t("pl_channel"), type: "select", value: l.channel, options: m.CHANNELS.map(function (c) { return [c, chName(c)]; }), attrs: dis }) +
       ui.field({ id: "pl-pack", label: t("pl_pack"), type: "select", value: l.pack, options: m.packKeys().map(function (k) { return [k, m.pack(k).name]; }), attrs: dis }) +
       ui.field({ id: "pl-owner-f", label: t("pl_owner"), type: "select", value: l.owner, options: owners.map(function (p) { return [p.id, p.name]; }), attrs: dis }) +
       "</div>" +
@@ -320,7 +336,7 @@
       '<div class="form">' +
       ui.field({ id: "pl-next", label: t("pl_next"), value: l.next, placeholder: t("pl_next_ph"), attrs: dis }) +
       ui.field({ id: "pl-nextdate", label: t("pl_next_date"), type: "date", value: l.nextDate, attrs: dis }) +
-      ui.field({ id: "pl-stage", label: t("pl_stage"), type: "select", value: m.leadStage(l), options: m.LEAD_STAGES.map(function (s) { return [s, t("ls_" + s)]; }), attrs: dis + ' data-c="pl-mstage"' }) +
+      ui.field({ id: "pl-stage", label: t("pl_stage"), type: "select", value: m.leadStep(l), options: m.LEAD_PICK.map(function (s) { return [s, t("ls_" + s)]; }), attrs: dis + ' data-c="pl-mstage"' }) +
       '<div id="pl-lostwrap"' + (m.leadStage(l) === "lost" ? "" : " hidden") + ">" +
       ui.field({ id: "pl-lostr", label: t("pl_lost_reason"), type: "select", value: l.lostReason || "", options: [["", "—"]].concat(m.LOST_REASONS.map(function (r) { return [r, t("pl_lr_" + r)]; })), attrs: dis }) + "</div>" +
       "</div>" +
@@ -342,11 +358,13 @@
     if (!brand) { u.focus("pl-brand"); return ui.toast(t("required")); }
     var stage = u.val("pl-stage"), lr = u.val("pl-lostr");
     if (stage === "lost" && !lr) { u.focus("pl-lostr"); return ui.toast(t("required")); }
+    var id = el.dataset.id;
     if (!id && stage === "won") return ui.toast(t("pl_signed_unpaid"));
     var data = { brand: brand, contact: u.val("pl-contact").trim(), handle: u.val("pl-handle").trim(), channel: u.val("pl-channel"), pack: u.val("pl-pack"),
       owner: u.val("pl-owner-f"), q: [1, 2, 3, 4].map(function (i) { return u.checked("pl-q" + i); }), next: u.val("pl-next").trim(), nextDate: u.val("pl-nextdate"),
       lostReason: stage === "lost" ? lr : "" };
-    var id = el.dataset.id;
+    var gaps = m.leadGaps(Object.assign({}, data, { stage: stage }));
+    if (gaps.length) { u.focus(gaps[0] === "owner" ? "pl-owner-f" : gaps[0] === "next" ? "pl-next" : "pl-nextdate"); return ui.toast(t("pl_guard_save")); }
     ui.closeModal(true);
     if (!id) {
       var saved = S.put("leads", Object.assign(data, { stage: stage, history: [{ stage: stage, at: u.today() }] }), { log: t("pl_log_added") });

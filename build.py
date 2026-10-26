@@ -31,8 +31,10 @@ def build():
     if bool(backend_url) != bool(backend_key):
         sys.exit("Set both GK_SUPABASE_URL and GK_SUPABASE_ANON_KEY, or neither.")
     if backend_url:
-        if not re.match(r"^https?://(localhost|127\.0\.0\.1|\[::1\])(?::[0-9]+)?$", backend_url):
-            sys.exit("For Phase 0, only a local Supabase URL may be embedded in the build.")
+        local = re.match(r"^http://(localhost|127\.0\.0\.1|\[::1\])(?::[0-9]+)?$", backend_url)
+        hosted = re.match(r"^https://[a-z0-9]{20}\.supabase\.co$", backend_url)
+        if not (local or hosted):
+            sys.exit("GK_SUPABASE_URL must be a local Supabase URL or https://<project-ref>.supabase.co")
         if backend_key.lower().startswith(("sb_secret_", "service_role")):
             sys.exit("A service-role/secret key must never be embedded in the browser build.")
         try:

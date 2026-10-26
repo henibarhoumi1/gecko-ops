@@ -51,6 +51,13 @@
     se_reset_demo: ["Clear workspace records", "Vider les données de l'espace"],
     se_backup: ["Download a backup", "Télécharger une sauvegarde"],
     se_backup_hint: ["Downloads a JSON copy of all workspace records and configuration before cleanup.", "Télécharge une copie JSON des données et de la configuration avant le nettoyage."],
+    se_restore: ["Restore a backup", "Restaurer une sauvegarde"],
+    se_restore_hint: ["Moves a backup file from the old app into this workspace. People join by invite, and client links are published again.", "Importe une sauvegarde de l'ancienne app dans cet espace. L'équipe rejoint par invitation, les liens clients sont republiés."],
+    se_restore_q: ["Restore {n} records?", "Restaurer {n} éléments ?"],
+    se_restore_b: ["Records with the same id are replaced. Settings are replaced by the ones in the file.", "Les éléments avec le même identifiant sont remplacés. Les réglages sont remplacés par ceux du fichier."],
+    se_restore_go: ["Restoring {i} of {n}", "Restauration {i} sur {n}"],
+    se_restore_done: ["Restored {done} of {total} records", "{done} éléments restaurés sur {total}"],
+    se_restore_bad: ["This file is not a Gecko Ops backup.", "Ce fichier n'est pas une sauvegarde Gecko Ops."],
     se_backup_ok: ["Backup copied: {n} records", "Sauvegarde copiée : {n} éléments"],
     se_clear_title: ["Clear local workspace records?", "Effacer les données de l'espace local ?"],
     se_clear_confirm: ["This permanently removes {n} saved records from {collections}. Company details, packs, rates, financial rules, invoice numbering, language, theme and navigation preferences are preserved. Download a backup first if you may need these records.", "Cette action supprime définitivement {n} éléments enregistrés dans : {collections}. Les informations de société, packs, tarifs, règles financières, numérotation des factures, langue, thème et préférences de navigation sont conservés. Téléchargez une sauvegarde avant si vous pourriez en avoir besoin."],
@@ -145,6 +152,8 @@
       '<div class="row">' + btns + "</div>" +
       '<hr class="rule"><div class="stack" style="gap:6px"><div class="row">' + ui.btn(t("se_backup"), "se-backup", { cls: "" }) + "</div>" +
       '<span class="small muted">' + esc(t("se_backup_hint")) + "</span></div>" +
+      (S.backend === "supabase" && S.workspaceRole === "founder" ? '<hr class="rule"><div class="stack" style="gap:6px"><div class="row">' + ui.btn(t("se_restore"), "se-restore", { cls: "" }) + "</div>" +
+        '<span class="small muted">' + esc(t("se_restore_hint")) + "</span></div>" : "") +
       (S.backend === "local" && canEdit() ? '<hr class="rule"><div class="stack" style="gap:6px">' +
         ui.btn(t("se_reset_demo"), "se-clear-local", { cls: "ghost" }) +
         '<span class="small muted">' + esc(t("se_clear_confirm", { n: records, collections: localRecordSummary().join(", ") || t("none") })) + "</span></div>" : "") +
@@ -228,6 +237,24 @@
     var o = { app: "GECKO Ops", version: 1, exported: u.nowStamp(), mode: S.mode, backend: S.backend, config: S.config(), colls: {} }, n = 0;
     S.COLLS.forEach(function (c) { o.colls[c] = S.all(c); n += o.colls[c].length; });
     ui.download("gecko-ops-backup-" + u.today() + ".json", JSON.stringify(o, null, 1));
+  });
+  GK.act("se-restore", function () {
+    var input = document.createElement("input");
+    input.type = "file"; input.accept = ".json,application/json";
+    input.onchange = function () {
+      var f = input.files && input.files[0];
+      if (!f) return;
+      f.text().then(function (text) {
+        var b; try { b = JSON.parse(text); } catch (e) { b = null; }
+        if (!b || !b.colls) return ui.toast(t("se_restore_bad"));
+        var n = Object.keys(b.colls).reduce(function (a, c) { return a + (["team", "shares", "feedback"].indexOf(c) < 0 && Array.isArray(b.colls[c]) ? b.colls[c].length : 0); }, 0);
+        ui.confirm(t("se_restore_q", { n: n }), t("se_restore_b"), function () {
+          S.restoreBackup(b, function (i, total) { if (i % 10 === 0) ui.toast(t("se_restore_go", { i: i, n: total })); })
+            .then(function (r) { ui.toast(t("se_restore_done", r)); }, function (e) { ui.toast(e.message); });
+        });
+      });
+    };
+    input.click();
   });
   GK.act("se-clear-local", function () {
     if (!canEdit() || S.backend !== "local") return;
