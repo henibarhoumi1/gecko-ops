@@ -334,7 +334,7 @@
     hasHelp: function (view) { return !!track(view) || STEP_VIEWS[view] != null; },
     learned: learned,
     maybeWelcome: function () {
-      if (!S.ready || ui.modalOpen()) return;
+      if (!S.ready || ui.modalOpen() || (S.backend === "supabase" && S.authState !== "ready")) return;
       var state = readState();
       if (state && state.status === "active") start(state.step);
       else if (!state) welcome();

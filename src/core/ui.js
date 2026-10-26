@@ -16,7 +16,25 @@
     ui_new: ["New", "Nouveau"], ui_view_all: ["View all", "Tout voir"], ui_vs_prev: ["vs last period", "vs période précédente"],
     ui_filter: ["Filter…", "Filtrer…"], ui_sort_by: ["Sort by {c}", "Trier par {c}"],
     ui_recommend: ["Do", "À faire"], ui_close_panel: ["Close panel", "Fermer le panneau"],
-    grp_main: ["Main", "Principal"]
+    grp_main: ["Main", "Principal"],
+    au_kick: ["Gecko · sign in", "Gecko · connexion"], au_in_t: ["Welcome back", "Bon retour"], au_in_p: ["Team and clients sign in here with their own email.", "L'équipe et les clients se connectent ici avec leur propre e-mail."],
+    au_up_t: ["Create your account", "Créer votre compte"], au_up_p: ["Use the email your invite was sent to.", "Utilisez l'e-mail qui a reçu l'invitation."],
+    au_email: ["Email", "E-mail"], au_pass: ["Password", "Mot de passe"], au_pass_h: ["8 characters or more", "8 caractères ou plus"], au_name: ["Your name", "Votre nom"],
+    au_signin: ["Sign in", "Se connecter"], au_signup: ["Create account", "Créer le compte"], au_to_up: ["New here? Create an account", "Nouveau ? Créer un compte"], au_to_in: ["Already have an account? Sign in", "Déjà un compte ? Se connecter"],
+    au_invite_on: ["You have an invite. Sign in or create an account with the email it was sent to.", "Vous avez une invitation. Connectez-vous ou créez un compte avec l'e-mail qui l'a reçue."],
+    au_load: ["Opening your workspace", "Ouverture de votre espace"],
+    au_none_t: ["One more step", "Encore une étape"], au_none_p: ["Paste the invite code Gecko sent you. It works for team members and for clients.", "Collez le code d'invitation envoyé par Gecko. Il marche pour l'équipe et pour les clients."],
+    au_code: ["Invite code", "Code d'invitation"], au_join: ["Join", "Rejoindre"], au_out: ["Sign out", "Se déconnecter"],
+    au_first_t: ["Setting up Gecko for the first time?", "Première installation de Gecko ?"], au_first_p: ["The first account creates the workspace and becomes its founder. After that, people join by invite only.", "Le premier compte crée l'espace et en devient le fondateur. Ensuite, on rejoint uniquement sur invitation."],
+    au_create: ["Create the Gecko workspace", "Créer l'espace Gecko"],
+    au_e_exists: ["Gecko's workspace already exists. Ask the founder for an invite.", "L'espace Gecko existe déjà. Demandez une invitation au fondateur."],
+    au_e_invite: ["This code doesn't work for this email, or it has expired. Ask for a new one.", "Ce code ne marche pas pour cet e-mail, ou il a expiré. Demandez-en un nouveau."],
+    au_e_login: ["Wrong email or password.", "E-mail ou mot de passe incorrect."], au_e_confirm: ["Confirm your email first: open the link we sent you, then sign in.", "Confirmez d'abord votre e-mail : ouvrez le lien envoyé, puis connectez-vous."],
+    au_confirm: ["Check your email to confirm the account, then sign in.", "Vérifiez votre e-mail pour confirmer le compte, puis connectez-vous."],
+    inv_body: ["Send this link to {e}. They open it, create an account with that email, and they're in.", "Envoyez ce lien à {e}. La personne l'ouvre, crée un compte avec cet e-mail, et elle est dedans."],
+    inv_note: ["It works once, only for that email. You won't see it again, so copy it now.", "Il marche une fois, seulement pour cet e-mail. Il ne s'affichera plus, copiez-le maintenant."],
+    inv_copy: ["Copy link", "Copier le lien"],
+    au_client_bar: ["Signed in as {e}", "Connecté en tant que {e}"]
   });
 
   var UI = { state: { view: "today", params: {} } };
@@ -500,32 +518,48 @@
     return out;
   }
   function backendScreen() {
-    var S = GK.store, h = '<div class="page" style="max-width:720px;margin:8vh auto"><section class="panel">';
-    h += '<span class="lab sm muted">GECKO OPS · SECURE WORKSPACE</span>';
+    var S = GK.store, mode = UI.state.authMode === "up" ? "up" : "in";
+    var h = '<div class="auth"><div class="auth-card"><div class="auth-logo">' + GK.logo.wordmark + '</div><p class="auth-kick">' + esc(t("au_kick")) + "</p>";
     if (S.authState === "loading") {
-      h += '<h1 class="hl">Connecting</h1><p class="muted">Loading your authorized workspace records…</p>';
+      h += '<h1 class="hl">' + esc(t("au_load")) + "</h1>";
     } else if (S.authState === "no-workspace") {
-      h += '<h1 class="hl">Your workspace</h1><p class="muted">Create a workspace or accept an invitation to continue.</p>';
-      h += UI.field({ id: "auth-workspace", label: "Workspace name", value: "" });
-      h += '<div class="row">' + UI.btn("Create workspace", "auth-create-workspace", { cls: "primary" }) + "</div>";
-      h += '<hr><div class="form">' + UI.field({ id: "auth-invite", label: "Invitation token", value: "" }) +
-        UI.field({ id: "auth-name", label: "Your name", value: "" }) + "</div>";
-      h += '<div class="row">' + UI.btn("Accept invitation", "auth-accept-invite", { cls: "primary" }) +
-        UI.btn("Sign out", "auth-signout", { cls: "ghost" }) + "</div>";
+      h += '<h1 class="hl">' + esc(t("au_none_t")) + '</h1><p class="auth-p">' + esc(t("au_none_p")) + "</p>";
+      h += '<div class="auth-form">' + UI.field({ id: "auth-invite", label: t("au_code"), value: S.pendingInvite() }) + UI.field({ id: "auth-name", label: t("au_name"), value: "" }) + "</div>";
+      h += UI.btn(t("au_join"), "auth-accept-invite", { cls: "primary auth-go" });
+      h += '<details class="auth-first"><summary>' + esc(t("au_first_t")) + '</summary><p class="auth-p">' + esc(t("au_first_p")) + "</p>" +
+        UI.btn(t("au_create"), "auth-create-workspace", { cls: "" }) + "</details>";
+      h += '<button type="button" class="auth-link" data-a="auth-signout">' + esc(t("au_out")) + "</button>";
     } else {
-      h += '<h1 class="hl">Sign in to GECKO</h1><p class="muted">Private workspace data is available only after authentication.</p>';
-      h += '<div class="form">' + UI.field({ id: "auth-email", label: "Email", type: "email", value: "" }) +
-        UI.field({ id: "auth-password", label: "Password", type: "password", value: "" }) + "</div>";
-      h += '<div class="row">' + UI.btn("Sign in", "auth-signin", { cls: "primary" }) +
-        UI.btn("Create account", "auth-signup", { cls: "ghost" }) + "</div>";
-      h += '<hr><p class="small muted">New accounts need an invitation, or may create their own workspace after sign-up.</p>';
-      h += '<div class="form">' + UI.field({ id: "auth-name", label: "Your name", value: "" }) +
-        UI.field({ id: "auth-workspace", label: "Workspace name (optional)", value: "" }) + "</div>";
+      h += '<h1 class="hl">' + esc(t(mode === "up" ? "au_up_t" : "au_in_t")) + '</h1><p class="auth-p">' + esc(t(S.pendingInvite() ? "au_invite_on" : mode === "up" ? "au_up_p" : "au_in_p")) + "</p>";
+      h += '<div class="auth-form" data-auth="' + mode + '">' + (mode === "up" ? UI.field({ id: "auth-name", label: t("au_name"), value: "" }) : "") +
+        UI.field({ id: "auth-email", label: t("au_email"), type: "email", value: "", attrs: ' autocomplete="email"' }) +
+        UI.field({ id: "auth-password", label: t("au_pass"), type: "password", value: "", hint: mode === "up" ? t("au_pass_h") : "", attrs: ' autocomplete="' + (mode === "up" ? "new-password" : "current-password") + '"' }) + "</div>";
+      h += UI.btn(t(mode === "up" ? "au_signup" : "au_signin"), mode === "up" ? "auth-signup" : "auth-signin", { cls: "primary auth-go" });
+      h += '<button type="button" class="auth-link" data-a="auth-mode">' + esc(t(mode === "up" ? "au_to_in" : "au_to_up")) + "</button>";
     }
     var message = S.authError || S.authMessage;
-    if (message) h += '<p class="note" role="status">' + esc(message) + "</p>";
-    h += '<div class="row">' + UI.btn("Use local workspace", "show-demo", { cls: "ghost" }) + "</div>";
-    return h + "</section></div>";
+    if (message) h += '<p class="auth-msg" role="status">' + esc(message) + "</p>";
+    return h + "</div></div>";
+  }
+  /** The link someone opens to join: sign in or sign up, and the code is used for them. */
+  UI.inviteLink = function (code) { return location.origin + location.pathname + "#join-" + code; };
+  /** Shows a one-time invite link with a copy button. */
+  UI.inviteModal = function (title, email, code) {
+    var link = UI.inviteLink(code);
+    UI.modal({
+      title: title,
+      body: '<p style="margin:0">' + esc(t("inv_body", { e: email })) + '</p><code class="code" style="word-break:break-all;user-select:all">' + esc(link) + "</code>" +
+        '<p class="small muted" style="margin:0">' + esc(t("inv_note")) + "</p>",
+      foot: UI.btn(t("inv_copy"), "inv-copy", { cls: "", data: { v: link } }) + UI.btn(t("close"), "close", { cls: "primary" })
+    });
+  };
+  actions["inv-copy"] = function (el) { u.copy(el.getAttribute("data-v")).then(function (ok) { UI.toast(t(ok ? "copied" : "write_failed")); }); };
+  /** A signed-in client: their own page, with a slim bar to sign out. */
+  function clientAccountScreen() {
+    var S = GK.store, cm = GK.clientMode, sh = S.publicShare || {};
+    var email = ""; try { var ses = JSON.parse(sessionStorage.getItem("gecko-ops-supabase-session") || "{}"); email = ses.user && ses.user.email || ""; } catch (e) {}
+    return '<div class="cl-acct"><span>' + esc(t("au_client_bar", { e: email || (sh.account && sh.account.brand) || "" })) + '</span><button type="button" class="auth-link" data-a="auth-signout">' + esc(t("au_out")) + "</button></div>" +
+      (cm ? cm.render("me") : "");
   }
   /** Full render. Store updates arriving while someone types are held until they leave the field. */
   var lastScreen = "";
@@ -541,6 +575,11 @@
       if (cm && cm.after) try { cm.after(app); } catch (e) { console.error(e); }
       window.scrollTo(0, winTop);
       document.title = "GECKO";
+      return;
+    }
+    if (GK.store.backend === "supabase" && GK.store.authState === "client") {
+      app.innerHTML = clientAccountScreen();
+      if (GK.clientMode && GK.clientMode.after) try { GK.clientMode.after(app); } catch (e) { console.error(e); }
       return;
     }
     if (GK.store.backend === "supabase" && GK.store.authState !== "ready") {
@@ -642,40 +681,47 @@
     UI.closeModal(true); GK.store.join(name, role, claim); UI.render(true);
   };
   function authFailure(error) {
-    GK.store.authError = error && error.message ? error.message : "Authentication request failed.";
+    var m = error && error.message ? error.message : "";
+    GK.store.authError = /workspace_exists/.test(m) ? t("au_e_exists") : /invalid_invite/.test(m) ? t("au_e_invite") :
+      /Invalid login/i.test(m) ? t("au_e_login") : /not confirmed|verified_email/i.test(m) ? t("au_e_confirm") : (m || "Authentication request failed.");
     UI.render(true);
   }
+  /** After sign-in: a code waiting from an invite link is used at once. */
+  function afterAuth() {
+    var S = GK.store, code = S.pendingInvite();
+    S.authError = "";
+    if (code && S.authState === "no-workspace") return S.acceptAnyInvite(code, u.val("auth-name").trim()).then(function () { UI.render(true); }, authFailure);
+    UI.render(true);
+  }
+  actions["auth-mode"] = function () { UI.state.authMode = UI.state.authMode === "up" ? "in" : "up"; GK.store.authError = ""; GK.store.authMessage = ""; UI.render(true); };
   actions["auth-signin"] = function () {
     var email = u.val("auth-email").trim(), password = u.val("auth-password");
     if (!email) return u.focus("auth-email");
     if (!password) return u.focus("auth-password");
     GK.store.authError = "";
-    GK.store.signIn(email, password).then(function () { GK.store.authError = ""; UI.render(true); }, authFailure);
+    GK.store.signIn(email, password).then(afterAuth, authFailure);
   };
   actions["auth-signup"] = function () {
     var email = u.val("auth-email").trim(), password = u.val("auth-password"), name = u.val("auth-name").trim();
     if (!email) return u.focus("auth-email");
     if (!password) return u.focus("auth-password");
     GK.store.authError = "";
+    if (password.length < 8) { GK.store.authError = t("au_pass_h"); return UI.render(true); }
     GK.store.signUp(email, password, name).then(function () {
-      var workspace = u.val("auth-workspace").trim();
-      if (workspace && GK.store.authState === "no-workspace") {
-        return GK.store.createWorkspace(workspace).then(function () { GK.store.authError = ""; UI.render(true); }, authFailure);
-      }
-      UI.render(true);
+      if (GK.store.authState === "login") { GK.store.authMessage = t("au_confirm"); UI.state.authMode = "in"; }
+      afterAuth();
     }, authFailure);
   };
   actions["auth-create-workspace"] = function () {
-    var name = u.val("auth-workspace").trim();
-    if (!name) return u.focus("auth-workspace");
+    var name = "Gecko";
     GK.store.authError = "";
-    GK.store.createWorkspace(name).then(function () { GK.store.authError = ""; UI.render(true); }, authFailure);
+    GK.store.createWorkspace(name || "Gecko").then(function () { GK.store.authError = ""; UI.render(true); }, authFailure);
   };
   actions["auth-accept-invite"] = function () {
     var token = u.val("auth-invite").trim(), name = u.val("auth-name").trim();
     if (!token) return u.focus("auth-invite");
     GK.store.authError = "";
-    GK.store.acceptInvite(token, name).then(function () { GK.store.authError = ""; UI.render(true); }, authFailure);
+    GK.store.acceptAnyInvite(token, name).then(function () { GK.store.authError = ""; UI.render(true); }, authFailure);
   };
   actions["auth-signout"] = function () {
     GK.store.signOut().then(function () { UI.render(true); }, authFailure);
@@ -729,6 +775,8 @@
     var app = document.getElementById("app");
     app.innerHTML = skeleton();
     var h = (location.hash || "").replace("#", "");
+    var join = /^join-([a-f0-9]{64})$/.exec(h);
+    if (join) { GK.store.pendingInvite(join[1]); h = ""; try { history.replaceState(null, "", location.pathname); } catch (e) {} }
     UI.clientToken = GK.clientMode && GK.clientMode.match(h);   // "#cl-<token>" opens the client-facing page instead of the app
     UI.state.view = (UI.clientToken ? "" : h) || u.lsGet(VIEW_KEY, "today");
     window.addEventListener("hashchange", function () {

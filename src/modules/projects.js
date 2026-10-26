@@ -55,7 +55,7 @@
     pj_ob1: ["Brief call done", "Appel de brief fait"],
     pj_ob2: ["Brand assets and logo received", "Charte et logo reçus"],
     pj_ob3: ["Product samples received", "Échantillons produit reçus"],
-    pj_ob4: ["Ad account access (or the media buyer's contact)", "Accès au compte pub (ou contact du media buyer)"],
+    pj_ob4: ["Ad results they can share (Ads Manager screenshots)", "Résultats pubs à partager (captures Ads Manager)"],
     pj_ob5: ["Baseline orders per week recorded", "Commandes par semaine de départ notées"],
     pj_ob6: ["Creative plan sent", "Plan créatif envoyé"],
     pj_ob7: ["Shoot date booked", "Date de tournage réservée"],

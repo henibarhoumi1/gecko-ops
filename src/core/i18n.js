@@ -97,7 +97,7 @@
     est_owner_days: ["Owner, director and camera ({n} day × {r})", "Fondateur, réalisation et image ({n} j × {r})"],
     est_owner_project: ["Owner, director and camera (project)", "Fondateur, réalisation et image (projet)"],
     est_owner_edit: ["Owner, editing ({n} reels)", "Fondateur, montage ({n} reels)"],
-    est_camera: ["Camera rental ({n} day × {r})", "Location caméra ({n} j × {r})"], est_transport: ["Transport ({n} day × {r})", "Transport ({n} j × {r})"],
+    est_camera: ["Studio day, gear included ({n} day × {r})", "Studio, matériel inclus ({n} j × {r})"], est_transport: ["Transport ({n} day × {r})", "Transport ({n} j × {r})"],
     est_food: ["Food and water on set ({n} day × {r})", "Repas sur le tournage ({n} j × {r})"], est_assistant: ["Assistant ({n} day × {r})", "Assistant ({n} j × {r})"]
   });
 })(window.GK);
