@@ -5,7 +5,7 @@
 
   GK.i18n.add({
     rp_title: ["Ad results", "Résultats pub"], rp_accent: ["", ""],
-    rp_sub: ["The proof that the creative works. Enter the ad numbers per hook, see what won, and send the client a one-page report.", "La preuve que les créas marchent. Saisissez les chiffres des pubs par accroche, voyez ce qui gagne et envoyez au client un rapport d'une page."],
+    rp_sub: ["Enter the ad numbers per hook, see what won, send the client a report.", "Entrez les chiffres par accroche, voyez ce qui gagne, envoyez le rapport."],
     rp_pick: ["Project", "Projet"],
     rp_none: ["No project is in testing yet. Projects show up here once their files are delivered and the ads are running.", "Aucun projet en test pour l'instant. Les projets apparaissent ici une fois les fichiers livrés et les pubs lancées."],
     rp_results: ["Results per hook", "Résultats par accroche"],

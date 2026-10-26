@@ -9,7 +9,7 @@
 
   GK.i18n.add({
     bd_title: ["Whiteboards", "Tableaux blancs"], bd_accent: ["", ""],
-    bd_sub: ["Pin the ideas, frames and shot lists for a video or a campaign. Everything saves as you go.", "Posez les idées, les plans et les listes de plans d'une vidéo ou d'une campagne. Tout s'enregistre au fil de l'eau."],
+    bd_sub: ["Ideas, frames and shot lists for a video or a campaign.", "Idées, cadres et listes de plans pour une vidéo ou une campagne."],
     bd_new: ["New board", "Nouveau tableau"], bd_empty: ["No boards yet. Start from a template.", "Aucun tableau pour l'instant. Partez d'un modèle."],
     bd_no_match: ["No board matches these filters.", "Aucun tableau ne correspond à ces filtres."],
     bd_all_clients: ["All clients", "Tous les clients"], bd_all_kinds: ["All kinds", "Tous les types"], bd_no_client: ["No client", "Aucun client"],

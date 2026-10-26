@@ -6,7 +6,7 @@
   if (!HUB) return;
 
   GK.i18n.add({
-    cpo_quick_h: ["Quick update", "Point rapide"], cpo_quick_sub: ["A short status for one client: where each project is and what we need. Send it on WhatsApp or show it on a call.", "Un point court pour un client : où en est chaque projet et ce qu'il nous faut. À envoyer sur WhatsApp ou à montrer en appel."],
+    cpo_quick_h: ["Quick update", "Point rapide"], cpo_quick_sub: ["Where each project is and what we need, ready to send or show.", "Où en est chaque projet et ce qu'il nous faut, prêt à envoyer ou montrer."],
     cpo_copy: ["Copy WhatsApp update", "Copier le point WhatsApp"], cpo_show: ["Show the page", "Voir la page"], cpo_hide: ["Hide the page", "Masquer la page"]
   });
 

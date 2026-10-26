@@ -23,7 +23,7 @@
     tr_why: ["Why it matters", "Pourquoi c'est important"], tr_try: ["Try it: ", "À vous : "], tr_nice: ["Done. Nice.", "Fait. Bien joué."],
     tr_check: ["Quick check", "Petite vérification"], tr_right: ["Right.", "Exact."], tr_wrong: ["Not quite.", "Pas tout à fait."],
     tr_finish: ["Finish lesson", "Terminer la leçon"], tr_learned: ["{x}: lesson done", "{x} : leçon terminée"],
-    tr_lessons: ["Learn each section", "Apprendre chaque section"], tr_lessons_sub: ["Short hands-on lessons. Each one points at the real screen, has you try the key moves and ends with a quick check.", "Des leçons courtes et pratiques. Chacune montre l'écran réel, vous fait essayer l'essentiel et se termine par une petite vérification."],
+    tr_lessons: ["Learn each section", "Apprendre chaque section"], tr_lessons_sub: ["Short lessons on the real screen, each ending with a quick check.", "Des leçons courtes sur le vrai écran, chacune finit par une question."],
     tr_start_lesson: ["Start lesson", "Commencer"], tr_redo: ["Do again", "Refaire"], tr_done_on: ["Done", "Terminée"], tr_steps: ["{n} steps", "{n} étapes"],
     tr_click: ["Click {x} in the menu", "Cliquez sur {x} dans le menu"], tr_skip_step: ["Skip this step", "Passer cette étape"], tr_menu: ["Tap More, then {x}", "Touchez Plus, puis {x}"],
     tr_home_t: ["Home", "Accueil"], tr_home_b: ["Your day starts here: what needs you, your tasks, cash coming in and the next shoot.", "Votre journée commence ici : ce qui vous attend, vos tâches, l'argent attendu et le prochain tournage."],

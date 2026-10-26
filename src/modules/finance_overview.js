@@ -18,7 +18,7 @@
     fi_ov_profit: ["Profit by client", "Bénéfice par client"], fi_ov_profit_sub: ["Received minus project costs, before commission. Estimate.", "Reçu moins coûts projets, avant commission. Estimation."],
     fi_ov_margin: ["margin {p}", "marge {p}"],
     fi_ov_chase: ["To chase", "À relancer"], fi_ov_chase_none: ["Nothing to chase. Every open invoice is on time.", "Rien à relancer. Toutes les factures ouvertes sont dans les temps."],
-    fi_ov_chase_sub: ["Late invoices, and those due in the next 3 days. The tone gets firmer with the days late.", "Factures en retard et celles qui arrivent à échéance sous 3 jours. Le ton se durcit avec le retard."],
+    fi_ov_chase_sub: ["Late invoices, and those due in the next 3 days.", "Factures en retard, et celles dues sous 3 jours."],
     fi_ov_copy_wa: ["Copy WhatsApp reminder", "Copier le rappel WhatsApp"], fi_ov_tone_friendly: ["Friendly", "Amical"], fi_ov_tone_firm: ["Firm", "Ferme"], fi_ov_tone_final: ["Final", "Dernier rappel"],
     fi_ov_due_in: ["due {d}", "échéance le {d}"], fi_ov_late_d: ["{n} days late, due {d}", "{n} jours de retard, échéance le {d}"], fi_ov_late_1: ["1 day late, due {d}", "1 jour de retard, échéance le {d}"],
     fi_ov_day_1: ["1 day", "1 jour"], fi_ov_day_n: ["{n} days", "{n} jours"],

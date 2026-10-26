@@ -5,7 +5,7 @@
 
   GK.i18n.add({
     pr_title: ["Edit files", "Fichiers de montage"], pr_accent: ["", ""],
-    pr_sub: ["Every hook and carousel is one file. Editors send them to review, the owner approves them.", "Chaque accroche et chaque carrousel est un fichier. Les monteurs l'envoient en relecture, Heni valide."],
+    pr_sub: ["Editors send each file to review, the owner approves it.", "Les monteurs envoient chaque fichier en relecture, le fondateur valide."],
     pr_project: ["Project", "Projet"], pr_all: ["All projects", "Tous les projets"],
     pr_board: ["Board", "Tableau"], pr_reels: ["By reel", "Par reel"],
     pr_empty: ["No project has files in production right now. Files appear once reels are planned.", "Aucun projet n'a de fichiers en production. Les fichiers apparaissent quand les reels sont planifiés."],
