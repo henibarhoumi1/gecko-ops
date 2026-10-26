@@ -27,7 +27,7 @@
     app_name: ["Gecko Ops", "Gecko Ops"],
     nav_today: ["Home", "Accueil"], nav_pipeline: ["Leads", "Prospects"], nav_clients: ["Clients", "Clients"],
     nav_projects: ["Projects", "Projets"], nav_production: ["Shoots and edits", "Tournages et montage"], nav_deliveries: ["Deliveries", "Livraisons"],
-    nav_reports: ["Ad results", "Résultats pubs"], nav_finance: ["Finance", "Finance"], nav_portal: ["Client portals", "Portails client"],
+    nav_reports: ["Ad results", "Résultats pubs"], nav_finance: ["Money", "Argent"], nav_portal: ["Client portals", "Portails client"],
     nav_dashboard: ["CEO dashboard", "Tableau de bord"], nav_studio: ["Ideas and scripts", "Idées et scripts"], nav_boards: ["Whiteboards", "Tableaux"], nav_team: ["Team", "Équipe"], nav_settings: ["Settings", "Réglages"],
     nav_tasks: ["Tasks", "Tâches"], nav_calendar: ["Calendar", "Calendrier"], nav_inbox: ["Inbox", "Messages"], nav_activity: ["Activity", "Activité"], nav_guide: ["Start here", "Commencer ici"], nav_docs: ["Docs", "Docs"],
     grp_main: ["Main", "Principal"], grp_sell: ["Sell", "Vendre"], grp_make: ["Make", "Produire"], grp_work: ["Work", "Travail"], grp_studio: ["Studio", "Studio"], grp_money: ["Money", "Argent"], grp_clients: ["Clients", "Clients"], grp_team: ["Team", "Équipe"], grp_ceo: ["Company", "Direction"], grp_sales: ["Sales", "Ventes"], grp_prod: ["Production", "Production"], grp_mkt: ["Marketing", "Marketing"],

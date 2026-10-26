@@ -155,6 +155,21 @@
     var stage = typeof l === "string" ? l : l && l.stage;
     return M.OLD && M.OLD.lead[stage] || stage || "";
   };
+  /** The five steps the board shows. Older, finer stages fold into the step they belong to. */
+  M.LEAD_STEPS = ["prospect", "contacted", "meeting_booked", "proposal_sent", "signed"];
+  M.STEP_OF = { prospect: "prospect", contacted: "contacted", conversation: "contacted", meeting_booked: "meeting_booked", qualified: "meeting_booked", proposal_sent: "proposal_sent", negotiation: "proposal_sent", accepted: "proposal_sent", signed: "signed" };
+  /** Stages a person picks: the five steps, then the outcomes. */
+  M.LEAD_PICK = M.LEAD_STEPS.concat(["won", "lost", "nurture"]);
+  M.leadStep = function (l) { var s = M.leadStage(l); return M.STEP_OF[s] || s; };
+  /** What an open lead is missing to stay safe: an owner, a next step and its date. */
+  M.leadGaps = function (l) {
+    if (!M.isOpen(l)) return [];
+    var gaps = [];
+    if (!l.owner || !S().get("team", l.owner)) gaps.push("owner");
+    if (!String(l.next || "").trim()) gaps.push("next");
+    if (!l.nextDate) gaps.push("date");
+    return gaps;
+  };
   M.isOpen = function (l) { return M.OPEN_STAGES.indexOf(M.leadStage(l)) > -1; };
   M.stageIndex = function (l) { return M.LEAD_STAGES.indexOf(M.leadStage(l)); };
   /** When the lead entered its current stage. */

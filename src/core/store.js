@@ -386,6 +386,28 @@
       changed(); return S.publicShare;
     });
   };
+  /** Founder only: copy a downloaded backup into the signed-in workspace. Clients go first, then projects, then the rest. Team and shares are not copied: people join by invite, client links are published again. */
+  S.restoreBackup = function (backup, onStep) {
+    if (S.backend !== "supabase" || S.workspaceRole !== "founder") return Promise.reject(new Error("Only a founder can restore into the workspace."));
+    if (!backup || !backup.colls || typeof backup.colls !== "object") return Promise.reject(new Error("This file is not a Gecko Ops backup."));
+    var order = ["clients", "projects"].concat(COLLS.filter(function (c) { return ["clients", "projects", "team", "shares", "feedback"].indexOf(c) < 0; }));
+    var jobs = [];
+    order.forEach(function (coll) {
+      (Array.isArray(backup.colls[coll]) ? backup.colls[coll] : []).forEach(function (o) {
+        if (o && o.id) jobs.push([coll, o]);
+      });
+    });
+    var done = 0, failed = 0;
+    var chain = backup.config ? rpc("set_workspace_config", { p_data: u.clone(backup.config) }).catch(function () { failed++; }) : Promise.resolve();
+    jobs.forEach(function (j) {
+      chain = chain.then(function () {
+        return rpc("put_workspace_record", { p_collection: j[0], p_id: String(j[1].id), p_data: u.clone(j[1]) })
+          .then(function () { done++; }, function () { failed++; })
+          .then(function () { if (onStep) onStep(done + failed, jobs.length); });
+      });
+    });
+    return chain.then(loadWorkspace).then(function () { changed(); return { done: done, failed: failed, total: jobs.length }; });
+  };
   S.createWorkspace = function (name) {
     return GK.supabase.rpc("create_workspace", { p_name: name }).then(loadWorkspace);
   };

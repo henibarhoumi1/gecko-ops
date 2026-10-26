@@ -82,15 +82,17 @@
 
   /** Sidebar groups (DESIGN.md §3). A view not listed here lands in Main. */
   UI.GROUPS = [
-    { id: "main", views: ["guide", "today", "tasks", "calendar"] },
-    { id: "ceo", views: ["dashboard", "finance"] },
-    { id: "sales", views: ["pipeline", "clients"] },
-    { id: "prod", views: ["projects", "production", "deliveries", "studio", "boards", "reports"] },
-    { id: "mkt", views: ["marketing"] },
+    { id: "main", views: ["today", "tasks", "guide", "calendar"] },
+    { id: "sales", views: ["pipeline", "marketing", "clients"] },
+    { id: "prod", views: ["projects", "studio", "production", "deliveries", "boards", "reports"] },
+    { id: "ceo", views: ["finance", "dashboard"] },
     { id: "team", views: ["team", "docs", "activity", "settings"] }
   ];
-  /** Views reached from inside another page rather than the sidebar (the menu stays short). */
-  UI.NAV_PARENT = { production: "projects", deliveries: "projects", reports: "projects", boards: "projects", activity: "dashboard", guide: "today" };
+  /** The sidebar stays at seven items. Other screens open as tabs at the top of their parent. */
+  UI.TOP = ["today", "pipeline", "clients", "projects", "calendar", "finance", "team"];
+  UI.NAV_PARENT = { tasks: "today", guide: "today", marketing: "pipeline", studio: "projects", production: "projects", deliveries: "projects", boards: "projects", reports: "projects", dashboard: "finance", docs: "team", activity: "team", settings: "team" };
+  /** The parent a view sits under for this viewer; a view whose parent this role can't open stands on its own. */
+  UI.parentOf = function (v, nav) { var p = UI.NAV_PARENT[v]; return p && (!nav || nav.indexOf(p) > -1) ? p : null; };
   UI.groupOf = function (v) { for (var i = 0; i < UI.GROUPS.length; i++) if (UI.GROUPS[i].views.indexOf(v) > -1) return UI.GROUPS[i].id; return "main"; };
   /** Remembered sidebar state: {mini: icon rail} */
   UI.navPref = function () { var p = u.lsGet(NAV_KEY, null); return p && typeof p === "object" ? { mini: !!p.mini } : { mini: false }; };
@@ -441,7 +443,7 @@
 
   // ---------- shell ----------
   function navItem(v) {
-    var c = UI.viewCount(v), on = UI.state.view === v || UI.NAV_PARENT[UI.state.view] === v, label = t("nav_" + v), gid = UI.groupOf(v), gi = 0;
+    var c = UI.viewCount(v), on = UI.state.view === v || UI.parentOf(UI.state.view, UI.nav()) === v, label = t("nav_" + v), gid = UI.groupOf(v), gi = 0;
     UI.GROUPS.forEach(function (g, i) { if (g.id === gid) gi = i; });
     return '<button type="button" class="nv" data-a="nav" data-v="' + v + '"' + (on ? ' aria-current="page"' : "") + ' title="' + esc(label) + '">' +
       UI.icon(v) + '<span class="nl">' + esc(label) + "</span>" + (c !== "" && c != null && c !== 0 ? '<span class="cnt"' + tintStyle(UI.tint(gi)) + ">" + esc(c) + "</span>" : "") + "</button>";
@@ -460,13 +462,9 @@
     var creates = GK.shell && GK.shell.creates ? GK.shell.creates() : [];
     if (creates.length) h += '<div class="side-new"><button type="button" class="btn primary" data-a="sh-menu" data-m="quick" aria-haspopup="menu" aria-expanded="false" title="' + esc(t("ui_new")) + ' (N)">' + UI.icon("plus") + "<span>" + esc(t("ui_new")) + "</span></button></div>";
     h += '<nav class="side-nav" aria-label="GECKO Ops">';
-    UI.GROUPS.forEach(function (g, gi) {
-      var vs = g.views.filter(function (v) { return nav.indexOf(v) > -1 && !UI.NAV_PARENT[v]; });
-      vs.forEach(function (v) { seen[v] = 1; });
-      if (gi === 0) nav.forEach(function (v) { if (!seen[v] && !UI.NAV_PARENT[v] && !UI.GROUPS.some(function (x) { return x.views.indexOf(v) > -1; })) { vs.push(v); seen[v] = 1; } });
-      if (!vs.length) return;
-      h += '<div class="grp" role="group" aria-label="' + esc(t("grp_" + g.id)) + '"><span class="grp-h" aria-hidden="true">' + esc(t("grp_" + g.id)) + "</span>" + vs.map(navItem).join("") + "</div>";
-    });
+    var flat = UI.TOP.filter(function (v) { return nav.indexOf(v) > -1; });
+    nav.forEach(function (v) { if (flat.indexOf(v) < 0 && !UI.parentOf(v, nav)) flat.push(v); });
+    h += '<div class="grp">' + flat.map(navItem).join("") + "</div>";
     h += "</nav>";
     h += '<div class="side-foot"><button type="button" class="me-card" data-a="sh-menu" data-m="user" aria-haspopup="menu" aria-expanded="false" title="' + esc(me ? me.name : t("sh_user")) + '">' +
       UI.avatar(me ? me.name : "?", { tone: "gel" }) + '<span class="mt"><b>' + esc(me ? me.name : t("sh_user")) + "</b><span>" + esc(me ? t("role_" + me.role).split(" · ")[0] : "") + "</span></span>" + UI.icon("updown", "sm") + "</button></div>";
@@ -474,12 +472,12 @@
   }
   /** Phone bottom bar: 5 items + More (opens the full sidebar as a drawer). */
   function bottomHTML(nav) {
-    var pick = ["today", "tasks", "calendar", "projects", "studio"].filter(function (v) { return nav.indexOf(v) > -1; });
-    nav.forEach(function (v) { if (pick.length < 5 && pick.indexOf(v) < 0 && !UI.NAV_PARENT[v]) pick.push(v); });
-    var inMore = pick.indexOf(UI.state.view) < 0;
+    var pick = ["today", "pipeline", "projects", "calendar"].filter(function (v) { return nav.indexOf(v) > -1; });
+    nav.forEach(function (v) { if (pick.length < 4 && pick.indexOf(v) < 0 && !UI.parentOf(v, nav)) pick.push(v); });
+    var cur = UI.parentOf(UI.state.view, nav) || UI.state.view, inMore = pick.indexOf(cur) < 0;
     return '<nav class="bnav" aria-label="GECKO Ops">' + pick.map(function (v) {
       var c = UI.viewCount(v);
-      return '<button type="button" data-a="nav" data-v="' + v + '"' + (UI.state.view === v ? ' aria-current="page"' : "") + ">" + UI.icon(v) + "<span>" + esc(t("nav_" + v)) + "</span>" + (c && v !== "today" ? '<i class="dot" aria-hidden="true"></i>' : "") + "</button>";
+      return '<button type="button" data-a="nav" data-v="' + v + '"' + (cur === v ? ' aria-current="page"' : "") + ">" + UI.icon(v) + "<span>" + esc(t("nav_" + v)) + "</span>" + (c && v !== "today" ? '<i class="dot" aria-hidden="true"></i>' : "") + "</button>";
     }).join("") + '<button type="button" data-a="drawer" aria-label="' + esc(t("sh_menu")) + '"' + (inMore ? ' aria-current="page"' : "") + ">" + UI.icon("more") + "<span>" + esc(t("sh_more")) + "</span></button></nav>";
   }
   /** First paint: the shell's shape, so the page doesn't jump when data arrives. */
@@ -564,7 +562,7 @@
     catch (e) { console.error(e); body = '<div class="err"><strong>Something broke on this screen.</strong><p class="small muted">' + esc(e && e.message) + "</p></div>"; }
     var pref = UI.navPref(), top = "";
     try { top = GK.shell ? GK.shell.top(me, UI.state.view, nav) : ""; } catch (e) { console.error(e); }
-    app.innerHTML = '<div class="shell' + (pref.mini ? " mini" : "") + (UI.state.drawer ? " drawer-open" : "") + '">' + sideHTML(me, nav) + '<div class="drawer-scrim" data-a="drawer"></div><main id="main">' + top + '<div class="page" id="page">' + body + "</div></main>" + bottomHTML(nav) + "</div>";
+    app.innerHTML = '<div class="shell' + (pref.mini ? " mini" : "") + (UI.state.drawer ? " drawer-open" : "") + '">' + sideHTML(me, nav) + '<div class="drawer-scrim" data-a="drawer"></div><main id="main">' + top + '<div class="page" id="page">' + subTabs(nav) + body + "</div></main>" + bottomHTML(nav) + "</div>";
     main = app.querySelector("main");
     if (lastView === UI.state.view) dirty.forEach(function (d) {
       var el = document.getElementById(d.id);
@@ -587,6 +585,16 @@
     document.title = t("nav_" + UI.state.view) + " · GECKO Ops";
     if (GK.store.needsJoin() && !UI.modalOpen()) joinModal();
   };
+  /** Tabs across the top when a screen has screens under it (Home: Tasks, Guide; Projects: Ideas, Shoots...). */
+  function subTabs(nav) {
+    var v = UI.state.view, top = UI.parentOf(v, nav) || v;
+    var g = UI.GROUPS.filter(function (x) { return x.views.indexOf(top) > -1; })[0];
+    var kids = (g ? g.views : []).filter(function (k) { return k !== top && nav.indexOf(k) > -1 && UI.parentOf(k, nav) === top; });
+    if (!kids.length) return "";
+    return '<nav class="subtabs" aria-label="' + esc(t("nav_" + top)) + '">' + [top].concat(kids).map(function (k) {
+      return '<button type="button" data-a="nav" data-v="' + k + '"' + (k === v ? ' aria-current="page"' : "") + ">" + esc(t("nav_" + k)) + "</button>";
+    }).join("") + "</nav>";
+  }
   function flush() { if (deferred) UI.render(); }
 
   /** Theme: "dark" (default, total black), "light" or "auto" (follows the system). */

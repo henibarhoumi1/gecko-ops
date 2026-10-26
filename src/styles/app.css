@@ -799,3 +799,46 @@ input.in:focus,select.in:focus,textarea.in:focus{border-color:var(--tx)}
 .head .hl::before{content:"";position:absolute;z-index:-1;left:-.22em;top:-.06em;width:1.12em;height:1.12em;border-radius:50%;background:var(--b-yellow)}
 /* bottom bar on phones */
 .bnav button[aria-current="page"],.bnav button[aria-current="page"] .ic{color:var(--b-mat)}
+/* ---------- calm v3 (Oct 26): soft paper page, white cards without ink outlines, colour in the number tiles, seven-item sidebar ---------- */
+:root{--paper:#F6F3EE;--card-line:rgba(0,0,0,.07);--glass-border:var(--card-line);--card-shadow:0 1px 2px rgba(30,20,10,.04),0 8px 24px -12px rgba(30,20,10,.10)}
+main{background:var(--paper)}
+.page{padding:36px clamp(16px,3.4vw,48px) 96px;gap:28px;max-width:1280px}
+.card,.panel,.kpi,.dec,.col{border-color:var(--card-line);box-shadow:var(--card-shadow);background:#fff}
+.panel,.card{border-radius:18px;padding:24px}
+.kpi{border-radius:18px;padding:22px 24px;box-shadow:none;border-color:transparent}
+.kpis>.kpi:nth-child(4n+1),.kpi-row>.kpi:nth-child(4n+1){background:var(--b-yellow-soft)}
+.kpis>.kpi:nth-child(4n+2),.kpi-row>.kpi:nth-child(4n+2){background:var(--b-pink-soft)}
+.kpis>.kpi:nth-child(4n+3),.kpi-row>.kpi:nth-child(4n+3){background:var(--b-mat-soft)}
+.kpis>.kpi:nth-child(4n+4),.kpi-row>.kpi:nth-child(4n+4){background:#fff}
+.kpi .v{font-size:40px;font-weight:700;letter-spacing:-.035em}
+.kpi .kh .ic,.kpi .kh>span:first-child:not(:last-child){display:none}
+.kpi .spark,.kpi svg.ch-svg{opacity:.55}
+.col{background:transparent;box-shadow:none;border:0;padding:4px 0}
+.col .card{box-shadow:var(--card-shadow)}
+.head{padding-bottom:4px}
+.head .t>p,.head .sub{font-size:15px;color:var(--tx-3)}
+.act{background:var(--paper)}
+/* sidebar: one flat list, roomier rows */
+.side .grp{gap:4px;padding-top:6px}
+.side .grp-h{display:none}
+.side .nv{height:44px;font-size:15px;border-radius:12px}
+/* tabs under a page title: Home > Tasks, Projects > Ideas and scripts, Money > CEO dashboard */
+.subtabs{display:flex;gap:6px;flex-wrap:wrap;margin:-12px 0 -8px}
+.subtabs button{all:unset;cursor:pointer;font-weight:600;font-size:14px;padding:8px 14px;border-radius:999px;color:var(--tx-2);background:rgba(0,0,0,.04)}
+.subtabs button:hover:not([aria-current]){background:var(--b-pink-soft);color:var(--tx)}
+.subtabs button[aria-current="page"]{background:var(--b-ink);color:#fff}
+.subtabs button:focus-visible{outline:2px solid var(--b-mat);outline-offset:2px}
+@media (max-width:760px){.page{padding-top:20px;gap:20px}.kpi .v{font-size:32px}.subtabs{margin:-4px 0 -4px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}.subtabs button{flex:none}}
+/* calm v3: quiet chrome. Ink outlines stay on buttons only; fields, tabs and the top bar use a soft line */
+.topbar{background:color-mix(in srgb,var(--paper) 85%,transparent);border-bottom:1px solid var(--card-line)}
+.srch{border:1px solid var(--card-line);background:#fff;border-radius:12px}
+.srch:hover{box-shadow:none;border-color:rgba(0,0,0,.2)}
+.tabs,.seg{border:1px solid var(--card-line);background:#fff;border-radius:12px}
+.in,.field input,.field select,.field textarea,input.in,select.in,textarea.in{border:1px solid rgba(0,0,0,.14);border-radius:12px}
+.in:focus,.field input:focus,.field select:focus,.field textarea:focus,input.in:focus,select.in:focus,textarea.in:focus{border-color:var(--b-ink);box-shadow:0 0 0 3px var(--b-yellow-soft)}
+.bnav{border-top:1px solid var(--card-line)}
+/* leads: a lead with no owner, next step or date is flagged on its card */
+.card.pl-unsafe{box-shadow:inset 3px 0 0 var(--b-pink),var(--card-shadow)}
+.pl-gap{align-self:flex-start;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--b-pink-soft);color:var(--b-ink)}
+.col .card{background:#fff;border-color:var(--card-line)}
+.board{grid-auto-columns:minmax(220px,1fr)}
