@@ -11,7 +11,7 @@
 
 :root{
   /* brand constants (v5 colour page) */
-  --b-white:#FFFFFF;--b-ink:#000000;--b-ink-2:#5E5953;--b-pink-soft:#FBE3E4;--b-yellow-soft:#FAF0CF;--b-pink:#F4C1C4;--b-yellow:#F3DF9E;
+  --b-white:#FFFFFF;--b-ink:#000000;--b-ink-2:#3B3835;--b-mat:#2E6B4E;--b-mat-deep:#1F4D37;--b-mat-soft:#DCEBE2;--b-pink-soft:#FBE3E4;--b-yellow-soft:#FAF0CF;--b-pink:#F4C1C4;--b-yellow:#F3DF9E;
   /* old names kept for modules that still read them */
   --b-black:var(--b-ink);--b-blue:var(--b-ink);--b-navy:var(--b-ink);--b-deep-blue:var(--b-ink);--b-teal:var(--b-yellow);--b-orange:var(--b-pink);--b-cream:var(--b-white);
   --b-soft:rgba(252,250,245,.76);--on-orange:var(--b-ink);--b-paper:var(--b-white);--b-paper-warm:var(--b-white);--b-ink-text:var(--b-ink);--b-ink-soft:rgba(24,22,20,.74);
@@ -19,7 +19,7 @@
   --bg:var(--b-white);--bg-paint:var(--b-white);
   --s1:var(--b-white);--s2:rgba(0,0,0,.035);--s3:rgba(0,0,0,.07);--s-solid:var(--b-white);
   --line:rgba(0,0,0,.14);--line-2:var(--b-ink);
-  --tx:var(--b-ink);--tx-2:var(--b-ink-2);--tx-3:#75706A;--head:var(--b-ink);
+  --tx:var(--b-ink);--tx-2:var(--b-ink-2);--tx-3:#6B6762;--head:var(--b-ink);
   --chroma:var(--b-yellow);--chroma-soft:var(--b-yellow);--chroma-tx:var(--b-ink);--on-chroma:var(--b-ink);
   --gel:var(--b-pink);--gel-deep:var(--b-pink);--gel-soft:var(--b-pink);
   --action:var(--b-ink);--on-action:var(--b-white);--link:var(--b-ink);
