@@ -28,7 +28,7 @@
     tm_add_hint: ["Add someone here first, then they claim their name when they open the page.", "Ajoutez la personne ici, puis elle choisit son nom en ouvrant la page."],
     tm_member_added: ["Added to the team", "Ajouté à l'équipe"],
     tm_invite_email: ["Email address", "Adresse e-mail"],
-    tm_invite_ready: ["Secure invitation token", "Jeton d'invitation sécurisé"],
+    tm_invite_ready: ["Invite link ready", "Lien d'invitation prêt"],
     tm_signout: ["Sign out", "Se déconnecter"]
   });
 
@@ -148,11 +148,7 @@
       var email = u.val("tm-m-email").trim(), role = u.val("tm-m-role") || "editor";
       if (!email) { u.focus("tm-m-email"); return ui.toast(t("required")); }
       S.createInvite(email, role).then(function (token) {
-        ui.modal({
-          title: t("tm_invite_ready"),
-          body: '<p class="small muted">This one-time token expires in seven days. Copy it and share it with the invited person through a trusted channel.</p><code class="code" style="word-break:break-all;user-select:all">' + esc(token) + "</code>",
-          foot: ui.btn(t("close"), "close", { cls: "primary" })
-        });
+        ui.inviteModal(t("tm_invite_ready"), email, token);
       }, function (error) { ui.toast(error.message); });
       return;
     }

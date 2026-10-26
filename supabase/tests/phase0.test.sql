@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(31);
+select extensions.plan(42);
 
 insert into auth.users (
   id, aud, role, email, encrypted_password, email_confirmed_at,
@@ -206,6 +206,56 @@ select extensions.throws_ok(
   $$select public.submit_client_feedback(repeat('a', 64), 'approve', 'plan', '', 'Client', 'p2')$$,
   'P0001', 'invalid_feedback_project', 'share feedback rejects a project outside the published snapshot'
 );
+
+-- client accounts
+insert into auth.users (id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at) values
+  ('00000000-0000-4000-8000-000000000006', 'authenticated', 'authenticated', 'client@local.test', '', now(), '{}', '{}', now(), now()),
+  ('00000000-0000-4000-8000-000000000007', 'authenticated', 'authenticated', 'stranger@local.test', '', now(), '{}', '{}', now(), now());
+select extensions.ok(not has_function_privilege('anon', 'public.get_my_client_share(uuid,text)', 'execute'), 'anonymous role cannot call the signed-in client page');
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000002', true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000002","role":"authenticated","email":"editor@local.test"}', true);
+select extensions.throws_ok(
+  $$select public.invite_client_account('10000000-0000-4000-8000-000000000001', 'c1', 'client@local.test')$$,
+  'P0001', 'forbidden', 'an editor cannot invite a client account'
+);
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000001', true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","email":"founder@local.test"}', true);
+select set_config('gecko.client_token', public.invite_client_account('10000000-0000-4000-8000-000000000001', 'c1', 'Client@local.test'), true);
+select extensions.throws_ok(
+  $$select public.create_workspace('Second workspace')$$,
+  'P0001', 'workspace_exists', 'only one Gecko workspace can be created'
+);
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000007', true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000007","role":"authenticated","email":"stranger@local.test"}', true);
+select extensions.throws_ok(
+  format('select public.accept_client_invite(%L, %L)', current_setting('gecko.client_token'), 'Stranger'),
+  'P0001', 'invalid_invite', 'a client invite only works for the email it was sent to'
+);
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000006', true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000006","role":"authenticated","email":"client@local.test"}', true);
+select public.accept_client_invite(current_setting('gecko.client_token'), 'Client One');
+select extensions.is((select count(*) from public.get_my_client_portals()), 1::bigint, 'a signed-in client sees exactly their own client');
+select extensions.is(
+  public.get_my_client_share('10000000-0000-4000-8000-000000000001', 'c1')->'snapshot'->'brand'->>'name',
+  'Synthetic One', 'a signed-in client reads their own live client page'
+);
+select extensions.is(public.get_my_client_share('10000000-0000-4000-8000-000000000001', 'c2'), null::jsonb, 'a signed-in client cannot read another client');
+select extensions.throws_ok(
+  $$select * from public.get_workspace_records('10000000-0000-4000-8000-000000000001', 'clients')$$,
+  'P0001', 'forbidden', 'a client account has no team access'
+);
+select set_config('gecko.client_feedback_id', public.submit_my_client_feedback('10000000-0000-4000-8000-000000000001', 'c1', 'approve', 'plan', '', 'p1')::text, true);
+select extensions.is(
+  (select who from public.client_feedback f where f.id::text = current_setting('gecko.client_feedback_id')),
+  'Client One', 'signed-in client feedback carries the client name'
+);
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000001', true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","email":"founder@local.test"}', true);
+select public.revoke_client_account('10000000-0000-4000-8000-000000000001', (select id from public.client_accounts where email = 'client@local.test'));
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000006', true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000006","role":"authenticated","email":"client@local.test"}', true);
+select extensions.is(public.get_my_client_share('10000000-0000-4000-8000-000000000001', 'c1'), null::jsonb, 'a revoked client account loses its page');
+select extensions.is((select count(*) from public.get_my_client_portals()), 0::bigint, 'a revoked client account lists no client');
 
 select * from extensions.finish();
 rollback;

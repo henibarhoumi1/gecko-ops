@@ -23,6 +23,13 @@ Point the domain (e.g. ops.gecko.tn) at Vercel or GitHub Pages from the host's D
 5. Redeploy. Open the site, sign up, create the workspace. You are its founder.
 6. Team > Settings > Data > Restore a backup, to bring records over from the claude.ai app. Then invite people from Team.
 
+Already ran an older `setup.sql`? Run `supabase/update-2026-10-26-client-logins.sql` once as well.
+
+## Who signs in
+- Founder: the first account creates the Gecko workspace. Only one workspace can exist, so nobody else can make their own.
+- Team: Team > Add person makes a one-time invite link for their email and role (sales, editor, assistant).
+- Clients: a client's Portal tab > Client logins makes a one-time invite link for their email. They sign in and see only their own latest published client page, and can approve and comment. Share links keep working alongside.
+
 The database enforces every role (founder, sales, editor, assistant): what a role can't see is never sent to its browser. `sh supabase/tests/local/run.sh` runs the 31 security tests on a throwaway PostgreSQL.
 
 Free Supabase projects pause after a week with no use; opening the dashboard wakes them.

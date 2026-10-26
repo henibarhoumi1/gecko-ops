@@ -10,6 +10,7 @@
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
+    tp_invite_note: ["People join by invite link. Each link works once, only for the email it was made for.", "On rejoint par lien d'invitation. Chaque lien marche une fois, seulement pour son e-mail."],
     tp_people: ["The team", "L'équipe"], tp_back: ["All people", "Toute l'équipe"],
     tp_active_n: ["{n} active projects", "{n} projets en cours"], tp_active_1: ["1 active project", "1 projet en cours"],
     tp_open: ["Open profile", "Ouvrir le profil"],
@@ -216,7 +217,7 @@
     var team = S.all("team").sort(function (a, b) { return m.ROLES.indexOf(a.role) - m.ROLES.indexOf(b.role) || (a.name > b.name ? 1 : -1); });
     var h = "";
     if (S.backend === "shared") h += '<p class="note">' + esc(t("tm_shared_note")) + "</p>";
-    if (S.backend === "supabase") h += '<p class="note">Team access is granted by email invitation. The token is shown once; send it to the invited person through a trusted channel.</p>';
+    if (S.backend === "supabase") h += '<p class="note">' + esc(t("tp_invite_note")) + '</p>';
     h += '<section class="panel"><div class="panel-h"><h2 class="sec">' + esc(t("tp_people")) + '</h2><span class="small muted">' + team.length + "</span>" +
       (S.backend === "supabase" ? ui.btn(t("tm_signout"), "auth-signout", { cls: "ghost sm" }) : "") + '</div><div class="tp-grid">' + team.map(card).join("") + "</div></section>";
     if (isOwner()) h += rolePayPanel();

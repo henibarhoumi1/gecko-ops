@@ -349,9 +349,12 @@
       return GK.supabase.rpc("get_my_workspaces", {}).then(function (workspaces) {
         emptyCache(); cfg = null; assignmentRows = [];
         if (!workspaces || !workspaces.length) {
-          S.workspaceId = null; S.workspaceRole = null; S.authState = "no-workspace";
+          S.workspaceId = null; S.workspaceRole = null;
           S.mode = "live"; S.backend = "supabase"; S.readOnly = true;
-          changed(); return;
+          return loadClientPortal().then(function (found) {
+            if (!found) { S.authState = "no-workspace"; S.publicShare = null; }
+            changed();
+          });
         }
         var remembered = sessionStorage.getItem("gecko-ops-workspace");
         var workspace = workspaces.find(function (w) { return w.id === remembered; }) || workspaces[0];
@@ -432,6 +435,36 @@
       changed();
     });
   };
+  /** A signed-in client (no team seat): their own live client page, read through their account. */
+  function loadClientPortal() {
+    return GK.supabase.rpc("get_my_client_portals", {}).then(function (rows) {
+      S.clientPortals = rows || [];
+      if (!S.clientPortals.length) return false;
+      var p = S.clientPortals[0];
+      return GK.supabase.rpc("get_my_client_share", { p_workspace_id: p.workspace_id, p_client_id: p.client_id }).then(function (share) {
+        S.publicShare = Object.assign({ id: "me", token: "me", account: { workspaceId: p.workspace_id, clientId: p.client_id, brand: p.brand } },
+          share || { enabled: false, snapshot: null });
+        S.authState = "client";
+        return true;
+      });
+    });
+  }
+  /** Invite codes arrive in links as #join-<code>; the code waits here until the person signs in. */
+  S.pendingInvite = function (code) {
+    try {
+      if (code !== undefined) { if (code) sessionStorage.setItem("gecko-ops-invite", code); else sessionStorage.removeItem("gecko-ops-invite"); }
+      return sessionStorage.getItem("gecko-ops-invite") || "";
+    } catch (e) { return ""; }
+  };
+  /** One code field for both: a team invite first, then a client invite. */
+  S.acceptAnyInvite = function (code, name) {
+    return GK.supabase.rpc("accept_workspace_invite", { p_token: code, p_display_name: name || "" }).catch(function () {
+      return GK.supabase.rpc("accept_client_invite", { p_token: code, p_display_name: name || "" });
+    }).then(function () { S.pendingInvite(""); return loadWorkspace(); });
+  };
+  S.inviteClient = function (clientId, email) { return rpc("invite_client_account", { p_client_id: clientId, p_email: email }); };
+  S.clientAccounts = function (clientId) { return rpc("list_client_accounts", { p_client_id: clientId }); };
+  S.revokeClientAccount = function (id) { return rpc("revoke_client_account", { p_account_id: id }); };
   S.signIn = function (email, password) {
     return GK.supabase.signIn(email, password).then(loadWorkspace).then(function () { changed(); });
   };
@@ -448,6 +481,7 @@
     function clear() {
       emptyCache(); cfg = null; assignmentRows = []; S.workspaceId = null; S.workspaceRole = null;
       sessionStorage.removeItem("gecko-ops-share-tokens");
+      S.publicShare = null; S.clientPortals = [];
       S.viewer = { id: null, isOwner: false, canEdit: false, canWrite: false };
       S.authState = "login"; S.readOnly = true; changed();
     }
@@ -502,6 +536,11 @@
     }).catch(function (error) { remoteError(error); return false; });
   };
   S.submitClientFeedback = function (token, kind, target, text, projectId) {
+    var acc = token === "me" && S.publicShare && S.publicShare.account;
+    if (acc) return GK.supabase.rpc("submit_my_client_feedback", {
+      p_workspace_id: acc.workspaceId, p_client_id: acc.clientId, p_kind: kind, p_target: target,
+      p_text: text || "", p_project_id: projectId || null
+    });
     return GK.supabase.rpc("submit_client_feedback", {
       p_token: token, p_kind: kind, p_target: target, p_text: text || "",
       p_project_id: projectId || null

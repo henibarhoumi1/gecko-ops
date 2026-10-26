@@ -959,6 +959,24 @@ main{background:var(--paper)}
 .pl-gap{align-self:flex-start;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--b-pink-soft);color:var(--b-ink)}
 .col .card{background:#fff;border-color:var(--card-line)}
 .board{grid-auto-columns:minmax(220px,1fr)}
+/* sign in */
+.auth{min-height:100vh;display:grid;place-items:center;background:var(--b-pink-soft);padding:32px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px))}
+.auth-card{width:100%;max-width:440px;background:#fff;border-radius:22px;padding:36px 32px;display:flex;flex-direction:column;gap:14px;box-shadow:0 30px 60px -30px rgba(40,20,10,.25)}
+.auth-logo svg{height:34px;width:auto;color:var(--b-ink)}
+.auth-kick{margin:6px 0 0;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--tx-3)}
+.auth .hl{font-size:clamp(30px,6vw,40px);margin:0;letter-spacing:-.03em}
+.auth-p{margin:0;color:var(--tx-2);line-height:1.5}
+.auth-form{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+.auth-go{height:48px;font-size:15px;margin-top:4px}
+.auth-link{all:unset;cursor:pointer;align-self:center;font-weight:600;font-size:14px;color:var(--tx-2);text-decoration:underline;text-underline-offset:3px}
+.auth-link:hover{color:var(--tx)}
+.auth-link:focus-visible{outline:2px solid var(--b-mat);outline-offset:3px;border-radius:4px}
+.auth-msg{margin:0;padding:12px 14px;border-radius:12px;background:var(--b-yellow-soft);font-size:14px}
+.auth-first{border-top:1px solid var(--card-line);padding-top:12px}
+.auth-first summary{cursor:pointer;font-weight:600;font-size:14px}
+.auth-first[open]{display:flex;flex-direction:column;gap:10px}
+.cl-acct{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));background:var(--b-ink);color:#fff;font-size:13px}
+.cl-acct .auth-link{color:#fff;align-self:auto}
 
 </style>
 <div id="app"></div>
@@ -1145,7 +1163,7 @@ window.GK = window.GK || {};
     est_owner_days: ["Owner, director and camera ({n} day × {r})", "Fondateur, réalisation et image ({n} j × {r})"],
     est_owner_project: ["Owner, director and camera (project)", "Fondateur, réalisation et image (projet)"],
     est_owner_edit: ["Owner, editing ({n} reels)", "Fondateur, montage ({n} reels)"],
-    est_camera: ["Camera rental ({n} day × {r})", "Location caméra ({n} j × {r})"], est_transport: ["Transport ({n} day × {r})", "Transport ({n} j × {r})"],
+    est_camera: ["Studio day, gear included ({n} day × {r})", "Studio, matériel inclus ({n} j × {r})"], est_transport: ["Transport ({n} day × {r})", "Transport ({n} j × {r})"],
     est_food: ["Food and water on set ({n} day × {r})", "Repas sur le tournage ({n} j × {r})"], est_assistant: ["Assistant ({n} day × {r})", "Assistant ({n} j × {r})"]
   });
 })(window.GK);
@@ -1209,11 +1227,11 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       upfront: deposit (50% to book) | month (monthly, paid in advance) | full (paid upfront). */
   M.PACKS_DEFAULT = {
     audit:      { name: "Ad Audit",        market: "tunisia", currency: "TND", price: 150,  launch: null, monthly: false, upfront: "full",    shootDays: 0, angles: 0, reels: 0,  variations: 0,  carousels: 0, cost: 0 },
-    test:       { name: "Test Campaign",   market: "tunisia", currency: "TND", price: 1500, launch: 1000, monthly: false, upfront: "deposit", shootDays: 1, angles: 3, reels: 3,  variations: 6,  carousels: 1, statics: 0,  mashups: 0, cost: 380 },
-    regular:    { name: "Regular",          market: "tunisia", currency: "TND", price: 3200, launch: 2200, monthly: true,  upfront: "month",   shootDays: 1, angles: 3, reels: 10, variations: 20, carousels: 1, statics: 4,  mashups: 0, cost: 380, minMonths: 3, rev: 4 },
-    premier:    { name: "Pro",              market: "tunisia", currency: "TND", price: 3900, launch: 3200, monthly: true,  upfront: "month",   shootDays: 1, angles: 4, reels: 15, variations: 30, carousels: 2, statics: 6,  mashups: 2, cost: 380, minMonths: 3 },
-    premium:    { name: "Creative Partner", market: "tunisia", currency: "TND", price: 4800, launch: null, monthly: true,  upfront: "month",   shootDays: 1, angles: 4, reels: 20, variations: 60, carousels: 2, statics: 10, mashups: 4, cost: 500, minMonths: 3, ads: true, from: true, note: "20 reels and up, sized to the volume the brand needs; VIP: priority dates, a direct line, Meta ads run by Gecko" },
-    campaign:   { name: "Campaign",        market: "tunisia", currency: "TND", price: 4800, launch: 3600, monthly: false, upfront: "deposit", shootDays: 2, angles: 4, reels: 10, variations: 10, carousels: 2, cost: 760 },
+    test:       { name: "Test",            market: "tunisia", currency: "TND", price: 999,  launch: null, monthly: false, upfront: "deposit", shootDays: 1, shootHours: 3, angles: 3, reels: 3, variations: 3, carousels: 0, statics: 1, mashups: 0, cost: 380, exclusive: true, rounds: 0, note: "3 reels and 1 static from a 3-hour shoot. Exclusive." },
+    regular:    { name: "Regular",          market: "tunisia", currency: "TND", price: 2900, launch: null, monthly: true,  upfront: "month",   shootDays: 1, angles: 3, reels: 10, variations: 20, hooks: 2, carousels: 1, statics: 4,  mashups: 0, cost: 380, minMonths: 3, review: "monthly", rev: 5 },
+    premier:    { name: "Pro",              market: "tunisia", currency: "TND", price: 3800, launch: null, monthly: true,  upfront: "month",   shootDays: 1, angles: 4, reels: 15, variations: 30, hooks: 2, carousels: 2, statics: 6,  mashups: 2, cost: 380, minMonths: 3, review: "monthly" },
+    premium:    { name: "Creative Partner", market: "tunisia", currency: "TND", price: 0,    launch: null, monthly: true,  upfront: "month",   shootDays: 1, angles: 4, reels: 20, reelsMax: 100, variations: 60, hooks: 3, carousels: 2, statics: 10, mashups: 4, cost: 500, minMonths: 3, custom: true, review: "weekly", note: "20 to 100 reels a month, 3 hooks per reel. VIP: priority shoot dates, a direct line 7 days a week, market analysis, performance tracking and a weekly review. No media buying." },
+    campaign:   { name: "Campaign",        market: "tunisia", currency: "TND", price: 3600, launch: null, monthly: false, upfront: "deposit", shootDays: 2, angles: 4, reels: 10, variations: 10, carousels: 2, cost: 760 },
     remote_edit:{ name: "Remote Ad Edit Pack", market: "international", currency: "USD", price: 700, launch: null, monthly: true, upfront: "month", shootDays: 0, angles: 0, reels: 8, variations: 16, carousels: 0, cost: 240 },
     gulf_trip:  { name: "Gulf Shoot Trip", market: "international", currency: "USD", price: 3500, launch: null, monthly: false, upfront: "deposit", shootDays: 2, angles: 4, reels: 8, variations: 16, carousels: 0, cost: 0 },
     tn_day:     { name: "Tunisia Shoot Day", market: "international", currency: "EUR", price: 950, launch: null, monthly: false, upfront: "deposit", shootDays: 1, angles: 2, reels: 4, variations: 4, carousels: 0, cost: 350 },
@@ -1224,7 +1242,8 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   M.ADDONS_DEFAULT = []; // add-ons removed (Oct 2026); quotes use custom lines
   /** Cost rates (TND). Owner pay is what Heni is paid on a project before the partner share is worked out. */
   M.RATES_DEFAULT = {
-    camera: 300, transport: 50, food: 30, editReel: 30, assistant: 120, lights: 80,
+    camera: 1000, transport: 75, food: 75, editReel: 70, assistant: 100, lights: 0, // camera = studio day at Jardin de Carthage, gear included (24 Oct)
+    talent: 200, dop: 350, // talent is the client's cost (Gecko pays it upfront, invoices it with the final 50%); DOP rate not agreed yet
     ownerDirect: 350, ownerPer: "day", // Heni as director and DOP: per shoot day (confirmed by Heni)
     editSmall: 300, editMid: 500, editLarge: 700 // Heni's editing pay: 6 reels or fewer, 7 to 14 (confirmed), 15 or more
   };
@@ -1245,7 +1264,11 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     withholding: 3,      // % a Tunisian company client withholds. Accountant to confirm.
     vat: 0,              // % VAT on Tunisian invoices (19 under a SUARL). Accountant to confirm.
     dueDays: 7,
-    extrasDirect: true,  // actors, locations: client pays them directly by default
+    extrasDirect: false, // talent and props: Gecko pays upfront and invoices them with the final 50% (25 Oct)
+    depositPct: 50,      // 50% to book, 50% after the client approves watermarked previews
+    firstDraftDays: 7,   // first draft 7 days after the shoot
+    rawFootage: false,   // raw footage is not included
+    mediaBuying: false,  // no plan includes running the client's ads
     openingCash: 0,      // cash when you start tracking, TND
     launchClients: 5,    // launch prices for the first N won clients...
     launchUntil: "2026-12-31", // ...or until this date, whichever comes first
@@ -1259,7 +1282,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   };
   M.COMPANY_DEFAULT = {
     name: "Gecko", legal: "", mf: "", address: "",
-    phone: "+216 26 191 555", email: "reachoutgecko@gmail.com", instagram: "@geckoagency_",
+    phone: "+216 26 191 555", email: "contact@geckostudio.com", instagram: "@geckoagency_",
     appUrl: "https://claude.ai/artifact/FaYCvv65YDNYfUCk66r8uo",
     invoiceNote: ""
   };
@@ -1271,7 +1294,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   function S() { return GK.store; }
   M.cfg = function () { return S().config() || M.defaultConfig(); };
   /** Saved offers from before Regular, Pro and Creative Partner (18 Oct 2026) fall back to the defaults. */
-  function packsCfg() { var c = M.cfg(); return c.version >= 2 && c.packs && c.packs.regular && c.packs.regular.rev === 4 ? c.packs : M.PACKS_DEFAULT; }
+  function packsCfg() { var c = M.cfg(); return c.version >= 2 && c.packs && c.packs.regular && c.packs.regular.rev === 5 ? c.packs : M.PACKS_DEFAULT; }
   M.pack = function (k) { if (M.OLD && M.OLD.pack[k]) k = M.OLD.pack[k]; var p = packsCfg()[k] || M.PACKS_DEFAULT[k]; return p ? Object.assign({ currency: "TND", launch: null, upfront: p && p.monthly ? "month" : "deposit", market: "tunisia" }, p) : { name: k || "—", currency: "TND", price: 0, launch: null, monthly: false, upfront: "deposit", reels: 0, variations: 0, carousels: 0, angles: 0, shootDays: 0, cost: 0 }; };
   M.packKeys = function (market) { var ps = packsCfg(); return Object.keys(ps).filter(function (k) { return !market || (ps[k].market || "tunisia") === market; }); };
   M.addons = function () { return M.ADDONS_DEFAULT; };
@@ -1623,7 +1646,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   M.levelNow = function () { var n = M.recurringClients(), L = M.levels(), lv = 0; L.forEach(function (x, i) { if (n >= x.clients) lv = i + 1; }); return { level: lv, pay: lv ? L[lv - 1].pay : 0, next: L[lv] || null, clients: n }; };
   /** Estimated direct cost lines for an offer (costs.md), owner pay included so the partner share is worked out after it. */
   M.estimateCosts = function (packKey) {
-    var pk = M.pack(packKey), r = M.rates(), t = GK.t, days = pk.shootDays || 0, reels = pk.reels || 0;
+    var pk = M.pack(packKey), r = M.rates(), t = GK.t, days = pk.shootHours ? Math.round(pk.shootHours / 8 * 100) / 100 : (pk.shootDays || 0), reels = pk.reels || 0; // a 3-hour block is a share of a studio day
     var direct = r.ownerPer === "day" ? days * r.ownerDirect : (days ? r.ownerDirect : 0);
     var edit = !reels ? 0 : reels <= 6 ? r.editSmall : reels < 15 ? r.editMid : r.editLarge;
     var lines = [
@@ -1718,7 +1741,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   // ---------- migration from the first version (old packs, stages and channels) ----------
   M.OLD = {
     pack: { GRIP: "test", SEASON: "campaign", SKIN10: "premier", SKIN20: "premium", monthly8: "premier", monthly12: "premium" },
-    packName: [[/SKIN 20/g, "Creative Partner"], [/SKIN 10/g, "Pro"], [/Monthly 12/g, "Creative Partner"], [/Monthly 8/g, "Pro"], [/\bSKIN\b/g, "Monthly"], [/\bGRIP\b/g, "Test Campaign"], [/\bSEASON\b/g, "Campaign"]],
+    packName: [[/SKIN 20/g, "Creative Partner"], [/SKIN 10/g, "Pro"], [/Monthly 12/g, "Creative Partner"], [/Monthly 8/g, "Pro"], [/\bSKIN\b/g, "Monthly"], [/\bGRIP\b/g, "Test"], [/\bSEASON\b/g, "Campaign"]],
     stage: { onboard: "onboarding", plan: "scripting", edit: "editing", testing: "delivered", report: "paid", done: "retention" },
     lead: { dm: "contacted", replied: "conversation", call: "meeting_booked", proposal: "proposal_sent" },
     source: { teardown_dm: "outbound_dm", media_buyer: "referral_personal", referral: "referral_client", warm: "referral_personal", inbound: "ig_organic" },
@@ -2242,9 +2265,12 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       return GK.supabase.rpc("get_my_workspaces", {}).then(function (workspaces) {
         emptyCache(); cfg = null; assignmentRows = [];
         if (!workspaces || !workspaces.length) {
-          S.workspaceId = null; S.workspaceRole = null; S.authState = "no-workspace";
+          S.workspaceId = null; S.workspaceRole = null;
           S.mode = "live"; S.backend = "supabase"; S.readOnly = true;
-          changed(); return;
+          return loadClientPortal().then(function (found) {
+            if (!found) { S.authState = "no-workspace"; S.publicShare = null; }
+            changed();
+          });
         }
         var remembered = sessionStorage.getItem("gecko-ops-workspace");
         var workspace = workspaces.find(function (w) { return w.id === remembered; }) || workspaces[0];
@@ -2325,6 +2351,36 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       changed();
     });
   };
+  /** A signed-in client (no team seat): their own live client page, read through their account. */
+  function loadClientPortal() {
+    return GK.supabase.rpc("get_my_client_portals", {}).then(function (rows) {
+      S.clientPortals = rows || [];
+      if (!S.clientPortals.length) return false;
+      var p = S.clientPortals[0];
+      return GK.supabase.rpc("get_my_client_share", { p_workspace_id: p.workspace_id, p_client_id: p.client_id }).then(function (share) {
+        S.publicShare = Object.assign({ id: "me", token: "me", account: { workspaceId: p.workspace_id, clientId: p.client_id, brand: p.brand } },
+          share || { enabled: false, snapshot: null });
+        S.authState = "client";
+        return true;
+      });
+    });
+  }
+  /** Invite codes arrive in links as #join-<code>; the code waits here until the person signs in. */
+  S.pendingInvite = function (code) {
+    try {
+      if (code !== undefined) { if (code) sessionStorage.setItem("gecko-ops-invite", code); else sessionStorage.removeItem("gecko-ops-invite"); }
+      return sessionStorage.getItem("gecko-ops-invite") || "";
+    } catch (e) { return ""; }
+  };
+  /** One code field for both: a team invite first, then a client invite. */
+  S.acceptAnyInvite = function (code, name) {
+    return GK.supabase.rpc("accept_workspace_invite", { p_token: code, p_display_name: name || "" }).catch(function () {
+      return GK.supabase.rpc("accept_client_invite", { p_token: code, p_display_name: name || "" });
+    }).then(function () { S.pendingInvite(""); return loadWorkspace(); });
+  };
+  S.inviteClient = function (clientId, email) { return rpc("invite_client_account", { p_client_id: clientId, p_email: email }); };
+  S.clientAccounts = function (clientId) { return rpc("list_client_accounts", { p_client_id: clientId }); };
+  S.revokeClientAccount = function (id) { return rpc("revoke_client_account", { p_account_id: id }); };
   S.signIn = function (email, password) {
     return GK.supabase.signIn(email, password).then(loadWorkspace).then(function () { changed(); });
   };
@@ -2341,6 +2397,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     function clear() {
       emptyCache(); cfg = null; assignmentRows = []; S.workspaceId = null; S.workspaceRole = null;
       sessionStorage.removeItem("gecko-ops-share-tokens");
+      S.publicShare = null; S.clientPortals = [];
       S.viewer = { id: null, isOwner: false, canEdit: false, canWrite: false };
       S.authState = "login"; S.readOnly = true; changed();
     }
@@ -2395,6 +2452,11 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     }).catch(function (error) { remoteError(error); return false; });
   };
   S.submitClientFeedback = function (token, kind, target, text, projectId) {
+    var acc = token === "me" && S.publicShare && S.publicShare.account;
+    if (acc) return GK.supabase.rpc("submit_my_client_feedback", {
+      p_workspace_id: acc.workspaceId, p_client_id: acc.clientId, p_kind: kind, p_target: target,
+      p_text: text || "", p_project_id: projectId || null
+    });
     return GK.supabase.rpc("submit_client_feedback", {
       p_token: token, p_kind: kind, p_target: target, p_text: text || "",
       p_project_id: projectId || null
@@ -3098,7 +3160,25 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     ui_new: ["New", "Nouveau"], ui_view_all: ["View all", "Tout voir"], ui_vs_prev: ["vs last period", "vs période précédente"],
     ui_filter: ["Filter…", "Filtrer…"], ui_sort_by: ["Sort by {c}", "Trier par {c}"],
     ui_recommend: ["Do", "À faire"], ui_close_panel: ["Close panel", "Fermer le panneau"],
-    grp_main: ["Main", "Principal"]
+    grp_main: ["Main", "Principal"],
+    au_kick: ["Gecko · sign in", "Gecko · connexion"], au_in_t: ["Welcome back", "Bon retour"], au_in_p: ["Team and clients sign in here with their own email.", "L'équipe et les clients se connectent ici avec leur propre e-mail."],
+    au_up_t: ["Create your account", "Créer votre compte"], au_up_p: ["Use the email your invite was sent to.", "Utilisez l'e-mail qui a reçu l'invitation."],
+    au_email: ["Email", "E-mail"], au_pass: ["Password", "Mot de passe"], au_pass_h: ["8 characters or more", "8 caractères ou plus"], au_name: ["Your name", "Votre nom"],
+    au_signin: ["Sign in", "Se connecter"], au_signup: ["Create account", "Créer le compte"], au_to_up: ["New here? Create an account", "Nouveau ? Créer un compte"], au_to_in: ["Already have an account? Sign in", "Déjà un compte ? Se connecter"],
+    au_invite_on: ["You have an invite. Sign in or create an account with the email it was sent to.", "Vous avez une invitation. Connectez-vous ou créez un compte avec l'e-mail qui l'a reçue."],
+    au_load: ["Opening your workspace", "Ouverture de votre espace"],
+    au_none_t: ["One more step", "Encore une étape"], au_none_p: ["Paste the invite code Gecko sent you. It works for team members and for clients.", "Collez le code d'invitation envoyé par Gecko. Il marche pour l'équipe et pour les clients."],
+    au_code: ["Invite code", "Code d'invitation"], au_join: ["Join", "Rejoindre"], au_out: ["Sign out", "Se déconnecter"],
+    au_first_t: ["Setting up Gecko for the first time?", "Première installation de Gecko ?"], au_first_p: ["The first account creates the workspace and becomes its founder. After that, people join by invite only.", "Le premier compte crée l'espace et en devient le fondateur. Ensuite, on rejoint uniquement sur invitation."],
+    au_create: ["Create the Gecko workspace", "Créer l'espace Gecko"],
+    au_e_exists: ["Gecko's workspace already exists. Ask the founder for an invite.", "L'espace Gecko existe déjà. Demandez une invitation au fondateur."],
+    au_e_invite: ["This code doesn't work for this email, or it has expired. Ask for a new one.", "Ce code ne marche pas pour cet e-mail, ou il a expiré. Demandez-en un nouveau."],
+    au_e_login: ["Wrong email or password.", "E-mail ou mot de passe incorrect."], au_e_confirm: ["Confirm your email first: open the link we sent you, then sign in.", "Confirmez d'abord votre e-mail : ouvrez le lien envoyé, puis connectez-vous."],
+    au_confirm: ["Check your email to confirm the account, then sign in.", "Vérifiez votre e-mail pour confirmer le compte, puis connectez-vous."],
+    inv_body: ["Send this link to {e}. They open it, create an account with that email, and they're in.", "Envoyez ce lien à {e}. La personne l'ouvre, crée un compte avec cet e-mail, et elle est dedans."],
+    inv_note: ["It works once, only for that email. You won't see it again, so copy it now.", "Il marche une fois, seulement pour cet e-mail. Il ne s'affichera plus, copiez-le maintenant."],
+    inv_copy: ["Copy link", "Copier le lien"],
+    au_client_bar: ["Signed in as {e}", "Connecté en tant que {e}"]
   });
 
   var UI = { state: { view: "today", params: {} } };
@@ -3582,32 +3662,48 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     return out;
   }
   function backendScreen() {
-    var S = GK.store, h = '<div class="page" style="max-width:720px;margin:8vh auto"><section class="panel">';
-    h += '<span class="lab sm muted">GECKO OPS · SECURE WORKSPACE</span>';
+    var S = GK.store, mode = UI.state.authMode === "up" ? "up" : "in";
+    var h = '<div class="auth"><div class="auth-card"><div class="auth-logo">' + GK.logo.wordmark + '</div><p class="auth-kick">' + esc(t("au_kick")) + "</p>";
     if (S.authState === "loading") {
-      h += '<h1 class="hl">Connecting</h1><p class="muted">Loading your authorized workspace records…</p>';
+      h += '<h1 class="hl">' + esc(t("au_load")) + "</h1>";
     } else if (S.authState === "no-workspace") {
-      h += '<h1 class="hl">Your workspace</h1><p class="muted">Create a workspace or accept an invitation to continue.</p>';
-      h += UI.field({ id: "auth-workspace", label: "Workspace name", value: "" });
-      h += '<div class="row">' + UI.btn("Create workspace", "auth-create-workspace", { cls: "primary" }) + "</div>";
-      h += '<hr><div class="form">' + UI.field({ id: "auth-invite", label: "Invitation token", value: "" }) +
-        UI.field({ id: "auth-name", label: "Your name", value: "" }) + "</div>";
-      h += '<div class="row">' + UI.btn("Accept invitation", "auth-accept-invite", { cls: "primary" }) +
-        UI.btn("Sign out", "auth-signout", { cls: "ghost" }) + "</div>";
+      h += '<h1 class="hl">' + esc(t("au_none_t")) + '</h1><p class="auth-p">' + esc(t("au_none_p")) + "</p>";
+      h += '<div class="auth-form">' + UI.field({ id: "auth-invite", label: t("au_code"), value: S.pendingInvite() }) + UI.field({ id: "auth-name", label: t("au_name"), value: "" }) + "</div>";
+      h += UI.btn(t("au_join"), "auth-accept-invite", { cls: "primary auth-go" });
+      h += '<details class="auth-first"><summary>' + esc(t("au_first_t")) + '</summary><p class="auth-p">' + esc(t("au_first_p")) + "</p>" +
+        UI.btn(t("au_create"), "auth-create-workspace", { cls: "" }) + "</details>";
+      h += '<button type="button" class="auth-link" data-a="auth-signout">' + esc(t("au_out")) + "</button>";
     } else {
-      h += '<h1 class="hl">Sign in to GECKO</h1><p class="muted">Private workspace data is available only after authentication.</p>';
-      h += '<div class="form">' + UI.field({ id: "auth-email", label: "Email", type: "email", value: "" }) +
-        UI.field({ id: "auth-password", label: "Password", type: "password", value: "" }) + "</div>";
-      h += '<div class="row">' + UI.btn("Sign in", "auth-signin", { cls: "primary" }) +
-        UI.btn("Create account", "auth-signup", { cls: "ghost" }) + "</div>";
-      h += '<hr><p class="small muted">New accounts need an invitation, or may create their own workspace after sign-up.</p>';
-      h += '<div class="form">' + UI.field({ id: "auth-name", label: "Your name", value: "" }) +
-        UI.field({ id: "auth-workspace", label: "Workspace name (optional)", value: "" }) + "</div>";
+      h += '<h1 class="hl">' + esc(t(mode === "up" ? "au_up_t" : "au_in_t")) + '</h1><p class="auth-p">' + esc(t(S.pendingInvite() ? "au_invite_on" : mode === "up" ? "au_up_p" : "au_in_p")) + "</p>";
+      h += '<div class="auth-form" data-auth="' + mode + '">' + (mode === "up" ? UI.field({ id: "auth-name", label: t("au_name"), value: "" }) : "") +
+        UI.field({ id: "auth-email", label: t("au_email"), type: "email", value: "", attrs: ' autocomplete="email"' }) +
+        UI.field({ id: "auth-password", label: t("au_pass"), type: "password", value: "", hint: mode === "up" ? t("au_pass_h") : "", attrs: ' autocomplete="' + (mode === "up" ? "new-password" : "current-password") + '"' }) + "</div>";
+      h += UI.btn(t(mode === "up" ? "au_signup" : "au_signin"), mode === "up" ? "auth-signup" : "auth-signin", { cls: "primary auth-go" });
+      h += '<button type="button" class="auth-link" data-a="auth-mode">' + esc(t(mode === "up" ? "au_to_in" : "au_to_up")) + "</button>";
     }
     var message = S.authError || S.authMessage;
-    if (message) h += '<p class="note" role="status">' + esc(message) + "</p>";
-    h += '<div class="row">' + UI.btn("Use local workspace", "show-demo", { cls: "ghost" }) + "</div>";
-    return h + "</section></div>";
+    if (message) h += '<p class="auth-msg" role="status">' + esc(message) + "</p>";
+    return h + "</div></div>";
+  }
+  /** The link someone opens to join: sign in or sign up, and the code is used for them. */
+  UI.inviteLink = function (code) { return location.origin + location.pathname + "#join-" + code; };
+  /** Shows a one-time invite link with a copy button. */
+  UI.inviteModal = function (title, email, code) {
+    var link = UI.inviteLink(code);
+    UI.modal({
+      title: title,
+      body: '<p style="margin:0">' + esc(t("inv_body", { e: email })) + '</p><code class="code" style="word-break:break-all;user-select:all">' + esc(link) + "</code>" +
+        '<p class="small muted" style="margin:0">' + esc(t("inv_note")) + "</p>",
+      foot: UI.btn(t("inv_copy"), "inv-copy", { cls: "", data: { v: link } }) + UI.btn(t("close"), "close", { cls: "primary" })
+    });
+  };
+  actions["inv-copy"] = function (el) { u.copy(el.getAttribute("data-v")).then(function (ok) { UI.toast(t(ok ? "copied" : "write_failed")); }); };
+  /** A signed-in client: their own page, with a slim bar to sign out. */
+  function clientAccountScreen() {
+    var S = GK.store, cm = GK.clientMode, sh = S.publicShare || {};
+    var email = ""; try { var ses = JSON.parse(sessionStorage.getItem("gecko-ops-supabase-session") || "{}"); email = ses.user && ses.user.email || ""; } catch (e) {}
+    return '<div class="cl-acct"><span>' + esc(t("au_client_bar", { e: email || (sh.account && sh.account.brand) || "" })) + '</span><button type="button" class="auth-link" data-a="auth-signout">' + esc(t("au_out")) + "</button></div>" +
+      (cm ? cm.render("me") : "");
   }
   /** Full render. Store updates arriving while someone types are held until they leave the field. */
   var lastScreen = "";
@@ -3623,6 +3719,11 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       if (cm && cm.after) try { cm.after(app); } catch (e) { console.error(e); }
       window.scrollTo(0, winTop);
       document.title = "GECKO";
+      return;
+    }
+    if (GK.store.backend === "supabase" && GK.store.authState === "client") {
+      app.innerHTML = clientAccountScreen();
+      if (GK.clientMode && GK.clientMode.after) try { GK.clientMode.after(app); } catch (e) { console.error(e); }
       return;
     }
     if (GK.store.backend === "supabase" && GK.store.authState !== "ready") {
@@ -3724,40 +3825,47 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     UI.closeModal(true); GK.store.join(name, role, claim); UI.render(true);
   };
   function authFailure(error) {
-    GK.store.authError = error && error.message ? error.message : "Authentication request failed.";
+    var m = error && error.message ? error.message : "";
+    GK.store.authError = /workspace_exists/.test(m) ? t("au_e_exists") : /invalid_invite/.test(m) ? t("au_e_invite") :
+      /Invalid login/i.test(m) ? t("au_e_login") : /not confirmed|verified_email/i.test(m) ? t("au_e_confirm") : (m || "Authentication request failed.");
     UI.render(true);
   }
+  /** After sign-in: a code waiting from an invite link is used at once. */
+  function afterAuth() {
+    var S = GK.store, code = S.pendingInvite();
+    S.authError = "";
+    if (code && S.authState === "no-workspace") return S.acceptAnyInvite(code, u.val("auth-name").trim()).then(function () { UI.render(true); }, authFailure);
+    UI.render(true);
+  }
+  actions["auth-mode"] = function () { UI.state.authMode = UI.state.authMode === "up" ? "in" : "up"; GK.store.authError = ""; GK.store.authMessage = ""; UI.render(true); };
   actions["auth-signin"] = function () {
     var email = u.val("auth-email").trim(), password = u.val("auth-password");
     if (!email) return u.focus("auth-email");
     if (!password) return u.focus("auth-password");
     GK.store.authError = "";
-    GK.store.signIn(email, password).then(function () { GK.store.authError = ""; UI.render(true); }, authFailure);
+    GK.store.signIn(email, password).then(afterAuth, authFailure);
   };
   actions["auth-signup"] = function () {
     var email = u.val("auth-email").trim(), password = u.val("auth-password"), name = u.val("auth-name").trim();
     if (!email) return u.focus("auth-email");
     if (!password) return u.focus("auth-password");
     GK.store.authError = "";
+    if (password.length < 8) { GK.store.authError = t("au_pass_h"); return UI.render(true); }
     GK.store.signUp(email, password, name).then(function () {
-      var workspace = u.val("auth-workspace").trim();
-      if (workspace && GK.store.authState === "no-workspace") {
-        return GK.store.createWorkspace(workspace).then(function () { GK.store.authError = ""; UI.render(true); }, authFailure);
-      }
-      UI.render(true);
+      if (GK.store.authState === "login") { GK.store.authMessage = t("au_confirm"); UI.state.authMode = "in"; }
+      afterAuth();
     }, authFailure);
   };
   actions["auth-create-workspace"] = function () {
-    var name = u.val("auth-workspace").trim();
-    if (!name) return u.focus("auth-workspace");
+    var name = "Gecko";
     GK.store.authError = "";
-    GK.store.createWorkspace(name).then(function () { GK.store.authError = ""; UI.render(true); }, authFailure);
+    GK.store.createWorkspace(name || "Gecko").then(function () { GK.store.authError = ""; UI.render(true); }, authFailure);
   };
   actions["auth-accept-invite"] = function () {
     var token = u.val("auth-invite").trim(), name = u.val("auth-name").trim();
     if (!token) return u.focus("auth-invite");
     GK.store.authError = "";
-    GK.store.acceptInvite(token, name).then(function () { GK.store.authError = ""; UI.render(true); }, authFailure);
+    GK.store.acceptAnyInvite(token, name).then(function () { GK.store.authError = ""; UI.render(true); }, authFailure);
   };
   actions["auth-signout"] = function () {
     GK.store.signOut().then(function () { UI.render(true); }, authFailure);
@@ -3811,6 +3919,8 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     var app = document.getElementById("app");
     app.innerHTML = skeleton();
     var h = (location.hash || "").replace("#", "");
+    var join = /^join-([a-f0-9]{64})$/.exec(h);
+    if (join) { GK.store.pendingInvite(join[1]); h = ""; try { history.replaceState(null, "", location.pathname); } catch (e) {} }
     UI.clientToken = GK.clientMode && GK.clientMode.match(h);   // "#cl-<token>" opens the client-facing page instead of the app
     UI.state.view = (UI.clientToken ? "" : h) || u.lsGet(VIEW_KEY, "today");
     window.addEventListener("hashchange", function () {
@@ -5375,17 +5485,58 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
    portal_pages.js, and the quick update (a clean page to screen-share, or a WhatsApp text), built in portal.js. */
 (function (GK) {
   "use strict";
-  var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, esc = u.esc, HUB = GK.clientHub;
+  var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc, HUB = GK.clientHub;
   if (!HUB) return;
 
   GK.i18n.add({
     cpo_quick_h: ["Quick update", "Point rapide"], cpo_quick_sub: ["Where each project is and what we need, ready to send or show.", "Où en est chaque projet et ce qu'il nous faut, prêt à envoyer ou montrer."],
+    cpo_log_h: ["Client logins", "Accès client"], cpo_log_sub: ["People at the brand who sign in with their own email to see their page, approve and comment.", "Les personnes de la marque qui se connectent avec leur e-mail pour voir leur page, valider et commenter."],
+    cpo_log_email: ["Their email", "Son e-mail"], cpo_log_add: ["Invite", "Inviter"], cpo_log_ready: ["Client invite ready", "Invitation client prête"],
+    cpo_log_joined: ["Signed in", "Connecté"], cpo_log_wait: ["Invite sent", "Invitation envoyée"], cpo_log_off: ["Access removed", "Accès retiré"],
+    cpo_log_rm: ["Remove access", "Retirer l'accès"], cpo_log_rm_q: ["Remove this person's access?", "Retirer l'accès de cette personne ?"],
+    cpo_log_rm_b: ["They can't sign in to this client page any more. The share link, if you sent one, keeps working until you switch it off.", "Elle ne peut plus se connecter à cette page client. Le lien de partage, si vous en avez envoyé un, marche jusqu'à ce que vous le coupiez."],
+    cpo_log_none: ["Nobody yet. Invite the brand's contact so they sign in instead of using a link.", "Personne pour l'instant. Invitez le contact de la marque pour qu'il se connecte au lieu d'utiliser un lien."],
+    cpo_log_need: ["They see the latest page you published. Publish one first if you haven't.", "Ils voient la dernière page publiée. Publiez-en une d'abord si ce n'est pas fait."],
     cpo_copy: ["Copy WhatsApp update", "Copier le point WhatsApp"], cpo_show: ["Show the page", "Voir la page"], cpo_hide: ["Hide the page", "Masquer la page"]
+  });
+
+  var accounts = {}, loading = {};
+  function loadAccounts(id) {
+    if (loading[id]) return; loading[id] = true;
+    S.clientAccounts(id).then(function (rows) { accounts[id] = rows || []; loading[id] = false; ui.render(true); },
+      function () { accounts[id] = []; loading[id] = false; });
+  }
+  function loginsHTML(c) {
+    if (S.backend !== "supabase" || !m.can("portal")) return "";
+    var list = accounts[c.id];
+    if (!list) { loadAccounts(c.id); list = []; }
+    var rows = list.length ? '<div class="list">' + list.map(function (a) {
+      var st = a.revoked ? ui.pill(t("cpo_log_off")) : a.joined ? ui.pill(t("cpo_log_joined"), "done") : ui.pill(t("cpo_log_wait"), "wip");
+      return '<div class="li"><div class="stack" style="gap:2px"><strong>' + esc(a.name || a.email) + '</strong><span class="m">' + esc(a.email) + "</span></div>" +
+        '<span class="row" style="gap:8px">' + st + (a.revoked ? "" : ui.btn(t("cpo_log_rm"), "cpo-log-rm", { cls: "ghost sm", data: { id: a.id, c: c.id } })) + "</span></div>";
+    }).join("") + "</div>" : '<p class="small muted" style="margin:0">' + esc(t("cpo_log_none")) + "</p>";
+    return '<section class="panel"><div class="panel-h"><div class="stack" style="gap:2px"><h2 class="sec">' + esc(t("cpo_log_h")) + '</h2><span class="small muted">' + esc(t("cpo_log_sub")) + "</span></div></div>" +
+      rows + '<div class="row" style="gap:8px;align-items:flex-end">' + ui.field({ id: "cpo-log-email", label: t("cpo_log_email"), type: "email", value: c.email || "" }) +
+      ui.btn(t("cpo_log_add"), "cpo-log-add", { cls: "primary", data: { c: c.id } }) + "</div>" +
+      '<p class="small muted" style="margin:0">' + esc(t("cpo_log_need")) + "</p></section>";
+  }
+  GK.act("cpo-log-add", function (el) {
+    var cid = el.getAttribute("data-c"), email = u.val("cpo-log-email").trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { u.focus("cpo-log-email"); return ui.toast(t("required")); }
+    S.inviteClient(cid, email).then(function (code) {
+      delete accounts[cid]; ui.inviteModal(t("cpo_log_ready"), email, code); ui.render(true);
+    }, function (e) { ui.toast(e.message); });
+  });
+  GK.act("cpo-log-rm", function (el) {
+    var id = el.getAttribute("data-id"), cid = el.getAttribute("data-c");
+    ui.confirm(t("cpo_log_rm_q"), t("cpo_log_rm_b"), function () {
+      S.revokeClientAccount(id).then(function () { delete accounts[cid]; ui.render(true); }, function (e) { ui.toast(e.message); });
+    }, t("cpo_log_rm"));
   });
 
   function portalTab(c) {
     var P = GK.portal || {}, st = ui.p("clients"), can = m.can("portal");
-    var h = P.sharesHTML ? P.sharesHTML(c) : "";
+    var h = loginsHTML(c) + (P.sharesHTML ? P.sharesHTML(c) : "");
     h += '<section class="panel"><div class="panel-h"><div class="stack" style="gap:2px"><h2 class="sec">' + esc(t("cpo_quick_h")) + '</h2><span class="small muted">' + esc(t("cpo_quick_sub")) + "</span></div>" +
       '<div class="row" style="gap:6px">' + ui.btn(t("cpo_copy"), "po-copy", { cls: "primary sm", data: { id: c.id }, disabled: !can, title: can ? "" : t("po_no_perm") }) +
       ui.btn(st.quick ? t("cpo_hide") : t("cpo_show"), "cl-quick", { cls: "sm" }) + "</div></div>" +
@@ -5794,7 +5945,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     pj_ob1: ["Brief call done", "Appel de brief fait"],
     pj_ob2: ["Brand assets and logo received", "Charte et logo reçus"],
     pj_ob3: ["Product samples received", "Échantillons produit reçus"],
-    pj_ob4: ["Ad account access (or the media buyer's contact)", "Accès au compte pub (ou contact du media buyer)"],
+    pj_ob4: ["Ad results they can share (Ads Manager screenshots)", "Résultats pubs à partager (captures Ads Manager)"],
     pj_ob5: ["Baseline orders per week recorded", "Commandes par semaine de départ notées"],
     pj_ob6: ["Creative plan sent", "Plan créatif envoyé"],
     pj_ob7: ["Shoot date booked", "Date de tournage réservée"],
@@ -9063,14 +9214,14 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     fi_of_c_offer: ["Offer", "Offre"], fi_of_c_launch: ["Launch price", "Prix de lancement"], fi_of_c_std: ["Standard price", "Prix standard"], fi_of_c_incl: ["Included", "Inclus"],
     fi_of_c_direct: ["Direct cost", "Coût direct"], fi_of_c_owner: ["Owner pay", "Paie du fondateur"], fi_of_c_net_l: ["Net at launch", "Net au lancement"], fi_of_c_net_s: ["Net at standard", "Net au standard"], fi_of_c_margin: ["Margin", "Marge"],
     fi_of_month: ["/ month", "/ mois"], fi_of_none: ["no launch price", "pas de prix de lancement"], fi_of_min: ["min. {n} months", "min. {n} mois"],
-    fi_of_reels: ["Reels: {n}", "Reels : {n}"], fi_of_hooks: ["Hooks and variations: {n}", "Hooks et variations : {n}"], fi_of_statics: ["Statics: {n}", "Visuels fixes : {n}"], fi_of_mashups: ["Mashups: {n}", "Mashups : {n}"],
+    fi_of_reels: ["Reels: {n}", "Reels : {n}"], fi_of_hooks: ["Hooks and variations: {n}", "Hooks et variations : {n}"], fi_of_statics: ["Statics: {n}", "Visuels fixes : {n}"], fi_of_mashups: ["Recut ads: {n}", "Pubs remontées : {n}"],
     fi_of_carousels: ["Carousels: {n}", "Carrousels : {n}"], fi_of_days: ["Shoot days: {n}", "Jours de tournage : {n}"], fi_of_day1: ["Shoot days: 1", "Jours de tournage : 1"],
     fi_of_ads: ["Ads management", "Gestion des pubs"], fi_of_nothing: ["The report only", "Le rapport seulement"],
     fi_of_rates: ["Cost rates used", "Tarifs de coûts utilisés"],
     fi_of_rates_l: ["Camera {c} per shoot day. Transport {tr} and food {fd} per shoot day. Assistant {as} per shoot day when the offer includes ads. Owner {ow} per shoot day. Owner editing {es} for up to 6 reels, {em} for 7 to 14, {el} for 15 or more. TND.", "Caméra {c} par jour de tournage. Transport {tr} et repas {fd} par jour de tournage. Assistant {as} par jour de tournage si l'offre inclut les pubs. Fondateur {ow} par jour de tournage. Montage du fondateur {es} jusqu'à 6 reels, {em} de 7 à 14, {el} à partir de 15. TND."],
     fi_of_note: ["Net = price in TND minus direct cost minus owner pay, before the partner share, overheads and tax. Foreign prices are converted at the rates in Settings. Estimate.", "Net = prix en TND moins coût direct moins paie du fondateur, avant la part du partenaire, les charges et les impôts. Les prix en devise sont convertis aux taux des Réglages. Estimation."],
     fi_of_edit: ["Edit prices in Settings", "Modifier les prix dans les Réglages"],
-    fi_of_addons: ["Add-ons", "Options"], fi_of_from: ["from", "à partir de"], fi_of_c_addon: ["Add-on", "Option"], fi_of_c_price: ["Price", "Prix"], fi_of_pct: ["{p}% of the offer", "{p} % de l'offre"], fi_of_atcost: ["at cost", "au coût"]
+    fi_of_addons: ["Add-ons", "Options"], fi_of_from: ["from", "à partir de"], fi_of_custom: ["Custom", "Sur mesure"], fi_of_c_addon: ["Add-on", "Option"], fi_of_c_price: ["Price", "Prix"], fi_of_pct: ["{p}% of the offer", "{p} % de l'offre"], fi_of_atcost: ["at cost", "au coût"]
   });
 
   function cost(key) {
@@ -9104,7 +9255,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       var pk = m.pack(k), c = cost(k), cur = pk.currency || "TND", per = pk.monthly ? " " + t("fi_of_month") : "";
       var std = m.toTND(pk.price, cur), lau = pk.launch ? m.toTND(pk.launch, cur) : null;
       h += "<tr><td><strong>" + esc(pk.name) + "</strong>" + (pk.minMonths ? '<br><span class="small muted">' + esc(t("fi_of_min", { n: pk.minMonths })) + "</span>" : "") + '</td><td class="r num">' +
-        (pk.launch ? price(pk.launch, cur) + '<span class="small muted">' + esc(per) + "</span>" : '<span class="small muted">—</span>') + '</td><td class="r num">' + (pk.from ? '<span class="small muted">' + esc(t("fi_of_from")) + "</span> " : "") + price(pk.price, cur) + '<span class="small muted">' + esc(per) + '</span></td><td class="small">' + incl(pk).map(esc).join("<br>") +
+        (pk.launch ? price(pk.launch, cur) + '<span class="small muted">' + esc(per) + "</span>" : '<span class="small muted">—</span>') + '</td><td class="r num">' + (pk.custom ? esc(t("fi_of_custom")) : (pk.from ? '<span class="small muted">' + esc(t("fi_of_from")) + "</span> " : "") + price(pk.price, cur) + '<span class="small muted">' + esc(per) + "</span>") + '</td><td class="small">' + incl(pk).map(esc).join("<br>") +
         '</td><td class="r num">' + F.fm(c.direct) + '</td><td class="r num">' + F.fm(c.owner) + "</td>" + (lau != null ? netCell(lau - c.direct - c.owner, lau) : '<td class="r small muted">—</td>') + netCell(std - c.direct - c.owner, std) + "</tr>";
     });
     return h + "</tbody></table></div></section>";
@@ -10852,7 +11003,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     tm_add_hint: ["Add someone here first, then they claim their name when they open the page.", "Ajoutez la personne ici, puis elle choisit son nom en ouvrant la page."],
     tm_member_added: ["Added to the team", "Ajouté à l'équipe"],
     tm_invite_email: ["Email address", "Adresse e-mail"],
-    tm_invite_ready: ["Secure invitation token", "Jeton d'invitation sécurisé"],
+    tm_invite_ready: ["Invite link ready", "Lien d'invitation prêt"],
     tm_signout: ["Sign out", "Se déconnecter"]
   });
 
@@ -10972,11 +11123,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       var email = u.val("tm-m-email").trim(), role = u.val("tm-m-role") || "editor";
       if (!email) { u.focus("tm-m-email"); return ui.toast(t("required")); }
       S.createInvite(email, role).then(function (token) {
-        ui.modal({
-          title: t("tm_invite_ready"),
-          body: '<p class="small muted">This one-time token expires in seven days. Copy it and share it with the invited person through a trusted channel.</p><code class="code" style="word-break:break-all;user-select:all">' + esc(token) + "</code>",
-          foot: ui.btn(t("close"), "close", { cls: "primary" })
-        });
+        ui.inviteModal(t("tm_invite_ready"), email, token);
       }, function (error) { ui.toast(error.message); });
       return;
     }
@@ -11006,6 +11153,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
   var u = GK.u, t = GK.t, ui = GK.ui, m = GK.m, S = GK.store, esc = u.esc;
 
   GK.i18n.add({
+    tp_invite_note: ["People join by invite link. Each link works once, only for the email it was made for.", "On rejoint par lien d'invitation. Chaque lien marche une fois, seulement pour son e-mail."],
     tp_people: ["The team", "L'équipe"], tp_back: ["All people", "Toute l'équipe"],
     tp_active_n: ["{n} active projects", "{n} projets en cours"], tp_active_1: ["1 active project", "1 projet en cours"],
     tp_open: ["Open profile", "Ouvrir le profil"],
@@ -11212,7 +11360,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     var team = S.all("team").sort(function (a, b) { return m.ROLES.indexOf(a.role) - m.ROLES.indexOf(b.role) || (a.name > b.name ? 1 : -1); });
     var h = "";
     if (S.backend === "shared") h += '<p class="note">' + esc(t("tm_shared_note")) + "</p>";
-    if (S.backend === "supabase") h += '<p class="note">Team access is granted by email invitation. The token is shown once; send it to the invited person through a trusted channel.</p>';
+    if (S.backend === "supabase") h += '<p class="note">' + esc(t("tp_invite_note")) + '</p>';
     h += '<section class="panel"><div class="panel-h"><h2 class="sec">' + esc(t("tp_people")) + '</h2><span class="small muted">' + team.length + "</span>" +
       (S.backend === "supabase" ? ui.btn(t("tm_signout"), "auth-signout", { cls: "ghost sm" }) : "") + '</div><div class="tp-grid">' + team.map(card).join("") + "</div></section>";
     if (isOwner()) h += rolePayPanel();
@@ -13155,7 +13303,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     hasHelp: function (view) { return !!track(view) || STEP_VIEWS[view] != null; },
     learned: learned,
     maybeWelcome: function () {
-      if (!S.ready || ui.modalOpen()) return;
+      if (!S.ready || ui.modalOpen() || (S.backend === "supabase" && S.authState !== "ready")) return;
       var state = readState();
       if (state && state.status === "active") start(state.step);
       else if (!state) welcome();
@@ -19912,8 +20060,8 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
       "E-commerce brands that already run ads: cosmetics, fashion, food, health and beauty, accessories, home.\nPersonal brands with money: founders, doctors and clinic owners, coaches, creators.\nHigh-end fashion campaigns and upscale restaurant branding, sold as a Campaign or a custom quote.\nThey already spend on ads, their videos are weak, and the decider can pay at least 2,500 TND a month.\nGulf and Europe: a quiet outreach in the background, a few touches a week.",
       "Marques e-commerce qui font déjà de la pub : cosmétique, mode, alimentaire, santé et beauté, accessoires, maison.\nMarques personnelles qui ont les moyens : fondateurs, médecins et cliniques, coachs, créateurs.\nCampagnes mode haut de gamme et branding de restaurants haut de gamme, vendus en Campagne ou sur devis.\nIls dépensent déjà en pub, leurs vidéos sont faibles, et le décideur peut payer au moins 2 500 TND par mois.\nGolfe et Europe : une prospection discrète en arrière-plan, quelques contacts par semaine."],
     mk_s_def_offers: [
-      "Ad Audit, 150 TND: a 20-minute video review plus 5 hook ideas. Credited if they book a Test Campaign within 30 days.\nTest Campaign: the first step. 3 angles, 3 reels, 6 hook variations.\nMonthly plans (Regular, Pro, Creative Partner) once the test shows what works.\nCampaign for launches and big moments.\nEvery offer above 1,000 TND goes through a call.",
-      "Ad Audit, 150 TND : une revue vidéo de 20 minutes et 5 idées d'accroches. Déduit si la marque réserve un Test Campaign sous 30 jours.\nTest Campaign : la première étape. 3 angles, 3 reels, 6 variations d'accroche.\nPlans mensuels (Regular, Pro, Creative Partner) quand le test montre ce qui marche.\nCampagne pour les lancements et les grands moments.\nToute offre au-dessus de 1 000 TND passe par un appel."],
+      "Test, 999 TND: the first step. 3 reels and 1 static from a 3-hour shoot. Exclusive.\nRegular, 2,900 TND a month: 10 reels, 2 hooks each, 4 statics, 1 carousel, a monthly results review.\nPro, 3,800 TND a month: 15 reels, 2 hooks each, 6 statics, 2 recut ads, 2 carousels, a monthly results review.\nCreative Partner, custom: 20 to 100 reels a month, 3 hooks each, the VIP treatment and a weekly review.\nLaunch prices until 31 Dec 2026. No plan includes media buying.",
+      "Test, 999 TND : la première étape. 3 reels et 1 visuel issus d'un tournage de 3 heures. Exclusif.\nRegular, 2 900 TND par mois : 10 reels, 2 accroches chacun, 4 visuels, 1 carrousel, un point résultats mensuel.\nPro, 3 800 TND par mois : 15 reels, 2 accroches chacun, 6 visuels, 2 pubs remontées, 2 carrousels, un point résultats mensuel.\nCreative Partner, sur mesure : 20 à 100 reels par mois, 3 accroches chacun, le traitement VIP et un point chaque semaine.\nPrix de lancement jusqu'au 31 déc. 2026. Aucun plan n'inclut l'achat média."],
     mk_s_def_goals: [
       "Publish 3 reels a week, the same reel on Instagram and TikTok.\nRun our own campaign: 15 TND a day for 14 days, then 450 to 900 TND a month.\nCost per conversation under 6 TND. One in 5 conversations qualifies. One in 3 qualified books a call.\nShow 4 to 5 case studies with real ad results by the end of November.\nOutbound: 4 meetings booked per 50 first touches.",
       "Publier 3 reels par semaine, le même reel sur Instagram et TikTok.\nLancer notre propre campagne : 15 TND par jour pendant 14 jours, puis 450 à 900 TND par mois.\nCoût par conversation sous 6 TND. Une conversation sur 5 est qualifiée. Une sur 3 qualifiées réserve un appel.\nMontrer 4 à 5 études de cas avec de vrais résultats pub d'ici fin novembre.\nProspection directe : 4 rendez-vous pour 50 premiers contacts."],
