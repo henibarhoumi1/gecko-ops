@@ -32,7 +32,7 @@
     db_t_dm: ["DM reply rate", "Taux de réponse DM"], db_t_dm_n: ["{n} a day vs {g} goal, last 4 weeks", "{n} par jour pour {g} visés, 4 dernières semaines"], db_t_dm_n0: ["{n} a day, last 4 weeks", "{n} par jour, 4 dernières semaines"],
     db_t_dm_na: ["No DMs logged yet", "Aucun DM saisi"],
     // charts
-    db_c_money: ["Money in and money out", "Argent entré et sorti"], db_c_money_sub: ["By month, TND. Money out = expenses + salary + project costs + commissions (estimate).", "Par mois, TND. Sorties = dépenses + salaire + coûts projets + commissions (estimation)."],
+    db_c_money: ["Money in and money out", "Argent entré et sorti"], db_c_money_sub: ["By month, TND. Money out includes salary, project costs and commissions.", "Par mois, TND. Les sorties incluent salaire, coûts projet et commissions."],
     db_s_in: ["Money in", "Entrées"], db_s_out: ["Money out", "Sorties"], db_goal: ["Goal", "Objectif"],
     db_net_line: ["Net over {n} months: {a}. Best month {b}.", "Net sur {n} mois : {a}. Meilleur mois : {b}."],
     db_c_fc: ["Next 13 weeks of cash", "Trésorerie des 13 prochaines semaines"], db_c_fc_sub: ["Estimate. Booked = invoices due and costs known. With pipeline adds weighted leads.", "Estimation. Acquis = factures dues et coûts connus. Avec pipeline ajoute les prospects pondérés."],

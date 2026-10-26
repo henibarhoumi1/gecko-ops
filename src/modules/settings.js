@@ -5,7 +5,7 @@
 
   GK.i18n.add({
     se_title: ["Settings", "Réglages"], se_accent: ["", ""],
-    se_sub: ["Company details for invoices, the packs and their prices, the cost rates and money rules, and where the data lives.", "Les infos de la société pour les factures, les packs et leurs prix, les tarifs de coûts, les règles d'argent et l'endroit où vivent les données."],
+    se_sub: ["Company details, packs and prices, money rules and where the data lives.", "Détails de l'entreprise, packs et prix, règles d'argent et stockage des données."],
     se_tab_company: ["Company", "Société"], se_tab_packs: ["Packs & rules", "Packs & règles"], se_tab_data: ["Data & sharing", "Données & partage"],
     se_read_only: ["Only the owner can change these settings. You can read them.", "Seul le fondateur peut modifier ces réglages. Vous pouvez les consulter."],
     // company

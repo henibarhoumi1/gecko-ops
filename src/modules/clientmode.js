@@ -11,6 +11,9 @@
     cm_unavail_b: ["The link may be old, or the page was switched off. Message us and we'll send you a fresh one.", "Le lien est peut-être ancien, ou la page a été désactivée. Écrivez-nous et on vous en envoie un nouveau."],
     cm_hero_t: ["Your campaign", "Votre page"], cm_hero_a: ["page", "campagne"],
     cm_for: ["Prepared for {brand}", "Préparé pour {brand}"],
+    cm_kick: ["Client page", "Page client"],
+    cm_lede: ["Your videos with Gecko: the plan, the files, what is approved and what comes next.", "Vos vidéos avec Gecko : le plan, les fichiers, ce qui est validé et ce qui arrive."],
+
     cm_updated: ["Last updated {date}", "Dernière mise à jour le {date}"],
     cm_lang: ["Language", "Langue"], cm_skip: ["Skip to content", "Aller au contenu"], cm_sections: ["Sections", "Sections"],
     cm_tab_overview: ["Overview", "Vue d'ensemble"], cm_tab_plan: ["Campaign plan", "Plan de campagne"], cm_tab_scripts: ["Scripts", "Scripts"],
@@ -140,7 +143,46 @@
       "@keyframes cl-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}",
       ".cl-sec:not([hidden])>*{animation:cl-in .28s var(--ease) both}.cl-sec:not([hidden])>*:nth-child(2){animation-delay:.04s}.cl-sec:not([hidden])>*:nth-child(3){animation-delay:.08s}.cl-sec:not([hidden])>*:nth-child(n+4){animation-delay:.12s}",
       "@media (prefers-reduced-motion:reduce){.cl-sec>*{animation:none!important}}",
-      "@media (max-width:560px){.cl-glance>div{padding:12px 10px}.cl-page{padding:0 16px 28px}.cl-tabs{margin:0 -16px;padding:0 16px}.cl-hero .hl{font-size:clamp(40px,13vw,60px)}.cl-top .wm{width:84px}.cl-box{padding:14px}.cl-cb{padding:12px}.cl-cp{padding:4px 12px 16px}}"
+      "@media (max-width:560px){.cl-glance>div{padding:12px 10px}.cl-page{padding:0 16px 28px}.cl-tabs{margin:0 -16px;padding:0 16px}.cl-hero .hl{font-size:clamp(40px,13vw,60px)}.cl-top .wm{width:84px}.cl-box{padding:14px}.cl-cb{padding:12px}.cl-cp{padding:4px 12px 16px}}",
+      /* ---------- premium pass: website type, ink lines, hard shadows ---------- */
+      ".cl-page{max-width:1060px;padding:0 24px 64px;gap:32px}",
+      ".cl-top{justify-content:space-between;padding:22px 0 16px;border-bottom:1.5px solid var(--b-ink)}",
+      ".cl-top .wm{width:104px}",
+      ".cl-lang{position:static;margin:0;border:1.5px solid var(--b-ink)}",
+      ".cl-lang button[aria-pressed=true]{background:var(--b-ink);color:#fff}",
+      ".cl-hero{align-items:flex-start;text-align:left;gap:18px;padding:14px 0 2px}",
+      ".cl-hero .hl{font-size:clamp(46px,8vw,96px);line-height:.92;letter-spacing:-.055em;max-width:14ch}",
+      ".cl-hero p{font-size:19px;line-height:1.45;max-width:44ch;color:var(--ink-2)}",
+      ".cl-kick{display:inline-flex;align-items:center;gap:10px;margin:0;padding:7px 15px 7px 11px;border:1.5px solid var(--b-ink);border-radius:999px;font-weight:700;font-size:13px;color:var(--ink)}",
+      ".cl-kick i{width:9px;height:9px;border-radius:50%;background:var(--b-pink);box-shadow:0 0 0 1.5px var(--b-ink)}",
+      ".cl-tabs{border-top:0;border-bottom:1.5px solid var(--b-ink);gap:8px;padding:12px 24px;margin:0 -24px;background:var(--bg)}",
+      ".cl-tabs button{padding:9px 15px;border:1.5px solid var(--b-ink);border-bottom:1.5px solid var(--b-ink);border-radius:999px;font-stretch:normal;font-size:13px;color:var(--ink)}",
+      ".cl-tabs button:first-child{margin-left:0}.cl-tabs button:last-child{margin-right:0}",
+      ".cl-tabs button:hover:not([aria-current=true]){background:var(--b-pink-soft)}",
+      ".cl-tabs button[aria-current=true]{background:var(--b-ink);color:#fff;border-color:var(--b-ink)}",
+      ".cl-bd{border-radius:999px;background:var(--b-yellow);color:var(--b-ink);padding:1px 7px;font-weight:700}",
+      ".cl-sec>header h2.sec{font-size:clamp(28px,3.4vw,40px)!important;letter-spacing:-.04em;line-height:1}",
+      ".cl-sec>header p{font-size:17px}",
+      ".cl-box{border:1.5px solid var(--b-ink);border-radius:14px;padding:20px}",
+      ".cl-card{border:1.5px solid var(--b-ink);border-radius:14px}",
+      ".cl-card+.cl-card{margin-top:10px}",
+      ".cl-gel{background:var(--b-pink);border:1.5px solid var(--b-ink);border-radius:14px;box-shadow:6px 6px 0 var(--b-ink)}",
+      ".cl-gel h3.sec{font-size:22px;letter-spacing:-.03em}",
+      ".cl-needs li{padding:12px 0;border-bottom:1.5px solid rgba(0,0,0,.18)}",
+      ".cl-glance{border:0;border-radius:14px;background:var(--b-ink);color:#fff;overflow:hidden}",
+      ".cl-glance>div{padding:18px 20px;border-right:1px solid rgba(255,255,255,.2)}",
+      ".cl-glance .lab{color:rgba(255,255,255,.6)}",
+      ".cl-glance strong{font-weight:700;letter-spacing:-.04em;font-size:clamp(26px,5vw,40px)}",
+      ".cl-ph{border-bottom:1.5px solid var(--b-ink);padding-bottom:8px}",
+      ".cl-ph strong,.cl-ph b{letter-spacing:-.02em}",
+      ".cl-foot.cl-blue{background:var(--b-ink);color:#fff;border-radius:18px;padding:40px 24px;--ink:#fff;--ink-2:rgba(255,255,255,.72);--bg:var(--b-ink);--line:rgba(255,255,255,.28)}",
+      ".cl-foot.cl-blue,.cl-foot.cl-blue .hl,.cl-foot.cl-blue p,.cl-foot.cl-blue span,.cl-foot.cl-blue a{color:#fff}",
+      ".cl-foot.cl-blue a{text-decoration:underline;text-underline-offset:4px;text-decoration-color:var(--b-pink)}",
+      ".cl-foot .hl{letter-spacing:-.04em;font-size:clamp(28px,4.4vw,44px)}",
+      ".cl-foot .wm{color:#fff;width:120px}",
+      ".cl-foot .btn.primary{background:var(--b-pink);border-color:var(--b-pink);color:var(--b-ink)}",
+      ".cl-foot .btn.primary:hover{background:var(--b-yellow);border-color:var(--b-yellow);box-shadow:3px 3px 0 #fff}",
+      "@media (max-width:560px){.cl-page{padding:0 18px 40px}.cl-tabs{margin:0 -18px;padding:10px 18px}.cl-hero .hl{font-size:clamp(38px,12vw,58px)}.cl-glance{grid-template-columns:1fr}.cl-glance>div{border-right:0;border-bottom:1px solid rgba(255,255,255,.2)}.cl-foot.cl-blue{padding:28px 18px}}"
     ].join("\n");
     document.head.appendChild(s);
   }
@@ -549,9 +591,10 @@
     if (!tabs.some(function (x) { return x[0] === ST.tab; })) ST.tab = "overview";
     var brand = snap.brand && snap.brand.name || "";
     var h = '<div class="cl-page" data-token="' + esc(share.id) + '"' + (opts && opts.preview ? ' data-preview="1"' : "") + ' lang="' + GK.i18n.lang() + '"><a class="cl-skip" href="#cl-main">' + esc(t("cm_skip")) + "</a>" + topBar();
-    h += '<div class="cl-hero"><span class="lab br">' + esc(brand) + '</span><h1 class="hl">' + esc(t("cm_hero_t")) + " <i>" + esc(t("cm_hero_a")) + "</i></h1>";
-    h += "<p>" + esc(snap.title || t("cm_for", { brand: brand })) + "</p>";
-    if (share.publishedAt) h += '<span class="small muted">' + esc(t("cm_updated", { date: dfull(share.publishedAt) })) + "</span>";
+    h += '<div class="cl-hero"><p class="cl-kick"><i aria-hidden="true"></i>' + esc(t("cm_kick")) +
+      (share.publishedAt ? " · " + esc(t("cm_updated", { date: dfull(share.publishedAt) })) : "") + "</p>";
+    h += '<h1 class="hl">' + esc(brand || t("cm_hero_t")) + "</h1>";
+    h += "<p>" + esc(snap.title || t("cm_lede")) + "</p>";
     h += "</div>";
     h += '<nav class="cl-tabs" aria-label="' + esc(t("cm_sections")) + '">' + tabs.map(function (x) {
       return '<button type="button" data-a="cm-tab" data-t="' + x[0] + '"' + (x[0] === ST.tab ? ' aria-current="true"' : "") + ">" + esc(t("cm_tab_" + x[0])) + (x[3] ? wait(x[3](snap)) : "") + "</button>";

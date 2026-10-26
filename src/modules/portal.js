@@ -7,7 +7,7 @@
 
   GK.i18n.add({
     po_title: ["Client pages", "Pages client"], po_accent: ["", ""],
-    po_sub: ["One link per client: their plan, scripts, files, timeline, invoices and boards. Or a quick update to screen-share or send on WhatsApp.", "Un lien par client : son plan, ses scripts, ses fichiers, son calendrier, ses factures et ses tableaux. Ou un point rapide à partager à l'écran ou sur WhatsApp."],
+    po_sub: ["One link per client, or a quick update to send on WhatsApp.", "Un lien par client, ou un point rapide à envoyer sur WhatsApp."],
     po_note: ["A quick update is a clean document for a call or a WhatsApp message. For something the client can open and answer, use Client pages.", "Le point rapide est un document clair pour un appel ou un message WhatsApp. Pour quelque chose que le client ouvre et auquel il répond, utilisez les Pages client."],
     po_pick: ["Client", "Client"],
     po_none: ["No clients yet. Add one in Clients.", "Aucun client pour l'instant. Ajoutez-en un dans Clients."],

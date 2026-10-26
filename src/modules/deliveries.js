@@ -5,7 +5,7 @@
 
   GK.i18n.add({
     dv_title: ["Delivery", "Livraison"], dv_accent: ["", ""],
-    dv_sub: ["What's approved, what the client signed off, and the message to send. Files only leave once the money is in.", "Ce qui est validé, ce que le client a accepté, et le message à envoyer. Les fichiers partent seulement une fois payés."],
+    dv_sub: ["What is ready to send. Files leave once the money is in.", "Ce qui est prêt à envoyer. Les fichiers partent une fois l'argent reçu."],
     dv_empty: ["Nothing to deliver right now. Projects show up here once editing starts.", "Rien à livrer pour l'instant. Les projets apparaissent ici dès le montage."],
     dv_k_ready: ["Ready to send", "Prêts à envoyer"], dv_k_ready_n: ["projects with every file approved", "projets avec tous les fichiers validés"],
     dv_k_locked: ["Waiting on payment", "En attente de paiement"], dv_k_locked_n: ["files held until paid", "fichiers bloqués jusqu'au paiement"],

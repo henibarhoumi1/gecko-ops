@@ -18,7 +18,6 @@
     mk_s_positioning: ["Positioning", "Positionnement"], mk_s_targets: ["Who we target", "Qui on vise"], mk_s_offers: ["Offers we push", "Offres qu'on pousse"],
     mk_s_goals: ["Goals for this quarter", "Objectifs du trimestre"], mk_s_channels: ["Channels", "Canaux"], mk_s_messages: ["Key messages", "Messages clés"],
     mk_s_hint: ["One point per line.", "Un point par ligne."],
-    mk_s_suggested: ["Suggested from the plan. Edit it to make it yours.", "Proposé d'après le plan. Modifiez-le pour le faire vôtre."],
     mk_s_edit_t: ["Edit {n}", "Modifier : {n}"],
     mk_s_def_positioning: [
       "Ads built to be tested.\nGecko is an ad creative studio that makes tested video ads for Tunisian brands that already advertise.\nWe are the creative partner of the brand, not only a production house.\nOne shoot day gives many ads, and the numbers show which one wins.",
@@ -118,7 +117,7 @@
       var s = stratText(k);
       h += '<section class="mk-block' + (k === "positioning" ? " wide" : "") + '" style="--i:' + i + '"><div class="mk-block-h"><h3 class="lab">' + esc(t("mk_s_" + k)) + "</h3>" + K.btnEdit(t("mk_edit"), "mk-s-edit", { k: k }) + "</div>" +
         "<ul>" + lines(s.text).map(function (l) { return "<li>" + esc(l) + "</li>"; }).join("") + "</ul>" +
-        (s.own ? "" : '<p class="small muted mk-sug">' + esc(t("mk_s_suggested")) + "</p>") + "</section>";
+        "</section>";
     });
     return h + "</div>";
   };

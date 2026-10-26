@@ -37,7 +37,7 @@
     cn_share: ["Show on portal", "Afficher sur le portail"], cn_unshare: ["Keep internal", "Garder en interne"], cn_del: ["Delete", "Supprimer"],
     cn_log_add: ["Note added", "Note ajoutée"], cn_log_del: ["Note deleted", "Note supprimée"], cn_log_share: ["Note visibility changed", "Visibilité d'une note modifiée"],
     // extras
-    cx_h: ["Talents, props and extras", "Talents, accessoires et extras"], cx_sub: ["What we suggest adding to a shoot. The amount is the price to the client. The client approves or declines on the portal.", "Ce qu'on propose d'ajouter à un tournage. Le montant est le prix pour le client. Le client valide ou refuse sur le portail."],
+    cx_h: ["Talents, props and extras", "Talents, accessoires et extras"], cx_sub: ["What we suggest adding to a shoot, at the price the client pays. They answer on their page.", "Ce qu'on propose d'ajouter à un tournage, au prix payé par le client. Il répond sur sa page."],
     cx_add: ["Add extra", "Ajouter un extra"], cx_none: ["No extras yet. Suggest a talent, a prop or an extra cost for a shoot.", "Pas encore d'extra. Proposez un talent, un accessoire ou un coût en plus pour un tournage."],
     cx_k_talent: ["Talent", "Talent"], cx_k_prop: ["Prop", "Accessoire"], cx_k_cost: ["Extra cost", "Coût en plus"],
     cx_s_proposed: ["Proposed", "Proposé"], cx_s_approved: ["Approved", "Validé"], cx_s_declined: ["Declined", "Refusé"],
