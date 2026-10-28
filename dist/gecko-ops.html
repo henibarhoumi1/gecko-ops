@@ -3167,9 +3167,9 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     au_signin: ["Sign in", "Se connecter"], au_signup: ["Create account", "Créer le compte"], au_to_up: ["New here? Create an account", "Nouveau ? Créer un compte"], au_to_in: ["Already have an account? Sign in", "Déjà un compte ? Se connecter"],
     au_invite_on: ["You have an invite. Sign in or create an account with the email it was sent to.", "Vous avez une invitation. Connectez-vous ou créez un compte avec l'e-mail qui l'a reçue."],
     au_load: ["Opening your workspace", "Ouverture de votre espace"],
-    au_none_t: ["One more step", "Encore une étape"], au_none_p: ["Paste the invite code Gecko sent you. It works for team members and for clients.", "Collez le code d'invitation envoyé par Gecko. Il marche pour l'équipe et pour les clients."],
-    au_code: ["Invite code", "Code d'invitation"], au_join: ["Join", "Rejoindre"], au_out: ["Sign out", "Se déconnecter"],
-    au_first_t: ["Setting up Gecko for the first time?", "Première installation de Gecko ?"], au_first_p: ["The first account creates the workspace and becomes its founder. After that, people join by invite only.", "Le premier compte crée l'espace et en devient le fondateur. Ensuite, on rejoint uniquement sur invitation."],
+    au_none_t: ["One more step", "Encore une étape"], au_none_p: ["To join, open the invite link the Gecko founder sent you, or paste it below. No link yet? Ask them to invite this email from the Team page.", "Pour rejoindre, ouvrez le lien d'invitation envoyé par le fondateur de Gecko, ou collez-le ci-dessous. Pas de lien ? Demandez-lui d'inviter cet e-mail depuis la page Équipe."],
+    au_code: ["Invite link", "Lien d'invitation"], au_join: ["Join", "Rejoindre"], au_out: ["Sign out", "Se déconnecter"],
+    au_first_t: ["Setting up Gecko for the first time?", "Première installation de Gecko ?"], au_first_p: ["Only the very first account can create the workspace and become its founder. Once Gecko is set up, this button does nothing and people join by invite link only.", "Seul le tout premier compte peut créer l'espace et en devenir le fondateur. Une fois Gecko installé, ce bouton ne fait rien et on rejoint uniquement par lien d'invitation."],
     au_create: ["Create the Gecko workspace", "Créer l'espace Gecko"],
     au_e_exists: ["Gecko's workspace already exists. Ask the founder for an invite.", "L'espace Gecko existe déjà. Demandez une invitation au fondateur."],
     au_e_invite: ["This code doesn't work for this email, or it has expired. Ask for a new one.", "Ce code ne marche pas pour cet e-mail, ou il a expiré. Demandez-en un nouveau."],
@@ -3862,7 +3862,7 @@ GK.logo = {"wordmark": "<svg aria-hidden=\"true\" focusable=\"false\" xmlns=\"ht
     GK.store.createWorkspace(name || "Gecko").then(function () { GK.store.authError = ""; UI.render(true); }, authFailure);
   };
   actions["auth-accept-invite"] = function () {
-    var token = u.val("auth-invite").trim(), name = u.val("auth-name").trim();
+    var raw = u.val("auth-invite").trim(), hex = raw.match(/[0-9a-f]{64}/i), token = hex ? hex[0].toLowerCase() : raw, name = u.val("auth-name").trim();
     if (!token) return u.focus("auth-invite");
     GK.store.authError = "";
     GK.store.acceptAnyInvite(token, name).then(function () { GK.store.authError = ""; UI.render(true); }, authFailure);
