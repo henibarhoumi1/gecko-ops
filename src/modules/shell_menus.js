@@ -30,6 +30,7 @@
     h += '<button type="button" class="mi" role="menuitem" data-a="guide-restart">' + ui.icon("help") + "<span>" + esc(t("guide_restart")) + "</span></button>";
     h += '<button type="button" class="mi" role="menuitem" data-a="sh-help">' + ui.icon("keyboard") + "<span>" + esc(t("sh_help")) + '</span><span class="k"><kbd>?</kbd></span></button>';
     if (m.can("*")) h += '<button type="button" class="mi" role="menuitem" data-a="nav" data-v="settings">' + ui.icon("settings") + "<span>" + esc(t("nav_settings")) + "</span></button>";
+    if (S.backend === "supabase") h += '<button type="button" class="mi" role="menuitem" data-a="auth-signout">' + ui.icon("logout") + "<span>" + esc(t("au_out")) + "</span></button>";
     h += '<hr><div class="pop-s">' + esc(t("sh_contact")) + '</div><div class="pop-co"><span>' + esc(co.phone) + "</span><span>" + esc(co.email) + "</span><span>" + esc(co.instagram) + "</span></div>";
     return h;
   }
