@@ -724,6 +724,7 @@
     GK.store.acceptAnyInvite(token, name).then(function () { GK.store.authError = ""; UI.render(true); }, authFailure);
   };
   actions["auth-signout"] = function () {
+    if (GK.shell && GK.shell.closeAll) GK.shell.closeAll();
     GK.store.signOut().then(function () { UI.render(true); }, authFailure);
   };
   changes.workas = function (el) { GK.store.workAs(el.value); UI.state.view = "today"; };
