@@ -54,6 +54,7 @@
     cm_wa_approve: ["I approve the plan for {project}.", "Je valide le plan de {project}."], cm_wa_changes: ["I'd like some changes on the plan for {project}.", "Je voudrais des changements sur le plan de {project}."],
     cm_wa_love: ["I love this one on {project}: {what}", "J'adore celui-ci pour {project} : {what}"], cm_wa_chg: ["I'd like to change this one on {project}: {what}", "Je voudrais modifier celui-ci pour {project} : {what}"],
     cm_wa_note: ["My note: {note}", "Ma note : {note}"], cm_wa_open: ["Opening WhatsApp with your message.", "Ouverture de WhatsApp avec votre message."],
+    cm_tab_onboarding: ["Onboarding", "Onboarding"], cm_to_onboarding: ["Fill in your onboarding so we can start pre-production.", "Remplissez votre onboarding pour qu'on lance la préproduction."],
     cm_prev_bar: ["Preview. This is what the client sees.", "Aperçu. C'est ce que voit le client."], cm_prev_back: ["Back to the team app", "Retour à l'appli équipe"], cm_prev_nothing: ["Preview only: nothing was sent.", "Aperçu seulement : rien n'a été envoyé."]
   });
 
@@ -335,6 +336,7 @@
     });
     if (filesOpen) rows.push('<li><span>' + esc(t("cm_to_files", { n: filesOpen })) + '</span><button type="button" class="btn sm" data-a="cm-tab" data-t="approvals">' + esc(t("cm_open_sec")) + "</button></li>");
     if (extrasOpen && snap.sections.extras) rows.push('<li><span>' + esc(t("cm_to_extras", { n: extrasOpen })) + '</span><button type="button" class="btn sm" data-a="cm-tab" data-t="extras">' + esc(t("cm_open_sec")) + "</button></li>");
+    if (snap._ob && GK.onboarding && !GK.onboarding.sent(snap._ob)) rows.unshift('<li><span>' + esc(t("cm_to_onboarding")) + '</span><button type="button" class="btn sm" data-a="cm-tab" data-t="onboarding">' + esc(t("cm_open_sec")) + "</button></li>");
     h += rows.length ? '<ol class="cl-needs">' + rows.join("") + "</ol>" : '<p style="margin:0">' + esc(t("po_need_nothing")) + "</p>";
     h += "</div>";
     snap.projects.forEach(function (p) {
@@ -562,9 +564,14 @@
     return h;
   }
 
+  function onboardingSec(snap) {
+    return sectionHead(t("ob_head", { brand: snap.brand.name }), t("ob_lede")) + GK.onboarding.formHTML(snap._ob, { seed: { brand: snap.brand.name } });
+  }
+
   /** [key, render, shown(snap), badge(snap)] */
   var TABS = [
-    ["overview", overview, function () { return true; }],
+    ["overview", overview, function (s) { return !s._only; }],
+    ["onboarding", onboardingSec, function (s) { return !!(s._ob && GK.onboarding); }],
     ["projects", projectsSec, function (s) { return s.sections.plan || s.sections.timeline || (s.history || []).length > 0; }],
     ["approvals", approvalsSec, function (s) { return s.sections.plan || s.sections.scripts || s.sections.files; }, waitingCountNoExtras],
     ["assets", assetsSec, function (s) { return s.sections.files || s.sections.boards || s.sections.assets; }],
@@ -587,8 +594,10 @@
     snap.results = snap.results || { hooks: [], reports: [] };
     snap.projects.forEach(function (p) { p.angles = p.angles || []; p.reels = p.reels || []; p.carousels = p.carousels || []; p.needs = p.needs || []; });
     var co = Object.assign({}, CO, snap.company || {});
+    // The onboarding sheet: the signed-in client's own, the live link's client, or (team preview) the client's sheet.
+    snap._ob = share.account ? "me" : opts && opts.preview ? (share.clientId ? "c:" + share.clientId : "") : "t:" + share.id;
     var tabs = TABS.filter(function (x) { return x[2](snap); });
-    if (!tabs.some(function (x) { return x[0] === ST.tab; })) ST.tab = "overview";
+    if (!tabs.some(function (x) { return x[0] === ST.tab; })) ST.tab = snap._ob && (snap._only || !snap.projects.length) ? "onboarding" : "overview";
     var brand = snap.brand && snap.brand.name || "";
     var h = '<div class="cl-page" data-token="' + esc(share.id) + '"' + (opts && opts.preview ? ' data-preview="1"' : "") + ' lang="' + GK.i18n.lang() + '"><a class="cl-skip" href="#cl-main">' + esc(t("cm_skip")) + "</a>" + topBar();
     h += '<div class="cl-hero"><p class="cl-kick"><i aria-hidden="true"></i>' + esc(t("cm_kick")) +
@@ -612,6 +621,8 @@
     render: function (token, opts) {
       css(); resetState(token); opts = opts || {};
       var share = opts.share || (S.publicShare && S.publicShare.id === token ? S.publicShare : null);
+      // A signed-in client whose page is not published yet still gets their onboarding sheet.
+      if (share && share.account && !share.snapshot) share = Object.assign({}, share, { enabled: true, snapshot: { brand: { name: share.account.brand }, sections: {}, _only: true } });
       if (!share || (!share.enabled && !opts.force) || !share.snapshot) return unavailable();
       if (!opts.preview && !ST.langInit) {   // first visit: open in the language the team published in, unless the visitor already chose one
         ST.langInit = true;

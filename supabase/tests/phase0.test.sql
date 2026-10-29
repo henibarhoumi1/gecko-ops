@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(42);
+select extensions.plan(51);
 
 insert into auth.users (
   id, aud, role, email, encrypted_password, email_confirmed_at,
@@ -249,6 +249,48 @@ select extensions.is(
   (select who from public.client_feedback f where f.id::text = current_setting('gecko.client_feedback_id')),
   'Client One', 'signed-in client feedback carries the client name'
 );
+-- Onboarding sheet: the signed-in client, the team (founder or sales) and the live page link share one sheet per client.
+select extensions.is(
+  public.save_client_onboarding('10000000-0000-4000-8000-000000000001', 'c1', '{"brand":"Synthetic One","goal":"More sales"}'::jsonb)->'data'->>'goal',
+  'More sales', 'a signed-in client saves their own onboarding sheet'
+);
+select extensions.throws_ok(
+  $$select public.get_client_onboarding('10000000-0000-4000-8000-000000000001', 'c2')$$,
+  'P0001', 'forbidden', 'a signed-in client cannot read another client''s onboarding'
+);
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000002', true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000002","role":"authenticated","email":"editor@local.test"}', true);
+select extensions.throws_ok(
+  $$select public.get_client_onboarding('10000000-0000-4000-8000-000000000001', 'c1')$$,
+  'P0001', 'forbidden', 'an editor cannot read client onboarding answers'
+);
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000004', true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000004","role":"authenticated","email":"sales@local.test"}', true);
+select extensions.ok(
+  not (public.save_client_onboarding('10000000-0000-4000-8000-000000000001', 'c1', '{"brand":null}'::jsonb)->'data' ? 'brand'),
+  'the team edits the same sheet, and a null answer is removed'
+);
+select set_config('request.jwt.claim.sub', '', true);
+select set_config('request.jwt.claims', '', true);
+select extensions.is(
+  public.save_shared_onboarding(repeat('a', 64), '{"insta":"@synthetic"}'::jsonb, true)->'data'->>'goal',
+  'More sales', 'the live page link opens the same client sheet'
+);
+select extensions.ok(
+  (select sent_at is not null from public.client_onboarding where client_id = 'c1'),
+  'sending from the link marks the sheet as sent'
+);
+select extensions.throws_ok(
+  format('select public.get_shared_onboarding(%L)', repeat('c', 64)),
+  'P0001', 'invalid_share', 'an expired link cannot read the onboarding sheet'
+);
+select extensions.throws_ok(
+  format('select public.get_shared_onboarding(%L)', repeat('b', 64)),
+  'P0001', 'invalid_share', 'a switched-off link cannot read the onboarding sheet'
+);
+select extensions.ok(not has_table_privilege('anon', 'public.client_onboarding', 'select'), 'the onboarding table is closed to direct reads');
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000006', true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000006","role":"authenticated","email":"client@local.test"}', true);
 select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000001', true);
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated","email":"founder@local.test"}', true);
 select public.revoke_client_account('10000000-0000-4000-8000-000000000001', (select id from public.client_accounts where email = 'client@local.test'));
