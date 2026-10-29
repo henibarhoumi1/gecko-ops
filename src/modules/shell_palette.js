@@ -157,7 +157,8 @@
   var gPending = 0;
   function typingIn(el) { return !!el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName)); }
   document.addEventListener("keydown", function (ev) {
-    if (ui.clientToken) return;
+    // Shortcuts belong to the signed-in team app only: not the sign-in screen, a client's page or a client link.
+    if (ui.clientToken || !document.querySelector("#app .shell:not(.skel)")) { if (pal) SH.closePalette(); return; }
     var k = ev.key;
     if ((ev.metaKey || ev.ctrlKey) && !ev.altKey && (k === "k" || k === "K")) { ev.preventDefault(); if (pal) SH.closePalette(); else SH.palette(""); return; }
     if (ev.metaKey || ev.ctrlKey || ev.altKey || ev.defaultPrevented) return;
