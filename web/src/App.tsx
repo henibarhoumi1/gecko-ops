@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/features/auth/AuthProvider";
@@ -5,11 +6,22 @@ import { InvitePage } from "@/features/auth/InvitePage";
 import { JoinPage } from "@/features/auth/JoinPage";
 import { SignInPage } from "@/features/auth/SignInPage";
 import { SignUpPage } from "@/features/auth/SignUpPage";
+import { PipelinePage } from "@/features/pipeline/PipelinePage";
 import { PortalPage } from "@/features/portal/PortalPage";
 import { AppShell } from "@/features/shell/AppShell";
 import { ComingSoon } from "@/features/shell/ComingSoon";
 import { navFor } from "@/features/shell/nav";
+import { WorkspaceProvider } from "@/features/workspace/WorkspaceContext";
 import { supabase } from "@/lib/supabase";
+
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: true } },
+});
+
+/** Screens that have been rebuilt; every other section shows a placeholder for now. */
+const SCREENS: Record<string, () => ReactElement> = {
+  pipeline: () => <PipelinePage />,
+};
 
 export function App() {
   if (!supabase) {
@@ -23,16 +35,18 @@ export function App() {
     );
   }
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/invite/:code" element={<InvitePage />} />
-          <Route path="/sign-in" element={<SignedOutOnly page={<SignInPage />} />} />
-          <Route path="/sign-up" element={<SignedOutOnly page={<SignUpPage />} />} />
-          <Route path="/*" element={<Home />} />
-        </Routes>
-      </BrowserRouter>
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/invite/:code" element={<InvitePage />} />
+            <Route path="/sign-in" element={<SignedOutOnly page={<SignInPage />} />} />
+            <Route path="/sign-up" element={<SignedOutOnly page={<SignUpPage />} />} />
+            <Route path="/*" element={<Home />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }
 
@@ -59,15 +73,21 @@ function Home() {
   if (account.kind === "client") return <PortalPage portal={account.portals[0]!} email={email} />;
   const items = navFor(account.workspace.role);
   return (
-    <Routes>
-      <Route element={<AppShell workspace={account.workspace} email={email} />}>
-        <Route index element={<Navigate to="today" replace />} />
-        {items.map((item) => (
-          <Route key={item.path} path={item.path} element={<ComingSoon title={item.label} />} />
-        ))}
-        <Route path="*" element={<Navigate to="today" replace />} />
-      </Route>
-    </Routes>
+    <WorkspaceProvider workspace={account.workspace}>
+      <Routes>
+        <Route element={<AppShell workspace={account.workspace} email={email} />}>
+          <Route index element={<Navigate to="/today" replace />} />
+          {items.map((item) => (
+            <Route
+              key={item.path}
+              path={item.path}
+              element={SCREENS[item.path]?.() ?? <ComingSoon title={item.label} />}
+            />
+          ))}
+          <Route path="*" element={<Navigate to="/today" replace />} />
+        </Route>
+      </Routes>
+    </WorkspaceProvider>
   );
 }
 
