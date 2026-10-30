@@ -19,7 +19,7 @@ export function AppShell({ workspace, email }: { workspace: Workspace; email: st
         <p className="logo">gecko.]</p>
         <nav aria-label="Main">
           {navFor(workspace.role).map((item) => (
-            <NavLink key={item.path} to={item.path} className="nav-item">
+            <NavLink key={item.path} to={`/${item.path}`} className="nav-item">
               {item.label}
             </NavLink>
           ))}

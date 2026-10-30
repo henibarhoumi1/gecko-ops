@@ -11,6 +11,6 @@ $P -c "create database t" && $P -d t -c 'alter database t set search_path = "$us
 $P -d t -f "$HERE/supabase_stub.sql"
 for f in "$HERE"/../../migrations/*.sql; do $P -d t -f "$f" 2>&1 | grep -v NOTICE || true; done
 $P -d t -c "create extension if not exists pgtap with schema extensions"
-OUT=$(psql -h "$D" -p 5439 -U postgres -X -d t -f "$HERE/../phase0.test.sql" 2>&1)
+OUT=$(for t in "$HERE"/../*.test.sql; do psql -h "$D" -p 5439 -U postgres -X -d t -f "$t" 2>&1; done)
 echo "$OUT" | grep -E "^\s*(not )?ok [0-9]|^\s*# "
 echo "$OUT" | grep -qE "not ok|ERROR" && exit 1 || echo "all database tests passed"

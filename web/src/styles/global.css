@@ -255,7 +255,7 @@ a {
 
 @media (max-width: 720px) {
   .shell {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .side {
@@ -267,4 +267,151 @@ a {
     grid-auto-flow: column;
     overflow-x: auto;
   }
+}
+
+/* Shared bits */
+h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.small {
+  font-size: 13px;
+}
+
+.field select {
+  font: inherit;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--white);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.count {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.tag {
+  justify-self: start;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--yellow);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.page.wide {
+  max-width: none;
+}
+
+.page-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.page-head p {
+  margin: 0;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.tab {
+  font: inherit;
+  cursor: pointer;
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--white);
+}
+
+.tab[aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--white);
+}
+
+.tab[aria-pressed="true"] .count {
+  color: inherit;
+}
+
+/* Pipeline */
+.board {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(220px, 1fr));
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.column {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--pink-soft);
+}
+
+.column h2 {
+  font-size: 14px;
+}
+
+.lead {
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--ink);
+}
+
+.lead:hover {
+  border-color: var(--ink);
+}
+
+.lead-unsafe {
+  border-left: 4px solid var(--yellow);
+}
+
+.late {
+  color: #a3261b;
+  font-weight: 600;
+}
+
+.dialog {
+  width: min(100% - 32px, 560px);
+  padding: 24px;
+  border: 0;
+  border-radius: 20px;
+}
+
+.dialog::backdrop {
+  background: rgba(0, 0, 0, 0.35);
 }

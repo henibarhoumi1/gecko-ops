@@ -23,7 +23,7 @@ Point the domain (e.g. ops.gecko.tn) at Vercel or GitHub Pages from the host's D
 5. Redeploy. Open the site, sign up, create the workspace. You are its founder.
 6. Team > Settings > Data > Restore a backup, to bring records over from the claude.ai app. Then invite people from Team.
 
-Already ran an older `setup.sql`? Run `supabase/update-2026-10-26-client-logins.sql` once as well, then `supabase/update-2026-10-29-onboarding.sql`.
+Already ran an older `setup.sql`? Run `supabase/update-2026-10-26-client-logins.sql` once as well, then `supabase/update-2026-10-29-onboarding.sql`, then `supabase/update-2026-10-30-leads.sql`.
 
 ## Who signs in
 - Founder: the first account creates the Gecko workspace. Only one workspace can exist, so nobody else can make their own.
