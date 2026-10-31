@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { Button } from "@/components/Button";
+import { Logo } from "@/components/Logo";
 import type { Workspace } from "@/features/auth/account";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { ROLE_LABEL } from "@/features/workspace/members";
@@ -10,7 +11,7 @@ export function AppShell({ workspace, email }: { workspace: Workspace; email: st
   return (
     <div className="shell">
       <aside className="side">
-        <p className="logo">gecko.]</p>
+        <Logo />
         <nav aria-label="Main">
           {navFor(workspace.role).map((item) => (
             <NavLink key={item.path} to={`/${item.path}`} className="nav-item">

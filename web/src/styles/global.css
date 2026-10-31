@@ -1,3 +1,37 @@
+/* Gecko's look, shared with the website (gecko-site src/styles/brand.css): white paper, black ink, a pink marker,
+   yellow tape and the green cutting mat. One type family, Inter, self-hosted so every screen shows the same letters.
+   Cards and inputs have a black edge; separators are lighter hairlines. Buttons are pills. */
+@font-face {
+  font-family: "Gecko Sans";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/inter-latin.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Gecko Sans";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/inter-latin-ext.woff2") format("woff2");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1D00-1DBF, U+1E00-1E9F,
+    U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Gecko Fallback";
+  src: local("Arial"), local("Helvetica Neue"), local("Roboto");
+  size-adjust: 107.1%;
+  ascent-override: 90.4%;
+  descent-override: 22.5%;
+  line-gap-override: 0%;
+}
+
 :root {
   --white: #ffffff;
   --ink: #000000;
@@ -8,9 +42,14 @@
   --yellow: #f3df9e;
   --yellow-soft: #faf0cf;
   --mat: #2e6b4e;
-  --line: rgba(0, 0, 0, 0.14);
+  --mat-deep: #1f4d37;
+  --mat-minor: rgba(255, 255, 255, 0.07);
+  --mat-major: rgba(255, 255, 255, 0.17);
+  --line: rgba(0, 0, 0, 0.12);
+  --edge: var(--ink);
   --radius: 14px;
-  --font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --font: "Gecko Sans", "Gecko Fallback", "Helvetica Neue", Helvetica, Arial, sans-serif;
   color-scheme: light;
 }
 
@@ -23,14 +62,21 @@ body {
   background: var(--white);
   color: var(--ink);
   font: 15px/1.5 var(--font);
+  font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--pink);
+  color: var(--ink);
 }
 
 h1 {
   margin: 0 0 8px;
-  font-size: 28px;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
   text-wrap: balance;
 }
 
@@ -52,20 +98,80 @@ a {
   text-align: center;
 }
 
+/* Small labels above a title: bold, sentence case, like on the website. */
 .eyebrow {
-  margin: 0 0 4px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--ink-2);
 }
 
+/* The wordmark, drawn from the website's logo. */
 .logo {
+  display: block;
+  width: 64px;
   margin: 0 0 24px;
-  font-weight: 700;
-  font-size: 20px;
-  letter-spacing: -0.03em;
+  line-height: 0;
+  color: var(--ink);
+}
+
+.logo svg {
+  width: 100%;
+  height: auto;
+}
+
+/* The pink marker under the words that matter. */
+.hl {
+  padding-inline: 0.04em;
+  margin-inline: -0.04em;
+  background: linear-gradient(var(--pink), var(--pink)) 0 86% / 100% 34% no-repeat;
+}
+
+/* Yellow tape: holds things down and labels them, with slightly torn ends. Used instead of badges. */
+.tape {
+  display: inline-block;
+  padding: 0.45em 0.85em 0.4em;
+  background: var(--yellow);
+  color: var(--ink);
+  font: 700 12px/1.1 var(--font);
+  white-space: nowrap;
+  clip-path: polygon(
+    0 6%,
+    3% 0,
+    6% 8%,
+    9% 1%,
+    91% 0,
+    94% 7%,
+    97% 1%,
+    100% 6%,
+    100% 94%,
+    97% 100%,
+    94% 92%,
+    91% 99%,
+    9% 100%,
+    6% 93%,
+    3% 100%,
+    0 94%
+  );
+  transform: rotate(-1.6deg);
+}
+
+/* The green cutting mat: a fine grid, a bolder one every 5 squares. */
+.mat {
+  color: var(--white);
+  background-color: var(--mat);
+  background-image:
+    linear-gradient(var(--mat-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mat-major) 1px, transparent 1px),
+    linear-gradient(var(--mat-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mat-minor) 1px, transparent 1px);
+  background-size:
+    120px 120px,
+    120px 120px,
+    24px 24px,
+    24px 24px;
+  background-position: -1px -1px;
 }
 
 .stack {
@@ -81,24 +187,48 @@ a {
 
 .field label {
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 700;
+  color: var(--ink-2);
 }
 
 .field input {
   font: inherit;
-  padding: 11px 12px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--edge);
+  border-radius: 12px;
   background: var(--white);
 }
 
+/* Inputs look and react like the website's brief form: a black edge, a soft ring on focus. */
+.field input:focus,
+.field select:focus,
+.field textarea:focus,
+.ob-f input:focus,
+.ob-f textarea:focus,
+.ob-f select:focus,
+.ob-asset select:focus,
+.milestone input:focus,
+.chip-other:focus {
+  outline: none;
+  border-color: var(--ink);
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.06);
+}
+
+/* Buttons are pills, like on the website: black for the main action, an ink outline for the rest. */
 .btn {
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 14.5px;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
   cursor: pointer;
-  border-radius: 12px;
-  padding: 12px 18px;
-  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  padding: 12px 20px;
+  border: 1px solid var(--ink);
+  transition:
+    background 200ms var(--ease),
+    color 200ms var(--ease),
+    border-color 200ms var(--ease);
 }
 
 .btn:disabled {
@@ -111,14 +241,27 @@ a {
   color: var(--white);
 }
 
+.btn-primary:hover:not(:disabled) {
+  background: var(--pink);
+  border-color: var(--pink);
+  color: var(--ink);
+}
+
 .btn-secondary {
   background: var(--white);
   color: var(--ink);
 }
 
+.btn-secondary:hover:not(:disabled) {
+  background: var(--ink);
+  color: var(--white);
+}
+
 .btn-link {
   border: 0;
+  border-radius: 0;
   padding: 0;
+  font-weight: 600;
   background: none;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -145,14 +288,29 @@ a {
   place-items: center;
   padding-block: 32px;
   padding-inline: max(16px, env(safe-area-inset-left, 0px));
-  background: var(--pink);
+  color: var(--white);
+  background-color: var(--mat);
+  background-image:
+    linear-gradient(var(--mat-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mat-major) 1px, transparent 1px),
+    linear-gradient(var(--mat-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mat-minor) 1px, transparent 1px);
+  background-size:
+    120px 120px,
+    120px 120px,
+    24px 24px,
+    24px 24px;
+  background-position: -1px -1px;
 }
 
+/* The sign-in card sits on the cutting mat like a sheet of paper. */
 .auth-card {
   width: min(100%, 420px);
   padding: 32px;
+  color: var(--ink);
   background: var(--white);
-  border-radius: 20px;
+  border: 1px solid var(--ink);
+  border-radius: 18px;
 }
 
 .first-time {
@@ -181,16 +339,21 @@ a {
   border-right: 1px solid var(--line);
 }
 
+.side .logo {
+  margin: 2px 14px 22px;
+}
+
 .side nav {
   display: grid;
   gap: 2px;
 }
 
 .nav-item {
-  padding: 9px 12px;
-  border-radius: 10px;
+  padding: 9px 14px;
+  border-radius: 999px;
   text-decoration: none;
   color: var(--ink-2);
+  font-weight: 500;
 }
 
 .nav-item:hover {
@@ -249,7 +412,7 @@ a {
 
 .card {
   padding: 16px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--edge);
   border-radius: var(--radius);
 }
 
@@ -272,7 +435,10 @@ a {
 /* Shared bits */
 h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
 }
 
 .small {
@@ -281,9 +447,9 @@ h2 {
 
 .field select {
   font: inherit;
-  padding: 11px 12px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--edge);
+  border-radius: 12px;
   background: var(--white);
 }
 
@@ -304,13 +470,33 @@ h2 {
   color: var(--muted);
 }
 
+/* Format labels are yellow tape, like on the website. */
 .tag {
   justify-self: start;
-  padding: 2px 8px;
-  border-radius: 999px;
+  padding: 0.4em 0.8em 0.35em;
+  border-radius: 0;
   background: var(--yellow);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
+  clip-path: polygon(
+    0 6%,
+    4% 0,
+    8% 8%,
+    12% 1%,
+    88% 0,
+    92% 7%,
+    96% 1%,
+    100% 6%,
+    100% 94%,
+    96% 100%,
+    92% 92%,
+    88% 99%,
+    12% 100%,
+    8% 93%,
+    4% 100%,
+    0 94%
+  );
+  transform: rotate(-1.6deg);
 }
 
 .page.wide {
@@ -408,8 +594,8 @@ h2 {
 .dialog {
   width: min(100% - 32px, 560px);
   padding: 24px;
-  border: 0;
-  border-radius: 20px;
+  border: 1px solid var(--ink);
+  border-radius: 18px;
 }
 
 .dialog::backdrop {
@@ -425,9 +611,9 @@ h2 {
 .milestone input,
 .chip-other {
   font: inherit;
-  padding: 11px 12px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--edge);
+  border-radius: 12px;
   background: var(--white);
   color: var(--ink);
   width: 100%;
@@ -457,14 +643,15 @@ h2 {
   line-height: 1;
   width: 36px;
   height: 36px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
   background: var(--white);
   cursor: pointer;
 }
 
 .icon-btn:hover {
-  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--white);
 }
 
 a.btn {
@@ -514,6 +701,7 @@ a.btn {
 }
 
 .portal-bar .logo {
+  width: 58px;
   margin: 0;
 }
 
@@ -537,7 +725,8 @@ a.btn {
 }
 
 .portal-page h1 {
-  font-size: clamp(30px, 6vw, 44px);
+  font-size: clamp(36px, 7vw, 64px);
+  line-height: 0.98;
 }
 
 .portal-tabs {
