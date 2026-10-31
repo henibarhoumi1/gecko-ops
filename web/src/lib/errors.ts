@@ -34,7 +34,7 @@ const MESSAGES: [RegExp, string][] = [
   ],
   [/bad_upload|bad_part/, "The upload didn't go through. Try again."],
   [
-    /missing_stream_token|missing_link_secret|missing_watermark/,
+    /missing_stream_token|missing_link_secret|missing_watermark|missing_finals_bucket/,
     "Video storage isn't set up yet. Gecko needs to finish the Cloudflare setup.",
   ],
   [/stream_error|server_error|no_api/, "The video service didn't answer. Try again in a minute."],

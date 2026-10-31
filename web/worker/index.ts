@@ -13,7 +13,7 @@ import {
   verifyLink,
   type VideoAction,
 } from "./lib";
-import type { Access, Env, R2UploadedPart } from "./types";
+import type { Access, Env, R2Bucket, R2UploadedPart } from "./types";
 
 const PART_SIZE = 50 * 1024 * 1024; // must match web/src/features/videos/media.ts
 const WATCH_LINK_SECONDS = 2 * 60 * 60;
@@ -143,7 +143,7 @@ const handlers: Record<VideoAction, Handler> = {
     const body = (await request.json().catch(() => ({}))) as { name?: string; type?: string };
     const name = String(body.name ?? "final").slice(0, 200);
     const key = `${finalPrefix(access)}${Date.now()}-${safeName(name)}`;
-    const upload = await env.FINALS.createMultipartUpload(key, {
+    const upload = await bucket(env).createMultipartUpload(key, {
       httpMetadata: { contentType: String(body.type || "application/octet-stream").slice(0, 100) },
       customMetadata: { name },
     });
@@ -158,10 +158,9 @@ const handlers: Record<VideoAction, Handler> = {
       throw new HttpError(400, "bad_part");
     const length = Number(request.headers.get("content-length"));
     if (!request.body || !length || length > PART_SIZE) throw new HttpError(400, "bad_part");
-    const part = await env.FINALS.resumeMultipartUpload(key, uploadId).uploadPart(
-      partNumber,
-      request.body,
-    );
+    const part = await bucket(env)
+      .resumeMultipartUpload(key, uploadId)
+      .uploadPart(partNumber, request.body);
     return json(part);
   },
 
@@ -182,7 +181,7 @@ const handlers: Record<VideoAction, Handler> = {
       (p) => Number.isInteger(p.partNumber) && typeof p.etag === "string",
     );
     if (parts.length === 0) throw new HttpError(400, "bad_parts");
-    const object = await env.FINALS.resumeMultipartUpload(key, uploadId).complete(parts);
+    const object = await bucket(env).resumeMultipartUpload(key, uploadId).complete(parts);
     const name = String(object.customMetadata?.name ?? body.name ?? "final").slice(0, 200);
     try {
       await updateVideo(request, env, access.videoId, {
@@ -205,7 +204,7 @@ const handlers: Record<VideoAction, Handler> = {
       new URLSearchParams({ key: body.key ?? "", uploadId: body.uploadId ?? "" }),
       access,
     );
-    await env.FINALS.resumeMultipartUpload(key, uploadId).abort();
+    await bucket(env).resumeMultipartUpload(key, uploadId).abort();
     return json({ aborted: true });
   },
 };
@@ -215,7 +214,7 @@ async function download(env: Env, url: URL): Promise<Response> {
   const secret = needSecret(env.LINK_SECRET, "LINK_SECRET");
   const claims = await verifyLink(url.searchParams.get("t") ?? "", secret);
   if (!claims) throw new HttpError(403, "link_expired");
-  const object = await env.FINALS.get(claims.k);
+  const object = await bucket(env).get(claims.k);
   if (!object) throw new HttpError(404, "not_found");
   return new Response(object.body, {
     headers: {
@@ -285,11 +284,17 @@ async function dropPreview(env: Env, uid: string): Promise<void> {
 }
 
 async function dropFinal(env: Env, key: string): Promise<void> {
+  if (!env.FINALS) return;
   await env.FINALS.delete(key).catch((error: unknown) => console.error("r2 delete", key, error));
 }
 
 function needUpload(access: Access): void {
   if (!access.canUpload) throw new HttpError(403, "forbidden");
+}
+
+function bucket(env: Env): R2Bucket {
+  if (!env.FINALS) throw new HttpError(503, "missing_finals_bucket");
+  return env.FINALS;
 }
 
 function needSecret(value: string | undefined, name: string): string {

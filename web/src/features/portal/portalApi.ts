@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ClientPortal } from "@/features/auth/account";
 import type { Concept, NoteKind } from "@/features/concepts/model";
 import type { Video } from "@/features/videos/model";
+import { videosOn } from "@/lib/features";
 import { requireSupabase } from "@/lib/supabase";
 
 export interface Milestone {
@@ -153,6 +154,7 @@ const videosKey = (portal: ClientPortal) => ["portal-videos", portal.workspaceId
 export function useMyVideos(portal: ClientPortal) {
   return useQuery({
     queryKey: videosKey(portal),
+    enabled: videosOn,
     queryFn: async (): Promise<MyVideos> => {
       const { data, error } = await requireSupabase().rpc("get_my_videos", {
         p_workspace_id: portal.workspaceId,
