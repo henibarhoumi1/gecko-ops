@@ -10,8 +10,8 @@ import { ClientPage } from "@/features/clients/ClientPage";
 import { ClientsPage } from "@/features/clients/ClientsPage";
 import { PipelinePage } from "@/features/pipeline/PipelinePage";
 import { PortalPage } from "@/features/portal/PortalPage";
+import { TeamPage } from "@/features/team/TeamPage";
 import { AppShell } from "@/features/shell/AppShell";
-import { ComingSoon } from "@/features/shell/ComingSoon";
 import { navFor } from "@/features/shell/nav";
 import { WorkspaceProvider } from "@/features/workspace/WorkspaceContext";
 import { supabase } from "@/lib/supabase";
@@ -20,7 +20,7 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: true } },
 });
 
-/** Screens that have been rebuilt; every other section shows a placeholder for now. */
+/** One screen per section in the sidebar (see nav.ts). */
 const SCREENS: Record<string, () => ReactElement> = {
   pipeline: () => <PipelinePage />,
   clients: () => (
@@ -29,6 +29,7 @@ const SCREENS: Record<string, () => ReactElement> = {
       <Route path=":clientId/*" element={<ClientPage />} />
     </Routes>
   ),
+  team: () => <TeamPage />,
 };
 
 export function App() {
@@ -79,20 +80,15 @@ function Home() {
   const { account } = state;
   if (account.kind === "none") return <JoinPage />;
   if (account.kind === "client") return <PortalPage portal={account.portals[0]!} email={email} />;
-  const items = navFor(account.workspace.role);
-  // Land on the first section that has been rebuilt, so nobody starts on a placeholder.
-  const home = `/${items.find((item) => SCREENS[item.path])?.path ?? "today"}`;
+  const items = navFor(account.workspace.role).filter((item) => SCREENS[item.path]);
+  const home = `/${items[0]?.path ?? "team"}`;
   return (
     <WorkspaceProvider workspace={account.workspace}>
       <Routes>
         <Route element={<AppShell workspace={account.workspace} email={email} />}>
           <Route index element={<Navigate to={home} replace />} />
           {items.map((item) => (
-            <Route
-              key={item.path}
-              path={`${item.path}/*`}
-              element={SCREENS[item.path]?.() ?? <ComingSoon title={item.label} />}
-            />
+            <Route key={item.path} path={`${item.path}/*`} element={SCREENS[item.path]!()} />
           ))}
           <Route path="*" element={<Navigate to={home} replace />} />
         </Route>

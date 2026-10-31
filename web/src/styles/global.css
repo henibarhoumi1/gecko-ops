@@ -1282,3 +1282,51 @@ a.btn {
     align-items: flex-start;
   }
 }
+
+/* Team */
+.team-page h2 {
+  margin: 28px 0 12px;
+}
+
+.team-invite {
+  display: grid;
+  gap: 14px;
+}
+
+.invite.invite-role {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 230px) auto;
+  max-width: 780px;
+}
+
+.invite-role select {
+  width: 100%;
+  min-width: 0;
+}
+
+.member {
+  display: grid;
+  gap: 12px;
+}
+
+.client-access {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  margin: 0;
+  padding: 12px 0 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+.client-access legend {
+  float: left;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 2px;
+}
+
+@media (max-width: 560px) {
+  .invite.invite-role {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

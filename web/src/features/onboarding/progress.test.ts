@@ -4,7 +4,7 @@ import { QUESTIONS } from "./questions";
 const q = (id: string) => QUESTIONS.find((x) => x.id === id)!;
 
 describe("onboarding progress", () => {
-  it("has the 64 questions of the current app", () => {
+  it("has all 64 questions", () => {
     expect(QUESTIONS).toHaveLength(64);
   });
 

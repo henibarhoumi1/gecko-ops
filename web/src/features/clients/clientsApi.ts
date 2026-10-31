@@ -9,6 +9,7 @@ import {
 } from "@/features/concepts/model";
 import type { Milestone } from "@/features/portal/portalApi";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
+import { inviteLink } from "@/lib/hosts";
 import { requireSupabase } from "@/lib/supabase";
 
 export interface ClientRow {
@@ -37,7 +38,7 @@ export function newClientId(): string {
   return "c" + crypto.randomUUID().replace(/-/g, "").slice(0, 12);
 }
 
-/** Adds a client through the same call the current app uses, so both apps see it. */
+/** Adds a client. The database's record call checks the role and fills the clients table. */
 export function useAddClient() {
   const { id: workspaceId } = useWorkspace();
   const queryClient = useQueryClient();
@@ -284,7 +285,7 @@ export function useInviteClient(clientId: string) {
         p_email: email,
       });
       if (error) throw error;
-      return `${window.location.origin}/invite/${String(data)}`;
+      return inviteLink("client", String(data));
     },
     onSettled: () =>
       queryClient.invalidateQueries({ queryKey: ["client-accounts", workspaceId, clientId] }),

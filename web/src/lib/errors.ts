@@ -3,7 +3,7 @@ const MESSAGES: [RegExp, string][] = [
   [/email not confirmed/i, "Confirm your email first. Check your inbox for the link."],
   [/user already registered/i, "This email already has an account. Sign in instead."],
   [/password should be at least/i, "Use a password of at least 8 characters."],
-  [/invalid api key/i, "The app's Supabase key is wrong. Check the anon key in Vercel."],
+  [/invalid api key/i, "The app's Supabase key is wrong. Check the anon key in Cloudflare."],
   [/workspace_exists/, "Gecko is already set up. Ask the founder for an invite link."],
   [
     /invalid_invite/,
@@ -23,6 +23,8 @@ const MESSAGES: [RegExp, string][] = [
     /violates check constraint/,
     "Something in this form is too long or not valid. Check it and try again.",
   ],
+  [/member_not_found/, "That person isn't on the team anymore. Refresh the page."],
+  [/invalid_assignee/, "Only editors can be given clients."],
   [/forbidden/, "You don't have access to do that."],
   [/failed to fetch|network/i, "Can't reach the server. Check your connection."],
 ];

@@ -1,6 +1,6 @@
 /**
- * The onboarding sheet: everything Gecko needs before pre-production. Ported as-is from the current app
- * (src/modules/clients_onboarding.js), so both apps read and write the same answers in client_onboarding.
+ * The onboarding sheet: everything Gecko needs before pre-production. The client and the team fill
+ * the same answers, stored in client_onboarding.
  * Text is [English, French]. Picked options are stored by their English label.
  *
  * How answers are stored, by field type:
