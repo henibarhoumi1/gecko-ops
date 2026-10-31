@@ -1,69 +1,85 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
+import { NavLink, Navigate, Route, Routes } from "react-router-dom";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import type { ClientPortal } from "@/features/auth/account";
 import { useAuth } from "@/features/auth/AuthProvider";
+import { countByStatus } from "@/features/concepts/model";
+import { OnboardingForm } from "@/features/onboarding/OnboardingForm";
 import { friendlyError } from "@/lib/errors";
-import { requireSupabase } from "@/lib/supabase";
-import { loadPortal, type PortalSnapshot } from "./portalApi";
+import { ConceptsTab } from "./ConceptsTab";
+import { OverviewTab } from "./OverviewTab";
+import { useMyPortal } from "./portalApi";
 
-type Load =
-  | { status: "loading" }
-  | { status: "ready"; snapshot: PortalSnapshot | null }
-  | { status: "error"; message: string };
-
-/** What a client sees: only their own published page. No agency screens are reachable from here. */
+/** What a client sees: their campaign, their onboarding and the concepts to approve. Nothing else. */
 export function PortalPage({ portal, email }: { portal: ClientPortal; email: string }) {
   const { signOut } = useAuth();
-  const [load, setLoad] = useState<Load>({ status: "loading" });
-
-  useEffect(() => {
-    let live = true;
-    loadPortal(requireSupabase(), portal).then(
-      (snapshot) => live && setLoad({ status: "ready", snapshot }),
-      (error) => live && setLoad({ status: "error", message: friendlyError(error) }),
-    );
-    return () => {
-      live = false;
-    };
-  }, [portal]);
+  const page = useMyPortal(portal);
+  const target = useMemo(
+    () => ({ workspaceId: portal.workspaceId, clientId: portal.clientId }),
+    [portal.workspaceId, portal.clientId],
+  );
+  const waiting = page.data ? countByStatus(page.data.concepts).review : 0;
+  const brand = page.data?.brand ?? portal.brand;
 
   return (
     <div className="portal">
       <header className="portal-bar">
-        <span>Signed in as {email}</span>
-        <Button variant="link" onClick={() => void signOut()}>
-          Sign out
-        </Button>
+        <span className="logo">gecko.]</span>
+        <span className="portal-who small">
+          <span className="muted">{email}</span>
+          <Button variant="link" onClick={() => void signOut()}>
+            Sign out
+          </Button>
+        </span>
       </header>
-      <main className="page">
-        <p className="eyebrow">{portal.brand}</p>
-        {load.status === "loading" && <p className="muted">Loading your page…</p>}
-        {load.status === "error" && <Notice tone="error">{load.message}</Notice>}
-        {load.status === "ready" && !load.snapshot && (
-          <p className="muted">
-            Your Gecko page isn't published yet. You'll see it here as soon as it is.
-          </p>
+      <main className="page portal-page">
+        <p className="eyebrow">Client portal</p>
+        <h1>{brand}</h1>
+        <nav className="portal-tabs" aria-label="Portal">
+          <NavLink to="/" end className="portal-tab">
+            Overview
+          </NavLink>
+          <NavLink to="/onboarding" className="portal-tab">
+            Onboarding
+          </NavLink>
+          <NavLink to="/concepts" className="portal-tab">
+            Concepts
+            {waiting > 0 && <span className="badge">{waiting}</span>}
+          </NavLink>
+        </nav>
+        {page.isPending && <p className="muted">Loading your portal…</p>}
+        {page.isError && <Notice tone="error">{friendlyError(page.error)}</Notice>}
+        {page.data && (
+          <Routes>
+            <Route index element={<OverviewTab data={page.data} target={target} />} />
+            <Route
+              path="onboarding"
+              element={
+                <section className="tab-body">
+                  <p className="lede">
+                    Everything we need before pre-production. It saves as you type, so you can stop
+                    and come back. Skip anything you're not sure about.
+                  </p>
+                  <OnboardingForm target={target} brand={brand} mode="client" />
+                </section>
+              }
+            />
+            <Route
+              path="concepts"
+              element={<ConceptsTab portal={portal} concepts={page.data.concepts} />}
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
         )}
-        {load.status === "ready" && load.snapshot && <PortalContent snapshot={load.snapshot} />}
       </main>
+      <footer className="portal-foot small muted">
+        Questions? Message Gecko on{" "}
+        <a href="https://wa.me/21626191555" target="_blank" rel="noreferrer noopener">
+          WhatsApp
+        </a>
+        .
+      </footer>
     </div>
-  );
-}
-
-function PortalContent({ snapshot }: { snapshot: PortalSnapshot }) {
-  return (
-    <>
-      <h1>{snapshot.title || snapshot.brand?.name || "Your projects"}</h1>
-      <ul className="list">
-        {(snapshot.projects ?? []).map((project) => (
-          <li key={project.id} className="card">
-            <strong>{project.name}</strong>
-            {project.stage && <span className="muted"> · {project.stage}</span>}
-          </li>
-        ))}
-      </ul>
-      {snapshot.company?.email && <p className="muted">Questions? {snapshot.company.email}</p>}
-    </>
   );
 }

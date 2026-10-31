@@ -1,0 +1,10 @@
+// Cloudflare Workers: serves the built app from dist/. Every path falls back to index.html so the app's
+// own routes (/clients, /invite/…) work on reload. Security headers live in public/_headers.
+{
+  "name": "gecko-app",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application",
+  },
+}

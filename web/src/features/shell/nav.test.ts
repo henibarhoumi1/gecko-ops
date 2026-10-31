@@ -20,7 +20,7 @@ describe("navFor", () => {
       expect(paths(role)).not.toContain("money");
   });
 
-  it("keeps editors to their own work", () => {
-    expect(paths("editor")).toEqual(["today", "projects", "calendar"]);
+  it("keeps editors to their own work, plus the concepts of clients they are on", () => {
+    expect(paths("editor")).toEqual(["today", "clients", "projects", "calendar"]);
   });
 });

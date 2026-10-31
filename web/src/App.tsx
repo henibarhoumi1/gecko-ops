@@ -6,6 +6,8 @@ import { InvitePage } from "@/features/auth/InvitePage";
 import { JoinPage } from "@/features/auth/JoinPage";
 import { SignInPage } from "@/features/auth/SignInPage";
 import { SignUpPage } from "@/features/auth/SignUpPage";
+import { ClientPage } from "@/features/clients/ClientPage";
+import { ClientsPage } from "@/features/clients/ClientsPage";
 import { PipelinePage } from "@/features/pipeline/PipelinePage";
 import { PortalPage } from "@/features/portal/PortalPage";
 import { AppShell } from "@/features/shell/AppShell";
@@ -21,6 +23,12 @@ const queryClient = new QueryClient({
 /** Screens that have been rebuilt; every other section shows a placeholder for now. */
 const SCREENS: Record<string, () => ReactElement> = {
   pipeline: () => <PipelinePage />,
+  clients: () => (
+    <Routes>
+      <Route index element={<ClientsPage />} />
+      <Route path=":clientId/*" element={<ClientPage />} />
+    </Routes>
+  ),
 };
 
 export function App() {
@@ -72,19 +80,21 @@ function Home() {
   if (account.kind === "none") return <JoinPage />;
   if (account.kind === "client") return <PortalPage portal={account.portals[0]!} email={email} />;
   const items = navFor(account.workspace.role);
+  // Land on the first section that has been rebuilt, so nobody starts on a placeholder.
+  const home = `/${items.find((item) => SCREENS[item.path])?.path ?? "today"}`;
   return (
     <WorkspaceProvider workspace={account.workspace}>
       <Routes>
         <Route element={<AppShell workspace={account.workspace} email={email} />}>
-          <Route index element={<Navigate to="/today" replace />} />
+          <Route index element={<Navigate to={home} replace />} />
           {items.map((item) => (
             <Route
               key={item.path}
-              path={item.path}
+              path={`${item.path}/*`}
               element={SCREENS[item.path]?.() ?? <ComingSoon title={item.label} />}
             />
           ))}
-          <Route path="*" element={<Navigate to="/today" replace />} />
+          <Route path="*" element={<Navigate to={home} replace />} />
         </Route>
       </Routes>
     </WorkspaceProvider>

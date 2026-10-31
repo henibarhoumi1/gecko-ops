@@ -12,7 +12,7 @@ const ALL: readonly Role[] = ["founder", "sales", "editor", "assistant"];
 export const NAV: readonly NavItem[] = [
   { path: "today", label: "Today", roles: ALL },
   { path: "pipeline", label: "Pipeline", roles: ["founder", "sales"] },
-  { path: "clients", label: "Clients", roles: ["founder", "sales"] },
+  { path: "clients", label: "Clients", roles: ["founder", "sales", "editor"] },
   { path: "projects", label: "Projects", roles: ALL },
   { path: "calendar", label: "Calendar", roles: ALL },
   { path: "money", label: "Money", roles: ["founder"] },
