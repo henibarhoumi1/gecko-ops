@@ -9,7 +9,9 @@ One Supabase project holds the data and the logins. One Cloudflare account holds
 4. Authentication > Emails > SMTP Settings: turn on custom SMTP. Supabase's built-in sender only emails the project's own team, so clients would never get their confirmation email without it. Use Resend (free tier) or Google Workspace:
    - Resend: add `gecko-creative.com` in Resend, paste its DNS records into Cloudflare, then host `smtp.resend.com`, port 465, user `resend`, password = a Resend API key, sender `contact@gecko-creative.com`.
    - Google Workspace: host `smtp.gmail.com`, port 587, user `heni@gecko-creative.com`, password = an app password (needs 2-step verification on).
-5. Connect (top bar) or Project Settings > API Keys: copy the Project URL and the **anon** key (or the **publishable** key). Never the service_role or secret key.
+   - Until the domain and Workspace exist: the same Gmail settings with your personal Gmail address and an app password for it. Switch the sender to `contact@gecko-creative.com` later.
+5. Authentication > Emails > Templates: paste the two files from `supabase/email-templates/` (Confirm signup, Reset password) so emails look like Gecko.
+6. Connect (top bar) or Project Settings > API Keys: copy the Project URL and the **anon** key (or the **publishable** key). Never the service_role or secret key.
 
 ## 2. The app on Cloudflare (about 10 minutes)
 1. Cloudflare > Workers & Pages > Create > Import a repository > `gecko-ops`.
