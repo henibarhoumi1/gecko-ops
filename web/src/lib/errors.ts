@@ -19,7 +19,26 @@ const MESSAGES: [RegExp, string][] = [
     /concept_changed/,
     "This concept changed while you were reading it. The new version is shown now; have a look and decide again.",
   ],
-  [/client_only/, "Only the client can approve a concept or ask for changes."],
+  [/client_only/, "Only the client can approve or ask for changes."],
+  [
+    /video_changed/,
+    "Gecko uploaded a new cut while you were watching. The new version is shown now; watch it and decide again.",
+  ],
+  [/invalid_video/, "That concept belongs to another client. Pick one of this client's concepts."],
+  [/locked/, "The final file unlocks once the balance is paid."],
+  [/link_expired/, "This download link has expired. Press Download again."],
+  [/no_preview/, "There's no cut to watch yet."],
+  [
+    /preview_too_big/,
+    "Previews can be up to 200 MB. Export a lighter 1080p version and try again.",
+  ],
+  [/bad_upload|bad_part/, "The upload didn't go through. Try again."],
+  [
+    /missing_stream_token|missing_link_secret|missing_watermark/,
+    "Video storage isn't set up yet. Gecko needs to finish the Cloudflare setup.",
+  ],
+  [/stream_error|server_error|no_api/, "The video service didn't answer. Try again in a minute."],
+  [/sign_in/, "Your session ended. Sign in again."],
   [/invalid_note/, "That message couldn't be sent. Check it isn't empty and try again."],
   [/invalid_idea/, "Give the idea a title, and keep it under 10,000 characters."],
   [/too_many_ideas/, "That's 200 ideas already. Remove some before adding more."],
@@ -31,6 +50,7 @@ const MESSAGES: [RegExp, string][] = [
   [/member_not_found/, "That person isn't on the team anymore. Refresh the page."],
   [/invalid_assignee/, "Only editors can be given clients."],
   [/forbidden/, "You don't have access to do that."],
+  [/http_404|not_found/, "That video isn't there anymore. Refresh the page."],
   [/failed to fetch|network/i, "Can't reach the server. Check your connection."],
 ];
 

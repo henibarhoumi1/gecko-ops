@@ -10,6 +10,9 @@ export const supabase: SupabaseClient | null = config
     })
   : null;
 
+/** The public anon key, sent with calls to the app's own worker so it can ask the database as you. */
+export const anonKey: string = config?.anonKey ?? "";
+
 export function requireSupabase(): SupabaseClient {
   if (!supabase) throw new Error("This build is not connected to Supabase.");
   return supabase;

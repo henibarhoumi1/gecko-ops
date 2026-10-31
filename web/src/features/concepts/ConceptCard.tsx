@@ -59,30 +59,34 @@ export function ConceptCard({
         {concept.approvedAt &&
           ` · Approved by ${concept.approvedBy ?? "the client"} on ${shortDate(concept.approvedAt)}`}
       </p>
-      {concept.notes.length > 0 && (
-        <ol className="notes" aria-label="Conversation">
-          {concept.notes.map((note) => (
-            <li
-              key={note.id}
-              className={`note note-${note.kind}${note.fromClient ? " from-client" : ""}`}
-            >
-              <p className="small">
-                <strong>{note.authorName || (note.fromClient ? "Client" : "Gecko")}</strong>
-                {NOTE_LABEL[note.kind] && (
-                  <span className="note-kind">{NOTE_LABEL[note.kind]}</span>
-                )}
-                <span className="muted">
-                  {" "}
-                  · {shortDate(note.createdAt)}
-                  {note.kind !== "comment" ? ` · version ${note.version}` : ""}
-                </span>
-              </p>
-              {note.body && <p className="note-body">{note.body}</p>}
-            </li>
-          ))}
-        </ol>
-      )}
+      <NoteList notes={concept.notes} />
       {children}
     </article>
+  );
+}
+
+/** The conversation under a concept or a video, oldest first. */
+export function NoteList({ notes }: { notes: ConceptNote[] }) {
+  if (notes.length === 0) return null;
+  return (
+    <ol className="notes" aria-label="Conversation">
+      {notes.map((note) => (
+        <li
+          key={note.id}
+          className={`note note-${note.kind}${note.fromClient ? " from-client" : ""}`}
+        >
+          <p className="small">
+            <strong>{note.authorName || (note.fromClient ? "Client" : "Gecko")}</strong>
+            {NOTE_LABEL[note.kind] && <span className="note-kind">{NOTE_LABEL[note.kind]}</span>}
+            <span className="muted">
+              {" "}
+              · {shortDate(note.createdAt)}
+              {note.kind !== "comment" ? ` · version ${note.version}` : ""}
+            </span>
+          </p>
+          {note.body && <p className="note-body">{note.body}</p>}
+        </li>
+      ))}
+    </ol>
   );
 }

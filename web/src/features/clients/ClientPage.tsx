@@ -1,7 +1,9 @@
 import { useMemo } from "react";
 import { Link, NavLink, Navigate, Route, Routes, useParams } from "react-router-dom";
 import { Notice } from "@/components/Notice";
+import { useActiveTabInView } from "@/components/useActiveTabInView";
 import { OnboardingForm } from "@/features/onboarding/OnboardingForm";
+import { TeamVideos } from "@/features/videos/TeamVideos";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { friendlyError } from "@/lib/errors";
 import { useClients } from "./clientsApi";
@@ -14,6 +16,7 @@ export function ClientPage() {
   const { clientId = "" } = useParams();
   const workspace = useWorkspace();
   const clients = useClients();
+  useActiveTabInView(clients.isSuccess);
   const target = useMemo(() => ({ workspaceId: workspace.id, clientId }), [workspace.id, clientId]);
   const lead = workspace.role === "founder" || workspace.role === "sales";
 
@@ -26,10 +29,14 @@ export function ClientPage() {
     ? [
         ["", "Overview"],
         ["concepts", "Concepts"],
+        ["videos", "Videos"],
         ["onboarding", "Onboarding"],
         ["logins", "Client logins"],
       ]
-    : [["concepts", "Concepts"]];
+    : [
+        ["concepts", "Concepts"],
+        ["videos", "Videos"],
+      ];
 
   return (
     <section className="page">
@@ -74,6 +81,7 @@ export function ClientPage() {
           <Route index element={<Navigate to="concepts" replace />} />
         )}
         <Route path="concepts" element={<TeamConcepts clientId={clientId} />} />
+        <Route path="videos" element={<TeamVideos clientId={clientId} />} />
         <Route path="*" element={<Navigate to={`/clients/${clientId}`} replace />} />
       </Routes>
     </section>
