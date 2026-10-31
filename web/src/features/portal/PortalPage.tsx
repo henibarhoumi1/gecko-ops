@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { NavLink, Navigate, Route, Routes } from "react-router-dom";
 import { Button } from "@/components/Button";
+import { Logo } from "@/components/Logo";
 import { Notice } from "@/components/Notice";
 import { useActiveTabInView } from "@/components/useActiveTabInView";
 import type { ClientPortal } from "@/features/auth/account";
@@ -31,7 +32,7 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
   return (
     <div className="portal">
       <header className="portal-bar">
-        <span className="logo">gecko.]</span>
+        <Logo />
         <span className="portal-who small">
           <span className="muted">{email}</span>
           <Button variant="link" onClick={() => void signOut()}>

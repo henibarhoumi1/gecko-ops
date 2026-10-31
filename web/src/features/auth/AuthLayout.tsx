@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Logo } from "@/components/Logo";
 
 export function AuthLayout({
   eyebrow,
@@ -14,7 +15,7 @@ export function AuthLayout({
   return (
     <main className="auth">
       <section className="auth-card">
-        <p className="logo">gecko.]</p>
+        <Logo />
         <p className="eyebrow">{eyebrow}</p>
         <h1>{title}</h1>
         {intro && <p className="muted">{intro}</p>}
