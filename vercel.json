@@ -1,5 +1,0 @@
-{
-  "buildCommand": "python3 build.py",
-  "outputDirectory": "dist/site",
-  "cleanUrls": true
-}

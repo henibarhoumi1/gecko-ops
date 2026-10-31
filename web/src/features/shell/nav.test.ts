@@ -4,23 +4,21 @@ const paths = (role: Parameters<typeof navFor>[0]) => navFor(role).map((n) => n.
 
 describe("navFor", () => {
   it("gives the founder everything", () => {
-    expect(paths("founder")).toEqual([
-      "today",
-      "pipeline",
-      "clients",
-      "projects",
-      "calendar",
-      "money",
-      "team",
-    ]);
+    expect(paths("founder")).toEqual(["pipeline", "clients", "team"]);
   });
 
-  it("never shows money to anyone but the founder", () => {
-    for (const role of ["sales", "editor", "assistant"] as const)
-      expect(paths(role)).not.toContain("money");
+  it("keeps the pipeline to the founder and client leads", () => {
+    for (const role of ["editor", "assistant"] as const)
+      expect(paths(role)).not.toContain("pipeline");
+    expect(paths("sales")).toContain("pipeline");
   });
 
-  it("keeps editors to their own work", () => {
-    expect(paths("editor")).toEqual(["today", "projects", "calendar"]);
+  it("gives editors the clients they are on, and the team list", () => {
+    expect(paths("editor")).toEqual(["clients", "team"]);
+  });
+
+  it("gives everyone a screen to land on", () => {
+    for (const role of ["founder", "sales", "editor", "assistant"] as const)
+      expect(paths(role).length).toBeGreaterThan(0);
   });
 });

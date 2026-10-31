@@ -2,14 +2,8 @@ import { NavLink, Outlet } from "react-router-dom";
 import { Button } from "@/components/Button";
 import type { Workspace } from "@/features/auth/account";
 import { useAuth } from "@/features/auth/AuthProvider";
+import { ROLE_LABEL } from "@/features/workspace/members";
 import { navFor } from "./nav";
-
-const ROLE_LABEL = {
-  founder: "Founder",
-  sales: "Client lead",
-  editor: "Editor",
-  assistant: "Production",
-} as const;
 
 export function AppShell({ workspace, email }: { workspace: Workspace; email: string }) {
   const { signOut } = useAuth();

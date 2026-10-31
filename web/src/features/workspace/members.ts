@@ -7,7 +7,16 @@ export interface Member {
   id: string;
   name: string;
   role: Role;
+  /** Only set on the signed-in person's own row. */
+  userId?: string | null;
 }
+
+export const ROLE_LABEL: Record<Role, string> = {
+  founder: "Founder",
+  sales: "Client lead",
+  editor: "Editor",
+  assistant: "Production",
+};
 
 /** Active team members, for owner pickers and names on cards. */
 export function useMembers() {

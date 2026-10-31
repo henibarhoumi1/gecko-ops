@@ -9,15 +9,16 @@ export function parseInviteCode(input: string): string | null {
 
 export function savePendingInvite(code: string): void {
   try {
-    sessionStorage.setItem(STORAGE_KEY, code);
+    localStorage.setItem(STORAGE_KEY, code);
   } catch {
     // Private mode: the code just isn't remembered across the sign-in step.
+    // localStorage (not sessionStorage) so the code survives the email confirmation opening a new tab.
   }
 }
 
 export function readPendingInvite(): string | null {
   try {
-    return sessionStorage.getItem(STORAGE_KEY);
+    return localStorage.getItem(STORAGE_KEY);
   } catch {
     return null;
   }
@@ -25,7 +26,7 @@ export function readPendingInvite(): string | null {
 
 export function clearPendingInvite(): void {
   try {
-    sessionStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(STORAGE_KEY);
   } catch {
     // Nothing stored.
   }
