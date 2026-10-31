@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ClientPortal } from "@/features/auth/account";
 import type { Concept, NoteKind } from "@/features/concepts/model";
+import type { Video } from "@/features/videos/model";
 import { requireSupabase } from "@/lib/supabase";
 
 export interface Milestone {
@@ -137,4 +138,53 @@ export function paymentLines(
 
 export function dt(amount: number): string {
   return `${amount.toLocaleString("en-US", { maximumFractionDigits: 3 })} DT`;
+}
+
+// ---------- videos ----------
+
+export interface MyVideos {
+  balancePaid: boolean;
+  videos: Video[];
+}
+
+const videosKey = (portal: ClientPortal) => ["portal-videos", portal.workspaceId, portal.clientId];
+
+/** The videos Gecko shared, and whether the finals can be downloaded yet. */
+export function useMyVideos(portal: ClientPortal) {
+  return useQuery({
+    queryKey: videosKey(portal),
+    queryFn: async (): Promise<MyVideos> => {
+      const { data, error } = await requireSupabase().rpc("get_my_videos", {
+        p_workspace_id: portal.workspaceId,
+        p_client_id: portal.clientId,
+      });
+      if (error) throw error;
+      return data as MyVideos;
+    },
+    refetchInterval: 30_000,
+  });
+}
+
+/** Approve a cut, ask for changes, or comment, on the version the client watched. */
+export function useVideoNote(portal: ClientPortal) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: {
+      videoId: string;
+      kind: NoteKind;
+      body: string;
+      version: number;
+    }) => {
+      const { error } = await requireSupabase().rpc("client_video_note", {
+        p_workspace_id: portal.workspaceId,
+        p_client_id: portal.clientId,
+        p_video_id: input.videoId,
+        p_kind: input.kind,
+        p_body: input.body,
+        p_version: input.version,
+      });
+      if (error) throw error;
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: videosKey(portal) }),
+  });
 }

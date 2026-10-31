@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { NavLink, Navigate, Route, Routes } from "react-router-dom";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
+import { useActiveTabInView } from "@/components/useActiveTabInView";
 import type { ClientPortal } from "@/features/auth/account";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { countByStatus } from "@/features/concepts/model";
@@ -9,17 +10,21 @@ import { OnboardingForm } from "@/features/onboarding/OnboardingForm";
 import { friendlyError } from "@/lib/errors";
 import { ConceptsTab } from "./ConceptsTab";
 import { OverviewTab } from "./OverviewTab";
-import { useMyPortal } from "./portalApi";
+import { useMyPortal, useMyVideos } from "./portalApi";
+import { VideosTab } from "./VideosTab";
 
-/** What a client sees: their campaign, their onboarding and the concepts to approve. Nothing else. */
+/** What a client sees: their campaign, onboarding, concepts and videos to approve. Nothing else. */
 export function PortalPage({ portal, email }: { portal: ClientPortal; email: string }) {
   const { signOut } = useAuth();
   const page = useMyPortal(portal);
+  const videos = useMyVideos(portal);
+  useActiveTabInView();
   const target = useMemo(
     () => ({ workspaceId: portal.workspaceId, clientId: portal.clientId }),
     [portal.workspaceId, portal.clientId],
   );
   const waiting = page.data ? countByStatus(page.data.concepts).review : 0;
+  const cuts = videos.data?.videos.filter((v) => v.status === "review").length ?? 0;
   const brand = page.data?.brand ?? portal.brand;
 
   return (
@@ -47,6 +52,10 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
             Concepts
             {waiting > 0 && <span className="badge">{waiting}</span>}
           </NavLink>
+          <NavLink to="/videos" className="portal-tab">
+            Videos
+            {cuts > 0 && <span className="badge">{cuts}</span>}
+          </NavLink>
         </nav>
         {page.isPending && <p className="muted">Loading your portal…</p>}
         {page.isError && <Notice tone="error">{friendlyError(page.error)}</Notice>}
@@ -68,6 +77,18 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
             <Route
               path="concepts"
               element={<ConceptsTab portal={portal} concepts={page.data.concepts} />}
+            />
+            <Route
+              path="videos"
+              element={
+                videos.data ? (
+                  <VideosTab portal={portal} data={videos.data} />
+                ) : videos.isError ? (
+                  <Notice tone="error">{friendlyError(videos.error)}</Notice>
+                ) : (
+                  <p className="muted">Loading your videos…</p>
+                )
+              }
             />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

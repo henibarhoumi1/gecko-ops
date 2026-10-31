@@ -1,10 +1,23 @@
-// Cloudflare Workers: serves the built app from dist/. Every path falls back to index.html so the app's
-// own routes (/clients, /invite/…) work on reload. Security headers live in public/_headers.
+// Cloudflare Workers: worker/index.ts answers /api/* (video links), everything else is the built app
+// from dist/, with every unknown path falling back to index.html so the app's own routes work on reload.
+// Security headers for the app live in public/_headers.
+//
+// Before the first deploy with this file: create the R2 bucket "gecko-finals", turn on Stream, and add
+// the secrets STREAM_TOKEN and LINK_SECRET to the worker (see DEPLOY.md, "Videos").
 {
   "name": "gecko-app",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-10-01",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
     "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"],
   },
+  "r2_buckets": [{ "binding": "FINALS", "bucket_name": "gecko-finals" }],
+  "vars": {
+    "SUPABASE_URL": "https://ryusfpyxozqmsjoirxgm.supabase.co",
+    "CF_ACCOUNT_ID": "39b689d9db4027a9ec6a5713e2e8bcc0",
+  },
+  "observability": { "enabled": true },
 }

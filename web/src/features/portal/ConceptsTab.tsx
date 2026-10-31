@@ -5,6 +5,7 @@ import { TextArea } from "@/components/TextArea";
 import { Field } from "@/components/Field";
 import type { ClientPortal } from "@/features/auth/account";
 import { ConceptCard } from "@/features/concepts/ConceptCard";
+import { ReviewActions } from "@/features/concepts/ReviewActions";
 import { groupConcepts, type Concept } from "@/features/concepts/model";
 import { friendlyError } from "@/lib/errors";
 import { useConceptNote, useDeleteIdea, useSaveIdea } from "./portalApi";
@@ -54,81 +55,17 @@ export function ConceptsTab({ portal, concepts }: { portal: ClientPortal; concep
   );
 }
 
-type Mode = "idle" | "approve" | "changes" | "comment";
-
 function ClientActions({ portal, concept }: { portal: ClientPortal; concept: Concept }) {
   const note = useConceptNote(portal);
-  const [mode, setMode] = useState<Mode>("idle");
-  const [error, setError] = useState("");
-  const canDecide = concept.status === "review" || concept.status === "changes";
-
-  async function send(kind: "approve" | "changes" | "comment", body: string) {
-    setError("");
-    try {
-      await note.mutateAsync({ conceptId: concept.id, kind, body, version: concept.version });
-      setMode("idle");
-    } catch (e) {
-      setError(friendlyError(e));
-    }
-  }
-
-  function onSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const body = String(new FormData(event.currentTarget).get("body") ?? "").trim();
-    if (mode === "approve") return void send("approve", body);
-    if (!body)
-      return setError(mode === "changes" ? "Tell us what to change." : "Write a comment first.");
-    void send(mode === "changes" ? "changes" : "comment", body);
-  }
-
-  if (mode === "idle")
-    return (
-      <div className="concept-actions">
-        {canDecide && (
-          <>
-            <Button onClick={() => setMode("approve")}>Approve</Button>
-            <Button variant="secondary" onClick={() => setMode("changes")}>
-              Ask for changes
-            </Button>
-          </>
-        )}
-        <Button variant="link" onClick={() => setMode("comment")}>
-          Comment
-        </Button>
-      </div>
-    );
-
   return (
-    <form className="concept-form" onSubmit={onSubmit}>
-      {mode === "approve" && (
-        <p className="small">
-          You're approving version {concept.version} of "{concept.title}". Gecko goes ahead with it
-          as written.
-        </p>
-      )}
-      <TextArea
-        label={
-          mode === "approve"
-            ? "Anything to add? (optional)"
-            : mode === "changes"
-              ? "What should change?"
-              : "Your comment"
-        }
-        name="body"
-        rows={3}
-        maxLength={4000}
-        autoFocus
-      />
-      {error && <Notice tone="error">{error}</Notice>}
-      <div className="actions">
-        <Button variant="secondary" onClick={() => setMode("idle")} disabled={note.isPending}>
-          Cancel
-        </Button>
-        <Button type="submit" disabled={note.isPending}>
-          {mode === "approve" ? "Confirm approval" : mode === "changes" ? "Send changes" : "Send"}
-        </Button>
-      </div>
-    </form>
+    <ReviewActions
+      canDecide={concept.status === "review" || concept.status === "changes"}
+      pending={note.isPending}
+      approveNote={`You're approving version ${concept.version} of "${concept.title}". Gecko goes ahead with it as written.`}
+      onSend={(kind, body) =>
+        note.mutateAsync({ conceptId: concept.id, kind, body, version: concept.version })
+      }
+    />
   );
 }
 
