@@ -27,16 +27,17 @@ Import `gecko-site` the same way (root directory `/`, build `npm run build`, dep
 - **Team:** Team > Create invite link, with their email and role (editor or client lead). They open the link, create an account with that email and land in the app. Editors only see the clients you tick for them on the Team screen.
 - **Clients:** Clients > Add client > Overview (fill and save) > Client logins > Create invite link > Send on WhatsApp. The client opens the link (it points at `client.gecko-creative.com`), creates an account with that same email, confirms it, and lands in their portal: the campaign overview, the onboarding sheet, and the concepts to approve, ask changes on or comment. They never see drafts, other clients or anything of the team's.
 
-## 5. Videos (about 15 minutes)
-Previews play from Cloudflare Stream with a Gecko watermark burned in, through links that expire after two hours. Finals sit in a private R2 bucket and download through ten-minute links, and only once the client's balance is marked paid on their Overview. Do these in this order, because the app's deploy fails if the bucket doesn't exist yet:
+## 5. Videos (later: switched off until Stream and R2 are paid for)
+The code is in the app but switched off: nobody sees a Videos tab, and the deploy needs nothing paid. Previews play from Cloudflare Stream with a Gecko watermark burned in, through links that expire after two hours. Finals sit in a private R2 bucket and download through ten-minute links, and only once the client's balance is marked paid on their Overview. To switch it on:
 1. Cloudflare > R2 Object Storage > Create bucket, name `gecko-finals`, location Automatic. Leave public access off.
 2. Cloudflare > Stream > subscribe (from $5 a month for 1,000 stored minutes).
 3. My Profile > API Tokens > Create Token > Custom token: permission Account > Stream > Edit, on your account only. Copy the token.
 4. Workers & Pages > `gecko-app` > Settings > Variables and Secrets > Add, type **Secret**:
    - `STREAM_TOKEN` = the token from step 3.
    - `LINK_SECRET` = any long random string (40 characters or more, e.g. from a password manager). It signs the download links; changing it only cancels links already handed out.
-5. Supabase > SQL Editor > new tab > paste `supabase/migrations/202611010001_videos.sql` > Run, once. (A brand-new project gets it from `setup.sql`.)
-6. Deploy the app (merge, or Deployments > Retry). The first preview upload creates the watermark in Stream from `web/public/watermark.png`.
+5. Same worker > Settings > Build > Variables: add `VITE_VIDEOS` = `on`.
+6. Supabase > SQL Editor > new tab > paste `supabase/migrations/202611010001_videos.sql` > Run, once. (A brand-new project gets it from `setup.sql`.)
+7. In `web/wrangler.jsonc`, add the `r2_buckets` line from the comment at the top, and merge that change. The deploy that follows switches videos on. The first preview upload creates the watermark in Stream from `web/public/watermark.png`.
 
 The team then opens a client > Videos > New video, uploads the cut (up to 200 MB, a 1080p export is plenty), shares it, and uploads the clean final whenever it's ready, at any size. Replacing a cut or a final deletes the old file; deleting a video deletes both.
 

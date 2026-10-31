@@ -39,7 +39,8 @@ export interface R2Bucket {
 
 export interface Env {
   ASSETS: { fetch(request: Request): Promise<Response> };
-  FINALS: R2Bucket;
+  /** The private bucket for finals. Missing until R2 is switched on (DEPLOY.md, "Videos"). */
+  FINALS?: R2Bucket;
   SUPABASE_URL: string;
   CF_ACCOUNT_ID: string;
   /** Cloudflare API token with Stream: Edit. A secret, set in the dashboard. */

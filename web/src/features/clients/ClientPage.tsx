@@ -4,6 +4,7 @@ import { Notice } from "@/components/Notice";
 import { useActiveTabInView } from "@/components/useActiveTabInView";
 import { OnboardingForm } from "@/features/onboarding/OnboardingForm";
 import { TeamVideos } from "@/features/videos/TeamVideos";
+import { videosOn } from "@/lib/features";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { friendlyError } from "@/lib/errors";
 import { useClients } from "./clientsApi";
@@ -25,18 +26,16 @@ export function ClientPage() {
   const client = clients.data.find((c) => c.id === clientId);
   if (!client) return <Navigate to="/clients" replace />;
 
+  const videos = videosOn ? [["videos", "Videos"]] : [];
   const tabs = lead
     ? [
         ["", "Overview"],
         ["concepts", "Concepts"],
-        ["videos", "Videos"],
+        ...videos,
         ["onboarding", "Onboarding"],
         ["logins", "Client logins"],
       ]
-    : [
-        ["concepts", "Concepts"],
-        ["videos", "Videos"],
-      ];
+    : [["concepts", "Concepts"], ...videos];
 
   return (
     <section className="page">
@@ -81,7 +80,7 @@ export function ClientPage() {
           <Route index element={<Navigate to="concepts" replace />} />
         )}
         <Route path="concepts" element={<TeamConcepts clientId={clientId} />} />
-        <Route path="videos" element={<TeamVideos clientId={clientId} />} />
+        {videosOn && <Route path="videos" element={<TeamVideos clientId={clientId} />} />}
         <Route path="*" element={<Navigate to={`/clients/${clientId}`} replace />} />
       </Routes>
     </section>

@@ -8,6 +8,7 @@ import { useAuth } from "@/features/auth/AuthProvider";
 import { countByStatus } from "@/features/concepts/model";
 import { OnboardingForm } from "@/features/onboarding/OnboardingForm";
 import { friendlyError } from "@/lib/errors";
+import { videosOn } from "@/lib/features";
 import { ConceptsTab } from "./ConceptsTab";
 import { OverviewTab } from "./OverviewTab";
 import { useMyPortal, useMyVideos } from "./portalApi";
@@ -52,10 +53,12 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
             Concepts
             {waiting > 0 && <span className="badge">{waiting}</span>}
           </NavLink>
-          <NavLink to="/videos" className="portal-tab">
-            Videos
-            {cuts > 0 && <span className="badge">{cuts}</span>}
-          </NavLink>
+          {videosOn && (
+            <NavLink to="/videos" className="portal-tab">
+              Videos
+              {cuts > 0 && <span className="badge">{cuts}</span>}
+            </NavLink>
+          )}
         </nav>
         {page.isPending && <p className="muted">Loading your portal…</p>}
         {page.isError && <Notice tone="error">{friendlyError(page.error)}</Notice>}
@@ -78,18 +81,20 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
               path="concepts"
               element={<ConceptsTab portal={portal} concepts={page.data.concepts} />}
             />
-            <Route
-              path="videos"
-              element={
-                videos.data ? (
-                  <VideosTab portal={portal} data={videos.data} />
-                ) : videos.isError ? (
-                  <Notice tone="error">{friendlyError(videos.error)}</Notice>
-                ) : (
-                  <p className="muted">Loading your videos…</p>
-                )
-              }
-            />
+            {videosOn && (
+              <Route
+                path="videos"
+                element={
+                  videos.data ? (
+                    <VideosTab portal={portal} data={videos.data} />
+                  ) : videos.isError ? (
+                    <Notice tone="error">{friendlyError(videos.error)}</Notice>
+                  ) : (
+                    <p className="muted">Loading your videos…</p>
+                  )
+                }
+              />
+            )}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         )}
