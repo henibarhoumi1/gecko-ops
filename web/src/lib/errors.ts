@@ -3,6 +3,11 @@ const MESSAGES: [RegExp, string][] = [
   [/email not confirmed/i, "Confirm your email first. Check your inbox for the link."],
   [/user already registered/i, "This email already has an account. Sign in instead."],
   [/password should be at least/i, "Use a password of at least 8 characters."],
+  [/should be different from the old password/i, "Pick a password you haven't used here before."],
+  [
+    /for security purposes|email rate limit/i,
+    "Too many emails just now. Wait a minute and try again.",
+  ],
   [/invalid api key/i, "The app's Supabase key is wrong. Check the anon key in Cloudflare."],
   [/workspace_exists/, "Gecko is already set up. Ask the founder for an invite link."],
   [

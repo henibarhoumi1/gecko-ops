@@ -2,8 +2,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactElement } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/features/auth/AuthProvider";
+import { ForgotPage } from "@/features/auth/ForgotPage";
 import { InvitePage } from "@/features/auth/InvitePage";
 import { JoinPage } from "@/features/auth/JoinPage";
+import { ResetPage } from "@/features/auth/ResetPage";
 import { SignInPage } from "@/features/auth/SignInPage";
 import { SignUpPage } from "@/features/auth/SignUpPage";
 import { ClientPage } from "@/features/clients/ClientPage";
@@ -51,6 +53,8 @@ export function App() {
             <Route path="/invite/:code" element={<InvitePage />} />
             <Route path="/sign-in" element={<SignedOutOnly page={<SignInPage />} />} />
             <Route path="/sign-up" element={<SignedOutOnly page={<SignUpPage />} />} />
+            <Route path="/forgot" element={<SignedOutOnly page={<ForgotPage />} />} />
+            <Route path="/reset" element={<ResetPage />} />
             <Route path="/*" element={<Home />} />
           </Routes>
         </BrowserRouter>

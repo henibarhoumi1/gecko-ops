@@ -50,6 +50,9 @@ export function SignInPage() {
         {error && <Notice tone="error">{error}</Notice>}
       </form>
       <p className="center">
+        <Link to="/forgot">Forgot your password?</Link>
+      </p>
+      <p className="center">
         <Link to="/sign-up">New here? Create an account</Link>
       </p>
     </AuthLayout>
