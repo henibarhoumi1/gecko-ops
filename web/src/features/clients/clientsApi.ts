@@ -1,3 +1,4 @@
+import type { PlanId } from "@/features/plans/model";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   fromRows,
@@ -72,11 +73,13 @@ export interface PortalRow {
   price: number | null;
   deposit_status: "due" | "paid";
   balance_status: "later" | "due" | "paid";
+  plan: PlanId;
+  reels: number | null;
   updated_at?: string;
 }
 
 const PORTAL_COLUMNS =
-  "client_id,campaign,summary,included,shoot_date,shoot_place,next_step,milestones,price,deposit_status,balance_status,updated_at";
+  "client_id,campaign,summary,included,shoot_date,shoot_place,next_step,milestones,price,deposit_status,balance_status,plan,reels,updated_at";
 
 export function blankPortal(clientId: string): PortalRow {
   return {
@@ -91,6 +94,8 @@ export function blankPortal(clientId: string): PortalRow {
     price: null,
     deposit_status: "due",
     balance_status: "later",
+    plan: "custom",
+    reels: null,
   };
 }
 
@@ -107,6 +112,22 @@ export function usePortalRow(clientId: string) {
         .maybeSingle();
       if (error) throw error;
       return data as PortalRow | null;
+    },
+  });
+}
+
+/** Every client's plan and shoot, for the client list. Editors get none: the overview carries the price. */
+export function usePortalRows() {
+  const { id: workspaceId } = useWorkspace();
+  return useQuery({
+    queryKey: ["client-portals", workspaceId],
+    queryFn: async (): Promise<PortalRow[]> => {
+      const { data, error } = await requireSupabase()
+        .from("client_portals")
+        .select(PORTAL_COLUMNS)
+        .eq("workspace_id", workspaceId);
+      if (error) throw error;
+      return data as PortalRow[];
     },
   });
 }
@@ -128,8 +149,10 @@ export function useSavePortal(clientId: string) {
         );
       if (error) throw error;
     },
-    onSettled: () =>
-      queryClient.invalidateQueries({ queryKey: ["client-portal", workspaceId, clientId] }),
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ["client-portal", workspaceId, clientId] });
+      void queryClient.invalidateQueries({ queryKey: ["client-portals", workspaceId] });
+    },
   });
 }
 

@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { countByStatus, shortDate } from "@/features/concepts/model";
+import { ReelStrip } from "@/features/plans/ReelStrip";
 import { percentFilled, type Answers } from "@/features/onboarding/progress";
 import type { SheetTarget } from "@/features/onboarding/useOnboardingSheet";
 import { requireSupabase } from "@/lib/supabase";
@@ -91,7 +92,6 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
   const doing = [
     counts.changes > 0 && `Reworking ${plural(counts.changes, "idea")} from your notes.`,
     scriptsReworked > 0 && `Reworking ${plural(scriptsReworked, "script")} from your notes.`,
-    o?.nextStep,
   ].filter((line): line is string => Boolean(line));
 
   return (
@@ -118,6 +118,15 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
           ))}
         </ul>
       )}
+
+      {o?.reels ? (
+        <ReelStrip
+          plan={o.plan ?? "custom"}
+          reels={o.reels}
+          scripts={data.scripts}
+          reader="client"
+        />
+      ) : null}
 
       {doing.length > 0 && (
         <>
