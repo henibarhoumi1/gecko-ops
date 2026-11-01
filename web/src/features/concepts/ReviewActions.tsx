@@ -15,11 +15,13 @@ export function ReviewActions({
   canDecide,
   pending,
   approveNote,
+  commentLabel = "Comment",
   onSend,
 }: {
   canDecide: boolean;
   pending: boolean;
   approveNote: string;
+  commentLabel?: string;
   onSend: (kind: NoteKind, body: string) => Promise<unknown>;
 }) {
   const [mode, setMode] = useState<Mode>("idle");
@@ -56,7 +58,7 @@ export function ReviewActions({
           </>
         )}
         <Button variant="link" onClick={() => setMode("comment")}>
-          Comment
+          {commentLabel}
         </Button>
         {error && <Notice tone="error">{error}</Notice>}
       </div>

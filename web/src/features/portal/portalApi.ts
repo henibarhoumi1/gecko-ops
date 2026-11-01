@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ClientPortal } from "@/features/auth/account";
 import type { Concept, NoteKind } from "@/features/concepts/model";
+import type { PlanId } from "@/features/plans/model";
 import type { Script } from "@/features/scripts/model";
 import type { Video } from "@/features/videos/model";
 import { videosOn } from "@/lib/features";
@@ -24,6 +25,9 @@ export interface Overview {
   depositStatus: "due" | "paid";
   balanceStatus: "later" | "due" | "paid";
   updatedAt: string;
+  /** Missing on a database without plans yet. */
+  plan?: PlanId;
+  reels?: number | null;
 }
 
 export interface PortalData {

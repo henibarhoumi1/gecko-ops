@@ -61,6 +61,7 @@ function ClientScript({ portal, script }: { portal: ClientPortal; script: Script
       <ReviewActions
         canDecide={canDecide}
         pending={note.isPending}
+        commentLabel="Comment on the whole script"
         approveNote={`You're approving version ${script.version} of "${script.title}"${
           picked !== null && script.hooks.length > 1 ? ` with ${hookName(picked)}` : ""
         }. This is what we'll shoot.`}

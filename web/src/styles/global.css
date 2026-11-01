@@ -2036,3 +2036,151 @@ a.btn {
   height: 8px;
   accent-color: var(--mat);
 }
+
+/* ---------- plan: the reels as a strip of frames ---------- */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.reel-strip {
+  margin: 28px 0;
+  padding: 18px 20px 20px;
+  border: 1.5px solid var(--edge);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+
+.reel-strip-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+  margin-bottom: 14px;
+}
+
+.reel-strip-head h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.reel-strip-head p {
+  margin: 0;
+}
+
+.frames {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.frame {
+  width: 26px;
+  height: 40px;
+  border: 1.5px solid var(--edge);
+  border-radius: 5px;
+  background: var(--white);
+}
+
+.frame-approved {
+  background: var(--mat);
+  border-color: var(--mat-deep);
+}
+
+.frame-review {
+  background: var(--yellow);
+}
+
+.frame-writing {
+  background: repeating-linear-gradient(135deg, var(--pink-soft) 0 5px, var(--pink) 5px 10px);
+}
+
+.frames-key {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 12px 0 0;
+}
+
+.key {
+  display: inline-block;
+  width: 10px;
+  height: 14px;
+  margin-left: 8px;
+  border: 1.5px solid var(--edge);
+  border-radius: 3px;
+}
+
+.key:first-child {
+  margin-left: 0;
+}
+
+.key-approved {
+  background: var(--mat);
+  border-color: var(--mat-deep);
+}
+
+.key-review {
+  background: var(--yellow);
+}
+
+.key-writing {
+  background: var(--pink);
+}
+
+/* ---------- the team's overview editor ---------- */
+
+.edit-part {
+  display: grid;
+  gap: 14px;
+  padding-top: 22px;
+  border-top: 1.5px solid var(--edge);
+}
+
+.edit-part h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.save-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  margin: 8px -4px 0;
+  padding: 12px 4px;
+  background: var(--white);
+  border-top: 1px solid var(--line);
+}
+
+.save-bar .notice {
+  flex: 1;
+  margin: 0;
+}
+
+.client-row {
+  gap: 4px;
+}
+
+.client-row-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tag-pink {
+  background: var(--pink);
+}
