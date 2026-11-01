@@ -21,7 +21,7 @@ export function SignUpPage() {
     const invite = readPendingInvite();
     setBusy(true);
     setError("");
-    const { error } = await requireSupabase().auth.signUp({
+    const { data, error } = await requireSupabase().auth.signUp({
       email,
       password: String(form.get("password")),
       options: {
@@ -35,7 +35,8 @@ export function SignUpPage() {
     });
     setBusy(false);
     if (error) setError(friendlyError(error));
-    else setSentTo(email);
+    // With email confirmation off the session comes straight back and the router moves on by itself.
+    else if (!data.session) setSentTo(email);
   }
 
   if (sentTo) {
@@ -58,7 +59,7 @@ export function SignUpPage() {
       title={invited ? "Create your login" : "Join Gecko"}
       intro={
         invited
-          ? "Use the email your invite was sent to. Confirm it from your inbox and you're in."
+          ? "Use the email your invite was sent to."
           : "Use the email your invite was sent to."
       }
     >

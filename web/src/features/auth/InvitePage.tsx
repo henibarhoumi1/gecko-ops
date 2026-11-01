@@ -51,6 +51,7 @@ function usePeek(code: string) {
 function InviteLanding({ code }: { code: string }) {
   const peek = usePeek(code);
   const [sentTo, setSentTo] = useState("");
+  const [byEmail, setByEmail] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -58,20 +59,30 @@ function InviteLanding({ code }: { code: string }) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const email = peek.data?.email ?? String(form.get("email")).trim();
+    const name = String(form.get("name") ?? "").trim();
+    // The code rides in the link, so an emailed link works even if it opens in another browser.
+    const redirect = `${window.location.origin}/invite/${code}`;
     setBusy(true);
     setError("");
-    const { error } = await requireSupabase().auth.signInWithOtp({
+    if (byEmail) {
+      const { error } = await requireSupabase().auth.signInWithOtp({
+        email,
+        options: { shouldCreateUser: true, data: { name }, emailRedirectTo: redirect },
+      });
+      setBusy(false);
+      if (error) setError(friendlyError(error));
+      else setSentTo(email);
+      return;
+    }
+    const { data, error } = await requireSupabase().auth.signUp({
       email,
-      options: {
-        shouldCreateUser: true,
-        data: { name: String(form.get("name") ?? "").trim() },
-        // The code rides in the link, so it works even if the email opens in another browser.
-        emailRedirectTo: `${window.location.origin}/invite/${code}`,
-      },
+      password: String(form.get("password")),
+      options: { data: { name }, emailRedirectTo: redirect },
     });
     setBusy(false);
     if (error) setError(friendlyError(error));
-    else setSentTo(email);
+    // With email confirmation off the session comes straight back and the page moves on by itself.
+    else if (!data.session) setSentTo(email);
   }
 
   if (peek.isPending) return null;
@@ -93,12 +104,12 @@ function InviteLanding({ code }: { code: string }) {
       <AuthLayout
         eyebrow="One more step"
         title="Check your email"
-        intro={`We sent a link to ${sentTo}. Open it on this phone or computer and you're in. No password needed.`}
+        intro={`We sent a link to ${sentTo}. Open it on this phone or computer and you're in.`}
       >
         <p className="small muted center">
           Nothing after a minute? Check spam, or{" "}
           <Button variant="link" onClick={() => setSentTo("")}>
-            send it again
+            try again
           </Button>
           .
         </p>
@@ -110,7 +121,11 @@ function InviteLanding({ code }: { code: string }) {
     <AuthLayout
       eyebrow="You're invited"
       title={brand ? `${brand} × Gecko` : "Your Gecko portal"}
-      intro="Everything for your campaign in one place: ideas and scripts to approve, your shoot, your videos. We'll email you a link to get in, no password needed."
+      intro={
+        byEmail
+          ? "We'll email you a link to get in, no password needed."
+          : "Everything for your campaign in one place: ideas and scripts to approve, your shoot, your videos. Pick a password and you're in."
+      }
     >
       <form className="stack" onSubmit={onSubmit}>
         <Field
@@ -122,7 +137,14 @@ function InviteLanding({ code }: { code: string }) {
           autoFocus
         />
         {peek.data?.email ? (
-          <Field label="Email" name="email" type="email" value={peek.data.email} readOnly />
+          <Field
+            label="Email"
+            name="email"
+            type="email"
+            autoComplete="username"
+            value={peek.data.email}
+            readOnly
+          />
         ) : (
           <Field
             label="Email (the one the invite was sent to)"
@@ -132,14 +154,38 @@ function InviteLanding({ code }: { code: string }) {
             required
           />
         )}
+        {!byEmail && (
+          <Field
+            label="Choose a password (8 characters or more)"
+            name="password"
+            type="password"
+            autoComplete="new-password"
+            required
+            minLength={8}
+          />
+        )}
         <Button type="submit" disabled={busy}>
-          {busy ? "Sending…" : "Email me my link"}
+          {byEmail
+            ? busy
+              ? "Sending…"
+              : "Email me my link"
+            : busy
+              ? "Opening…"
+              : "Open my portal"}
         </Button>
         {error && <Notice tone="error">{error}</Notice>}
       </form>
       <p className="center small">
-        <Link to="/sign-up">Prefer a password?</Link> ·{" "}
-        <Link to="/sign-in">I already have a login</Link>
+        <Button
+          variant="link"
+          onClick={() => {
+            setByEmail(!byEmail);
+            setError("");
+          }}
+        >
+          {byEmail ? "Use a password instead" : "Email me a link instead"}
+        </Button>{" "}
+        · <Link to="/sign-in">I already have a login</Link>
       </p>
     </AuthLayout>
   );
