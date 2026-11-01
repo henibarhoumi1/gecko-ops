@@ -63,11 +63,21 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
           <strong>
             {counts.review
               ? `${counts.review} waiting for your approval`
-              : counts.approved
-                ? `${counts.approved} approved`
-                : "Coming soon"}
+              : counts.changes
+                ? `Reworking ${counts.changes} for you`
+                : counts.approved
+                  ? `${counts.approved} approved`
+                  : "Coming soon"}
           </strong>
-          <span className="small muted">Approve them, ask for changes, or add your own ideas.</span>
+          <span className="small muted">
+            {counts.review
+              ? "Approve them, ask for changes, or add your own ideas."
+              : counts.changes
+                ? "The new version comes back here for your OK."
+                : counts.approved
+                  ? "Have an idea of your own? Add it any time."
+                  : "The first ideas land here for you to approve."}
+          </span>
         </Link>
       </div>
 
