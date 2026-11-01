@@ -8,7 +8,8 @@ import { TeamVideos } from "@/features/videos/TeamVideos";
 import { videosOn } from "@/lib/features";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { friendlyError } from "@/lib/errors";
-import { useClients } from "./clientsApi";
+import { useClients, useLogos } from "./clientsApi";
+import { LogoPanel } from "./LogoPanel";
 import { LoginsPanel } from "./LoginsPanel";
 import { OverviewEditor } from "./OverviewEditor";
 import { TeamConcepts } from "./TeamConcepts";
@@ -24,6 +25,7 @@ export function ClientPage() {
   const target = useMemo(() => ({ workspaceId: workspace.id, clientId }), [workspace.id, clientId]);
   const onBoard = useLocation().pathname.includes("/board");
   const lead = workspace.role === "founder" || workspace.role === "sales";
+  const logos = useLogos();
 
   if (clients.isPending) return <p className="loading">Loading…</p>;
   if (clients.isError) return <Notice tone="error">{friendlyError(clients.error)}</Notice>;
@@ -55,7 +57,12 @@ export function ClientPage() {
       <p className="small">
         <Link to="/clients">← Clients</Link>
       </p>
-      <h1>{client.brand}</h1>
+      <h1 className="client-title">
+        {logos.data?.[clientId] && (
+          <img className="client-title-logo" src={logos.data[clientId]} alt="" />
+        )}
+        {client.brand}
+      </h1>
       <nav className="portal-tabs" aria-label={client.brand}>
         {tabs.map(([path, label]) => (
           <NavLink
@@ -71,7 +78,15 @@ export function ClientPage() {
       <Routes>
         {lead ? (
           <>
-            <Route index element={<OverviewEditor clientId={clientId} />} />
+            <Route
+              index
+              element={
+                <>
+                  <LogoPanel clientId={clientId} brand={client.brand} />
+                  <OverviewEditor clientId={clientId} />
+                </>
+              }
+            />
             <Route
               path="onboarding"
               element={

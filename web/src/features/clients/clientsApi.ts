@@ -156,6 +156,54 @@ export function useSavePortal(clientId: string) {
   });
 }
 
+// ---------- logos ----------
+// Kept apart from the overview row so saving the overview never touches the logo, and the other way round.
+
+/** Each client's logo, by client id. Editors get none, like the rest of the overview row. */
+export function useLogos() {
+  const { id: workspaceId } = useWorkspace();
+  return useQuery({
+    queryKey: ["client-logos", workspaceId],
+    staleTime: 5 * 60_000,
+    queryFn: async (): Promise<Record<string, string>> => {
+      const { data, error } = await requireSupabase()
+        .from("client_portals")
+        .select("client_id,logo")
+        .eq("workspace_id", workspaceId);
+      if (error) {
+        // A database without the logo column yet: no logos, nothing broken.
+        if (/logo/.test(error.message)) return {};
+        throw error;
+      }
+      return Object.fromEntries(
+        (data as { client_id: string; logo: string | null }[])
+          .filter((r) => r.logo)
+          .map((r) => [r.client_id, r.logo as string]),
+      );
+    },
+  });
+}
+
+export function useSaveLogo(clientId: string) {
+  const { id: workspaceId } = useWorkspace();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (logo: string | null) => {
+      const { error } = await requireSupabase()
+        .from("client_portals")
+        .upsert(
+          { workspace_id: workspaceId, client_id: clientId, logo },
+          { onConflict: "workspace_id,client_id" },
+        );
+      if (error) throw error;
+    },
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: ["client-logos", workspaceId] });
+      void queryClient.invalidateQueries({ queryKey: ["client-portal", workspaceId, clientId] });
+    },
+  });
+}
+
 // ---------- concepts ----------
 
 const CONCEPT_COLUMNS =

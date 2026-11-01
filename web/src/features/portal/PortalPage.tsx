@@ -35,6 +35,7 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
   const scriptsWaiting = page.data?.scripts.filter((s) => s.status === "review").length ?? 0;
   const cuts = videos.data?.videos.filter((v) => v.status === "review").length ?? 0;
   const brand = page.data?.brand ?? portal.brand;
+  const logo = page.data?.logo;
 
   return (
     <div className="portal">
@@ -50,7 +51,13 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
       </header>
       <main className={`page portal-page${onBoard ? " board-page" : ""}`}>
         <p className="eyebrow">{t("Client portal", "Espace client")}</p>
-        <h1>{brand}</h1>
+        {logo ? (
+          <h1 className="portal-brand">
+            <img src={logo} alt={brand} />
+          </h1>
+        ) : (
+          <h1>{brand}</h1>
+        )}
         <nav className="portal-tabs" aria-label="Portal">
           <NavLink to="/" end className="portal-tab">
             {t("Home", "Accueil")}
