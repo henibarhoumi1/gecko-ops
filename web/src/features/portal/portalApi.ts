@@ -34,6 +34,8 @@ export interface Overview {
 export interface PortalData {
   brand: string;
   me: string;
+  /** The brand's logo as an image data URL, when Gecko added one. */
+  logo?: string | null;
   overview: Overview | null;
   concepts: Concept[];
   scripts: Script[];

@@ -8,7 +8,7 @@ import { PLANS } from "@/features/plans/model";
 import { useScripts } from "@/features/scripts/scriptsApi";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { friendlyError } from "@/lib/errors";
-import { useAddClient, useClients, useConcepts, usePortalRows } from "./clientsApi";
+import { useAddClient, useClients, useConcepts, useLogos, usePortalRows } from "./clientsApi";
 
 /** Every client, with what needs Gecko's attention in their portal. */
 export function ClientsPage() {
@@ -17,6 +17,7 @@ export function ClientsPage() {
   const concepts = useConcepts(null);
   const scripts = useScripts(null);
   const portals = usePortalRows();
+  const logos = useLogos();
   const [adding, setAdding] = useState(false);
 
   if (clients.isPending) return <p className="loading">Loading clients…</p>;
@@ -70,6 +71,9 @@ export function ClientsPage() {
             <li key={client.id}>
               <Link to={`/clients/${client.id}`} className="card client-row">
                 <span className="client-row-top">
+                  {logos.data?.[client.id] && (
+                    <img className="client-row-logo" src={logos.data[client.id]} alt="" />
+                  )}
                   <strong>{client.brand}</strong>
                   {forGecko.length > 0 && <span className="tag tag-pink">Needs Gecko</span>}
                 </span>

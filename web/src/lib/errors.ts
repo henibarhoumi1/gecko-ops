@@ -92,6 +92,16 @@ const MESSAGES: [RegExp, string, string][] = [
     "That card couldn't be saved. Refresh the board and try again.",
     "Cette carte n'a pas pu être enregistrée. Rechargez le tableau et réessayez.",
   ],
+  [
+    /logo_type/,
+    "Use a PNG, JPG or WebP logo. Export SVG or PDF logos as PNG first.",
+    "Utilisez un logo PNG, JPG ou WebP. Exportez d'abord un SVG ou un PDF en PNG.",
+  ],
+  [
+    /logo_too_big/,
+    "That logo is too detailed to store. Try a simpler PNG export.",
+    "Ce logo est trop lourd à enregistrer. Essayez un export PNG plus simple.",
+  ],
   [/image_type/, "Use a JPG, PNG, WebP or GIF image.", "Utilisez une image JPG, PNG, WebP ou GIF."],
   [
     /image_too_big/,

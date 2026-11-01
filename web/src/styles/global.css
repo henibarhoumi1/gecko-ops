@@ -2946,3 +2946,88 @@ a.btn {
     right: 8px;
   }
 }
+
+/* ---------- client logos ---------- */
+
+.portal-brand {
+  margin: 4px 0 22px;
+  line-height: 0;
+}
+
+.portal-brand img {
+  display: block;
+  max-width: min(440px, 100%);
+  max-height: clamp(48px, 10vw, 76px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.client-title {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.client-title-logo {
+  max-height: 44px;
+  max-width: 180px;
+  object-fit: contain;
+}
+
+.client-row-logo {
+  max-height: 22px;
+  max-width: 90px;
+  object-fit: contain;
+}
+
+.logo-panel {
+  display: grid;
+  grid-template-columns: minmax(160px, 260px) minmax(0, 1fr);
+  gap: 20px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.logo-panel h2 {
+  margin: 0 0 4px;
+}
+
+.logo-panel .small {
+  margin: 0 0 12px;
+  max-width: 52ch;
+}
+
+.logo-well {
+  display: grid;
+  place-items: center;
+  min-height: 110px;
+  padding: 18px;
+  border-radius: var(--radius);
+  background: var(--white);
+  border: 1px solid var(--line);
+}
+
+.logo-well.empty {
+  border-style: dashed;
+}
+
+.logo-well img {
+  max-width: 100%;
+  max-height: 80px;
+  object-fit: contain;
+}
+
+.logo-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 560px) {
+  .logo-panel {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
