@@ -50,14 +50,18 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
         </span>
       </header>
       <main className={`page portal-page${onBoard ? " board-page" : ""}`}>
-        <p className="eyebrow">{t("Client portal", "Espace client")}</p>
-        {logo ? (
-          <h1 className="portal-brand">
-            <img src={logo} alt={brand} />
-          </h1>
-        ) : (
-          <h1>{brand}</h1>
-        )}
+        <div className="portal-hero mat">
+          <div className={`portal-label${logo ? " has-logo" : ""}`}>
+            <span className="tape">{t("Gecko client portal", "Espace client Gecko")}</span>
+            {logo ? (
+              <h1 className="portal-brand">
+                <img src={logo} alt={brand} />
+              </h1>
+            ) : (
+              <h1>{brand}</h1>
+            )}
+          </div>
+        </div>
         <nav className="portal-tabs" aria-label="Portal">
           <NavLink to="/" end className="portal-tab">
             {t("Home", "Accueil")}
