@@ -12,6 +12,7 @@ import { friendlyError } from "@/lib/errors";
 import { videosOn } from "@/lib/features";
 import { ConceptsTab } from "./ConceptsTab";
 import { OverviewTab } from "./OverviewTab";
+import { ScriptsTab } from "./ScriptsTab";
 import { useMyPortal, useMyVideos } from "./portalApi";
 import { VideosTab } from "./VideosTab";
 
@@ -26,6 +27,7 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
     [portal.workspaceId, portal.clientId],
   );
   const waiting = page.data ? countByStatus(page.data.concepts).review : 0;
+  const scriptsWaiting = page.data?.scripts.filter((s) => s.status === "review").length ?? 0;
   const cuts = videos.data?.videos.filter((v) => v.status === "review").length ?? 0;
   const brand = page.data?.brand ?? portal.brand;
 
@@ -45,14 +47,18 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
         <h1>{brand}</h1>
         <nav className="portal-tabs" aria-label="Portal">
           <NavLink to="/" end className="portal-tab">
-            Overview
-          </NavLink>
-          <NavLink to="/onboarding" className="portal-tab">
-            Onboarding
+            Home
           </NavLink>
           <NavLink to="/concepts" className="portal-tab">
-            Concepts
+            Ideas
             {waiting > 0 && <span className="badge">{waiting}</span>}
+          </NavLink>
+          <NavLink to="/scripts" className="portal-tab">
+            Scripts
+            {scriptsWaiting > 0 && <span className="badge">{scriptsWaiting}</span>}
+          </NavLink>
+          <NavLink to="/onboarding" className="portal-tab">
+            Your brand
           </NavLink>
           {videosOn && (
             <NavLink to="/videos" className="portal-tab">
@@ -77,6 +83,10 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
                   <OnboardingForm target={target} brand={brand} mode="client" />
                 </section>
               }
+            />
+            <Route
+              path="scripts"
+              element={<ScriptsTab portal={portal} scripts={page.data.scripts} />}
             />
             <Route
               path="concepts"

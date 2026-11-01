@@ -18,8 +18,8 @@ export function ConceptsTab({ portal, concepts }: { portal: ClientPortal; concep
     <section className="tab-body">
       <div className="page-head">
         <p className="lede">
-          Each concept is one reel or post. Read it, then approve it or tell us what to change.
-          Nothing is shot until you approve it.
+          Each idea is one reel or post. Approve the ones you like or tell us what to change, and
+          the approved ones become scripts.
         </p>
         {!adding && (
           <Button variant="secondary" onClick={() => setAdding(true)}>
@@ -30,7 +30,7 @@ export function ConceptsTab({ portal, concepts }: { portal: ClientPortal; concep
       {adding && <IdeaForm portal={portal} onDone={() => setAdding(false)} />}
       {groups.length === 0 && !adding && (
         <p className="muted">
-          Gecko is writing your concepts. They'll appear here for you to read and approve.
+          Gecko is working on your ideas. They'll appear here for you to read and approve.
         </p>
       )}
       {groups.map((group) => (

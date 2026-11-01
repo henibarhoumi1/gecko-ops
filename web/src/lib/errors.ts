@@ -19,6 +19,12 @@ const MESSAGES: [RegExp, string][] = [
     /concept_changed/,
     "This concept changed while you were reading it. The new version is shown now; have a look and decide again.",
   ],
+  [
+    /script_changed/,
+    "Gecko updated this script while you were reading it. The new version is shown now; have a look and decide again.",
+  ],
+  [/hook_required/, "Pick the hook you like first, then approve."],
+  [/invalid_script/, "That concept belongs to another client. Pick one of this client's concepts."],
   [/client_only/, "Only the client can approve or ask for changes."],
   [
     /video_changed/,
