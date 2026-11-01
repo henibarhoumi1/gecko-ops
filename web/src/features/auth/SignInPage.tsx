@@ -7,6 +7,7 @@ import { friendlyError } from "@/lib/errors";
 import { requireSupabase } from "@/lib/supabase";
 import { AuthLayout } from "./AuthLayout";
 import { readPendingInvite } from "./inviteCode";
+import { t } from "@/lib/i18n";
 
 export function SignInPage() {
   const [error, setError] = useState("");
@@ -15,7 +16,13 @@ export function SignInPage() {
 
   async function emailLink(form: HTMLFormElement | null) {
     const email = String(new FormData(form ?? undefined).get("email") ?? "").trim();
-    if (!email) return setError("Type your email first, then ask for the link.");
+    if (!email)
+      return setError(
+        t(
+          "Type your email first, then ask for the link.",
+          "Tapez d'abord votre e-mail, puis demandez le lien.",
+        ),
+      );
     setBusy(true);
     setError("");
     const invite = readPendingInvite();
@@ -37,7 +44,12 @@ export function SignInPage() {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     if (!String(form.get("password") ?? ""))
-      return setError("Type your password, or ask for a sign-in link.");
+      return setError(
+        t(
+          "Type your password, or ask for a sign-in link.",
+          "Tapez votre mot de passe, ou demandez un lien de connexion.",
+        ),
+      );
     setBusy(true);
     setError("");
     const { error } = await requireSupabase().auth.signInWithPassword({
@@ -51,13 +63,16 @@ export function SignInPage() {
   if (linkSent)
     return (
       <AuthLayout
-        eyebrow="One more step"
-        title="Check your email"
-        intro={`If ${linkSent} has a Gecko login, a sign-in link is on its way. Open it and you're in.`}
+        eyebrow={t("One more step", "Encore une étape")}
+        title={t("Check your email", "Regardez vos e-mails")}
+        intro={t(
+          `If ${linkSent} has a Gecko login, a sign-in link is on its way. Open it and you're in.`,
+          `Si ${linkSent} a un accès Gecko, un lien de connexion arrive. Ouvrez-le et vous y êtes.`,
+        )}
       >
         <p className="center">
           <Button variant="link" onClick={() => setLinkSent("")}>
-            Back to sign in
+            {t("Back to sign in", "Retour à la connexion")}
           </Button>
         </p>
       </AuthLayout>
@@ -65,34 +80,51 @@ export function SignInPage() {
 
   return (
     <AuthLayout
-      eyebrow="Sign in"
-      title="Welcome back"
+      eyebrow={t("Sign in", "Connexion")}
+      title={t("Welcome back", "Bon retour")}
       intro={
         readPendingInvite()
-          ? "You have an invite. Sign in with the email it was sent to."
-          : "Team and clients sign in here with their own email."
+          ? t(
+              "You have an invite. Sign in with the email it was sent to.",
+              "Vous avez une invitation. Connectez-vous avec l'e-mail qui l'a reçue.",
+            )
+          : t(
+              "Team and clients sign in here with their own email.",
+              "L'équipe et les clients se connectent ici avec leur propre e-mail.",
+            )
       }
     >
       <form className="stack" onSubmit={onSubmit}>
-        <Field label="Email" name="email" type="email" autoComplete="email" required />
-        <Field label="Password" name="password" type="password" autoComplete="current-password" />
+        <Field
+          label={t("Email", "E-mail")}
+          name="email"
+          type="email"
+          autoComplete="email"
+          required
+        />
+        <Field
+          label={t("Password", "Mot de passe")}
+          name="password"
+          type="password"
+          autoComplete="current-password"
+        />
         <Button type="submit" disabled={busy}>
-          {busy ? "Signing in…" : "Sign in"}
+          {busy ? t("Signing in…", "Connexion…") : t("Sign in", "Se connecter")}
         </Button>
         <Button
           variant="secondary"
           disabled={busy}
           onClick={(e) => void emailLink(e.currentTarget.form)}
         >
-          Email me a sign-in link instead
+          {t("Email me a sign-in link instead", "Recevoir un lien de connexion par e-mail")}
         </Button>
         {error && <Notice tone="error">{error}</Notice>}
       </form>
       <p className="center">
-        <Link to="/forgot">Forgot your password?</Link>
+        <Link to="/forgot">{t("Forgot your password?", "Mot de passe oublié ?")}</Link>
       </p>
       <p className="center">
-        <Link to="/sign-up">New here? Create an account</Link>
+        <Link to="/sign-up">{t("New here? Create an account", "Nouveau ? Créer un compte")}</Link>
       </p>
     </AuthLayout>
   );

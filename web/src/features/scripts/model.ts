@@ -1,3 +1,4 @@
+import { t } from "@/lib/i18n";
 export type ScriptStatus = "draft" | "review" | "changes" | "approved";
 export type ScriptStyle =
   | "talking-head"
@@ -55,22 +56,45 @@ export interface Script extends ScriptContent {
   notes: ScriptNote[];
 }
 
+// Labels are getters so they read in the language in use at the moment they're shown.
 export const STYLE_LABEL: Record<ScriptStyle, string> = {
-  "talking-head": "Talking head",
-  demo: "Product demo",
-  "problem-fix": "Problem and fix",
-  skit: "Skit",
-  ugc: "UGC style",
-  voiceover: "Voiceover on footage",
-  other: "Other",
+  get "talking-head"() {
+    return t("Talking head", "Face caméra");
+  },
+  get demo() {
+    return t("Product demo", "Démo produit");
+  },
+  get "problem-fix"() {
+    return t("Problem and fix", "Problème et solution");
+  },
+  get skit() {
+    return t("Skit", "Sketch");
+  },
+  get ugc() {
+    return t("UGC style", "Style UGC");
+  },
+  get voiceover() {
+    return t("Voiceover on footage", "Voix off sur images");
+  },
+  get other() {
+    return t("Other", "Autre");
+  },
 };
 
 export const SCRIPT_STATUS: Record<"client" | "team", Record<ScriptStatus, string>> = {
   client: {
-    draft: "Draft",
-    review: "Waiting for you",
-    changes: "Being reworked",
-    approved: "Approved",
+    get draft() {
+      return t("Draft", "Brouillon");
+    },
+    get review() {
+      return t("Waiting for you", "Vous attend");
+    },
+    get changes() {
+      return t("Being reworked", "En cours de reprise");
+    },
+    get approved() {
+      return t("Approved", "Validé");
+    },
   },
   team: {
     draft: "Draft, only the team sees it",
@@ -80,10 +104,10 @@ export const SCRIPT_STATUS: Record<"client" | "team", Record<ScriptStatus, strin
   },
 };
 
-const CLIENT_ORDER: [ScriptStatus, string][] = [
-  ["review", "Waiting for your approval"],
-  ["changes", "Being reworked"],
-  ["approved", "Approved"],
+const clientOrder = (): [ScriptStatus, string][] => [
+  ["review", t("Waiting for your approval", "En attente de votre validation")],
+  ["changes", t("Being reworked", "En cours de reprise")],
+  ["approved", t("Approved", "Validés")],
 ];
 
 const TEAM_ORDER: [ScriptStatus, string][] = [
@@ -94,7 +118,7 @@ const TEAM_ORDER: [ScriptStatus, string][] = [
 ];
 
 export function groupScripts(scripts: Script[], reader: "client" | "team") {
-  const order = reader === "client" ? CLIENT_ORDER : TEAM_ORDER;
+  const order = reader === "client" ? clientOrder() : TEAM_ORDER;
   return order
     .map(([status, title]) => ({
       status,
@@ -152,13 +176,13 @@ export function changedParts(current: ScriptContent, previous: ScriptContent | n
 
 export function lineLabel(line: string | null): string {
   if (!line) return "";
-  if (line === "goal") return "Goal";
-  if (line === "cta") return "Call to action";
+  if (line === "goal") return t("Goal", "Objectif");
+  if (line === "cta") return t("Call to action", "Appel à l'action");
   const [kind, n] = line.split("-");
-  return kind === "hook" ? `Hook ${String.fromCharCode(65 + Number(n))}` : `Beat ${Number(n) + 1}`;
+  return kind === "hook" ? hookName(Number(n)) : `${t("Beat", "Séquence")} ${Number(n) + 1}`;
 }
 
-export const hookName = (i: number) => `Hook ${String.fromCharCode(65 + i)}`;
+export const hookName = (i: number) => `${t("Hook", "Accroche")} ${String.fromCharCode(65 + i)}`;
 
 /** Drops empty rows and trims every field, so the database keeps only what was written. */
 export function tidyLines(lines: ScriptLine[]): ScriptLine[] {

@@ -15,6 +15,7 @@ import {
   type ScriptLine,
   type ScriptNote,
 } from "./model";
+import { t } from "@/lib/i18n";
 
 type CommentFn = (line: string | null, body: string) => Promise<unknown>;
 
@@ -51,25 +52,36 @@ export function ScriptView({
         <span className={`status status-${script.status}`}>
           {SCRIPT_STATUS[reader][script.status]}
         </span>
-        {script.version > 1 && <span className="small muted">Version {script.version}</span>}
+        {script.version > 1 && (
+          <span className="small muted">
+            {t("Version", "Version")} {script.version}
+          </span>
+        )}
       </header>
       <h3 dir="auto">{script.title}</h3>
       <p className={`small script-runs${runs > script.seconds + 3 ? " over" : ""}`}>
-        Runs about {runs} s spoken · made for {script.seconds} s
+        {t(
+          `Runs about ${runs} s spoken · made for ${script.seconds} s`,
+          `Environ ${runs} s à l'oral · prévu pour ${script.seconds} s`,
+        )}
         {runs > script.seconds + 3 && reader === "team" && " · too long, trim it"}
       </p>
 
       {changed.size > 0 && (
         <p className="small script-changed-note">
-          Marked lines changed since the version {reader === "client" ? "you" : "the client"} read
-          before.
+          {reader === "client"
+            ? t(
+                "Marked lines changed since the version you read before.",
+                "Les lignes marquées ont changé depuis la version que vous avez lue.",
+              )
+            : "Marked lines changed since the version the client read before."}
         </p>
       )}
 
       {script.goal && (
         <Line id="goal" changed={changed.has("goal")} notes={byLine("goal")} onComment={onComment}>
           <p className="script-goal" dir="auto">
-            <strong>The viewer should</strong> {script.goal}
+            <strong>{t("The viewer should", "Le spectateur doit")}</strong> {script.goal}
           </p>
         </Line>
       )}
@@ -79,9 +91,9 @@ export function ScriptView({
           <h4>
             {script.hooks.length > 1
               ? onPick
-                ? "Pick the hook you like best"
-                : "Hook options"
-              : "The hook"}
+                ? t("Pick the hook you like best", "Choisissez l'accroche que vous préférez")
+                : t("Hook options", "Accroches possibles")
+              : t("The hook", "L'accroche")}
           </h4>
           <div className="hooks" role={onPick ? "radiogroup" : undefined}>
             {script.hooks.map((hook, i) => {
@@ -110,8 +122,8 @@ export function ScriptView({
                     </label>
                   ) : (
                     <span className="hook-name">
-                      {script.hooks.length > 1 ? hookName(i) : "Hook"}
-                      {isPicked && script.status === "approved" && " · picked"}
+                      {script.hooks.length > 1 ? hookName(i) : t("Hook", "Accroche")}
+                      {isPicked && script.status === "approved" && t(" · picked", " · choisie")}
                     </span>
                   )}
                   <LineText line={hook} />
@@ -124,7 +136,7 @@ export function ScriptView({
 
       {script.beats.length > 0 && (
         <section className="script-part">
-          <h4>Then</h4>
+          <h4>{t("Then", "Ensuite")}</h4>
           <ol className="beats">
             {script.beats.map((beat, i) => (
               <li key={i}>
@@ -149,15 +161,18 @@ export function ScriptView({
       {script.cta && (
         <Line id="cta" changed={changed.has("cta")} notes={byLine("cta")} onComment={onComment}>
           <p className="script-cta" dir="auto">
-            <strong>Ends on</strong> {script.cta}
+            <strong>{t("Ends on", "Finit sur")}</strong> {script.cta}
           </p>
         </Line>
       )}
 
       <p className="small muted">
-        By {script.authorName || "Gecko"}
+        {t("By", "Par")} {script.authorName || "Gecko"}
         {script.approvedAt &&
-          ` · Approved by ${script.approvedBy ?? "the client"} on ${shortDate(script.approvedAt)}`}
+          t(
+            ` · Approved by ${script.approvedBy ?? "the client"} on ${shortDate(script.approvedAt)}`,
+            ` · Validé par ${script.approvedBy ?? "le client"} le ${shortDate(script.approvedAt)}`,
+          )}
       </p>
       <Notes notes={general} />
       {children}
@@ -170,13 +185,13 @@ function LineText({ line }: { line: ScriptLine }) {
     <dl className="line-text">
       {line.see && (
         <>
-          <dt>See</dt>
+          <dt>{t("See", "On voit")}</dt>
           <dd dir="auto">{line.see}</dd>
         </>
       )}
       {line.hear && (
         <>
-          <dt>Hear</dt>
+          <dt>{t("Hear", "On entend")}</dt>
           <dd dir="auto" className="hear">
             {line.hear}
           </dd>
@@ -184,7 +199,7 @@ function LineText({ line }: { line: ScriptLine }) {
       )}
       {line.text && (
         <>
-          <dt>On screen</dt>
+          <dt>{t("On screen", "À l'écran")}</dt>
           <dd dir="auto" className="onscreen">
             {line.text}
           </dd>
@@ -218,7 +233,7 @@ function Line({
     event.preventDefault();
     if (!onComment) return;
     const body = String(new FormData(event.currentTarget).get("body") ?? "").trim();
-    if (!body) return setError("Write a comment first.");
+    if (!body) return setError(t("Write a comment first.", "Écrivez d'abord un commentaire."));
     setBusy(true);
     setError("");
     try {
@@ -233,23 +248,23 @@ function Line({
 
   return (
     <div className={`script-line ${className}${changed ? " changed" : ""}`}>
-      {changed && <span className="changed-tag">Changed</span>}
+      {changed && <span className="changed-tag">{t("Changed", "Modifié")}</span>}
       {children}
       <Notes notes={notes} />
       {onComment && !open && (
         <button
           type="button"
           className="line-comment"
-          aria-label={`Comment on ${lineLabel(id)}`}
+          aria-label={t(`Comment on ${lineLabel(id)}`, `Commenter : ${lineLabel(id)}`)}
           onClick={() => setOpen(true)}
         >
-          Comment
+          {t("Comment", "Commenter")}
         </button>
       )}
       {open && (
         <form className="concept-form" onSubmit={onSubmit}>
           <TextArea
-            label={`Your comment on ${lineLabel(id)}`}
+            label={t(`Your comment on ${lineLabel(id)}`, `Votre commentaire : ${lineLabel(id)}`)}
             name="body"
             rows={2}
             maxLength={4000}
@@ -258,10 +273,10 @@ function Line({
           {error && <Notice tone="error">{error}</Notice>}
           <div className="actions">
             <Button variant="secondary" onClick={() => setOpen(false)} disabled={busy}>
-              Cancel
+              {t("Cancel", "Annuler")}
             </Button>
             <Button type="submit" disabled={busy}>
-              Send
+              {t("Send", "Envoyer")}
             </Button>
           </div>
         </form>
@@ -270,33 +285,38 @@ function Line({
   );
 }
 
-const KIND_LABEL: Record<ScriptNote["kind"], string> = {
-  comment: "",
-  approve: "Approved",
-  changes: "Asked for changes",
-};
+const kindLabel = (kind: ScriptNote["kind"]) =>
+  kind === "approve"
+    ? t("Approved", "A validé")
+    : kind === "changes"
+      ? t("Asked for changes", "A demandé des changements")
+      : "";
 
 function Notes({ notes }: { notes: ScriptNote[] }) {
   if (notes.length === 0) return null;
   return (
-    <ol className="notes" aria-label="Comments">
+    <ol className="notes" aria-label={t("Comments", "Commentaires")}>
       {notes.map((note) => (
         <li
           key={note.id}
           className={`note note-${note.kind}${note.fromClient ? " from-client" : ""}`}
         >
           <p className="small">
-            <strong>{note.authorName || (note.fromClient ? "Client" : "Gecko")}</strong>
-            {KIND_LABEL[note.kind] && (
+            <strong>
+              {note.authorName || (note.fromClient ? t("Client", "Client") : "Gecko")}
+            </strong>
+            {kindLabel(note.kind) && (
               <span className="note-kind">
-                {KIND_LABEL[note.kind]}
-                {note.kind === "approve" && note.hook !== null && ` with ${hookName(note.hook)}`}
+                {kindLabel(note.kind)}
+                {note.kind === "approve" &&
+                  note.hook !== null &&
+                  t(` with ${hookName(note.hook)}`, `, ${hookName(note.hook)}`)}
               </span>
             )}
             <span className="muted">
               {" "}
               · {shortDate(note.createdAt)}
-              {note.kind !== "comment" ? ` · version ${note.version}` : ""}
+              {note.kind !== "comment" ? ` · ${t("version", "version")} ${note.version}` : ""}
             </span>
           </p>
           {note.body && (

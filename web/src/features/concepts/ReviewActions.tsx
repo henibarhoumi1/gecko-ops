@@ -4,6 +4,7 @@ import { Notice } from "@/components/Notice";
 import { TextArea } from "@/components/TextArea";
 import { friendlyError } from "@/lib/errors";
 import type { NoteKind } from "./model";
+import { t } from "@/lib/i18n";
 
 type Mode = "idle" | NoteKind;
 
@@ -15,7 +16,7 @@ export function ReviewActions({
   canDecide,
   pending,
   approveNote,
-  commentLabel = "Comment",
+  commentLabel,
   onSend,
 }: {
   canDecide: boolean;
@@ -42,7 +43,11 @@ export function ReviewActions({
     const body = String(new FormData(event.currentTarget).get("body") ?? "").trim();
     if (mode === "approve") return void send("approve", body);
     if (!body)
-      return setError(mode === "changes" ? "Tell us what to change." : "Write a comment first.");
+      return setError(
+        mode === "changes"
+          ? t("Tell us what to change.", "Dites-nous quoi changer.")
+          : t("Write a comment first.", "Écrivez d'abord un commentaire."),
+      );
     void send(mode === "changes" ? "changes" : "comment", body);
   }
 
@@ -51,14 +56,14 @@ export function ReviewActions({
       <div className="concept-actions">
         {canDecide && (
           <>
-            <Button onClick={() => setMode("approve")}>Approve</Button>
+            <Button onClick={() => setMode("approve")}>{t("Approve", "Valider")}</Button>
             <Button variant="secondary" onClick={() => setMode("changes")}>
-              Ask for changes
+              {t("Ask for changes", "Demander des changements")}
             </Button>
           </>
         )}
         <Button variant="link" onClick={() => setMode("comment")}>
-          {commentLabel}
+          {commentLabel ?? t("Comment", "Commenter")}
         </Button>
         {error && <Notice tone="error">{error}</Notice>}
       </div>
@@ -70,10 +75,10 @@ export function ReviewActions({
       <TextArea
         label={
           mode === "approve"
-            ? "Anything to add? (optional)"
+            ? t("Anything to add? (optional)", "Quelque chose à ajouter ? (facultatif)")
             : mode === "changes"
-              ? "What should change?"
-              : "Your comment"
+              ? t("What should change?", "Qu'est-ce qui doit changer ?")
+              : t("Your comment", "Votre commentaire")
         }
         name="body"
         rows={3}
@@ -83,10 +88,14 @@ export function ReviewActions({
       {error && <Notice tone="error">{error}</Notice>}
       <div className="actions">
         <Button variant="secondary" onClick={() => setMode("idle")} disabled={pending}>
-          Cancel
+          {t("Cancel", "Annuler")}
         </Button>
         <Button type="submit" disabled={pending}>
-          {mode === "approve" ? "Confirm approval" : mode === "changes" ? "Send changes" : "Send"}
+          {mode === "approve"
+            ? t("Confirm approval", "Confirmer la validation")
+            : mode === "changes"
+              ? t("Send changes", "Envoyer les changements")
+              : t("Send", "Envoyer")}
         </Button>
       </div>
     </form>

@@ -313,6 +313,48 @@ a {
   border-radius: 18px;
 }
 
+.auth-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* EN · FR: two small pill halves with an ink edge, the picked one filled pink. */
+.lang-switch {
+  display: inline-flex;
+  flex: none;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.lang-switch button {
+  min-width: 38px;
+  padding: 5px 10px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  background: var(--white);
+  border: 0;
+  cursor: pointer;
+}
+
+.lang-switch button + button {
+  border-left: 1px solid var(--ink);
+}
+
+.lang-switch button.on {
+  background: var(--pink);
+}
+
+.lang-switch button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -3px;
+}
+
 .first-time {
   margin-top: 24px;
   padding-top: 16px;

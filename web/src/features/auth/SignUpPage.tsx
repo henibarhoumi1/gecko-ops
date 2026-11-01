@@ -7,6 +7,7 @@ import { friendlyError } from "@/lib/errors";
 import { requireSupabase } from "@/lib/supabase";
 import { AuthLayout } from "./AuthLayout";
 import { readPendingInvite } from "./inviteCode";
+import { t } from "@/lib/i18n";
 
 export function SignUpPage() {
   const [error, setError] = useState("");
@@ -42,12 +43,15 @@ export function SignUpPage() {
   if (sentTo) {
     return (
       <AuthLayout
-        eyebrow="Almost there"
-        title="Check your email"
-        intro={`We sent a confirmation link to ${sentTo}. Open it and you're in.`}
+        eyebrow={t("Almost there", "Presque fini")}
+        title={t("Check your email", "Regardez vos e-mails")}
+        intro={t(
+          `We sent a confirmation link to ${sentTo}. Open it and you're in.`,
+          `Nous avons envoyé un lien de confirmation à ${sentTo}. Ouvrez-le et vous y êtes.`,
+        )}
       >
         <p className="center">
-          <Link to="/sign-in">Go to sign in</Link>
+          <Link to="/sign-in">{t("Go to sign in", "Aller à la connexion")}</Link>
         </p>
       </AuthLayout>
     );
@@ -55,19 +59,34 @@ export function SignUpPage() {
 
   return (
     <AuthLayout
-      eyebrow={invited ? "You're invited" : "Create an account"}
-      title={invited ? "Create your login" : "Join Gecko"}
-      intro={
-        invited
-          ? "Use the email your invite was sent to."
-          : "Use the email your invite was sent to."
+      eyebrow={
+        invited ? t("You're invited", "Invitation") : t("Create an account", "Créer un compte")
       }
+      title={
+        invited ? t("Create your login", "Créez votre accès") : t("Join Gecko", "Rejoindre Gecko")
+      }
+      intro={t(
+        "Use the email your invite was sent to.",
+        "Utilisez l'e-mail qui a reçu l'invitation.",
+      )}
     >
       <form className="stack" onSubmit={onSubmit}>
-        <Field label="Your name" name="name" autoComplete="name" required maxLength={120} />
-        <Field label="Email" name="email" type="email" autoComplete="email" required />
         <Field
-          label="Password"
+          label={t("Your name", "Votre nom")}
+          name="name"
+          autoComplete="name"
+          required
+          maxLength={120}
+        />
+        <Field
+          label={t("Email", "E-mail")}
+          name="email"
+          type="email"
+          autoComplete="email"
+          required
+        />
+        <Field
+          label={t("Password (8 characters or more)", "Mot de passe (8 caractères ou plus)")}
           name="password"
           type="password"
           autoComplete="new-password"
@@ -75,12 +94,14 @@ export function SignUpPage() {
           minLength={8}
         />
         <Button type="submit" disabled={busy}>
-          {busy ? "Creating…" : "Create account"}
+          {busy ? t("Creating…", "Création…") : t("Create account", "Créer le compte")}
         </Button>
         {error && <Notice tone="error">{error}</Notice>}
       </form>
       <p className="center">
-        <Link to="/sign-in">Already have an account? Sign in</Link>
+        <Link to="/sign-in">
+          {t("Already have an account? Sign in", "Déjà un compte ? Se connecter")}
+        </Link>
       </p>
     </AuthLayout>
   );

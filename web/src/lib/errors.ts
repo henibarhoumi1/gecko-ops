@@ -1,79 +1,221 @@
-const MESSAGES: [RegExp, string][] = [
-  [/invalid login credentials/i, "That email and password don't match."],
-  [/email not confirmed/i, "Confirm your email first. Check your inbox for the link."],
-  [/user already registered/i, "This email already has an account. Sign in instead."],
-  [/password should be at least/i, "Use a password of at least 8 characters."],
-  [/should be different from the old password/i, "Pick a password you haven't used here before."],
+import { t } from "./i18n";
+
+/** What people read when something fails, in English and French. Checked top to bottom; the first match wins. */
+const MESSAGES: [RegExp, string, string][] = [
+  [
+    /invalid login credentials/i,
+    "That email and password don't match.",
+    "Cet e-mail et ce mot de passe ne correspondent pas.",
+  ],
+  [
+    /email not confirmed/i,
+    "Confirm your email first. Check your inbox for the link.",
+    "Confirmez d'abord votre e-mail. Le lien est dans votre boîte de réception.",
+  ],
+  [
+    /user already registered/i,
+    "This email already has an account. Sign in instead.",
+    "Cet e-mail a déjà un compte. Connectez-vous plutôt.",
+  ],
+  [
+    /password should be at least/i,
+    "Use a password of at least 8 characters.",
+    "Choisissez un mot de passe d'au moins 8 caractères.",
+  ],
+  [
+    /should be different from the old password/i,
+    "Pick a password you haven't used here before.",
+    "Choisissez un mot de passe que vous n'avez pas encore utilisé ici.",
+  ],
   [
     /for security purposes|email rate limit/i,
     "Too many emails just now. Wait a minute and try again.",
+    "Trop d'e-mails d'un coup. Attendez une minute et réessayez.",
   ],
-  [/invalid api key/i, "The app's Supabase key is wrong. Check the anon key in Cloudflare."],
-  [/workspace_exists/, "Gecko is already set up. Ask the founder for an invite link."],
+  [
+    /error sending|smtp|sending (confirmation|magic link|recovery) email/i,
+    "We couldn't send the email just now. Use a password instead, or message Gecko.",
+    "L'e-mail n'a pas pu partir. Utilisez un mot de passe, ou écrivez à Gecko.",
+  ],
+  [
+    /invalid api key/i,
+    "The app's Supabase key is wrong. Check the anon key in Cloudflare.",
+    "La clé Supabase de l'app est fausse. Vérifiez la clé anon dans Cloudflare.",
+  ],
+  [
+    /workspace_exists/,
+    "Gecko is already set up. Ask the founder for an invite link.",
+    "Gecko est déjà installé. Demandez un lien d'invitation au fondateur.",
+  ],
   [
     /invalid_invite/,
     "This invite link is wrong, used or expired, or was sent to a different email.",
+    "Ce lien d'invitation est faux, déjà utilisé ou expiré, ou il a été envoyé à un autre e-mail.",
   ],
   [
     /signups not allowed for otp|otp_disabled/i,
     "There's no Gecko login for that email yet. Use your invite link.",
+    "Cet e-mail n'a pas encore d'accès Gecko. Utilisez votre lien d'invitation.",
   ],
-  [/verified_email_required/, "Confirm your email first, then try again."],
+  [
+    /verified_email_required/,
+    "Confirm your email first, then try again.",
+    "Confirmez d'abord votre e-mail, puis réessayez.",
+  ],
   [
     /concept_changed/,
     "This concept changed while you were reading it. The new version is shown now; have a look and decide again.",
+    "Cette idée a changé pendant votre lecture. La nouvelle version est affichée : relisez-la et décidez à nouveau.",
   ],
   [
     /script_changed/,
     "Gecko updated this script while you were reading it. The new version is shown now; have a look and decide again.",
+    "Gecko a modifié ce script pendant votre lecture. La nouvelle version est affichée : relisez-la et décidez à nouveau.",
   ],
-  [/hook_required/, "Pick the hook you like first, then approve."],
-  [/invalid_script/, "That concept belongs to another client. Pick one of this client's concepts."],
-  [/invalid_item/, "Check the link starts with https:// and the note isn't empty."],
-  [/invalid_card/, "That card couldn't be saved. Refresh the board and try again."],
-  [/image_type/, "Use a JPG, PNG, WebP or GIF image."],
-  [/image_too_big/, "That image is over 5 MB even after shrinking it. Try a smaller one."],
-  [/board_full/, "This board holds 500 cards. Make a board inside it for the rest."],
-  [/too_many_boards/, "This client has 200 boards already. Delete one you don't use."],
-  [/board_not_found/, "This board was deleted or moved. Go back to the main board."],
-  [/invalid_notes/, "The brand notes can be up to 8,000 characters."],
+  [
+    /hook_required/,
+    "Pick the hook you like first, then approve.",
+    "Choisissez d'abord l'accroche qui vous plaît, puis validez.",
+  ],
+  [
+    /invalid_script/,
+    "That concept belongs to another client. Pick one of this client's concepts.",
+    "Cette idée appartient à un autre client. Choisissez une idée de ce client.",
+  ],
+  [
+    /invalid_item/,
+    "Check the link starts with https:// and the note isn't empty.",
+    "Vérifiez que le lien commence par https:// et que la note n'est pas vide.",
+  ],
+  [
+    /invalid_card/,
+    "That card couldn't be saved. Refresh the board and try again.",
+    "Cette carte n'a pas pu être enregistrée. Rechargez le tableau et réessayez.",
+  ],
+  [/image_type/, "Use a JPG, PNG, WebP or GIF image.", "Utilisez une image JPG, PNG, WebP ou GIF."],
+  [
+    /image_too_big/,
+    "That image is over 5 MB even after shrinking it. Try a smaller one.",
+    "Cette image dépasse 5 Mo même réduite. Essayez-en une plus légère.",
+  ],
+  [
+    /board_full/,
+    "This board holds 500 cards. Make a board inside it for the rest.",
+    "Ce tableau contient déjà 500 cartes. Créez un tableau à l'intérieur pour la suite.",
+  ],
+  [
+    /too_many_boards/,
+    "This client has 200 boards already. Delete one you don't use.",
+    "Ce client a déjà 200 tableaux. Supprimez-en un qui ne sert plus.",
+  ],
+  [
+    /board_not_found/,
+    "This board was deleted or moved. Go back to the main board.",
+    "Ce tableau a été supprimé ou déplacé. Revenez au tableau principal.",
+  ],
+  [
+    /invalid_notes/,
+    "The brand notes can be up to 8,000 characters.",
+    "Les notes de marque font 8 000 caractères au maximum.",
+  ],
   [
     /PGRST20[25]|could not find the (table|function)|does not exist/i,
     "The database is missing an update. Run the newest file from supabase/migrations in the Supabase SQL Editor, then refresh.",
+    "Il manque une mise à jour à la base de données. Prévenez Gecko.",
   ],
-  [/client_only/, "Only the client can approve or ask for changes."],
+  [
+    /client_only/,
+    "Only the client can approve or ask for changes.",
+    "Seul le client peut valider ou demander des changements.",
+  ],
   [
     /video_changed/,
     "Gecko uploaded a new cut while you were watching. The new version is shown now; watch it and decide again.",
+    "Gecko a mis en ligne un nouveau montage pendant que vous regardiez. La nouvelle version est affichée : regardez-la et décidez à nouveau.",
   ],
-  [/invalid_video/, "That concept belongs to another client. Pick one of this client's concepts."],
-  [/locked/, "The final file unlocks once the balance is paid."],
-  [/link_expired/, "This download link has expired. Press Download again."],
-  [/no_preview/, "There's no cut to watch yet."],
+  [
+    /invalid_video/,
+    "That concept belongs to another client. Pick one of this client's concepts.",
+    "Cette idée appartient à un autre client. Choisissez une idée de ce client.",
+  ],
+  [
+    /locked/,
+    "The final file unlocks once the balance is paid.",
+    "Le fichier final se débloque une fois le solde payé.",
+  ],
+  [
+    /link_expired/,
+    "This download link has expired. Press Download again.",
+    "Ce lien de téléchargement a expiré. Appuyez à nouveau sur Télécharger.",
+  ],
+  [/no_preview/, "There's no cut to watch yet.", "Il n'y a pas encore de montage à regarder."],
   [
     /preview_too_big/,
     "Previews can be up to 200 MB. Export a lighter 1080p version and try again.",
+    "Les aperçus font 200 Mo au maximum. Exportez une version 1080p plus légère et réessayez.",
   ],
-  [/bad_upload|bad_part/, "The upload didn't go through. Try again."],
+  [
+    /bad_upload|bad_part/,
+    "The upload didn't go through. Try again.",
+    "L'envoi n'a pas abouti. Réessayez.",
+  ],
   [
     /missing_stream_token|missing_link_secret|missing_watermark|missing_finals_bucket/,
     "Video storage isn't set up yet. Gecko needs to finish the Cloudflare setup.",
+    "Le stockage vidéo n'est pas encore prêt côté Gecko.",
   ],
-  [/stream_error|server_error|no_api/, "The video service didn't answer. Try again in a minute."],
-  [/sign_in/, "Your session ended. Sign in again."],
-  [/invalid_note/, "That message couldn't be sent. Check it isn't empty and try again."],
-  [/invalid_idea/, "Give the idea a title, and keep it under 10,000 characters."],
-  [/too_many_ideas/, "That's 200 ideas already. Remove some before adding more."],
-  [/feedback_rate_limited/, "That's a lot of messages in an hour. Try again a little later."],
+  [
+    /stream_error|server_error|no_api/,
+    "The video service didn't answer. Try again in a minute.",
+    "Le service vidéo ne répond pas. Réessayez dans une minute.",
+  ],
+  [/sign_in/, "Your session ended. Sign in again.", "Votre session a expiré. Reconnectez-vous."],
+  [
+    /invalid_note/,
+    "That message couldn't be sent. Check it isn't empty and try again.",
+    "Ce message n'a pas pu partir. Vérifiez qu'il n'est pas vide et réessayez.",
+  ],
+  [
+    /invalid_idea/,
+    "Give the idea a title, and keep it under 10,000 characters.",
+    "Donnez un titre à l'idée, en moins de 10 000 caractères.",
+  ],
+  [
+    /too_many_ideas/,
+    "That's 200 ideas already. Remove some before adding more.",
+    "Il y a déjà 200 idées. Retirez-en avant d'en ajouter.",
+  ],
+  [
+    /feedback_rate_limited/,
+    "That's a lot of messages in an hour. Try again a little later.",
+    "Beaucoup de messages en une heure. Réessayez un peu plus tard.",
+  ],
   [
     /violates check constraint/,
     "Something in this form is too long or not valid. Check it and try again.",
+    "Un champ est trop long ou invalide. Vérifiez et réessayez.",
   ],
-  [/member_not_found/, "That person isn't on the team anymore. Refresh the page."],
-  [/invalid_assignee/, "Only editors can be given clients."],
-  [/forbidden/, "You don't have access to do that."],
-  [/http_404|not_found/, "That video isn't there anymore. Refresh the page."],
-  [/failed to fetch|network/i, "Can't reach the server. Check your connection."],
+  [
+    /member_not_found/,
+    "That person isn't on the team anymore. Refresh the page.",
+    "Cette personne ne fait plus partie de l'équipe. Rechargez la page.",
+  ],
+  [
+    /invalid_assignee/,
+    "Only editors can be given clients.",
+    "Seuls les monteurs peuvent recevoir des clients.",
+  ],
+  [/forbidden/, "You don't have access to do that.", "Vous n'avez pas accès à cette action."],
+  [
+    /http_404|not_found/,
+    "That video isn't there anymore. Refresh the page.",
+    "Cette vidéo n'est plus là. Rechargez la page.",
+  ],
+  [
+    /failed to fetch|network/i,
+    "Can't reach the server. Check your connection.",
+    "Impossible de joindre le serveur. Vérifiez votre connexion.",
+  ],
 ];
 
 export function friendlyError(error: unknown): string {
@@ -83,6 +225,6 @@ export function friendlyError(error: unknown): string {
       : typeof error === "object" && error && "message" in error
         ? String(error.message)
         : String(error);
-  for (const [pattern, message] of MESSAGES) if (pattern.test(text)) return message;
-  return "Something went wrong. Try again.";
+  for (const [pattern, en, fr] of MESSAGES) if (pattern.test(text)) return t(en, fr);
+  return t("Something went wrong. Try again.", "Un problème est survenu. Réessayez.");
 }

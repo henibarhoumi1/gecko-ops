@@ -6,6 +6,7 @@ import type { Script } from "@/features/scripts/model";
 import type { Video } from "@/features/videos/model";
 import { videosOn } from "@/lib/features";
 import { requireSupabase } from "@/lib/supabase";
+import { locale, t } from "@/lib/i18n";
 
 export interface Milestone {
   label: string;
@@ -128,12 +129,15 @@ export function paymentLines(
   const half = overview.price == null ? null : Math.round(overview.price * 500) / 1000;
   return [
     {
-      label: "Deposit, 50% to book the shoot",
+      label: t("Deposit, 50% to book the shoot", "Acompte, 50 % pour réserver le tournage"),
       amount: half,
       state: overview.depositStatus === "paid" ? "Paid" : "Due",
     },
     {
-      label: "Balance, 50% once you approve the previews",
+      label: t(
+        "Balance, 50% once you approve the previews",
+        "Solde, 50 % après validation des aperçus",
+      ),
       amount: half,
       state:
         overview.balanceStatus === "paid"
@@ -146,7 +150,14 @@ export function paymentLines(
 }
 
 export function dt(amount: number): string {
-  return `${amount.toLocaleString("en-US", { maximumFractionDigits: 3 })} DT`;
+  return `${amount.toLocaleString(locale(), { maximumFractionDigits: 3 })} DT`;
+}
+
+/** How a payment state reads to the client. */
+export function stateLabel(state: PaymentLine["state"]): string {
+  if (state === "Paid") return t("Paid", "Payé");
+  if (state === "Due") return t("Due", "À régler");
+  return t("Later", "Plus tard");
 }
 
 // ---------- videos ----------

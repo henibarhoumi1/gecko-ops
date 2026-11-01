@@ -1,3 +1,4 @@
+import { t } from "@/lib/i18n";
 export type CardKind =
   | "note"
   | "todo"
@@ -69,15 +70,32 @@ export const DEFAULT_WIDTH: Record<CardKind, number> = {
   arrow: 40,
 };
 
+// Getters, so the toolbar reads in the language in use when it is drawn.
 export const KIND_LABEL: Record<Exclude<CardKind, "arrow">, string> = {
-  note: "Note",
-  todo: "To-do",
-  link: "Link or video",
-  video: "Video",
-  image: "Image",
-  table: "Table",
-  column: "Column",
-  board: "Board",
+  get note() {
+    return t("Note", "Note");
+  },
+  get todo() {
+    return t("To-do", "À faire");
+  },
+  get link() {
+    return t("Link or video", "Lien ou vidéo");
+  },
+  get video() {
+    return t("Video", "Vidéo");
+  },
+  get image() {
+    return t("Image", "Image");
+  },
+  get table() {
+    return t("Table", "Grille");
+  },
+  get column() {
+    return t("Column", "Colonne");
+  },
+  get board() {
+    return t("Board", "Tableau");
+  },
 };
 
 export function newId(): string {
@@ -102,7 +120,7 @@ export function blankCard(kind: CardKind, at: { x: number; y: number }, z: numbe
           : kind === "column"
             ? { title: "" }
             : kind === "board"
-              ? { title: "Untitled board" }
+              ? { title: t("Untitled board", "Tableau sans titre") }
               : {};
   return {
     id: newId(),
@@ -155,7 +173,7 @@ export function positionAt(siblings: Card[], index: number): number {
   return (before + after) / 2;
 }
 
-const t = (cols: string[], rows: number): Pick<CardData, "cols" | "rows"> => ({
+const grid = (cols: string[], rows: number): Pick<CardData, "cols" | "rows"> => ({
   cols,
   rows: Array.from({ length: rows }, () => cols.map(() => "")),
 });
@@ -169,10 +187,10 @@ export function campaignTemplate(z: number): Card[] {
     ...blankCard("column", { x, y: 0 }, z),
     data: { title },
   });
-  const about = col(0, "About the brand");
-  const inspiration = col(340, "Inspiration");
-  const story = col(680, "Story");
-  const shoot = col(1020, "Shoot");
+  const about = col(0, t("About the brand", "La marque"));
+  const inspiration = col(340, t("Inspiration", "Inspiration"));
+  const story = col(680, t("Story", "Histoire"));
+  const shoot = col(1020, t("Shoot", "Tournage"));
   const inside = (column: Card, position: number, card: Card): Card => ({
     ...card,
     columnId: column.id,
@@ -195,38 +213,89 @@ export function campaignTemplate(z: number): Card[] {
     inside(
       about,
       0,
-      note("Who we sell to, in one sentence.\n\nWhat they should feel after a reel.", "yellow"),
+      note(
+        t(
+          "Who we sell to, in one sentence.\n\nWhat they should feel after a reel.",
+          "À qui on vend, en une phrase.\n\nCe qu'ils doivent ressentir après une vidéo.",
+        ),
+        "yellow",
+      ),
     ),
-    inside(about, 1, note("Words we always use:\n\nWords we never use:")),
-    inside(about, 2, note("Key contact\nName:\nPhone:")),
+    inside(
+      about,
+      1,
+      note(
+        t(
+          "Words we always use:\n\nWords we never use:",
+          "Les mots qu'on utilise toujours :\n\nLes mots qu'on n'utilise jamais :",
+        ),
+      ),
+    ),
+    inside(
+      about,
+      2,
+      note(t("Key contact\nName:\nPhone:", "Contact principal\nNom :\nTéléphone :")),
+    ),
     inspiration,
-    inside(inspiration, 0, board("Moodboard")),
-    inside(inspiration, 1, board("Reels we love")),
+    inside(inspiration, 0, board(t("Moodboard", "Moodboard"))),
+    inside(inspiration, 1, board(t("Reels we love", "Vidéos qu'on adore"))),
     inside(
       inspiration,
       2,
       note(
-        "Paste any Instagram, TikTok, YouTube or Pinterest link on the board and it plays right here.",
+        t(
+          "Paste any Instagram, TikTok, YouTube or Pinterest link on the board and it plays right here.",
+          "Collez n'importe quel lien Instagram, TikTok, YouTube ou Pinterest sur le tableau : il se lit directement ici.",
+        ),
         "pink",
       ),
     ),
     story,
-    inside(story, 0, board("Ideas")),
-    inside(story, 1, board("Storyboard")),
-    inside(story, 2, todo("Next steps", ["Approve the ideas", "Approve the scripts"])),
+    inside(story, 0, board(t("Ideas", "Idées"))),
+    inside(story, 1, board(t("Storyboard", "Storyboard"))),
+    inside(
+      story,
+      2,
+      todo(t("Next steps", "Prochaines étapes"), [
+        t("Approve the ideas", "Valider les idées"),
+        t("Approve the scripts", "Valider les scripts"),
+      ]),
+    ),
     shoot,
-    inside(shoot, 0, board("Call sheet")),
-    inside(shoot, 1, todo("Props and products to bring", [])),
-    inside(shoot, 2, todo("Gear", [])),
+    inside(shoot, 0, board(t("Call sheet", "Feuille de service"))),
+    inside(
+      shoot,
+      1,
+      todo(t("Props and products to bring", "Accessoires et produits à apporter"), []),
+    ),
+    inside(shoot, 2, todo(t("Gear", "Matériel"), [])),
     {
       ...blankCard("table", { x: 0, y: 560 }, z),
       w: 660,
-      data: { title: "Shot list", ...t(["Shot", "Framing", "Sound", "Done"], 5) },
+      data: {
+        title: t("Shot list", "Liste des plans"),
+        ...grid(
+          [t("Shot", "Plan"), t("Framing", "Cadrage"), t("Sound", "Son"), t("Done", "Fait")],
+          5,
+        ),
+      },
     },
     {
       ...blankCard("table", { x: 700, y: 560 }, z),
       w: 620,
-      data: { title: "Location plan", ...t(["Day", "Location", "Address", "Start", "Finish"], 3) },
+      data: {
+        title: t("Location plan", "Plan des lieux"),
+        ...grid(
+          [
+            t("Day", "Jour"),
+            t("Location", "Lieu"),
+            t("Address", "Adresse"),
+            t("Start", "Début"),
+            t("Finish", "Fin"),
+          ],
+          3,
+        ),
+      },
     },
   ];
 }

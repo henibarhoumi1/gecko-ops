@@ -1,6 +1,7 @@
 import type { PointerEvent as ReactPointerEvent } from "react";
 import { CardBody, ColumnHead } from "./BoardCards";
 import { columnCards, type Card, type CardData } from "./model";
+import { t } from "@/lib/i18n";
 
 interface Props {
   cards: Card[];
@@ -87,7 +88,7 @@ function Shell({ card, placed, ...p }: Props & { card: Card; placed?: boolean })
           <button
             type="button"
             className="bcard-remove no-drag"
-            aria-label="Delete card"
+            aria-label={t("Delete card", "Supprimer la carte")}
             onClick={() => p.onRemove(card.id)}
           >
             ×

@@ -2,6 +2,7 @@ import { useEffect, useRef, type ReactNode } from "react";
 import { isShortLink, mediaFromUrl, siteName } from "./embed";
 import { useImageUrl } from "./boardApi";
 import type { Card, CardData, NoteColor, Task } from "./model";
+import { plural, t } from "@/lib/i18n";
 
 export interface CardProps {
   card: Card;
@@ -62,13 +63,20 @@ export function NoteCard({ card, editing, onData, onEdit }: CardProps) {
       {editing ? (
         <>
           <Grow
-            label="Note"
+            label={t("Note", "Note")}
             value={text}
             autoFocus
-            placeholder="Write anything: a feeling, a line, a rule…"
+            placeholder={t(
+              "Write anything: a feeling, a line, a rule…",
+              "Écrivez ce que vous voulez : une sensation, une phrase, une règle…",
+            )}
             onChange={(v) => onData({ text: v })}
           />
-          <div className="bc-colors no-drag" role="radiogroup" aria-label="Note colour">
+          <div
+            className="bc-colors no-drag"
+            role="radiogroup"
+            aria-label={t("Note colour", "Couleur de la note")}
+          >
             {COLORS.map((c) => (
               <button
                 key={c}
@@ -88,7 +96,8 @@ export function NoteCard({ card, editing, onData, onEdit }: CardProps) {
           className={`bc-text${text ? "" : " empty"}`}
           onDoubleClick={() => onEdit(true)}
         >
-          {text || "Empty note. Double-click to write."}
+          {text ||
+            t("Empty note. Double-click to write.", "Note vide. Double-cliquez pour écrire.")}
         </p>
       )}
     </div>
@@ -105,16 +114,16 @@ export function TodoCard({ card, editing, onData, onEdit }: CardProps) {
       {editing ? (
         <input
           dir="auto"
-          aria-label="List title"
+          aria-label={t("List title", "Titre de la liste")}
           className="bc-title-input no-drag"
           autoFocus={!card.data.title}
           value={card.data.title ?? ""}
-          placeholder="List title"
+          placeholder={t("List title", "Titre de la liste")}
           onChange={(e) => onData({ title: e.target.value })}
         />
       ) : (
         <h4 dir="auto" onDoubleClick={() => onEdit(true)}>
-          {card.data.title || "To-do"}
+          {card.data.title || t("To-do", "À faire")}
           {total > 0 && (
             <span className="muted">
               {" "}
@@ -125,7 +134,7 @@ export function TodoCard({ card, editing, onData, onEdit }: CardProps) {
       )}
       {tasks.length === 0 && !editing && (
         <p className="small muted bc-text" onDoubleClick={() => onEdit(true)}>
-          Double-click to add tasks.
+          {t("Double-click to add tasks.", "Double-cliquez pour ajouter des tâches.")}
         </p>
       )}
       <ul>
@@ -134,7 +143,7 @@ export function TodoCard({ card, editing, onData, onEdit }: CardProps) {
             <input
               type="checkbox"
               className="no-drag"
-              aria-label={task.text || "Task"}
+              aria-label={task.text || t("Task", "Tâche")}
               checked={task.done}
               onChange={(e) =>
                 set(tasks.map((t, j) => (j === i ? { ...t, done: e.target.checked } : t)))
@@ -143,10 +152,10 @@ export function TodoCard({ card, editing, onData, onEdit }: CardProps) {
             {editing ? (
               <input
                 dir="auto"
-                aria-label="Task"
+                aria-label={t("Task", "Tâche")}
                 className="no-drag"
                 value={task.text}
-                placeholder="Add a task"
+                placeholder={t("Add a task", "Ajouter une tâche")}
                 autoFocus={i === tasks.length - 1 && !task.text && Boolean(card.data.title)}
                 onChange={(e) =>
                   set(tasks.map((t, j) => (j === i ? { ...t, text: e.target.value } : t)))
@@ -178,7 +187,7 @@ export function TodoCard({ card, editing, onData, onEdit }: CardProps) {
           className="bc-add no-drag"
           onClick={() => set([...tasks, { text: "", done: false }])}
         >
-          Add a task
+          {t("Add a task", "Ajouter une tâche")}
         </button>
       )}
     </div>
@@ -194,10 +203,13 @@ export function LinkCard({ card, editing, onData, onEdit, dragging }: CardProps)
       <div className="bc-link">
         <input
           className="bc-title-input no-drag"
-          aria-label="Link"
+          aria-label={t("Link", "Lien")}
           autoFocus
           inputMode="url"
-          placeholder="Paste a link: Instagram, TikTok, YouTube, Pinterest, any site"
+          placeholder={t(
+            "Paste a link: Instagram, TikTok, YouTube, Pinterest, any site",
+            "Collez un lien : Instagram, TikTok, YouTube, Pinterest, n'importe quel site",
+          )}
           defaultValue={url}
           onKeyDown={(e) => {
             if (e.key === "Enter") e.currentTarget.blur();
@@ -209,7 +221,10 @@ export function LinkCard({ card, editing, onData, onEdit, dragging }: CardProps)
           }}
         />
         <p className="small muted">
-          Videos play right on the board. Other links open in a new tab.
+          {t(
+            "Videos play right on the board. Other links open in a new tab.",
+            "Les vidéos se lisent directement sur le tableau. Les autres liens s'ouvrent dans un nouvel onglet.",
+          )}
         </p>
       </div>
     );
@@ -220,7 +235,7 @@ export function LinkCard({ card, editing, onData, onEdit, dragging }: CardProps)
           <span className="tag">{media.label}</span>
           {card.data.title && <span className="bc-video-title">{card.data.title}</span>}
           <a className="no-drag small" href={url} target="_blank" rel="noreferrer noopener">
-            Open
+            {t("Open", "Ouvrir")}
           </a>
         </div>
         <div className="bc-player" style={{ aspectRatio: String(media.aspect) }}>
@@ -229,7 +244,7 @@ export function LinkCard({ card, editing, onData, onEdit, dragging }: CardProps)
           ) : (
             <iframe
               src={media.src}
-              title={card.data.title || `${media.label} video`}
+              title={card.data.title || t(`${media.label} video`, `Vidéo ${media.label}`)}
               loading="lazy"
               allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
               allowFullScreen
@@ -249,8 +264,10 @@ export function LinkCard({ card, editing, onData, onEdit, dragging }: CardProps)
       </a>
       {isShortLink(url) && (
         <p className="small muted">
-          Short links can't play here. Open it, copy the full address from the browser and paste
-          that instead.
+          {t(
+            "Short links can't play here. Open it, copy the full address from the browser and paste that instead.",
+            "Les liens courts ne se lisent pas ici. Ouvrez-le, copiez l'adresse complète dans le navigateur et collez-la à la place.",
+          )}
         </p>
       )}
     </div>
@@ -265,15 +282,17 @@ export function ImageCard({ card, editing, onData }: CardProps) {
         {src.data ? (
           <img src={src.data} alt={card.data.caption ?? ""} draggable={false} />
         ) : (
-          <span className="small muted">{src.isError ? "Image not found" : "Loading…"}</span>
+          <span className="small muted">
+            {src.isError ? t("Image not found", "Image introuvable") : t("Loading…", "Chargement…")}
+          </span>
         )}
       </div>
       {editing ? (
         <Grow
-          label="Caption"
+          label={t("Caption", "Légende")}
           className="bc-caption"
           value={card.data.caption ?? ""}
-          placeholder="Add a caption"
+          placeholder={t("Add a caption", "Ajouter une légende")}
           autoFocus
           onChange={(v) => onData({ caption: v })}
         />
@@ -304,7 +323,7 @@ export function TableCard({ card, editing, onData, onEdit }: CardProps) {
       />
     ) : (
       <span dir="auto" className={value ? "" : "muted"}>
-        {value || (head ? "Column" : "")}
+        {value || (head ? t("Column", "Colonne") : "")}
       </span>
     );
   return (
@@ -312,14 +331,14 @@ export function TableCard({ card, editing, onData, onEdit }: CardProps) {
       {editing ? (
         <input
           dir="auto"
-          aria-label="Table title"
+          aria-label={t("Table title", "Titre de la grille")}
           className="bc-title-input no-drag"
           value={card.data.title ?? ""}
-          placeholder="Table title"
+          placeholder={t("Table title", "Titre de la grille")}
           onChange={(e) => onData({ title: e.target.value })}
         />
       ) : (
-        <h4 dir="auto">{card.data.title || "Table"}</h4>
+        <h4 dir="auto">{card.data.title || t("Table", "Grille")}</h4>
       )}
       <div className="bc-table-scroll no-drag">
         <table>
@@ -330,7 +349,7 @@ export function TableCard({ card, editing, onData, onEdit }: CardProps) {
                 <th key={j}>
                   {cell(
                     c,
-                    `Column ${j + 1}`,
+                    `${t("Column", "Colonne")} ${j + 1}`,
                     (v) => onData({ cols: cols.map((x, k) => (k === j ? v : x)) }),
                     true,
                   )}
@@ -344,8 +363,10 @@ export function TableCard({ card, editing, onData, onEdit }: CardProps) {
                 <td className="bc-n">{i + 1}</td>
                 {cols.map((_, j) => (
                   <td key={j}>
-                    {cell(row[j] ?? "", `Row ${i + 1}, ${cols[j] || `column ${j + 1}`}`, (v) =>
-                      setCell(i, j, v),
+                    {cell(
+                      row[j] ?? "",
+                      `${t("Row", "Ligne")} ${i + 1}, ${cols[j] || `${t("column", "colonne")} ${j + 1}`}`,
+                      (v) => setCell(i, j, v),
                     )}
                   </td>
                 ))}
@@ -362,7 +383,7 @@ export function TableCard({ card, editing, onData, onEdit }: CardProps) {
               className="bc-add"
               onClick={() => onData({ rows: [...rows, cols.map(() => "")] })}
             >
-              Add a row
+              {t("Add a row", "Ajouter une ligne")}
             </button>
           )}
           {cols.length < 10 && (
@@ -371,7 +392,7 @@ export function TableCard({ card, editing, onData, onEdit }: CardProps) {
               className="bc-add"
               onClick={() => onData({ cols: [...cols, ""], rows: rows.map((r) => [...r, ""]) })}
             >
-              Add a column
+              {t("Add a column", "Ajouter une colonne")}
             </button>
           )}
           {rows.length > 1 && (
@@ -380,7 +401,7 @@ export function TableCard({ card, editing, onData, onEdit }: CardProps) {
               className="bc-add"
               onClick={() => onData({ rows: rows.slice(0, -1) })}
             >
-              Remove last row
+              {t("Remove last row", "Retirer la dernière ligne")}
             </button>
           )}
           {cols.length > 1 && (
@@ -391,7 +412,7 @@ export function TableCard({ card, editing, onData, onEdit }: CardProps) {
                 onData({ cols: cols.slice(0, -1), rows: rows.map((r) => r.slice(0, -1)) })
               }
             >
-              Remove last column
+              {t("Remove last column", "Retirer la dernière colonne")}
             </button>
           )}
         </div>
@@ -413,7 +434,7 @@ export function BoardCard({ card, editing, onData, onOpen }: CardProps) {
         {editing ? (
           <input
             dir="auto"
-            aria-label="Board name"
+            aria-label={t("Board name", "Nom du tableau")}
             className="bc-title-input no-drag"
             autoFocus
             value={card.data.title ?? ""}
@@ -421,11 +442,13 @@ export function BoardCard({ card, editing, onData, onOpen }: CardProps) {
           />
         ) : (
           <button type="button" className="bc-board-open no-drag" onClick={onOpen}>
-            {card.data.title || "Untitled board"}
+            {card.data.title || t("Untitled board", "Tableau sans titre")}
           </button>
         )}
         <span className="small muted">
-          {card.count == null ? "Board" : card.count === 1 ? "1 card" : `${card.count} cards`}
+          {card.count == null
+            ? t("Board", "Tableau")
+            : plural(card.count, ["card", "cards"], ["carte", "cartes"])}
         </span>
       </span>
     </div>
@@ -442,17 +465,17 @@ export function ColumnHead({
   return editing ? (
     <input
       dir="auto"
-      aria-label="Column title"
+      aria-label={t("Column title", "Titre de la colonne")}
       className="bc-title-input no-drag"
       autoFocus
       value={card.data.title ?? ""}
-      placeholder="Column title"
+      placeholder={t("Column title", "Titre de la colonne")}
       onChange={(e) => onData({ title: e.target.value })}
     />
   ) : (
     <h3 dir="auto" onDoubleClick={() => onEdit(true)}>
-      {card.data.title || "Untitled column"}
-      <span className="small muted">{count === 1 ? "1 card" : `${count} cards`}</span>
+      {card.data.title || t("Untitled column", "Colonne sans titre")}
+      <span className="small muted">{plural(count, ["card", "cards"], ["carte", "cartes"])}</span>
     </h3>
   );
 }

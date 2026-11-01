@@ -4,7 +4,7 @@ import { Notice } from "@/components/Notice";
 import { useAuth } from "@/features/auth/AuthProvider";
 import {
   answerText,
-  en,
+  say,
   openQuestions,
   percentFilled,
   questionLabel,
@@ -14,6 +14,7 @@ import {
 } from "./progress";
 import { SECTIONS, type Question } from "./questions";
 import { useOnboardingSheet, type SheetTarget } from "./useOnboardingSheet";
+import { locale, t } from "@/lib/i18n";
 
 const SEND = "send";
 
@@ -58,7 +59,7 @@ export function OnboardingForm({ target, brand, mode }: Props) {
   }
 
   if (!sheet.ready && sheet.status === "loading")
-    return <p className="muted">Loading the sheet…</p>;
+    return <p className="muted">{t("Loading the sheet…", "Chargement du questionnaire…")}</p>;
   if (sheet.status === "error" && !Object.keys(sheet.answers).length && sheet.error)
     return <Notice tone="error">{sheet.error}</Notice>;
 
@@ -68,9 +69,13 @@ export function OnboardingForm({ target, brand, mode }: Props) {
         <div className="meter" aria-hidden="true">
           <i style={{ width: `${pct}%` }} />
         </div>
-        <span className="small">{pct}% filled</span>
+        <span className="small">{t(`${pct}% filled`, `${pct} % rempli`)}</span>
         <span className={`small save save-${sheet.status}`} aria-live="polite">
-          {sheet.status === "saving" ? "Saving…" : sheet.status === "error" ? "Not saved" : "Saved"}
+          {sheet.status === "saving"
+            ? t("Saving…", "Enregistrement…")
+            : sheet.status === "error"
+              ? t("Not saved", "Non enregistré")
+              : t("Saved", "Enregistré")}
         </span>
       </div>
       {sheet.status === "error" && sheet.error && <Notice tone="error">{sheet.error}</Notice>}
@@ -87,7 +92,7 @@ export function OnboardingForm({ target, brand, mode }: Props) {
               onClick={() => go(s.id)}
             >
               <span className="num">{String(i + 1).padStart(2, "0")}</span>
-              {en(s.name)}
+              {say(s.name)}
             </button>
           );
         })}
@@ -98,7 +103,7 @@ export function OnboardingForm({ target, brand, mode }: Props) {
           onClick={() => go(SEND)}
         >
           <span className="num">✓</span>
-          {mode === "team" ? "Summary" : "Send"}
+          {mode === "team" ? "Summary" : t("Send", "Envoyer")}
         </button>
       </nav>
 
@@ -113,7 +118,7 @@ export function OnboardingForm({ target, brand, mode }: Props) {
           onSend={async () => {
             try {
               await sheet.send();
-              setNotice("Sent. Gecko has your answers.");
+              setNotice(t("Sent. Gecko has your answers.", "Envoyé. Gecko a vos réponses."));
             } catch {
               // The error shows above.
             }
@@ -128,8 +133,8 @@ export function OnboardingForm({ target, brand, mode }: Props) {
           <header className="ob-head">
             <span className="num">{String(index + 1).padStart(2, "0")}</span>
             <div>
-              <h2 id={`ob-${at}`}>{en(SECTIONS[index]!.title)}</h2>
-              <p className="muted">{en(SECTIONS[index]!.why)}</p>
+              <h2 id={`ob-${at}`}>{say(SECTIONS[index]!.title)}</h2>
+              <p className="muted">{say(SECTIONS[index]!.why)}</p>
             </div>
           </header>
           <div className="ob-grid">
@@ -140,17 +145,17 @@ export function OnboardingForm({ target, brand, mode }: Props) {
           <div className="ob-foot">
             {index > 0 ? (
               <Button variant="secondary" onClick={() => go(SECTIONS[index - 1]!.id)}>
-                ← {en(SECTIONS[index - 1]!.name)}
+                ← {say(SECTIONS[index - 1]!.name)}
               </Button>
             ) : (
               <span />
             )}
             <Button onClick={() => go(SECTIONS[index + 1]?.id ?? SEND)}>
               {SECTIONS[index + 1]
-                ? `Next: ${en(SECTIONS[index + 1]!.name)}`
+                ? `${t("Next", "Suivant")} : ${say(SECTIONS[index + 1]!.name)}`
                 : mode === "team"
                   ? "Summary"
-                  : "Review and send"}{" "}
+                  : t("Review and send", "Relire et envoyer")}{" "}
               →
             </Button>
           </div>
@@ -182,33 +187,40 @@ function SendPart({
   const open = useMemo(() => openQuestions(answers), [answers]);
   const left = open.reduce((n, row) => n + row.missing.length, 0);
   const when = sentAt
-    ? new Date(sentAt).toLocaleDateString("en-GB", { day: "numeric", month: "long" })
+    ? new Date(sentAt).toLocaleDateString(locale(), { day: "numeric", month: "long" })
     : "";
   return (
     <section className="ob-part">
       <header className="ob-head">
         <span className="num">✓</span>
         <div>
-          <h2>{mode === "team" ? `${brand}: summary` : "Ready to send?"}</h2>
+          <h2>{mode === "team" ? `${brand}: summary` : t("Ready to send?", "Prêt à envoyer ?")}</h2>
           <p className="muted">
             {mode === "team"
               ? when
                 ? `The client sent it on ${when}.`
                 : "The client hasn't sent it yet."
-              : "Gaps are fine: we cover them together on a call. Press send and Gecko gets everything."}
+              : t(
+                  "Gaps are fine: we cover them together on a call. Press send and Gecko gets everything.",
+                  "Les trous, ce n'est pas grave : on les complète ensemble lors d'un appel. Appuyez sur envoyer et Gecko reçoit tout.",
+                )}
           </p>
         </div>
       </header>
-      {mode === "client" && when && <p className="tag">Sent to Gecko on {when}</p>}
+      {mode === "client" && when && (
+        <p className="tag">{t(`Sent to Gecko on ${when}`, `Envoyé à Gecko le ${when}`)}</p>
+      )}
       <p className="small">
-        {left ? `${left} questions still open` : "Every question has an answer."}
+        {left
+          ? t(`${left} questions still open`, `${left} question(s) sans réponse`)
+          : t("Every question has an answer.", "Toutes les questions ont une réponse.")}
       </p>
       {open.length > 0 && (
         <ul className="ob-gaps">
           {open.map(({ section, missing }) => (
             <li key={section.id}>
               <button type="button" onClick={() => onGo(section.id)}>
-                <strong>{en(section.name)}</strong>
+                <strong>{say(section.name)}</strong>
                 <span className="muted">
                   {missing
                     .slice(0, 3)
@@ -239,13 +251,15 @@ function SendPart({
       )}
       <div className="ob-foot">
         <Button variant="secondary" onClick={() => onGo(SECTIONS[SECTIONS.length - 1]!.id)}>
-          ← {en(SECTIONS[SECTIONS.length - 1]!.name)}
+          ← {say(SECTIONS[SECTIONS.length - 1]!.name)}
         </Button>
         {mode === "team" ? (
           <Button onClick={() => void onCopy()}>Copy answers</Button>
         ) : (
           <Button onClick={() => void onSend()}>
-            {sentAt ? "Send the update" : "Send to Gecko"}
+            {sentAt
+              ? t("Send the update", "Envoyer la mise à jour")
+              : t("Send to Gecko", "Envoyer à Gecko")}
           </Button>
         )}
       </div>
@@ -264,14 +278,14 @@ function QuestionField({
   set: (key: string, value: unknown) => void;
 }) {
   const id = useId();
-  const label = q.label ? en(q.label) : "";
+  const label = q.label ? say(q.label) : "";
   const wide =
     q.type === "list" ||
     q.type === "assets" ||
     q.type === "long" ||
     ((q.type === "pick" || q.type === "picks") && q.opts.length > 6);
   const cls = `ob-f${q.half ? " half" : ""}${wide ? " wide" : ""}`;
-  const placeholder = q.ph ? en(q.ph) : undefined;
+  const placeholder = q.ph ? say(q.ph) : undefined;
   const str = (key: string) => (typeof answers[key] === "string" ? (answers[key] as string) : "");
 
   switch (q.type) {
@@ -325,14 +339,14 @@ function QuestionField({
                 aria-pressed={isOn(opt[0])}
                 onClick={() => toggle(opt[0])}
               >
-                {en(opt)}
+                {say(opt)}
               </button>
             ))}
             {q.other ? (
               <input
                 className="chip-other"
                 aria-label={`${label}: other`}
-                placeholder="Other…"
+                placeholder={t("Other…", "Autre…")}
                 value={str(`${q.id}.other`)}
                 maxLength={300}
                 onChange={(e) => set(`${q.id}.other`, e.target.value)}
@@ -346,17 +360,17 @@ function QuestionField({
       const value = str(q.id);
       return (
         <div className={`${cls} scale${value ? " set" : ""}`}>
-          <span>{en(q.left)}</span>
+          <span>{say(q.left)}</span>
           <input
             type="range"
             min={0}
             max={100}
             step={5}
             value={value || "50"}
-            aria-label={`${en(q.left)} or ${en(q.right)}`}
+            aria-label={`${say(q.left)} ${t("or", "ou")} ${say(q.right)}`}
             onChange={(e) => set(q.id, e.target.value)}
           />
-          <span>{en(q.right)}</span>
+          <span>{say(q.right)}</span>
         </div>
       );
     }
@@ -383,8 +397,8 @@ function QuestionField({
                   <input
                     key={col[0]}
                     type={col[2] === "url" ? "url" : "text"}
-                    aria-label={en(col[1])}
-                    placeholder={en(col[1])}
+                    aria-label={say(col[1])}
+                    placeholder={say(col[1])}
                     value={row[col[0]] ?? ""}
                     maxLength={500}
                     onChange={(e) => update(i, col[0], e.target.value)}
@@ -394,7 +408,7 @@ function QuestionField({
                   <button
                     type="button"
                     className="icon-btn"
-                    aria-label="Remove"
+                    aria-label={t("Remove", "Retirer")}
                     onClick={() =>
                       set(
                         q.id,
@@ -420,21 +434,21 @@ function QuestionField({
           <div className="ob-assets">
             {q.items.map((item, n) => (
               <div className="ob-asset" key={n}>
-                <span>{en(item)}</span>
+                <span>{say(item)}</span>
                 <select
-                  aria-label={en(item)}
+                  aria-label={say(item)}
                   value={str(`${q.id}.${n}`)}
                   onChange={(e) => set(`${q.id}.${n}`, e.target.value)}
                 >
-                  <option value="">Choose</option>
-                  <option value="have">We have it</option>
-                  <option value="help">Need help</option>
-                  <option value="none">Not needed</option>
+                  <option value="">{t("Choose", "Choisir")}</option>
+                  <option value="have">{t("We have it", "On l'a")}</option>
+                  <option value="help">{t("Need help", "Besoin d'aide")}</option>
+                  <option value="none">{t("Not needed", "Pas nécessaire")}</option>
                 </select>
                 <input
                   type="url"
-                  aria-label={`${en(item)}: link`}
-                  placeholder="Link"
+                  aria-label={`${say(item)}: link`}
+                  placeholder={t("Link", "Lien")}
                   value={str(`${q.id}.${n}.link`)}
                   maxLength={500}
                   onChange={(e) => set(`${q.id}.${n}.link`, e.target.value)}

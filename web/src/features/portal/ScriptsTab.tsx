@@ -4,18 +4,24 @@ import { ReviewActions } from "@/features/concepts/ReviewActions";
 import { hookName, groupScripts, type Script } from "@/features/scripts/model";
 import { ScriptView } from "@/features/scripts/ScriptView";
 import { useClientScriptNote } from "@/features/scripts/scriptsApi";
+import { t } from "@/lib/i18n";
 
 export function ScriptsTab({ portal, scripts }: { portal: ClientPortal; scripts: Script[] }) {
   const groups = groupScripts(scripts, "client");
   return (
     <section className="tab-body">
       <p className="lede">
-        Each script is one reel, written the way we'll film it. Pick the hook you like, comment on
-        any line, then approve. Once you approve, that's what we shoot.
+        {t(
+          "Each script is one reel, written the way we'll film it. Pick the hook you like, comment on any line, then approve. Once you approve, that's what we shoot.",
+          "Chaque script, c'est une vidéo, écrite comme on va la filmer. Choisissez l'accroche qui vous plaît, commentez n'importe quelle ligne, puis validez. Une fois validé, c'est ce qu'on tourne.",
+        )}
       </p>
       {groups.length === 0 && (
         <p className="muted">
-          Scripts come after you approve the ideas. They'll appear here for you to read and approve.
+          {t(
+            "Scripts come after you approve the ideas. They'll appear here for you to read and approve.",
+            "Les scripts arrivent après la validation des idées. Ils apparaîtront ici pour que vous les lisiez et les validiez.",
+          )}
         </p>
       )}
       {groups.map((group) => (
@@ -61,10 +67,15 @@ function ClientScript({ portal, script }: { portal: ClientPortal; script: Script
       <ReviewActions
         canDecide={canDecide}
         pending={note.isPending}
-        commentLabel="Comment on the whole script"
-        approveNote={`You're approving version ${script.version} of "${script.title}"${
-          picked !== null && script.hooks.length > 1 ? ` with ${hookName(picked)}` : ""
-        }. This is what we'll shoot.`}
+        commentLabel={t("Comment on the whole script", "Commenter tout le script")}
+        approveNote={t(
+          `You're approving version ${script.version} of "${script.title}"${
+            picked !== null && script.hooks.length > 1 ? ` with ${hookName(picked)}` : ""
+          }. This is what we'll shoot.`,
+          `Vous validez la version ${script.version} de « ${script.title} »${
+            picked !== null && script.hooks.length > 1 ? `, avec ${hookName(picked)}` : ""
+          }. C'est ce qu'on va tourner.`,
+        )}
         onSend={(kind, body) => {
           if (kind === "approve" && script.hooks.length > 1 && picked === null)
             return Promise.reject(new Error("hook_required"));

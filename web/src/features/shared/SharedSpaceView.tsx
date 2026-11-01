@@ -6,6 +6,7 @@ import { TextArea } from "@/components/TextArea";
 import { shortDate } from "@/features/concepts/model";
 import { friendlyError } from "@/lib/errors";
 import { linkHost, type SharedItem, type SharedSpace } from "./sharedApi";
+import { t } from "@/lib/i18n";
 
 export interface SharedActions {
   saveNotes: (body: string) => Promise<unknown>;
@@ -39,7 +40,10 @@ export function SharedSpaceView({
     <section className="tab-body shared">
       <p className="lede">
         {reader === "client"
-          ? "The space we both fill in. Your brand notes guide every script, references show us what you like, and requests are for anything that isn't about a script or a reel."
+          ? t(
+              "The space we both fill in. Your brand notes guide every script, references show us what you like, and requests are for anything that isn't about a script or a reel.",
+              "L'espace qu'on remplit ensemble. Vos notes de marque guident chaque script, les références nous montrent ce que vous aimez, et les demandes servent à tout ce qui ne concerne pas un script ou une vidéo.",
+            )
           : "Filled in by both sides. Every script gets checked against the brand notes. Requests from the client need an answer here."}
       </p>
 
@@ -47,13 +51,16 @@ export function SharedSpaceView({
 
       <div className="group">
         <h2>
-          References <span className="count">{references.length}</span>
+          {t("References", "Références")} <span className="count">{references.length}</span>
         </h2>
         <ReferenceForm reader={reader} onAdd={actions.addReference} />
         {references.length === 0 ? (
           <p className="muted">
             {reader === "client"
-              ? "Drop in reels or ads you love, or ones you never want to look like."
+              ? t(
+                  "Drop in reels or ads you love, or ones you never want to look like.",
+                  "Ajoutez des vidéos ou des pubs que vous adorez, ou auxquelles vous ne voulez jamais ressembler.",
+                )
               : "No references yet."}
           </p>
         ) : (
@@ -67,7 +74,7 @@ export function SharedSpaceView({
 
       <div className="group">
         <h2>
-          Requests{" "}
+          {t("Requests", "Demandes")}{" "}
           {reader === "team" && openRequests.length > 0 && (
             <span className="badge">{openRequests.length} open</span>
           )}
@@ -76,7 +83,10 @@ export function SharedSpaceView({
         {requests.length === 0 ? (
           <p className="muted">
             {reader === "client"
-              ? "A new product, a date that moved, a question for Heni: ask here and the answer stays with it."
+              ? t(
+                  "A new product, a date that moved, a question for Heni: ask here and the answer stays with it.",
+                  "Un nouveau produit, une date qui bouge, une question pour Heni : demandez ici, la réponse reste avec.",
+                )
               : "No requests from the client."}
           </p>
         ) : (
@@ -139,34 +149,35 @@ function BrandNotes({
   return (
     <div className="block brand-notes">
       <div className="page-head">
-        <h2>Brand notes</h2>
+        <h2>{t("Brand notes", "Notes de marque")}</h2>
         {!editing && (
           <Button variant="secondary" onClick={() => setEditing(true)}>
-            {notes.body ? "Edit" : "Write them"}
+            {notes.body ? t("Edit", "Modifier") : t("Write them", "Les écrire")}
           </Button>
         )}
       </div>
       {editing ? (
         <form className="concept-form" onSubmit={onSubmit}>
           <TextArea
-            label="Brand notes"
+            label={t("Brand notes", "Notes de marque")}
             name="body"
             rows={10}
             maxLength={8000}
             defaultValue={notes.body}
             dir="auto"
             autoFocus
-            placeholder={
-              "Words we use: …\nWords we never use: …\nClaims we can't make: …\nThe brand never: …\nAlways show: …"
-            }
+            placeholder={t(
+              "Words we use: …\nWords we never use: …\nClaims we can't make: …\nThe brand never: …\nAlways show: …",
+              "Les mots qu'on utilise : …\nLes mots qu'on n'utilise jamais : …\nCe qu'on ne peut pas promettre : …\nLa marque ne fait jamais : …\nToujours montrer : …",
+            )}
           />
           {error && <Notice tone="error">{error}</Notice>}
           <div className="actions">
             <Button variant="secondary" onClick={() => setEditing(false)} disabled={busy}>
-              Cancel
+              {t("Cancel", "Annuler")}
             </Button>
             <Button type="submit" disabled={busy}>
-              Save
+              {t("Save", "Enregistrer")}
             </Button>
           </div>
         </form>
@@ -177,14 +188,20 @@ function BrandNotes({
           </p>
           {notes.updatedAt && (
             <p className="small muted">
-              Last edited by {notes.updatedBy || "Gecko"} on {shortDate(notes.updatedAt)}
+              {t(
+                `Last edited by ${notes.updatedBy || "Gecko"} on ${shortDate(notes.updatedAt)}`,
+                `Modifié par ${notes.updatedBy || "Gecko"} le ${shortDate(notes.updatedAt)}`,
+              )}
             </p>
           )}
         </>
       ) : (
         <p className="muted">
           {reader === "client"
-            ? "Words you use and avoid, claims you can't make, what your brand never does. Every script gets checked against this."
+            ? t(
+                "Words you use and avoid, claims you can't make, what your brand never does. Every script gets checked against this.",
+                "Les mots que vous utilisez et ceux à éviter, ce que vous ne pouvez pas promettre, ce que votre marque ne fait jamais. Chaque script est vérifié avec ces notes.",
+              )
             : "Nothing yet. Fill it in from the onboarding answers or on a call with the client."}
         </p>
       )}
@@ -207,9 +224,17 @@ function ReferenceForm({
     const form = new FormData(event.currentTarget);
     const text = (name: string) => String(form.get(name) ?? "").trim();
     const url = text("url");
-    if (!url && !text("body")) return setError("Paste a link or write what you mean.");
+    if (!url && !text("body"))
+      return setError(
+        t("Paste a link or write what you mean.", "Collez un lien ou expliquez en quelques mots."),
+      );
     if (url && !/^https?:\/\/\S+$/i.test(url))
-      return setError("Paste the full link, starting with https://");
+      return setError(
+        t(
+          "Paste the full link, starting with https://",
+          "Collez le lien complet, qui commence par https://",
+        ),
+      );
     void run(
       () => onAdd({ title: text("title"), body: text("body"), url }),
       () => setOpen(false),
@@ -220,29 +245,31 @@ function ReferenceForm({
     return (
       <p>
         <Button variant="secondary" onClick={() => setOpen(true)}>
-          Add a reference
+          {t("Add a reference", "Ajouter une référence")}
         </Button>
       </p>
     );
   return (
     <form className="concept-form card" onSubmit={onSubmit}>
       <Field
-        label="Link"
+        label={t("Link", "Lien")}
         name="url"
         type="url"
         placeholder="https://www.instagram.com/reel/…"
         autoFocus
       />
       <Field
-        label="In a few words"
+        label={t("In a few words", "En quelques mots")}
         name="title"
         maxLength={160}
         placeholder={
-          reader === "client" ? "This hook, this light, never this" : "What to take from it"
+          reader === "client"
+            ? t("This hook, this light, never this", "Cette accroche, cette lumière, jamais ça")
+            : "What to take from it"
         }
       />
       <TextArea
-        label="Anything to add (optional)"
+        label={t("Anything to add (optional)", "Quelque chose à ajouter (facultatif)")}
         name="body"
         rows={2}
         maxLength={4000}
@@ -251,10 +278,10 @@ function ReferenceForm({
       {error && <Notice tone="error">{error}</Notice>}
       <div className="actions">
         <Button variant="secondary" onClick={() => setOpen(false)} disabled={busy}>
-          Cancel
+          {t("Cancel", "Annuler")}
         </Button>
         <Button type="submit" disabled={busy}>
-          Add
+          {t("Add", "Ajouter")}
         </Button>
       </div>
     </form>
@@ -290,8 +317,10 @@ function Reference({
         </p>
       )}
       <p className="small muted">
-        {item.fromClient ? item.authorName || "Client" : `${item.authorName || "Gecko"}, Gecko`} ·{" "}
-        {shortDate(item.createdAt)}
+        {item.fromClient
+          ? item.authorName || t("Client", "Client")
+          : `${item.authorName || "Gecko"}, Gecko`}{" "}
+        · {shortDate(item.createdAt)}
         {canRemove && (
           <>
             {" · "}
@@ -301,7 +330,7 @@ function Reference({
               disabled={busy}
               onClick={() => void run(() => onRemove(item.id))}
             >
-              Remove
+              {t("Remove", "Retirer")}
             </button>
           </>
         )}
@@ -323,7 +352,7 @@ function RequestForm({
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const body = String(form.get("body") ?? "").trim();
-    if (!body) return setError("Write what you need.");
+    if (!body) return setError(t("Write what you need.", "Écrivez ce dont vous avez besoin."));
     void run(
       () => onAdd({ title: String(form.get("title") ?? "").trim(), body }),
       () => setOpen(false),
@@ -334,31 +363,46 @@ function RequestForm({
     return (
       <p>
         <Button variant="secondary" onClick={() => setOpen(true)}>
-          Ask for something
+          {t("Ask for something", "Faire une demande")}
         </Button>
       </p>
     );
   return (
     <form className="concept-form card" onSubmit={onSubmit}>
-      <Field label="Subject (optional)" name="title" maxLength={160} autoFocus />
-      <TextArea label="What do you need?" name="body" rows={4} maxLength={4000} dir="auto" />
+      <Field
+        label={t("Subject (optional)", "Sujet (facultatif)")}
+        name="title"
+        maxLength={160}
+        autoFocus
+      />
+      <TextArea
+        label={t("What do you need?", "De quoi avez-vous besoin ?")}
+        name="body"
+        rows={4}
+        maxLength={4000}
+        dir="auto"
+      />
       {error && <Notice tone="error">{error}</Notice>}
       <div className="actions">
         <Button variant="secondary" onClick={() => setOpen(false)} disabled={busy}>
-          Cancel
+          {t("Cancel", "Annuler")}
         </Button>
         <Button type="submit" disabled={busy}>
-          Send to Gecko
+          {t("Send to Gecko", "Envoyer à Gecko")}
         </Button>
       </div>
     </form>
   );
 }
 
-const REQUEST_STATUS: Record<"client" | "team", Record<string, string>> = {
-  client: { open: "With Gecko", answered: "Answered", closed: "Closed" },
-  team: { open: "Needs an answer", answered: "Answered", closed: "Closed" },
-};
+const requestStatus = (reader: "client" | "team", status: string) =>
+  status === "open"
+    ? reader === "client"
+      ? t("With Gecko", "Chez Gecko")
+      : "Needs an answer"
+    : status === "answered"
+      ? t("Answered", "Répondu")
+      : t("Closed", "Clos");
 
 function Request({
   reader,
@@ -389,11 +433,11 @@ function Request({
     <li className={`request request-${status}`}>
       <p className="small">
         <span className={`status status-${status === "open" ? "changes" : "approved"}`}>
-          {REQUEST_STATUS[reader][status]}
+          {requestStatus(reader, status)}
         </span>
         <span className="muted">
           {" "}
-          · {item.authorName || "Client"} · {shortDate(item.createdAt)}
+          · {item.authorName || t("Client", "Client")} · {shortDate(item.createdAt)}
         </span>
       </p>
       {item.title && (
@@ -444,7 +488,7 @@ function Request({
           />
           <div className="actions">
             <Button variant="secondary" onClick={() => setAnswering(false)} disabled={busy}>
-              Cancel
+              {t("Cancel", "Annuler")}
             </Button>
             <Button type="submit" disabled={busy}>
               Send answer
@@ -459,7 +503,7 @@ function Request({
           disabled={busy}
           onClick={() => void run(() => onRemove(item.id))}
         >
-          Withdraw
+          {t("Withdraw", "Retirer")}
         </button>
       )}
       {error && <Notice tone="error">{error}</Notice>}
