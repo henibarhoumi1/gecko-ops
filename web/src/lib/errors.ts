@@ -30,6 +30,12 @@ const MESSAGES: [RegExp, string][] = [
   [/hook_required/, "Pick the hook you like first, then approve."],
   [/invalid_script/, "That concept belongs to another client. Pick one of this client's concepts."],
   [/invalid_item/, "Check the link starts with https:// and the note isn't empty."],
+  [/invalid_card/, "That card couldn't be saved. Refresh the board and try again."],
+  [/image_type/, "Use a JPG, PNG, WebP or GIF image."],
+  [/image_too_big/, "That image is over 5 MB even after shrinking it. Try a smaller one."],
+  [/board_full/, "This board holds 500 cards. Make a board inside it for the rest."],
+  [/too_many_boards/, "This client has 200 boards already. Delete one you don't use."],
+  [/board_not_found/, "This board was deleted or moved. Go back to the main board."],
   [/invalid_notes/, "The brand notes can be up to 8,000 characters."],
   [
     /PGRST20[25]|could not find the (table|function)|does not exist/i,
