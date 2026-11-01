@@ -39,8 +39,9 @@ export function ClientsPage() {
             (concepts.data ?? []).filter((c) => c.clientId === client.id),
           );
           const flags = [
-            counts.changes && `${counts.changes} changes asked`,
-            counts.idea && `${counts.idea} new ideas`,
+            counts.changes &&
+              `${counts.changes} ${counts.changes === 1 ? "needs" : "need"} changes`,
+            counts.idea && `${counts.idea} new ${counts.idea === 1 ? "idea" : "ideas"}`,
             counts.review && `${counts.review} with the client`,
             counts.approved && `${counts.approved} approved`,
           ].filter(Boolean);
