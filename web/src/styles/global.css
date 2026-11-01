@@ -3126,3 +3126,101 @@ a.btn {
   list-style: none;
   margin-left: -18px;
 }
+
+/* ---------- portal polish ---------- */
+
+/* The brand's label, taped onto the cutting mat. */
+.portal-hero {
+  display: flex;
+  align-items: center;
+  padding: 34px 28px;
+  border-radius: var(--radius);
+}
+
+.portal-label {
+  position: relative;
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  max-width: 100%;
+  padding: 26px 30px 22px;
+  background: var(--white);
+  color: var(--ink);
+  border-radius: 4px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  transform: rotate(-0.8deg);
+}
+
+.portal-label .tape {
+  position: absolute;
+  top: -12px;
+  left: 22px;
+  transform: rotate(-2deg);
+}
+
+.portal-label h1 {
+  margin: 4px 0 0;
+  font-size: clamp(32px, 6vw, 56px);
+  line-height: 1;
+  overflow-wrap: anywhere;
+}
+
+.portal-label .portal-brand {
+  margin: 6px 0 0;
+}
+
+.portal-label .portal-brand img {
+  max-height: clamp(40px, 8vw, 64px);
+  max-width: min(400px, 100%);
+}
+
+.portal-page .portal-tabs {
+  margin-top: 26px;
+}
+
+/* What needs the client: one list, not a stack of boxes. */
+.waiting {
+  gap: 0;
+  border-radius: var(--radius);
+  background: var(--yellow-soft);
+  overflow: hidden;
+}
+
+.waiting li + li {
+  border-top: 1px solid rgba(17, 17, 17, 0.12);
+}
+
+.waiting-item {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.waiting-item:hover {
+  background: var(--yellow);
+}
+
+@media (max-width: 560px) {
+  .portal-hero {
+    padding: 24px 16px;
+    margin-inline: -4px;
+  }
+
+  .portal-label {
+    padding: 22px 20px 16px;
+  }
+
+  .portal-who .muted {
+    display: none;
+  }
+
+  /* Tabs scroll sideways on a phone; the fade says there is more. */
+  .portal-tabs {
+    mask-image: linear-gradient(90deg, #000 85%, transparent);
+  }
+}
+
+/* The board already sits on the mat and names the brand; give it the room. */
+.portal-page.board-page .portal-hero {
+  display: none;
+}

@@ -152,7 +152,10 @@ export function OnboardingForm({ target, brand, mode }: Props) {
             )}
             <Button onClick={() => go(SECTIONS[index + 1]?.id ?? SEND)}>
               {SECTIONS[index + 1]
-                ? `${t("Next", "Suivant")} : ${say(SECTIONS[index + 1]!.name)}`
+                ? t(
+                    `Next: ${say(SECTIONS[index + 1]!.name)}`,
+                    `Suivant : ${say(SECTIONS[index + 1]!.name)}`,
+                  )
                 : mode === "team"
                   ? "Summary"
                   : t("Review and send", "Relire et envoyer")}{" "}
