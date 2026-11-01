@@ -10,8 +10,8 @@ export function ScriptsTab({ portal, scripts }: { portal: ClientPortal; scripts:
   return (
     <section className="tab-body">
       <p className="lede">
-        Each script is one reel, written the way we'll film it. Pick the hook you like, comment
-        on any line, then approve. Once you approve, that's what we shoot.
+        Each script is one reel, written the way we'll film it. Pick the hook you like, comment on
+        any line, then approve. Once you approve, that's what we shoot.
       </p>
       {groups.length === 0 && (
         <p className="muted">
