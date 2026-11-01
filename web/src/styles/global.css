@@ -1382,6 +1382,78 @@ a.btn {
   margin-top: 4px;
 }
 
+/* ---------- Shared space ---------- */
+.brand-notes .page-head h2 {
+  margin: 8px 0 0;
+}
+
+.brand-notes-body {
+  margin: 8px 0 6px;
+  padding: 16px 18px;
+  border-radius: var(--radius);
+  background: var(--yellow-soft);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.refs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ref-card {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: 14px;
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+}
+
+.ref-card p {
+  margin: 0;
+}
+
+.ref-link {
+  justify-self: start;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ref-body,
+.request-body {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.requests {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.request {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+}
+
+.request-open {
+  border-left: 4px solid var(--pink);
+}
+
+.request p {
+  margin: 0;
+}
+
 /* ---------- Onboarding ---------- */
 .ob {
   display: grid;

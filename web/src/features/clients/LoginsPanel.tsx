@@ -31,7 +31,7 @@ export function LoginsPanel({ clientId, brand }: { clientId: string; brand: stri
   }
 
   const message = link
-    ? `Hi! Here is your Gecko client portal for ${brand}: ${link.url}\nCreate your account with ${link.email}, then you'll see your campaign, the onboarding and the concepts to approve.`
+    ? `Hi! Your ${brand} × Gecko portal is ready: ${link.url}\nOpen it, type your name, and we'll email ${link.email} a link to get in. No password to remember. Everything for the campaign lives there: ideas and scripts to approve, the shoot, your videos.`
     : "";
 
   return (
