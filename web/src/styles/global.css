@@ -3031,3 +3031,98 @@ a.btn {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ---------- links that play in place ---------- */
+
+.link-player {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.link-player-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.play-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.play-toggle:hover,
+.play-toggle[aria-expanded="true"] {
+  background: var(--yellow-soft);
+}
+
+.link-player-frame {
+  display: block;
+  width: min(100%, 340px);
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--ink);
+}
+
+.link-player-frame.provider-youtube,
+.link-player-frame.provider-vimeo,
+.link-player-frame.provider-loom,
+.link-player-frame.provider-drive {
+  width: min(100%, 560px);
+}
+
+.link-player-frame iframe,
+.link-player-frame video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* ---------- messages Gecko sends the client ---------- */
+
+.nudge-open {
+  margin: 0 0 18px;
+}
+
+.nudge {
+  max-width: 640px;
+  margin: 0 0 20px;
+}
+
+.nudge-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.message-preview {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  background: var(--yellow-soft);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.msg-lang {
+  justify-self: start;
+}
+
+.refs li:has(.link-player) {
+  list-style: none;
+  margin-left: -18px;
+}

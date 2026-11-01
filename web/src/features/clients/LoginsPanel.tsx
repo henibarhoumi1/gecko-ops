@@ -5,6 +5,7 @@ import { Notice } from "@/components/Notice";
 import { shortDate } from "@/features/concepts/model";
 import { friendlyError } from "@/lib/errors";
 import { useClientAccounts, useInviteClient, useRevokeClientAccount } from "./clientsApi";
+import { inviteMessage, whatsappLink, type MsgLang } from "./messages";
 
 /** Who from the client can sign in to the portal, and the one-time links that let them. */
 export function LoginsPanel({ clientId, brand }: { clientId: string; brand: string }) {
@@ -14,6 +15,7 @@ export function LoginsPanel({ clientId, brand }: { clientId: string; brand: stri
   const [link, setLink] = useState<{ email: string; url: string } | null>(null);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+  const [lang, setLang] = useState<MsgLang>("fr");
 
   async function onInvite(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -30,9 +32,7 @@ export function LoginsPanel({ clientId, brand }: { clientId: string; brand: stri
     }
   }
 
-  const message = link
-    ? `Hi! Your ${brand} × Gecko portal is ready: ${link.url}\nOpen it, type your name, and we'll email ${link.email} a link to get in. No password to remember. Everything for the campaign lives there: ideas and scripts to approve, the shoot, your videos.`
-    : "";
+  const message = link ? inviteMessage(lang, brand, link.url) : "";
 
   return (
     <section className="tab-body">
@@ -51,6 +51,8 @@ export function LoginsPanel({ clientId, brand }: { clientId: string; brand: stri
         <div className="card stack invite-link">
           <p className="small">Send this to {link.email}. It only works once.</p>
           <code>{link.url}</code>
+          <MessageLang lang={lang} onChange={(l) => (setLang(l), setCopied(false))} />
+          <p className="small pre message-preview">{message}</p>
           <div className="actions start">
             <Button
               onClick={() =>
@@ -61,7 +63,7 @@ export function LoginsPanel({ clientId, brand }: { clientId: string; brand: stri
             </Button>
             <a
               className="btn btn-secondary"
-              href={`https://wa.me/?text=${encodeURIComponent(message)}`}
+              href={whatsappLink(message)}
               target="_blank"
               rel="noreferrer noopener"
             >
@@ -105,5 +107,24 @@ export function LoginsPanel({ clientId, brand }: { clientId: string; brand: stri
         ))}
       </ul>
     </section>
+  );
+}
+
+/** Which language the ready-made message is written in. */
+export function MessageLang({ lang, onChange }: { lang: MsgLang; onChange: (l: MsgLang) => void }) {
+  return (
+    <div className="lang-switch msg-lang" role="group" aria-label="Message language">
+      {(["fr", "en"] as const).map((l) => (
+        <button
+          key={l}
+          type="button"
+          className={lang === l ? "on" : ""}
+          aria-pressed={lang === l}
+          onClick={() => onChange(l)}
+        >
+          {l === "fr" ? "Français" : "English"}
+        </button>
+      ))}
+    </div>
   );
 }

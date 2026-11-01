@@ -10,6 +10,7 @@ import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { friendlyError } from "@/lib/errors";
 import { useClients, useLogos } from "./clientsApi";
 import { LogoPanel } from "./LogoPanel";
+import { ClientNudge } from "./ClientNudge";
 import { LoginsPanel } from "./LoginsPanel";
 import { OverviewEditor } from "./OverviewEditor";
 import { TeamConcepts } from "./TeamConcepts";
@@ -63,6 +64,7 @@ export function ClientPage() {
         )}
         {client.brand}
       </h1>
+      <ClientNudge clientId={clientId} />
       <nav className="portal-tabs" aria-label={client.brand}>
         {tabs.map(([path, label]) => (
           <NavLink

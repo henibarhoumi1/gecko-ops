@@ -1,3 +1,4 @@
+import { LinkPlayer } from "@/components/LinkPlayer";
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
@@ -306,11 +307,7 @@ function Reference({
           {item.title}
         </strong>
       )}
-      {item.url && (
-        <a href={item.url} target="_blank" rel="noreferrer noopener" className="ref-link">
-          {linkHost(item.url)} ↗
-        </a>
-      )}
+      {item.url && <LinkPlayer url={item.url} label={`${linkHost(item.url)} ↗`} />}
       {item.body && (
         <p className="small ref-body" dir="auto">
           {item.body}
