@@ -7,12 +7,14 @@ import {
   type Concept,
   type ConceptNote,
 } from "./model";
+import { t } from "@/lib/i18n";
 
-const NOTE_LABEL: Record<ConceptNote["kind"], string> = {
-  comment: "",
-  approve: "Approved",
-  changes: "Asked for changes",
-};
+const noteLabel = (kind: ConceptNote["kind"]) =>
+  kind === "approve"
+    ? t("Approved", "A validé")
+    : kind === "changes"
+      ? t("Asked for changes", "A demandé des changements")
+      : "";
 
 /** One concept as both sides see it: the idea, its references and the conversation under it. */
 export function ConceptCard({
@@ -33,7 +35,9 @@ export function ConceptCard({
           {STATUS_LABEL[reader][concept.status]}
         </span>
         {concept.version > 1 && concept.status !== "idea" && (
-          <span className="small muted">Version {concept.version}</span>
+          <span className="small muted">
+            {t("Version", "Version")} {concept.version}
+          </span>
         )}
       </header>
       <h3>{concept.title}</h3>
@@ -54,10 +58,13 @@ export function ConceptCard({
         </ul>
       )}
       <p className="small muted">
-        {concept.fromClient ? "Idea from " : "By "}
-        {concept.authorName || (concept.fromClient ? "the client" : "Gecko")}
+        {concept.fromClient ? t("Idea from ", "Idée de ") : t("By ", "Par ")}
+        {concept.authorName || (concept.fromClient ? t("the client", "le client") : "Gecko")}
         {concept.approvedAt &&
-          ` · Approved by ${concept.approvedBy ?? "the client"} on ${shortDate(concept.approvedAt)}`}
+          t(
+            ` · Approved by ${concept.approvedBy ?? "the client"} on ${shortDate(concept.approvedAt)}`,
+            ` · Validée par ${concept.approvedBy ?? "le client"} le ${shortDate(concept.approvedAt)}`,
+          )}
       </p>
       <NoteList notes={concept.notes} />
       {children}
@@ -69,19 +76,21 @@ export function ConceptCard({
 export function NoteList({ notes }: { notes: ConceptNote[] }) {
   if (notes.length === 0) return null;
   return (
-    <ol className="notes" aria-label="Conversation">
+    <ol className="notes" aria-label={t("Conversation", "Échanges")}>
       {notes.map((note) => (
         <li
           key={note.id}
           className={`note note-${note.kind}${note.fromClient ? " from-client" : ""}`}
         >
           <p className="small">
-            <strong>{note.authorName || (note.fromClient ? "Client" : "Gecko")}</strong>
-            {NOTE_LABEL[note.kind] && <span className="note-kind">{NOTE_LABEL[note.kind]}</span>}
+            <strong>
+              {note.authorName || (note.fromClient ? t("Client", "Client") : "Gecko")}
+            </strong>
+            {noteLabel(note.kind) && <span className="note-kind">{noteLabel(note.kind)}</span>}
             <span className="muted">
               {" "}
               · {shortDate(note.createdAt)}
-              {note.kind !== "comment" ? ` · version ${note.version}` : ""}
+              {note.kind !== "comment" ? ` · ${t("version", "version")} ${note.version}` : ""}
             </span>
           </p>
           {note.body && <p className="note-body">{note.body}</p>}

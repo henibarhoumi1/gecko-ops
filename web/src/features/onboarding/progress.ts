@@ -1,10 +1,11 @@
 import { QUESTIONS, SECTIONS, type Question, type Section, type Words } from "./questions";
+import { t } from "@/lib/i18n";
 
 export type Answers = Record<string, unknown>;
 
-/** English for now; French is in the data for when the portal gets a language switch. */
-export function en(words: Words | ""): string {
-  return words === "" ? "" : words[0];
+/** The question text in the language in use (the team app always reads English). */
+export function say(words: Words | ""): string {
+  return words === "" ? "" : t(words[0], words[1]);
 }
 
 function filled(value: unknown): boolean {
@@ -41,8 +42,8 @@ export function openQuestions(answers: Answers): { section: Section; missing: Qu
 
 /** The label to show for a question; a tone slider has none, so it shows its two ends. */
 export function questionLabel(q: Question): string {
-  if (q.type === "scale") return `${en(q.left)} / ${en(q.right)}`;
-  return en(q.label);
+  if (q.type === "scale") return `${say(q.left)} / ${say(q.right)}`;
+  return say(q.label);
 }
 
 /**
@@ -80,7 +81,7 @@ export function answerText(answers: Answers, q: Question): string {
       if (!filled(v)) return "";
       const n = Number(v);
       if (n === 50) return "In between";
-      return `${n < 50 ? en(q.left) : en(q.right)}${Math.abs(n - 50) >= 35 ? ", clearly" : ""}`;
+      return `${n < 50 ? say(q.left) : say(q.right)}${Math.abs(n - 50) >= 35 ? ", clearly" : ""}`;
     }
     case "list": {
       const rows = Array.isArray(answers[q.id]) ? (answers[q.id] as Record<string, string>[]) : [];
@@ -107,7 +108,7 @@ export function answerText(answers: Answers, q: Question): string {
                 : state === "none"
                   ? "Not needed"
                   : "";
-          return `${en(item)}: ${[word, link].filter(Boolean).join(" · ")}`;
+          return `${say(item)}: ${[word, link].filter(Boolean).join(" · ")}`;
         })
         .filter(Boolean)
         .join("\n");
@@ -122,7 +123,7 @@ export function sheetText(brand: string, answers: Answers): string {
       .map((q) => [questionLabel(q), answerText(answers, q)] as const)
       .filter(([, a]) => a)
       .map(([l, a]) => `${l}: ${a}`);
-    if (lines.length) parts.push(`\n${en(section.title).toUpperCase()}\n${lines.join("\n")}`);
+    if (lines.length) parts.push(`\n${say(section.title).toUpperCase()}\n${lines.join("\n")}`);
   }
   return parts.join("\n");
 }

@@ -9,6 +9,7 @@ import { ReviewActions } from "@/features/concepts/ReviewActions";
 import { groupConcepts, type Concept } from "@/features/concepts/model";
 import { friendlyError } from "@/lib/errors";
 import { useConceptNote, useDeleteIdea, useSaveIdea } from "./portalApi";
+import { t } from "@/lib/i18n";
 
 export function ConceptsTab({ portal, concepts }: { portal: ClientPortal; concepts: Concept[] }) {
   const [adding, setAdding] = useState(false);
@@ -18,19 +19,24 @@ export function ConceptsTab({ portal, concepts }: { portal: ClientPortal; concep
     <section className="tab-body">
       <div className="page-head">
         <p className="lede">
-          Each idea is one reel or post. Approve the ones you like or tell us what to change, and
-          the approved ones become scripts.
+          {t(
+            "Each idea is one reel or post. Approve the ones you like or tell us what to change, and the approved ones become scripts.",
+            "Chaque idée, c'est une vidéo ou un post. Validez celles qui vous plaisent ou dites-nous quoi changer : les idées validées deviennent des scripts.",
+          )}
         </p>
         {!adding && (
           <Button variant="secondary" onClick={() => setAdding(true)}>
-            Add your own idea
+            {t("Add your own idea", "Proposer une idée")}
           </Button>
         )}
       </div>
       {adding && <IdeaForm portal={portal} onDone={() => setAdding(false)} />}
       {groups.length === 0 && !adding && (
         <p className="muted">
-          Gecko is working on your ideas. They'll appear here for you to read and approve.
+          {t(
+            "Gecko is working on your ideas. They'll appear here for you to read and approve.",
+            "Gecko travaille sur vos idées. Elles apparaîtront ici pour que vous les lisiez et les validiez.",
+          )}
         </p>
       )}
       {groups.map((group) => (
@@ -61,7 +67,10 @@ function ClientActions({ portal, concept }: { portal: ClientPortal; concept: Con
     <ReviewActions
       canDecide={concept.status === "review" || concept.status === "changes"}
       pending={note.isPending}
-      approveNote={`You're approving version ${concept.version} of "${concept.title}". Gecko goes ahead with it as written.`}
+      approveNote={t(
+        `You're approving version ${concept.version} of "${concept.title}". Gecko goes ahead with it as written.`,
+        `Vous validez la version ${concept.version} de « ${concept.title} ». Gecko avance avec, telle qu'elle est écrite.`,
+      )}
       onSend={(kind, body) =>
         note.mutateAsync({ conceptId: concept.id, kind, body, version: concept.version })
       }
@@ -77,7 +86,7 @@ function IdeaActions({ portal, concept }: { portal: ClientPortal; concept: Conce
   return (
     <div className="concept-actions">
       <Button variant="secondary" onClick={() => setEditing(true)}>
-        Edit
+        {t("Edit", "Modifier")}
       </Button>
       <Button
         variant="link"
@@ -86,7 +95,7 @@ function IdeaActions({ portal, concept }: { portal: ClientPortal; concept: Conce
           remove.mutateAsync(concept.id).catch((e: unknown) => setError(friendlyError(e)))
         }
       >
-        Remove
+        {t("Remove", "Retirer")}
       </Button>
       {error && <Notice tone="error">{error}</Notice>}
     </div>
@@ -109,7 +118,8 @@ function IdeaForm({
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const text = (name: string) => String(form.get(name) ?? "").trim();
-    if (!text("title")) return setError("Give your idea a short title.");
+    if (!text("title"))
+      return setError(t("Give your idea a short title.", "Donnez un titre court à votre idée."));
     try {
       await save.mutateAsync({
         id: idea?.id ?? null,
@@ -125,31 +135,40 @@ function IdeaForm({
 
   return (
     <form className="concept-form card" onSubmit={onSubmit}>
-      <h3>{idea ? "Edit your idea" : "Your idea"}</h3>
-      <Field label="Title" name="title" defaultValue={idea?.title} maxLength={160} autoFocus />
+      <h3>{idea ? t("Edit your idea", "Modifier votre idée") : t("Your idea", "Votre idée")}</h3>
+      <Field
+        label={t("Title", "Titre")}
+        name="title"
+        defaultValue={idea?.title}
+        maxLength={160}
+        autoFocus
+      />
       <TextArea
-        label="The idea"
+        label={t("The idea", "L'idée")}
         name="body"
         rows={4}
         defaultValue={idea?.body}
         maxLength={10000}
-        placeholder="Rough is fine: a scene, a line, a trend you saw."
+        placeholder={t(
+          "Rough is fine: a scene, a line, a trend you saw.",
+          "Brut, c'est très bien : une scène, une phrase, une tendance repérée.",
+        )}
       />
       <TextArea
-        label="Links (one per line)"
+        label={t("Links (one per line)", "Liens (un par ligne)")}
         name="refs"
         rows={2}
         defaultValue={idea?.refs}
         maxLength={2000}
-        placeholder="Reels or videos you like"
+        placeholder={t("Reels or videos you like", "Des vidéos qui vous plaisent")}
       />
       {error && <Notice tone="error">{error}</Notice>}
       <div className="actions">
         <Button variant="secondary" onClick={onDone} disabled={save.isPending}>
-          Cancel
+          {t("Cancel", "Annuler")}
         </Button>
         <Button type="submit" disabled={save.isPending}>
-          {idea ? "Save" : "Send to Gecko"}
+          {idea ? t("Save", "Enregistrer") : t("Send to Gecko", "Envoyer à Gecko")}
         </Button>
       </div>
     </form>

@@ -3,11 +3,12 @@ import { Notice } from "@/components/Notice";
 import { SharedSpaceView } from "@/features/shared/SharedSpaceView";
 import { useClientShared, useMyShared } from "@/features/shared/sharedApi";
 import { friendlyError } from "@/lib/errors";
+import { t } from "@/lib/i18n";
 
 export function SharedTab({ portal }: { portal: ClientPortal }) {
   const shared = useMyShared(portal);
   const act = useClientShared(portal);
-  if (shared.isPending) return <p className="muted">Loading…</p>;
+  if (shared.isPending) return <p className="muted">{t("Loading…", "Chargement…")}</p>;
   if (shared.isError) return <Notice tone="error">{friendlyError(shared.error)}</Notice>;
   return (
     <SharedSpaceView

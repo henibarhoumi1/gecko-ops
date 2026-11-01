@@ -9,6 +9,7 @@ import { requireSupabase } from "@/lib/supabase";
 import { AuthLayout } from "./AuthLayout";
 import { useAuth } from "./AuthProvider";
 import { parseInviteCode, savePendingInvite } from "./inviteCode";
+import { t } from "@/lib/i18n";
 
 /**
  * /invite/:code greets the person by brand and lets them in with one emailed link, no password to invent.
@@ -89,12 +90,15 @@ function InviteLanding({ code }: { code: string }) {
   if (peek.data === null)
     return (
       <AuthLayout
-        eyebrow="Invite"
-        title="This link has already been used"
-        intro="It was used to create a login, or it expired after 14 days. If you already have a login, sign in. Otherwise ask Gecko for a new link."
+        eyebrow={t("Invite", "Invitation")}
+        title={t("This link has already been used", "Ce lien a déjà servi")}
+        intro={t(
+          "It was used to create a login, or it expired after 14 days. If you already have a login, sign in. Otherwise ask Gecko for a new link.",
+          "Il a servi à créer un accès, ou il a expiré après 14 jours. Si vous avez déjà un accès, connectez-vous. Sinon, demandez un nouveau lien à Gecko.",
+        )}
       >
         <p className="center">
-          <Link to="/sign-in">Sign in</Link>
+          <Link to="/sign-in">{t("Sign in", "Se connecter")}</Link>
         </p>
       </AuthLayout>
     );
@@ -102,14 +106,20 @@ function InviteLanding({ code }: { code: string }) {
   if (sentTo)
     return (
       <AuthLayout
-        eyebrow="One more step"
-        title="Check your email"
-        intro={`We sent a link to ${sentTo}. Open it on this phone or computer and you're in.`}
+        eyebrow={t("One more step", "Encore une étape")}
+        title={t("Check your email", "Regardez vos e-mails")}
+        intro={t(
+          `We sent a link to ${sentTo}. Open it on this phone or computer and you're in.`,
+          `Nous avons envoyé un lien à ${sentTo}. Ouvrez-le sur ce téléphone ou cet ordinateur et vous y êtes.`,
+        )}
       >
         <p className="small muted center">
-          Nothing after a minute? Check spam, or{" "}
+          {t(
+            "Nothing after a minute? Check spam, or",
+            "Rien après une minute ? Regardez les spams, ou",
+          )}{" "}
           <Button variant="link" onClick={() => setSentTo("")}>
-            try again
+            {t("try again", "réessayez")}
           </Button>
           .
         </p>
@@ -119,17 +129,23 @@ function InviteLanding({ code }: { code: string }) {
   const brand = peek.data?.brand;
   return (
     <AuthLayout
-      eyebrow="You're invited"
-      title={brand ? `${brand} × Gecko` : "Your Gecko portal"}
+      eyebrow={t("You're invited", "Invitation")}
+      title={brand ? `${brand} × Gecko` : t("Your Gecko portal", "Votre espace Gecko")}
       intro={
         byEmail
-          ? "We'll email you a link to get in, no password needed."
-          : "Everything for your campaign in one place: ideas and scripts to approve, your shoot, your videos. Pick a password and you're in."
+          ? t(
+              "We'll email you a link to get in, no password needed.",
+              "On vous envoie un lien par e-mail pour entrer, sans mot de passe.",
+            )
+          : t(
+              "Everything for your campaign in one place: ideas and scripts to approve, your shoot, your videos. Pick a password and you're in.",
+              "Toute votre campagne au même endroit : idées et scripts à valider, votre tournage, vos vidéos. Choisissez un mot de passe et vous y êtes.",
+            )
       }
     >
       <form className="stack" onSubmit={onSubmit}>
         <Field
-          label="Your name"
+          label={t("Your name", "Votre nom")}
           name="name"
           autoComplete="name"
           required
@@ -138,7 +154,7 @@ function InviteLanding({ code }: { code: string }) {
         />
         {peek.data?.email ? (
           <Field
-            label="Email"
+            label={t("Email", "E-mail")}
             name="email"
             type="email"
             autoComplete="username"
@@ -147,7 +163,10 @@ function InviteLanding({ code }: { code: string }) {
           />
         ) : (
           <Field
-            label="Email (the one the invite was sent to)"
+            label={t(
+              "Email (the one the invite was sent to)",
+              "E-mail (celui qui a reçu l'invitation)",
+            )}
             name="email"
             type="email"
             autoComplete="email"
@@ -156,7 +175,10 @@ function InviteLanding({ code }: { code: string }) {
         )}
         {!byEmail && (
           <Field
-            label="Choose a password (8 characters or more)"
+            label={t(
+              "Choose a password (8 characters or more)",
+              "Choisissez un mot de passe (8 caractères ou plus)",
+            )}
             name="password"
             type="password"
             autoComplete="new-password"
@@ -167,11 +189,11 @@ function InviteLanding({ code }: { code: string }) {
         <Button type="submit" disabled={busy}>
           {byEmail
             ? busy
-              ? "Sending…"
-              : "Email me my link"
+              ? t("Sending…", "Envoi…")
+              : t("Email me my link", "Recevoir mon lien")
             : busy
-              ? "Opening…"
-              : "Open my portal"}
+              ? t("Opening…", "Ouverture…")
+              : t("Open my portal", "Ouvrir mon espace")}
         </Button>
         {error && <Notice tone="error">{error}</Notice>}
       </form>
@@ -183,9 +205,11 @@ function InviteLanding({ code }: { code: string }) {
             setError("");
           }}
         >
-          {byEmail ? "Use a password instead" : "Email me a link instead"}
+          {byEmail
+            ? t("Use a password instead", "Utiliser un mot de passe")
+            : t("Email me a link instead", "Recevoir un lien par e-mail")}
         </Button>{" "}
-        · <Link to="/sign-in">I already have a login</Link>
+        · <Link to="/sign-in">{t("I already have a login", "J'ai déjà un accès")}</Link>
       </p>
     </AuthLayout>
   );

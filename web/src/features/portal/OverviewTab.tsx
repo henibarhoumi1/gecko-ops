@@ -5,7 +5,8 @@ import { ReelStrip } from "@/features/plans/ReelStrip";
 import { percentFilled, type Answers } from "@/features/onboarding/progress";
 import type { SheetTarget } from "@/features/onboarding/useOnboardingSheet";
 import { requireSupabase } from "@/lib/supabase";
-import { dt, paymentLines, type PortalData } from "./portalApi";
+import { dt, paymentLines, stateLabel, type PortalData } from "./portalApi";
+import { locale, plural, t } from "@/lib/i18n";
 
 function useOnboardingPercent(target: SheetTarget) {
   return useQuery({
@@ -23,15 +24,11 @@ function useOnboardingPercent(target: SheetTarget) {
 }
 
 function longDate(iso: string): string {
-  return new Date(`${iso}T12:00:00`).toLocaleDateString("en-GB", {
+  return new Date(`${iso}T12:00:00`).toLocaleDateString(locale(), {
     weekday: "long",
     day: "numeric",
     month: "long",
   });
-}
-
-function plural(n: number, word: string) {
-  return `${n} ${word}${n === 1 ? "" : "s"}`;
 }
 
 interface Todo {
@@ -48,20 +45,35 @@ function waitingOnYou(data: PortalData, sentAt: string | null, onboardingLoaded:
   if (scripts > 0)
     todo.push({
       to: "/scripts",
-      title: scripts === 1 ? "A script is ready for you" : `${scripts} scripts are ready for you`,
-      detail: "Pick the hook you like, comment on any line, then approve.",
+      title:
+        scripts === 1
+          ? t("A script is ready for you", "Un script vous attend")
+          : t(`${scripts} scripts are ready for you`, `${scripts} scripts vous attendent`),
+      detail: t(
+        "Pick the hook you like, comment on any line, then approve.",
+        "Choisissez l'accroche qui vous plaît, commentez n'importe quelle ligne, puis validez.",
+      ),
     });
   if (ideas > 0)
     todo.push({
       to: "/concepts",
-      title: ideas === 1 ? "An idea is waiting for you" : `${ideas} ideas are waiting for you`,
-      detail: "Approve the ones you like or tell us what to change.",
+      title:
+        ideas === 1
+          ? t("An idea is waiting for you", "Une idée vous attend")
+          : t(`${ideas} ideas are waiting for you`, `${ideas} idées vous attendent`),
+      detail: t(
+        "Approve the ones you like or tell us what to change.",
+        "Validez celles qui vous plaisent ou dites-nous quoi changer.",
+      ),
     });
   if (onboardingLoaded && !sentAt)
     todo.push({
       to: "/onboarding",
-      title: "Tell us about your brand",
-      detail: "About 15 minutes. It saves as you go, so you can stop and come back.",
+      title: t("Tell us about your brand", "Parlez-nous de votre marque"),
+      detail: t(
+        "About 15 minutes. It saves as you go, so you can stop and come back.",
+        "Environ 15 minutes. C'est enregistré au fur et à mesure : vous pouvez faire une pause et revenir.",
+      ),
     });
   const o = data.overview;
   if (o?.price != null) {
@@ -69,14 +81,17 @@ function waitingOnYou(data: PortalData, sentAt: string | null, onboardingLoaded:
     if (o.depositStatus === "due")
       todo.push({
         to: "/#payment",
-        title: `Deposit of ${half}`,
-        detail: "It books your shoot day.",
+        title: t(`Deposit of ${half}`, `Acompte de ${half}`),
+        detail: t("It books your shoot day.", "Il réserve votre jour de tournage."),
       });
     else if (o.balanceStatus === "due")
       todo.push({
         to: "/#payment",
-        title: `Balance of ${half}`,
-        detail: "Your final files unlock as soon as it's in.",
+        title: t(`Balance of ${half}`, `Solde de ${half}`),
+        detail: t(
+          "Your final files unlock as soon as it's in.",
+          "Vos fichiers finaux se débloquent dès qu'il est reçu.",
+        ),
       });
   }
   return todo;
@@ -90,21 +105,34 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
   const todo = waitingOnYou(data, onboarding.data?.sentAt ?? null, onboarding.isSuccess);
   const scriptsReworked = data.scripts.filter((s) => s.status === "changes").length;
   const doing = [
-    counts.changes > 0 && `Reworking ${plural(counts.changes, "idea")} from your notes.`,
-    scriptsReworked > 0 && `Reworking ${plural(scriptsReworked, "script")} from your notes.`,
+    counts.changes > 0 &&
+      t(
+        `Reworking ${plural(counts.changes, ["idea", "ideas"], ["idée", "idées"])} from your notes.`,
+        `On retravaille ${plural(counts.changes, ["idea", "ideas"], ["idée", "idées"])} d'après vos notes.`,
+      ),
+    scriptsReworked > 0 &&
+      t(
+        `Reworking ${plural(scriptsReworked, ["script", "scripts"], ["script", "scripts"])} from your notes.`,
+        `On retravaille ${plural(scriptsReworked, ["script", "scripts"], ["script", "scripts"])} d'après vos notes.`,
+      ),
   ].filter((line): line is string => Boolean(line));
 
   return (
     <section className="tab-body">
       <p className="lede">
-        Welcome, {first}. This is where your campaign lives: what needs you, what Gecko is working
-        on, and the plan.
+        {t(
+          `Welcome, ${first}. This is where your campaign lives: what needs you, what Gecko is working on, and the plan.`,
+          `Bienvenue, ${first}. Votre campagne vit ici : ce qui vous attend, ce que Gecko prépare, et le plan.`,
+        )}
       </p>
 
-      <h2 className="waiting-title">Waiting on you</h2>
+      <h2 className="waiting-title">{t("Waiting on you", "À vous de jouer")}</h2>
       {todo.length === 0 ? (
         <p className="waiting-none">
-          Nothing needs you right now. We'll show it here when it does.
+          {t(
+            "Nothing needs you right now. We'll show it here when it does.",
+            "Rien ne vous attend pour l'instant. Ça s'affichera ici le moment venu.",
+          )}
         </p>
       ) : (
         <ul className="waiting">
@@ -130,7 +158,7 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
 
       {doing.length > 0 && (
         <>
-          <h2>What Gecko is doing</h2>
+          <h2>{t("What Gecko is doing", "Ce que fait Gecko")}</h2>
           <ul className="doing">
             {doing.map((line) => (
               <li key={line}>{line}</li>
@@ -140,7 +168,12 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
       )}
 
       {!o ? (
-        <p className="muted">Gecko is setting up your campaign plan. It will show here shortly.</p>
+        <p className="muted">
+          {t(
+            "Gecko is setting up your campaign plan. It will show here shortly.",
+            "Gecko prépare le plan de votre campagne. Il s'affichera ici très bientôt.",
+          )}
+        </p>
       ) : (
         <>
           {(o.campaign || o.summary) && (
@@ -153,7 +186,7 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
           <div className="facts">
             {o.included.length > 0 && (
               <div className="fact">
-                <span className="eyebrow">What's included</span>
+                <span className="eyebrow">{t("What's included", "Ce qui est inclus")}</span>
                 <ul>
                   {o.included.map((item, i) => (
                     <li key={i}>{item}</li>
@@ -162,13 +195,17 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
               </div>
             )}
             <div className="fact">
-              <span className="eyebrow">Shoot</span>
-              <strong>{o.shootDate ? longDate(o.shootDate) : "Date to be confirmed"}</strong>
+              <span className="eyebrow">{t("Shoot", "Tournage")}</span>
+              <strong>
+                {o.shootDate
+                  ? longDate(o.shootDate)
+                  : t("Date to be confirmed", "Date à confirmer")}
+              </strong>
               {o.shootPlace && <span className="muted">{o.shootPlace}</span>}
             </div>
             {o.nextStep && (
               <div className="fact fact-next">
-                <span className="eyebrow">Next step</span>
+                <span className="eyebrow">{t("Next step", "Prochaine étape")}</span>
                 <strong>{o.nextStep}</strong>
               </div>
             )}
@@ -176,14 +213,14 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
 
           {o.milestones.length > 0 && (
             <div className="block">
-              <h2>Timeline</h2>
+              <h2>{t("Timeline", "Calendrier")}</h2>
               <ol className="timeline">
                 {o.milestones.map((m, i) => (
                   <li key={i} className={m.done ? "done" : ""}>
                     <span className="dot" aria-hidden="true" />
                     <span>{m.label}</span>
                     <span className="muted small">
-                      {m.done ? "Done" : m.date ? shortDate(m.date) : ""}
+                      {m.done ? t("Done", "Fait") : m.date ? shortDate(m.date) : ""}
                     </span>
                   </li>
                 ))}
@@ -193,11 +230,11 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
 
           {o.price != null && (
             <div className="block" id="payment">
-              <h2>Payment</h2>
+              <h2>{t("Payment", "Paiement")}</h2>
               <table className="pay">
                 <tbody>
                   <tr>
-                    <th scope="row">Total</th>
+                    <th scope="row">{t("Total", "Total")}</th>
                     <td>{dt(o.price)}</td>
                     <td />
                   </tr>
@@ -207,14 +244,19 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
                       <td>{line.amount == null ? "" : dt(line.amount)}</td>
                       <td>
                         <span className={`pill pill-${line.state.toLowerCase()}`}>
-                          {line.state}
+                          {stateLabel(line.state)}
                         </span>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              <p className="small muted">Final files are delivered once the balance is paid.</p>
+              <p className="small muted">
+                {t(
+                  "Final files are delivered once the balance is paid.",
+                  "Les fichiers finaux sont livrés une fois le solde payé.",
+                )}
+              </p>
             </div>
           )}
         </>

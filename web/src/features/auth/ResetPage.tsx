@@ -7,6 +7,7 @@ import { friendlyError } from "@/lib/errors";
 import { requireSupabase } from "@/lib/supabase";
 import { AuthLayout } from "./AuthLayout";
 import { useAuth } from "./AuthProvider";
+import { t } from "@/lib/i18n";
 
 /** Where the reset email lands: the link signs the person in, and they set a new password here. */
 export function ResetPage() {
@@ -19,7 +20,10 @@ export function ResetPage() {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const password = String(form.get("password"));
-    if (password !== String(form.get("again"))) return setError("The two passwords don't match.");
+    if (password !== String(form.get("again")))
+      return setError(
+        t("The two passwords don't match.", "Les deux mots de passe ne sont pas identiques."),
+      );
     setBusy(true);
     setError("");
     const { error } = await requireSupabase().auth.updateUser({ password });
@@ -28,25 +32,31 @@ export function ResetPage() {
     else void navigate("/", { replace: true });
   }
 
-  if (state.status === "loading") return <p className="loading">Loading…</p>;
+  if (state.status === "loading") return <p className="loading">{t("Loading…", "Chargement…")}</p>;
   if (state.status === "signed-out")
     return (
       <AuthLayout
-        eyebrow="Reset link"
-        title="This link has expired"
-        intro="Reset links work once, for one hour. Ask for a new one."
+        eyebrow={t("Reset link", "Lien de réinitialisation")}
+        title={t("This link has expired", "Ce lien a expiré")}
+        intro={t(
+          "Reset links work once, for one hour. Ask for a new one.",
+          "Ces liens marchent une fois, pendant une heure. Demandez-en un nouveau.",
+        )}
       >
         <p className="center">
-          <Link to="/forgot">Send a new link</Link>
+          <Link to="/forgot">{t("Send a new link", "Envoyer un nouveau lien")}</Link>
         </p>
       </AuthLayout>
     );
 
   return (
-    <AuthLayout eyebrow="New password" title="Choose a new password">
+    <AuthLayout
+      eyebrow={t("New password", "Nouveau mot de passe")}
+      title={t("Choose a new password", "Choisissez un nouveau mot de passe")}
+    >
       <form className="stack" onSubmit={onSubmit}>
         <Field
-          label="New password"
+          label={t("New password", "Nouveau mot de passe")}
           name="password"
           type="password"
           autoComplete="new-password"
@@ -54,7 +64,7 @@ export function ResetPage() {
           required
         />
         <Field
-          label="Same password again"
+          label={t("Same password again", "Le même, encore une fois")}
           name="again"
           type="password"
           autoComplete="new-password"
@@ -62,7 +72,9 @@ export function ResetPage() {
           required
         />
         <Button type="submit" disabled={busy}>
-          {busy ? "Saving…" : "Save and continue"}
+          {busy
+            ? t("Saving…", "Enregistrement…")
+            : t("Save and continue", "Enregistrer et continuer")}
         </Button>
         {error && <Notice tone="error">{error}</Notice>}
       </form>

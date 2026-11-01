@@ -1,3 +1,4 @@
+import { locale, t } from "@/lib/i18n";
 export type ConceptStatus = "draft" | "review" | "changes" | "approved" | "idea";
 export type ConceptFormat = "reel" | "carousel" | "static" | "other";
 export type NoteKind = "comment" | "approve" | "changes";
@@ -31,21 +32,40 @@ export interface Concept {
   notes: ConceptNote[];
 }
 
+// Labels are getters so they read in the language in use at the moment they're shown.
 export const FORMAT_LABEL: Record<ConceptFormat, string> = {
-  reel: "Reel",
-  carousel: "Carousel",
-  static: "Static post",
-  other: "Other",
+  get reel() {
+    return t("Reel", "Vidéo");
+  },
+  get carousel() {
+    return t("Carousel", "Carrousel");
+  },
+  get static() {
+    return t("Static post", "Post fixe");
+  },
+  get other() {
+    return t("Other", "Autre");
+  },
 };
 
 /** What each status means to the person reading it. */
 export const STATUS_LABEL: Record<"client" | "team", Record<ConceptStatus, string>> = {
   client: {
-    draft: "Draft",
-    review: "Waiting for you",
-    changes: "Changes asked",
-    approved: "Approved",
-    idea: "Your idea",
+    get draft() {
+      return t("Draft", "Brouillon");
+    },
+    get review() {
+      return t("Waiting for you", "Vous attend");
+    },
+    get changes() {
+      return t("Changes asked", "Changements demandés");
+    },
+    get approved() {
+      return t("Approved", "Validée");
+    },
+    get idea() {
+      return t("Your idea", "Votre idée");
+    },
   },
   team: {
     draft: "Draft, only the team sees it",
@@ -62,11 +82,11 @@ export interface ConceptGroup {
   items: Concept[];
 }
 
-const CLIENT_ORDER: [ConceptStatus, string][] = [
-  ["review", "Waiting for your approval"],
-  ["changes", "You asked for changes"],
-  ["approved", "Approved"],
-  ["idea", "Your ideas"],
+const clientOrder = (): [ConceptStatus, string][] => [
+  ["review", t("Waiting for your approval", "En attente de votre validation")],
+  ["changes", t("You asked for changes", "Vous avez demandé des changements")],
+  ["approved", t("Approved", "Validées")],
+  ["idea", t("Your ideas", "Vos idées")],
 ];
 
 const TEAM_ORDER: [ConceptStatus, string][] = [
@@ -83,7 +103,7 @@ function byPosition(a: Concept, b: Concept): number {
 
 /** Concepts grouped in the order the reader should act on them. Empty groups are left out. */
 export function groupConcepts(concepts: Concept[], reader: "client" | "team"): ConceptGroup[] {
-  const order = reader === "client" ? CLIENT_ORDER : TEAM_ORDER;
+  const order = reader === "client" ? clientOrder() : TEAM_ORDER;
   return order
     .map(([status, title]) => ({
       status,
@@ -132,7 +152,7 @@ export function refLines(refs: string): RefLine[] {
 export function shortDate(iso: string | null): string {
   if (!iso) return "";
   const date = new Date(iso.length === 10 ? `${iso}T12:00:00` : iso);
-  return date.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+  return date.toLocaleDateString(locale(), { day: "numeric", month: "short" });
 }
 
 /** Rows from the team's direct table reads, in the same shape the client functions return. */

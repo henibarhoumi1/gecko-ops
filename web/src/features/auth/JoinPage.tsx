@@ -8,6 +8,7 @@ import { acceptInvite, createWorkspace } from "./account";
 import { AuthLayout } from "./AuthLayout";
 import { useAuth } from "./AuthProvider";
 import { parseInviteCode } from "./inviteCode";
+import { t } from "@/lib/i18n";
 
 /** Signed in, but not part of the workspace or any client yet. */
 export function JoinPage({ problem }: { problem?: string }) {
@@ -32,21 +33,35 @@ export function JoinPage({ problem }: { problem?: string }) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const code = parseInviteCode(String(form.get("invite")));
-    if (!code) return setError("Paste the whole invite link the founder sent you.");
+    if (!code)
+      return setError(
+        t(
+          "Paste the whole invite link Gecko sent you.",
+          "Collez le lien d'invitation complet envoyé par Gecko.",
+        ),
+      );
     void run(() => acceptInvite(requireSupabase(), code, String(form.get("name")).trim()));
   }
 
   return (
     <AuthLayout
-      eyebrow="One more step"
-      title="Join Gecko"
-      intro="Open the invite link the Gecko founder sent you, or paste it below. No link yet? Ask them to invite this email."
+      eyebrow={t("One more step", "Encore une étape")}
+      title={t("Join Gecko", "Rejoindre Gecko")}
+      intro={t(
+        "Open the invite link Gecko sent you, or paste it below. No link yet? Ask Gecko to invite this email.",
+        "Ouvrez le lien d'invitation envoyé par Gecko, ou collez-le ci-dessous. Pas encore de lien ? Demandez à Gecko d'inviter cet e-mail.",
+      )}
     >
       <form className="stack" onSubmit={onJoin}>
-        <Field label="Invite link" name="invite" required />
-        <Field label="Your name" name="name" autoComplete="name" maxLength={120} />
+        <Field label={t("Invite link", "Lien d'invitation")} name="invite" required />
+        <Field
+          label={t("Your name", "Votre nom")}
+          name="name"
+          autoComplete="name"
+          maxLength={120}
+        />
         <Button type="submit" disabled={busy}>
-          Join
+          {t("Join", "Rejoindre")}
         </Button>
       </form>
       <details className="first-time">
@@ -65,7 +80,7 @@ export function JoinPage({ problem }: { problem?: string }) {
       {error && <Notice tone="error">{error}</Notice>}
       <p className="center">
         <Button variant="link" onClick={() => void signOut()}>
-          Sign out
+          {t("Sign out", "Se déconnecter")}
         </Button>
       </p>
     </AuthLayout>

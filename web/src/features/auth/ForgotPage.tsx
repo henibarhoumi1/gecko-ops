@@ -6,6 +6,7 @@ import { Notice } from "@/components/Notice";
 import { friendlyError } from "@/lib/errors";
 import { requireSupabase } from "@/lib/supabase";
 import { AuthLayout } from "./AuthLayout";
+import { t } from "@/lib/i18n";
 
 /** Sends a password reset link. It says the same thing whether or not the email has an account. */
 export function ForgotPage() {
@@ -29,12 +30,15 @@ export function ForgotPage() {
   if (sentTo) {
     return (
       <AuthLayout
-        eyebrow="Check your email"
-        title="Reset link sent"
-        intro={`If ${sentTo} has an account, a link to choose a new password is on its way. It works once, for one hour.`}
+        eyebrow={t("Check your email", "Regardez vos e-mails")}
+        title={t("Reset link sent", "Lien envoyé")}
+        intro={t(
+          `If ${sentTo} has an account, a link to choose a new password is on its way. It works once, for one hour.`,
+          `Si ${sentTo} a un compte, un lien pour choisir un nouveau mot de passe arrive. Il marche une fois, pendant une heure.`,
+        )}
       >
         <p className="center">
-          <Link to="/sign-in">Back to sign in</Link>
+          <Link to="/sign-in">{t("Back to sign in", "Retour à la connexion")}</Link>
         </p>
       </AuthLayout>
     );
@@ -42,19 +46,28 @@ export function ForgotPage() {
 
   return (
     <AuthLayout
-      eyebrow="Forgot your password"
-      title="Choose a new one"
-      intro="Enter your email and we'll send you a link."
+      eyebrow={t("Forgot your password", "Mot de passe oublié")}
+      title={t("Choose a new one", "Choisissez-en un nouveau")}
+      intro={t(
+        "Enter your email and we'll send you a link.",
+        "Entrez votre e-mail, on vous envoie un lien.",
+      )}
     >
       <form className="stack" onSubmit={onSubmit}>
-        <Field label="Email" name="email" type="email" autoComplete="email" required />
+        <Field
+          label={t("Email", "E-mail")}
+          name="email"
+          type="email"
+          autoComplete="email"
+          required
+        />
         <Button type="submit" disabled={busy}>
-          {busy ? "Sending…" : "Send the link"}
+          {busy ? t("Sending…", "Envoi…") : t("Send the link", "Envoyer le lien")}
         </Button>
         {error && <Notice tone="error">{error}</Notice>}
       </form>
       <p className="center">
-        <Link to="/sign-in">Back to sign in</Link>
+        <Link to="/sign-in">{t("Back to sign in", "Retour à la connexion")}</Link>
       </p>
     </AuthLayout>
   );

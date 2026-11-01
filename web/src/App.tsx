@@ -16,6 +16,7 @@ import { TeamPage } from "@/features/team/TeamPage";
 import { AppShell } from "@/features/shell/AppShell";
 import { navFor } from "@/features/shell/nav";
 import { WorkspaceProvider } from "@/features/workspace/WorkspaceContext";
+import { setTeamMode, useLang } from "@/lib/i18n";
 import { supabase } from "@/lib/supabase";
 
 const queryClient = new QueryClient({
@@ -35,6 +36,8 @@ const SCREENS: Record<string, () => ReactElement> = {
 };
 
 export function App() {
+  // Switching language redraws the screens (the router remounts; the session and loaded data stay).
+  const lang = useLang();
   if (!supabase) {
     return (
       <main className="page">
@@ -48,7 +51,8 @@ export function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <BrowserRouter>
+        <TeamEnglish />
+        <BrowserRouter key={lang}>
           <Routes>
             <Route path="/invite/:code" element={<InvitePage />} />
             <Route path="/sign-in" element={<SignedOutOnly page={<SignInPage />} />} />
@@ -61,6 +65,13 @@ export function App() {
       </AuthProvider>
     </QueryClientProvider>
   );
+}
+
+/** The team app is English only for now; clients and signed-out pages follow the language switch. */
+function TeamEnglish() {
+  const { state } = useAuth();
+  setTeamMode(state.status === "ready" && state.account.kind === "member");
+  return null;
 }
 
 function SignedOutOnly({ page }: { page: ReactElement }) {

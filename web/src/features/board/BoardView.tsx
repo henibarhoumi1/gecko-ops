@@ -39,6 +39,7 @@ import {
   type CardKind,
   type Rect,
 } from "./model";
+import { t } from "@/lib/i18n";
 
 interface View {
   x: number;
@@ -357,7 +358,10 @@ export function BoardView({
   const addImages = useCallback(
     async (files: File[], at?: { x: number; y: number }) => {
       const images = files.filter((f) => IMAGE_TYPES.includes(f.type)).slice(0, 10);
-      if (images.length === 0) return setError("Use a JPG, PNG, WebP or GIF image.");
+      if (images.length === 0)
+        return setError(
+          t("Use a JPG, PNG, WebP or GIF image.", "Utilisez une image JPG, PNG, WebP ou GIF."),
+        );
       setBusy(true);
       try {
         let n = 0;
@@ -673,7 +677,7 @@ export function BoardView({
         <Notice tone="error">{friendlyError(page.error)}</Notice>
         {boardId && (
           <Button variant="secondary" onClick={() => onOpenBoard(null)}>
-            Back to the main board
+            {t("Back to the main board", "Retour au tableau principal")}
           </Button>
         )}
       </div>
@@ -717,7 +721,11 @@ export function BoardView({
             .join(", "),
         }}
       >
-        <div className="board-tools" role="toolbar" aria-label="Add to the board">
+        <div
+          className="board-tools"
+          role="toolbar"
+          aria-label={t("Add to the board", "Ajouter au tableau")}
+        >
           {TOOLS.map((kind) => (
             <button
               key={kind}
@@ -737,7 +745,7 @@ export function BoardView({
             onClick={() => setArrowFrom(arrowFrom === undefined ? null : undefined)}
           >
             <span className="tool-icon" aria-hidden="true" />
-            Arrow
+            {t("Arrow", "Flèche")}
           </button>
           <input
             ref={fileRef}
@@ -827,15 +835,23 @@ export function BoardView({
 
         {visible === 0 && (
           <div className="board-empty">
-            <h3>An empty board</h3>
+            <h3>{t("An empty board", "Un tableau vide")}</h3>
             <p>
-              Paste a link to a reel, drop in photos, or add a note from the left.{" "}
+              {t(
+                "Paste a link to a reel, drop in photos, or add a note from the left.",
+                "Collez le lien d'une vidéo, déposez des photos, ou ajoutez une note depuis la gauche.",
+              )}{" "}
               {reader === "team" && !data.board.parentId
-                ? "Or start from Gecko's campaign board."
+                ? t(
+                    "Or start from Gecko's campaign board.",
+                    "Ou partez du tableau de campagne Gecko.",
+                  )
                 : ""}
             </p>
             {!data.board.parentId && (
-              <Button onClick={applyTemplate}>Start from the campaign board</Button>
+              <Button onClick={applyTemplate}>
+                {t("Start from the campaign board", "Partir du tableau de campagne")}
+              </Button>
             )}
           </div>
         )}
@@ -843,13 +859,20 @@ export function BoardView({
         {arrowFrom !== undefined && (
           <p className="board-hint">
             {arrowFrom === null
-              ? "Click the card the arrow starts from."
-              : "Now click the card it points to."}
+              ? t(
+                  "Click the card the arrow starts from.",
+                  "Cliquez sur la carte de départ de la flèche.",
+                )
+              : t("Now click the card it points to.", "Cliquez maintenant sur la carte d'arrivée.")}
           </p>
         )}
 
-        <div className="board-zoom" aria-label="Zoom">
-          <button type="button" onClick={() => zoomBy(1 / 1.2)} aria-label="Zoom out">
+        <div className="board-zoom" aria-label={t("Zoom", "Zoom")}>
+          <button
+            type="button"
+            onClick={() => zoomBy(1 / 1.2)}
+            aria-label={t("Zoom out", "Dézoomer")}
+          >
             −
           </button>
           <button
@@ -859,18 +882,19 @@ export function BoardView({
           >
             {Math.round(view.zoom * 100)}%
           </button>
-          <button type="button" onClick={() => zoomBy(1.2)} aria-label="Zoom in">
+          <button type="button" onClick={() => zoomBy(1.2)} aria-label={t("Zoom in", "Zoomer")}>
             +
           </button>
           <button type="button" onClick={fit}>
-            Fit
+            {t("Fit", "Ajuster")}
           </button>
         </div>
       </div>
       <p className="small muted board-help">
-        Drag empty space to move around, and hold Ctrl or ⌘ while scrolling to zoom. Double-click a
-        card to write in it. Paste a link or an image anywhere on the board. Pink tape marks what
-        the client added.
+        {t(
+          "Drag empty space to move around, and hold Ctrl or ⌘ while scrolling to zoom. Double-click a card to write in it. Paste a link or an image anywhere on the board. Pink tape marks what the client added.",
+          "Faites glisser le vide pour vous déplacer, et maintenez Ctrl ou ⌘ en faisant défiler pour zoomer. Double-cliquez sur une carte pour écrire dedans. Collez un lien ou une image n'importe où sur le tableau. Le scotch rose marque ce que le client a ajouté.",
+        )}
       </p>
     </div>
   );
@@ -891,7 +915,7 @@ function BoardHeader({
   const [error, setError] = useState("");
   return (
     <div className="board-head">
-      <nav className="board-path small" aria-label="Boards">
+      <nav className="board-path small" aria-label={t("Boards", "Tableaux")}>
         {page.path.map((p, i) => (
           <span key={p.id}>
             <button
@@ -899,7 +923,7 @@ function BoardHeader({
               className="link-btn"
               onClick={() => onOpenBoard(i === 0 ? null : p.id)}
             >
-              {p.title || "Board"}
+              {p.title || t("Board", "Tableau")}
             </button>
             <span aria-hidden="true"> / </span>
           </span>
@@ -923,7 +947,7 @@ function BoardHeader({
           <input
             name="title"
             className="board-title-input"
-            aria-label="Board name"
+            aria-label={t("Board name", "Nom du tableau")}
             defaultValue={page.board.title}
             maxLength={120}
             autoFocus
@@ -936,15 +960,18 @@ function BoardHeader({
             type="button"
             className="link-btn"
             onClick={() => setRenaming(true)}
-            title="Rename"
+            title={t("Rename", "Renommer")}
           >
-            {page.board.title || "Board"}
+            {page.board.title || t("Board", "Tableau")}
           </button>
         </h2>
       )}
       {error && <Notice tone="error">{error}</Notice>}
       <span className="sr-note small muted">
-        Saved as you go. Changes from the other side show within a few seconds.
+        {t(
+          "Saved as you go. Changes from the other side show within a few seconds.",
+          "Enregistré au fur et à mesure. Les changements de l'autre côté s'affichent en quelques secondes.",
+        )}
       </span>
     </div>
   );

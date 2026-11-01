@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { NavLink, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Button } from "@/components/Button";
+import { LangSwitch } from "@/components/LangSwitch";
 import { Logo } from "@/components/Logo";
 import { Notice } from "@/components/Notice";
 import { useActiveTabInView } from "@/components/useActiveTabInView";
@@ -17,6 +18,7 @@ import { ScriptsTab } from "./ScriptsTab";
 import { SharedTab } from "./SharedTab";
 import { useMyPortal, useMyVideos } from "./portalApi";
 import { VideosTab } from "./VideosTab";
+import { t } from "@/lib/i18n";
 
 /** What a client sees: their campaign, onboarding, concepts and videos to approve. Nothing else. */
 export function PortalPage({ portal, email }: { portal: ClientPortal; email: string }) {
@@ -39,21 +41,22 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
       <header className="portal-bar">
         <Logo />
         <span className="portal-who small">
+          <LangSwitch />
           <span className="muted">{email}</span>
           <Button variant="link" onClick={() => void signOut()}>
-            Sign out
+            {t("Sign out", "Se déconnecter")}
           </Button>
         </span>
       </header>
       <main className={`page portal-page${onBoard ? " board-page" : ""}`}>
-        <p className="eyebrow">Client portal</p>
+        <p className="eyebrow">{t("Client portal", "Espace client")}</p>
         <h1>{brand}</h1>
         <nav className="portal-tabs" aria-label="Portal">
           <NavLink to="/" end className="portal-tab">
-            Home
+            {t("Home", "Accueil")}
           </NavLink>
           <NavLink to="/concepts" className="portal-tab">
-            Ideas
+            {t("Ideas", "Idées")}
             {waiting > 0 && <span className="badge">{waiting}</span>}
           </NavLink>
           <NavLink to="/scripts" className="portal-tab">
@@ -61,22 +64,24 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
             {scriptsWaiting > 0 && <span className="badge">{scriptsWaiting}</span>}
           </NavLink>
           <NavLink to="/board" className="portal-tab">
-            Board
+            {t("Board", "Tableau")}
           </NavLink>
           <NavLink to="/shared" className="portal-tab">
-            Shared
+            {t("Shared", "Partagé")}
           </NavLink>
           <NavLink to="/onboarding" className="portal-tab">
-            Your brand
+            {t("Your brand", "Votre marque")}
           </NavLink>
           {videosOn && (
             <NavLink to="/videos" className="portal-tab">
-              Videos
+              {t("Videos", "Vidéos")}
               {cuts > 0 && <span className="badge">{cuts}</span>}
             </NavLink>
           )}
         </nav>
-        {page.isPending && <p className="muted">Loading your portal…</p>}
+        {page.isPending && (
+          <p className="muted">{t("Loading your portal…", "Chargement de votre espace…")}</p>
+        )}
         {page.isError && <Notice tone="error">{friendlyError(page.error)}</Notice>}
         {page.data && (
           <Routes>
@@ -86,8 +91,10 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
               element={
                 <section className="tab-body">
                   <p className="lede">
-                    Everything we need before pre-production. It saves as you type, so you can stop
-                    and come back. Skip anything you're not sure about.
+                    {t(
+                      "Everything we need before pre-production. It saves as you type, so you can stop and come back. Skip anything you're not sure about.",
+                      "Tout ce qu'il nous faut avant la préproduction. C'est enregistré au fil de la saisie : vous pouvez vous arrêter et revenir. Passez ce dont vous n'êtes pas sûr.",
+                    )}
                   </p>
                   <OnboardingForm target={target} brand={brand} mode="client" />
                 </section>
@@ -118,7 +125,9 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
                   ) : videos.isError ? (
                     <Notice tone="error">{friendlyError(videos.error)}</Notice>
                   ) : (
-                    <p className="muted">Loading your videos…</p>
+                    <p className="muted">
+                      {t("Loading your videos…", "Chargement de vos vidéos…")}
+                    </p>
                   )
                 }
               />
@@ -128,7 +137,7 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
         )}
       </main>
       <footer className="portal-foot small muted">
-        Questions? Message Gecko on{" "}
+        {t("Questions? Message Gecko on", "Une question ? Écrivez à Gecko sur")}{" "}
         <a href="https://wa.me/21626191555" target="_blank" rel="noreferrer noopener">
           WhatsApp
         </a>
