@@ -13,6 +13,7 @@ import { videosOn } from "@/lib/features";
 import { ConceptsTab } from "./ConceptsTab";
 import { OverviewTab } from "./OverviewTab";
 import { ScriptsTab } from "./ScriptsTab";
+import { SharedTab } from "./SharedTab";
 import { useMyPortal, useMyVideos } from "./portalApi";
 import { VideosTab } from "./VideosTab";
 
@@ -57,6 +58,9 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
             Scripts
             {scriptsWaiting > 0 && <span className="badge">{scriptsWaiting}</span>}
           </NavLink>
+          <NavLink to="/shared" className="portal-tab">
+            Shared
+          </NavLink>
           <NavLink to="/onboarding" className="portal-tab">
             Your brand
           </NavLink>
@@ -84,6 +88,7 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
                 </section>
               }
             />
+            <Route path="shared" element={<SharedTab portal={portal} />} />
             <Route
               path="scripts"
               element={<ScriptsTab portal={portal} scripts={page.data.scripts} />}

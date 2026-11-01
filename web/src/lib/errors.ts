@@ -14,6 +14,10 @@ const MESSAGES: [RegExp, string][] = [
     /invalid_invite/,
     "This invite link is wrong, used or expired, or was sent to a different email.",
   ],
+  [
+    /signups not allowed for otp|otp_disabled/i,
+    "There's no Gecko login for that email yet. Use your invite link.",
+  ],
   [/verified_email_required/, "Confirm your email first, then try again."],
   [
     /concept_changed/,
@@ -25,6 +29,12 @@ const MESSAGES: [RegExp, string][] = [
   ],
   [/hook_required/, "Pick the hook you like first, then approve."],
   [/invalid_script/, "That concept belongs to another client. Pick one of this client's concepts."],
+  [/invalid_item/, "Check the link starts with https:// and the note isn't empty."],
+  [/invalid_notes/, "The brand notes can be up to 8,000 characters."],
+  [
+    /PGRST20[25]|could not find the (table|function)|does not exist/i,
+    "The database is missing an update. Run the newest file from supabase/migrations in the Supabase SQL Editor, then refresh.",
+  ],
   [/client_only/, "Only the client can approve or ask for changes."],
   [
     /video_changed/,

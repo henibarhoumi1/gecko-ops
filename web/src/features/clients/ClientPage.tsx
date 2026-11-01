@@ -12,6 +12,7 @@ import { LoginsPanel } from "./LoginsPanel";
 import { OverviewEditor } from "./OverviewEditor";
 import { TeamConcepts } from "./TeamConcepts";
 import { TeamScripts } from "./TeamScripts";
+import { TeamShared } from "./TeamShared";
 
 /** One client's portal, from the team's side. */
 export function ClientPage() {
@@ -34,10 +35,11 @@ export function ClientPage() {
         ["concepts", "Ideas"],
         ["scripts", "Scripts"],
         ...videos,
+        ["shared", "Shared"],
         ["onboarding", "Onboarding"],
         ["logins", "Client logins"],
       ]
-    : [["concepts", "Ideas"], ["scripts", "Scripts"], ...videos];
+    : [["concepts", "Ideas"], ["scripts", "Scripts"], ...videos, ["shared", "Shared"]];
 
   return (
     <section className="page">
@@ -83,6 +85,7 @@ export function ClientPage() {
         )}
         <Route path="concepts" element={<TeamConcepts clientId={clientId} />} />
         <Route path="scripts" element={<TeamScripts clientId={clientId} />} />
+        <Route path="shared" element={<TeamShared clientId={clientId} />} />
         {videosOn && <Route path="videos" element={<TeamVideos clientId={clientId} />} />}
         <Route path="*" element={<Navigate to={`/clients/${clientId}`} replace />} />
       </Routes>
