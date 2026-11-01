@@ -6,16 +6,19 @@ import { Notice } from "@/components/Notice";
 import { friendlyError } from "@/lib/errors";
 import { requireSupabase } from "@/lib/supabase";
 import { AuthLayout } from "./AuthLayout";
+import { readPendingInvite } from "./inviteCode";
 
 export function SignUpPage() {
   const [error, setError] = useState("");
   const [sentTo, setSentTo] = useState("");
   const [busy, setBusy] = useState(false);
+  const invited = readPendingInvite() !== null;
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const email = String(form.get("email"));
+    const invite = readPendingInvite();
     setBusy(true);
     setError("");
     const { error } = await requireSupabase().auth.signUp({
@@ -23,7 +26,11 @@ export function SignUpPage() {
       password: String(form.get("password")),
       options: {
         data: { name: String(form.get("name")).trim() },
-        emailRedirectTo: window.location.origin,
+        // The confirmation email often opens in another browser than the invite did (WhatsApp, then the mail app),
+        // so the invite code rides along in the link instead of relying on this browser's storage.
+        emailRedirectTo: invite
+          ? `${window.location.origin}/invite/${invite}`
+          : window.location.origin,
       },
     });
     setBusy(false);
@@ -36,7 +43,7 @@ export function SignUpPage() {
       <AuthLayout
         eyebrow="Almost there"
         title="Check your email"
-        intro={`We sent a confirmation link to ${sentTo}. Open it, then sign in.`}
+        intro={`We sent a confirmation link to ${sentTo}. Open it and you're in.`}
       >
         <p className="center">
           <Link to="/sign-in">Go to sign in</Link>
@@ -47,9 +54,13 @@ export function SignUpPage() {
 
   return (
     <AuthLayout
-      eyebrow="Create an account"
-      title="Join Gecko"
-      intro="Use the email your invite was sent to."
+      eyebrow={invited ? "You're invited" : "Create an account"}
+      title={invited ? "Create your login" : "Join Gecko"}
+      intro={
+        invited
+          ? "Use the email your invite was sent to. Confirm it from your inbox and you're in."
+          : "Use the email your invite was sent to."
+      }
     >
       <form className="stack" onSubmit={onSubmit}>
         <Field label="Your name" name="name" autoComplete="name" required maxLength={120} />

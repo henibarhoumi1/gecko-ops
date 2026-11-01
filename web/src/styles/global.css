@@ -453,6 +453,29 @@ h2 {
   background: var(--white);
 }
 
+/* Every dropdown gets the same drawn arrow as the website's brief form, not the browser's own. */
+.field select,
+.ob-f select,
+.ob-asset select,
+.invite-role select {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 38px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position:
+    calc(100% - 20px) 55%,
+    calc(100% - 15px) 55%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--ink);
+}
+
 .row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -660,7 +683,7 @@ a.btn {
 }
 
 .fieldset {
-  border: 1px solid var(--line);
+  border: 1px solid var(--edge);
   border-radius: var(--radius);
   padding: 14px 16px 16px;
   display: grid;
@@ -952,13 +975,9 @@ a.btn {
   display: grid;
   gap: 8px;
   padding: 18px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--edge);
   border-radius: var(--radius);
   background: var(--white);
-}
-
-.concept-review {
-  border-color: var(--ink);
 }
 
 .concept-approved {
@@ -970,7 +989,6 @@ a.btn {
 }
 
 .concept-draft {
-  background: #fbfaf8;
   border-style: dashed;
 }
 
@@ -1028,7 +1046,7 @@ a.btn {
 .note {
   padding: 10px 12px;
   border-radius: 12px;
-  background: #f6f5f2;
+  background: var(--yellow-soft);
 }
 
 .note.from-client {
@@ -1620,9 +1638,9 @@ a.btn {
 }
 
 .player-empty {
-  background: #f6f5f2;
+  background: var(--white);
   color: var(--muted);
-  border: 1px dashed var(--line);
+  border: 1px dashed var(--edge);
 }
 
 .player-wait .notice {

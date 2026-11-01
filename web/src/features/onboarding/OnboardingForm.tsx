@@ -1,6 +1,7 @@
-import { useId, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type CSSProperties } from "react";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
+import { useAuth } from "@/features/auth/AuthProvider";
 import {
   answerText,
   en,
@@ -26,6 +27,25 @@ interface Props {
 /** The onboarding sheet, one section at a time, saved as you type. */
 export function OnboardingForm({ target, brand, mode }: Props) {
   const sheet = useOnboardingSheet(target);
+  const { state } = useAuth();
+  const user = state.status === "ready" || state.status === "error" ? state.session.user : null;
+  const prefilled = useRef(false);
+  const { ready, status, answers, set } = sheet;
+
+  // The first time a client opens an empty sheet, fill in what Gecko already knows (brand, name, email), so they
+  // start on the questions only they can answer. Anything they change or clear afterwards stays as they left it.
+  useEffect(() => {
+    if (mode !== "client" || prefilled.current || !ready || status === "error") return;
+    prefilled.current = true;
+    if (Object.keys(answers).length) return;
+    const known: Record<string, unknown> = {
+      brand,
+      contact: user?.user_metadata?.name,
+      email: user?.email,
+    };
+    for (const [key, value] of Object.entries(known))
+      if (typeof value === "string" && value.trim()) set(key, value.trim());
+  }, [mode, ready, status, answers, brand, user, set]);
   const [at, setAt] = useState<string>(SECTIONS[0]!.id);
   const [notice, setNotice] = useState("");
   const pct = percentFilled(sheet.answers);

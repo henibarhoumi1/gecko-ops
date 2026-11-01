@@ -15,6 +15,8 @@ export function InvitePage() {
     if (parsed && signedIn) void refresh();
   }, [parsed, signedIn, refresh]);
 
+  // Opened from the confirmation email, the sign-in is still being read from the link: wait for it.
+  if (state.status === "loading") return null;
   if (!signedIn) return <Navigate to="/sign-up" replace />;
   return <Navigate to="/" replace />;
 }
