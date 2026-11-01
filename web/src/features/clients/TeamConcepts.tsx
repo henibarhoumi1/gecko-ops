@@ -27,7 +27,7 @@ export function TeamConcepts({ clientId }: { clientId: string }) {
   const concepts = useConcepts(clientId);
   const [adding, setAdding] = useState(false);
 
-  if (concepts.isPending) return <p className="muted">Loading concepts…</p>;
+  if (concepts.isPending) return <p className="muted">Loading ideas…</p>;
   if (concepts.isError) return <Notice tone="error">{friendlyError(concepts.error)}</Notice>;
   const groups = groupConcepts(concepts.data, "team");
   const nextPosition = concepts.data.reduce((max, c) => Math.max(max, c.position + 1), 0);
@@ -36,15 +36,15 @@ export function TeamConcepts({ clientId }: { clientId: string }) {
     <section className="tab-body">
       <div className="page-head">
         <p className="lede">
-          Drafts stay with the team. Share a concept and the client can approve it or ask for
-          changes. Editing a shared concept sends the new version back for approval.
+          Drafts stay with the team. Share an idea and the client can approve it or ask for changes.
+          Editing a shared idea sends the new version back for approval.
         </p>
-        {!adding && <Button onClick={() => setAdding(true)}>New concept</Button>}
+        {!adding && <Button onClick={() => setAdding(true)}>New idea</Button>}
       </div>
       {adding && (
         <ConceptForm clientId={clientId} position={nextPosition} onDone={() => setAdding(false)} />
       )}
-      {groups.length === 0 && !adding && <p className="muted">No concepts yet.</p>}
+      {groups.length === 0 && !adding && <p className="muted">No ideas yet.</p>}
       {groups.map((group) => (
         <div key={group.status} className="group">
           <h2>
@@ -137,7 +137,7 @@ function TeamConcept({ clientId, concept }: { clientId: string; concept: Concept
           <TextArea
             label={
               concept.status === "draft"
-                ? "Comment (the client sees it once you share the concept)"
+                ? "Comment (the client sees it once you share the idea)"
                 : "Comment (the client sees it)"
             }
             name="body"
@@ -179,7 +179,7 @@ function ConceptForm({
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const text = (name: string) => String(form.get(name) ?? "").trim();
-    if (!text("title")) return setError("Give the concept a title.");
+    if (!text("title")) return setError("Give the idea a title.");
     try {
       await save.mutateAsync({
         id: concept?.id ?? null,
@@ -197,7 +197,7 @@ function ConceptForm({
 
   return (
     <form className="card stack concept-edit" onSubmit={onSubmit}>
-      <h3>{concept ? `Edit "${concept.title}"` : "New concept"}</h3>
+      <h3>{concept ? `Edit "${concept.title}"` : "New idea"}</h3>
       <div className="row">
         <Field
           label="Title"
@@ -215,7 +215,7 @@ function ConceptForm({
         />
       </div>
       <TextArea
-        label="The concept"
+        label="The idea"
         name="body"
         rows={8}
         defaultValue={concept?.body}
@@ -236,7 +236,7 @@ function ConceptForm({
       )}
       {shared && (
         <p className="small muted">
-          Changing the title, format, concept or references makes a new version, and the client
+          Changing the title, format, idea or references makes a new version, and the client
           approves it again.
         </p>
       )}
@@ -246,7 +246,7 @@ function ConceptForm({
           Cancel
         </Button>
         <Button type="submit" disabled={save.isPending}>
-          {concept ? "Save" : "Add concept"}
+          {concept ? "Save" : "Add idea"}
         </Button>
       </div>
     </form>

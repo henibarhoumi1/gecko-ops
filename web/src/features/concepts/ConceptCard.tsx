@@ -1,3 +1,4 @@
+import { LinkPlayer } from "@/components/LinkPlayer";
 import type { ReactNode } from "react";
 import {
   FORMAT_LABEL,
@@ -45,15 +46,7 @@ export function ConceptCard({
       {refs.length > 0 && (
         <ul className="refs">
           {refs.map((ref, i) => (
-            <li key={i}>
-              {ref.href ? (
-                <a href={ref.href} target="_blank" rel="noreferrer noopener">
-                  {ref.text}
-                </a>
-              ) : (
-                ref.text
-              )}
-            </li>
+            <li key={i}>{ref.href ? <LinkPlayer url={ref.href} label={ref.text} /> : ref.text}</li>
           ))}
         </ul>
       )}
