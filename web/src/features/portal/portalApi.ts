@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ClientPortal } from "@/features/auth/account";
 import type { Concept, NoteKind } from "@/features/concepts/model";
+import type { Script } from "@/features/scripts/model";
 import type { Video } from "@/features/videos/model";
 import { videosOn } from "@/lib/features";
 import { requireSupabase } from "@/lib/supabase";
@@ -30,6 +31,7 @@ export interface PortalData {
   me: string;
   overview: Overview | null;
   concepts: Concept[];
+  scripts: Script[];
 }
 
 const key = (portal: ClientPortal) => ["portal", portal.workspaceId, portal.clientId];
@@ -44,7 +46,9 @@ export function useMyPortal(portal: ClientPortal) {
         p_client_id: portal.clientId,
       });
       if (error) throw error;
-      return data as PortalData;
+      const page = data as PortalData;
+      // An older database without scripts returns no key; treat it as none yet.
+      return { ...page, scripts: page.scripts ?? [] };
     },
     refetchInterval: 30_000,
   });

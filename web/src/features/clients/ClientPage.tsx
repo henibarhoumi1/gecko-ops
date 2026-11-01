@@ -11,6 +11,7 @@ import { useClients } from "./clientsApi";
 import { LoginsPanel } from "./LoginsPanel";
 import { OverviewEditor } from "./OverviewEditor";
 import { TeamConcepts } from "./TeamConcepts";
+import { TeamScripts } from "./TeamScripts";
 
 /** One client's portal, from the team's side. */
 export function ClientPage() {
@@ -30,12 +31,13 @@ export function ClientPage() {
   const tabs = lead
     ? [
         ["", "Overview"],
-        ["concepts", "Concepts"],
+        ["concepts", "Ideas"],
+        ["scripts", "Scripts"],
         ...videos,
         ["onboarding", "Onboarding"],
         ["logins", "Client logins"],
       ]
-    : [["concepts", "Concepts"], ...videos];
+    : [["concepts", "Ideas"], ["scripts", "Scripts"], ...videos];
 
   return (
     <section className="page">
@@ -80,6 +82,7 @@ export function ClientPage() {
           <Route index element={<Navigate to="concepts" replace />} />
         )}
         <Route path="concepts" element={<TeamConcepts clientId={clientId} />} />
+        <Route path="scripts" element={<TeamScripts clientId={clientId} />} />
         {videosOn && <Route path="videos" element={<TeamVideos clientId={clientId} />} />}
         <Route path="*" element={<Navigate to={`/clients/${clientId}`} replace />} />
       </Routes>

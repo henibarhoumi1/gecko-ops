@@ -29,57 +29,106 @@ function longDate(iso: string): string {
   });
 }
 
+function plural(n: number, word: string) {
+  return `${n} ${word}${n === 1 ? "" : "s"}`;
+}
+
+interface Todo {
+  to: string;
+  title: string;
+  detail: string;
+}
+
+/** Everything that waits on the client, most useful first. */
+function waitingOnYou(data: PortalData, sentAt: string | null, onboardingLoaded: boolean): Todo[] {
+  const todo: Todo[] = [];
+  const scripts = data.scripts.filter((s) => s.status === "review").length;
+  const ideas = countByStatus(data.concepts).review;
+  if (scripts > 0)
+    todo.push({
+      to: "/scripts",
+      title: scripts === 1 ? "A script is ready for you" : `${scripts} scripts are ready for you`,
+      detail: "Pick the hook you like, comment on any line, then approve.",
+    });
+  if (ideas > 0)
+    todo.push({
+      to: "/concepts",
+      title: ideas === 1 ? "An idea is waiting for you" : `${ideas} ideas are waiting for you`,
+      detail: "Approve the ones you like or tell us what to change.",
+    });
+  if (onboardingLoaded && !sentAt)
+    todo.push({
+      to: "/onboarding",
+      title: "Tell us about your brand",
+      detail: "About 15 minutes. It saves as you go, so you can stop and come back.",
+    });
+  const o = data.overview;
+  if (o?.price != null) {
+    const half = dt(Math.round(o.price * 500) / 1000);
+    if (o.depositStatus === "due")
+      todo.push({
+        to: "/#payment",
+        title: `Deposit of ${half}`,
+        detail: "It books your shoot day.",
+      });
+    else if (o.balanceStatus === "due")
+      todo.push({
+        to: "/#payment",
+        title: `Balance of ${half}`,
+        detail: "Your final files unlock as soon as it's in.",
+      });
+  }
+  return todo;
+}
+
 export function OverviewTab({ data, target }: { data: PortalData; target: SheetTarget }) {
   const onboarding = useOnboardingPercent(target);
   const counts = countByStatus(data.concepts);
   const o = data.overview;
   const first = data.me.split(/\s+/)[0] || data.me;
+  const todo = waitingOnYou(data, onboarding.data?.sentAt ?? null, onboarding.isSuccess);
+  const scriptsReworked = data.scripts.filter((s) => s.status === "changes").length;
+  const doing = [
+    counts.changes > 0 && `Reworking ${plural(counts.changes, "idea")} from your notes.`,
+    scriptsReworked > 0 && `Reworking ${plural(scriptsReworked, "script")} from your notes.`,
+    o?.nextStep,
+  ].filter((line): line is string => Boolean(line));
 
   return (
     <section className="tab-body">
       <p className="lede">
-        Welcome, {first}. This is where your campaign lives: what's included, the plan, and every
-        concept for you to approve.
+        Welcome, {first}. This is where your campaign lives: what needs you, what Gecko is working
+        on, and the plan.
       </p>
 
-      <div className="todo">
-        <Link to="/onboarding" className="todo-card">
-          <span className="eyebrow">Onboarding</span>
-          <strong>
-            {onboarding.data?.sentAt
-              ? "Sent to Gecko"
-              : onboarding.data
-                ? `${onboarding.data.pct}% filled`
-                : "Tell us about your brand"}
-          </strong>
-          <span className="small muted">
-            {onboarding.data?.sentAt
-              ? "You can still add to it."
-              : "About 15 minutes. It saves as you go."}
-          </span>
-        </Link>
-        <Link to="/concepts" className="todo-card">
-          <span className="eyebrow">Concepts</span>
-          <strong>
-            {counts.review
-              ? `${counts.review} waiting for your approval`
-              : counts.changes
-                ? `Reworking ${counts.changes} for you`
-                : counts.approved
-                  ? `${counts.approved} approved`
-                  : "Coming soon"}
-          </strong>
-          <span className="small muted">
-            {counts.review
-              ? "Approve them, ask for changes, or add your own ideas."
-              : counts.changes
-                ? "The new version comes back here for your OK."
-                : counts.approved
-                  ? "Have an idea of your own? Add it any time."
-                  : "The first ideas land here for you to approve."}
-          </span>
-        </Link>
-      </div>
+      <h2 className="waiting-title">Waiting on you</h2>
+      {todo.length === 0 ? (
+        <p className="waiting-none">
+          Nothing needs you right now. We'll show it here when it does.
+        </p>
+      ) : (
+        <ul className="waiting">
+          {todo.map((item) => (
+            <li key={item.to}>
+              <Link to={item.to} className="waiting-item">
+                <strong>{item.title}</strong>
+                <span className="small">{item.detail}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {doing.length > 0 && (
+        <>
+          <h2>What Gecko is doing</h2>
+          <ul className="doing">
+            {doing.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
+        </>
+      )}
 
       {!o ? (
         <p className="muted">Gecko is setting up your campaign plan. It will show here shortly.</p>
@@ -134,7 +183,7 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
           )}
 
           {o.price != null && (
-            <div className="block">
+            <div className="block" id="payment">
               <h2>Payment</h2>
               <table className="pay">
                 <tbody>

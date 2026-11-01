@@ -18,7 +18,8 @@ export function standardMilestones(shootDate: string | null): Milestone[] {
   };
   return [
     { label: "Onboarding sent", date: null, done: false },
-    { label: "Concepts approved", date: null, done: false },
+    { label: "Ideas approved", date: null, done: false },
+    { label: "Scripts approved", date: null, done: false },
     { label: "Shoot day", date: shootDate, done: false },
     { label: "First drafts", date: plus(7), done: false },
     { label: "Final files", date: null, done: false },
