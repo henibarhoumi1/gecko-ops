@@ -1,7 +1,8 @@
 import { useMemo } from "react";
-import { Link, NavLink, Navigate, Route, Routes, useParams } from "react-router-dom";
+import { Link, NavLink, Navigate, Route, Routes, useLocation, useParams } from "react-router-dom";
 import { Notice } from "@/components/Notice";
 import { useActiveTabInView } from "@/components/useActiveTabInView";
+import { BoardRoute } from "@/features/board/BoardRoute";
 import { OnboardingForm } from "@/features/onboarding/OnboardingForm";
 import { TeamVideos } from "@/features/videos/TeamVideos";
 import { videosOn } from "@/lib/features";
@@ -21,6 +22,7 @@ export function ClientPage() {
   const clients = useClients();
   useActiveTabInView(clients.isSuccess);
   const target = useMemo(() => ({ workspaceId: workspace.id, clientId }), [workspace.id, clientId]);
+  const onBoard = useLocation().pathname.includes("/board");
   const lead = workspace.role === "founder" || workspace.role === "sales";
 
   if (clients.isPending) return <p className="loading">Loading…</p>;
@@ -35,14 +37,21 @@ export function ClientPage() {
         ["concepts", "Ideas"],
         ["scripts", "Scripts"],
         ...videos,
+        ["board", "Board"],
         ["shared", "Shared"],
         ["onboarding", "Onboarding"],
         ["logins", "Client logins"],
       ]
-    : [["concepts", "Ideas"], ["scripts", "Scripts"], ...videos, ["shared", "Shared"]];
+    : [
+        ["concepts", "Ideas"],
+        ["scripts", "Scripts"],
+        ...videos,
+        ["board", "Board"],
+        ["shared", "Shared"],
+      ];
 
   return (
-    <section className="page">
+    <section className={`page${onBoard ? " board-page" : ""}`}>
       <p className="small">
         <Link to="/clients">← Clients</Link>
       </p>
@@ -52,7 +61,7 @@ export function ClientPage() {
           <NavLink
             key={path}
             to={`/clients/${clientId}${path ? `/${path}` : ""}`}
-            end
+            end={path !== "board"}
             className="portal-tab"
           >
             {label}
@@ -86,6 +95,15 @@ export function ClientPage() {
         <Route path="concepts" element={<TeamConcepts clientId={clientId} />} />
         <Route path="scripts" element={<TeamScripts clientId={clientId} />} />
         <Route path="shared" element={<TeamShared clientId={clientId} />} />
+        {["board", "board/:boardId"].map((path) => (
+          <Route
+            key={path}
+            path={path}
+            element={
+              <BoardRoute target={target} base={`/clients/${clientId}/board`} reader="team" />
+            }
+          />
+        ))}
         {videosOn && <Route path="videos" element={<TeamVideos clientId={clientId} />} />}
         <Route path="*" element={<Navigate to={`/clients/${clientId}`} replace />} />
       </Routes>

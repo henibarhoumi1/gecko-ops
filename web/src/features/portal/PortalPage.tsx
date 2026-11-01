@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { NavLink, Navigate, Route, Routes } from "react-router-dom";
+import { NavLink, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Button } from "@/components/Button";
 import { Logo } from "@/components/Logo";
 import { Notice } from "@/components/Notice";
@@ -7,6 +7,7 @@ import { useActiveTabInView } from "@/components/useActiveTabInView";
 import type { ClientPortal } from "@/features/auth/account";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { countByStatus } from "@/features/concepts/model";
+import { BoardRoute } from "@/features/board/BoardRoute";
 import { OnboardingForm } from "@/features/onboarding/OnboardingForm";
 import { friendlyError } from "@/lib/errors";
 import { videosOn } from "@/lib/features";
@@ -20,6 +21,7 @@ import { VideosTab } from "./VideosTab";
 /** What a client sees: their campaign, onboarding, concepts and videos to approve. Nothing else. */
 export function PortalPage({ portal, email }: { portal: ClientPortal; email: string }) {
   const { signOut } = useAuth();
+  const onBoard = useLocation().pathname.startsWith("/board");
   const page = useMyPortal(portal);
   const videos = useMyVideos(portal);
   useActiveTabInView();
@@ -43,7 +45,7 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
           </Button>
         </span>
       </header>
-      <main className="page portal-page">
+      <main className={`page portal-page${onBoard ? " board-page" : ""}`}>
         <p className="eyebrow">Client portal</p>
         <h1>{brand}</h1>
         <nav className="portal-tabs" aria-label="Portal">
@@ -57,6 +59,9 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
           <NavLink to="/scripts" className="portal-tab">
             Scripts
             {scriptsWaiting > 0 && <span className="badge">{scriptsWaiting}</span>}
+          </NavLink>
+          <NavLink to="/board" className="portal-tab">
+            Board
           </NavLink>
           <NavLink to="/shared" className="portal-tab">
             Shared
@@ -89,6 +94,13 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
               }
             />
             <Route path="shared" element={<SharedTab portal={portal} />} />
+            {["board", "board/:boardId"].map((path) => (
+              <Route
+                key={path}
+                path={path}
+                element={<BoardRoute target={target} base="/board" reader="client" />}
+              />
+            ))}
             <Route
               path="scripts"
               element={<ScriptsTab portal={portal} scripts={page.data.scripts} />}
