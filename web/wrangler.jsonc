@@ -23,6 +23,16 @@
     // The daily keep-alive below uses it. If the key is ever rotated, change it here and in the build variable.
     "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5dXNmcHl4b3pxbXNqb2lyeGdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0NzE5OTEsImV4cCI6MjEwOTA0Nzk5MX0.F6GhYc1mD0Q5Y3Hn1SSMM19CEAw7law_0BcIfp2Rkcs",
   },
+  // Pull-request previews ("Previews Base" builds, deploy command `npx wrangler preview`) don't inherit the vars
+  // above, so they are repeated here. Same public values: there is one Supabase project, so a preview signs in to
+  // the live data. Previews don't run the cron below, so only the live app pings the database.
+  "previews": {
+    "vars": {
+      "SUPABASE_URL": "https://ryusfpyxozqmsjoirxgm.supabase.co",
+      "CF_ACCOUNT_ID": "39b689d9db4027a9ec6a5713e2e8bcc0",
+      "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5dXNmcHl4b3pxbXNqb2lyeGdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0NzE5OTEsImV4cCI6MjEwOTA0Nzk5MX0.F6GhYc1mD0Q5Y3Hn1SSMM19CEAw7law_0BcIfp2Rkcs",
+    },
+  },
   // Every day at 03:17 UTC the worker pings the database so a quiet week never pauses the free project.
   "triggers": { "crons": ["17 3 * * *"] },
   "observability": { "enabled": true },
