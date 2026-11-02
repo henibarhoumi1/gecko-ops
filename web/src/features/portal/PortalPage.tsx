@@ -1,3 +1,4 @@
+import { byClient } from "@/features/scripts/model";
 import { useMemo, type ReactNode } from "react";
 import { NavLink, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Button } from "@/components/Button";
@@ -8,6 +9,7 @@ import type { ClientPortal } from "@/features/auth/account";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { countByStatus } from "@/features/concepts/model";
 import { BoardRoute } from "@/features/board/BoardRoute";
+import { WhiteboardRoute } from "@/features/whiteboard/WhiteboardRoute";
 import { OnboardingForm } from "@/features/onboarding/OnboardingForm";
 import { friendlyError } from "@/lib/errors";
 import { videosOn } from "@/lib/features";
@@ -63,7 +65,7 @@ function navGroups(badges: {
       items: [
         { to: "/concepts", label: words.ideas(), badge: badges.ideas },
         { to: "/scripts", label: words.scripts(), badge: badges.scripts },
-        { to: "/board", label: words.board() },
+        { to: "/whiteboard", label: words.board() },
       ],
     },
     {
@@ -105,7 +107,7 @@ const Badge = ({ n }: { n?: number }) => (n ? <span className="badge">{n}</span>
 export function PortalPage({ portal, email }: { portal: ClientPortal; email: string }) {
   const { signOut } = useAuth();
   const path = useLocation().pathname;
-  const onBoard = path.startsWith("/board");
+  const onBoard = path.startsWith("/board") || path.startsWith("/whiteboard");
   const page = useMyPortal(portal);
   const videos = useMyVideos(portal);
   const production = useMyProduction(portal);
@@ -117,7 +119,8 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
   setTemplate(page.data?.template);
   const role = asRole(page.data?.role);
   const ideas = page.data ? countByStatus(page.data.concepts).review : 0;
-  const scripts = page.data?.scripts.filter((s) => s.status === "review").length ?? 0;
+  const scripts =
+    page.data?.scripts.filter((s) => s.status === "review" && !byClient(s)).length ?? 0;
   const cuts = videos.data?.videos.filter((v) => v.status === "review").length ?? 0;
   const brand = page.data?.brand ?? portal.brand;
   // Only people who can say yes to a cost get a badge for it.
@@ -233,6 +236,20 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
               <Route path="talent" element={<ProductionTab portal={portal} kind="talent" />} />
               <Route path="locations" element={<ProductionTab portal={portal} kind="location" />} />
               <Route path="budget" element={<ProductionTab portal={portal} kind="budget" />} />
+              {["whiteboard", "whiteboard/:boardId"].map((p) => (
+                <Route
+                  key={p}
+                  path={p}
+                  element={
+                    <WhiteboardRoute
+                      target={target}
+                      base="/whiteboard"
+                      reader="client"
+                      template={page.data?.template === "cinematic" ? "cinematic" : "performance"}
+                    />
+                  }
+                />
+              ))}
               {["board", "board/:boardId"].map((p) => (
                 <Route
                   key={p}

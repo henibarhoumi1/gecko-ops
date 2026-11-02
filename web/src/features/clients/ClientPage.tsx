@@ -3,12 +3,14 @@ import { Link, NavLink, Navigate, Route, Routes, useLocation, useParams } from "
 import { Notice } from "@/components/Notice";
 import { useActiveTabInView } from "@/components/useActiveTabInView";
 import { BoardRoute } from "@/features/board/BoardRoute";
+import { WhiteboardRoute } from "@/features/whiteboard/WhiteboardRoute";
 import { OnboardingForm } from "@/features/onboarding/OnboardingForm";
 import { TeamVideos } from "@/features/videos/TeamVideos";
 import { videosOn } from "@/lib/features";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { friendlyError } from "@/lib/errors";
 import { useClients, useLogos } from "./clientsApi";
+import { useTemplates } from "./lookApi";
 import { LogoPanel } from "./LogoPanel";
 import { LookPanel } from "./LookPanel";
 import { ClientNudge } from "./ClientNudge";
@@ -26,9 +28,10 @@ export function ClientPage() {
   const clients = useClients();
   useActiveTabInView(clients.isSuccess);
   const target = useMemo(() => ({ workspaceId: workspace.id, clientId }), [workspace.id, clientId]);
-  const onBoard = useLocation().pathname.includes("/board");
+  const onBoard = /\/(white)?board/.test(useLocation().pathname);
   const lead = workspace.role === "founder" || workspace.role === "sales";
   const logos = useLogos();
+  const templates = useTemplates();
 
   if (clients.isPending) return <p className="loading">Loading…</p>;
   if (clients.isError) return <Notice tone="error">{friendlyError(clients.error)}</Notice>;
@@ -43,7 +46,7 @@ export function ClientPage() {
         ["scripts", "Scripts"],
         ["production", "Production"],
         ...videos,
-        ["board", "Board"],
+        ["whiteboard", "Whiteboard"],
         ["shared", "Shared"],
         ["onboarding", "Onboarding"],
         ["logins", "Client logins"],
@@ -52,7 +55,7 @@ export function ClientPage() {
         ["concepts", "Ideas"],
         ["scripts", "Scripts"],
         ...videos,
-        ["board", "Board"],
+        ["whiteboard", "Whiteboard"],
         ["shared", "Shared"],
       ];
 
@@ -73,7 +76,7 @@ export function ClientPage() {
           <NavLink
             key={path}
             to={`/clients/${clientId}${path ? `/${path}` : ""}`}
-            end={path !== "board"}
+            end={path !== "whiteboard"}
             className="portal-tab"
           >
             {label}
@@ -117,6 +120,21 @@ export function ClientPage() {
         <Route path="concepts" element={<TeamConcepts clientId={clientId} />} />
         <Route path="scripts" element={<TeamScripts clientId={clientId} />} />
         <Route path="shared" element={<TeamShared clientId={clientId} />} />
+        {["whiteboard", "whiteboard/:boardId"].map((path) => (
+          <Route
+            key={path}
+            path={path}
+            element={
+              <WhiteboardRoute
+                target={target}
+                base={`/clients/${clientId}/whiteboard`}
+                reader="team"
+                template={templates.data?.[clientId] === "cinematic" ? "cinematic" : "performance"}
+              />
+            }
+          />
+        ))}
+        {/* The old green-mat board stays readable at …/board until its notes are moved over. */}
         {["board", "board/:boardId"].map((path) => (
           <Route
             key={path}

@@ -9,6 +9,11 @@ import {
   hookName,
   STYLE_LABEL,
   tidyLines,
+  tidyTreatment,
+  TREATMENT_KEYS,
+  treatmentLabel,
+  byClient,
+  type Treatment,
   type Script,
   type ScriptLine,
   type ScriptStyle,
@@ -23,6 +28,8 @@ import {
 } from "@/features/scripts/scriptsApi";
 import { friendlyError } from "@/lib/errors";
 import { useConcepts } from "./clientsApi";
+import { useTemplates } from "./lookApi";
+import { TextArea } from "@/components/TextArea";
 
 const STYLES = Object.entries(STYLE_LABEL) as [ScriptStyle, string][];
 
@@ -67,7 +74,7 @@ export function TeamScripts({ clientId }: { clientId: string }) {
 }
 
 function TeamScript({ clientId, script }: { clientId: string; script: Script }) {
-  const [mode, setMode] = useState<"idle" | "edit" | "delete">("idle");
+  const [mode, setMode] = useState<"idle" | "edit" | "delete" | "changes">("idle");
   const status = useSetScriptStatus();
   const remove = useDeleteScript();
   const note = useTeamScriptNote(clientId);
@@ -91,6 +98,23 @@ function TeamScript({ clientId, script }: { clientId: string; script: Script }) 
     >
       {mode === "idle" && (
         <div className="concept-actions">
+          {byClient(script) && script.status === "review" && (
+            <>
+              <Button
+                disabled={status.isPending}
+                onClick={() => void run(status.mutateAsync({ id: script.id, status: "approved" }))}
+              >
+                Approve version {script.version}
+              </Button>
+              <Button
+                variant="secondary"
+                disabled={status.isPending}
+                onClick={() => setMode("changes")}
+              >
+                Ask for changes
+              </Button>
+            </>
+          )}
           {script.status === "draft" && (
             <Button
               disabled={status.isPending}
@@ -100,9 +124,13 @@ function TeamScript({ clientId, script }: { clientId: string; script: Script }) 
             </Button>
           )}
           <Button variant="secondary" onClick={() => setMode("edit")}>
-            {script.status === "approved" ? "Edit (makes a new version)" : "Edit"}
+            {byClient(script) && script.status !== "draft"
+              ? "Rewrite it (Gecko's version goes to the client)"
+              : script.status === "approved"
+                ? "Edit (makes a new version)"
+                : "Edit"}
           </Button>
-          {script.status === "review" && (
+          {script.status === "review" && !byClient(script) && (
             <Button
               variant="link"
               disabled={status.isPending}
@@ -115,6 +143,37 @@ function TeamScript({ clientId, script }: { clientId: string; script: Script }) 
             Delete
           </Button>
         </div>
+      )}
+      {mode === "changes" && (
+        <form
+          className="concept-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            const body = String(new FormData(event.currentTarget).get("body") ?? "").trim();
+            if (!body) return setError("Tell the client what to change.");
+            void run(
+              note
+                .mutateAsync({ scriptId: script.id, line: null, body })
+                .then(() => status.mutateAsync({ id: script.id, status: "changes" })),
+            );
+          }}
+        >
+          <TextArea
+            label="What should the client change?"
+            name="body"
+            rows={3}
+            maxLength={4000}
+            autoFocus
+          />
+          <div className="actions">
+            <Button variant="secondary" onClick={() => setMode("idle")}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={status.isPending || note.isPending}>
+              Send to the client
+            </Button>
+          </div>
+        </form>
       )}
       {mode === "delete" && (
         <div className="concept-form">
@@ -161,6 +220,10 @@ function ScriptForm({
   const [conceptId, setConceptId] = useState(script?.conceptId ?? "");
   const [seconds, setSeconds] = useState(script?.seconds ?? 30);
   const [cta, setCta] = useState(script?.cta ?? "");
+  const templates = useTemplates();
+  const cinematic =
+    templates.data?.[clientId] === "cinematic" ||
+    TREATMENT_KEYS.some((k) => script?.treatment?.[k]);
   const [error, setError] = useState("");
   const shared = script && script.status !== "draft";
   const runs = estimateSeconds({ hooks: tidyLines(hooks), beats: tidyLines(beats), cta });
@@ -182,6 +245,15 @@ function ScriptForm({
         hooks: tidyLines(hooks),
         beats: tidyLines(beats),
         cta: cta.trim(),
+        ...(cinematic
+          ? {
+              treatment: tidyTreatment(
+                Object.fromEntries(
+                  TREATMENT_KEYS.map((k) => [k, String(form.get(`t-${k}`) ?? "")]),
+                ) as Treatment,
+              ),
+            }
+          : {}),
         ...(script ? {} : { status: submitter?.value === "share" ? "review" : "draft", position }),
       });
       onDone();
@@ -239,6 +311,24 @@ function ScriptForm({
         maxLength={300}
         placeholder="Order the starter kit on the site"
       />
+
+      {cinematic && (
+        <fieldset className="fieldset">
+          <legend>
+            Treatment: the film before the scenes. The client approves this with the rest.
+          </legend>
+          {TREATMENT_KEYS.map((k) => (
+            <TextArea
+              key={k}
+              label={treatmentLabel(k)}
+              name={`t-${k}`}
+              rows={2}
+              maxLength={2000}
+              defaultValue={script?.treatment?.[k]}
+            />
+          ))}
+        </fieldset>
+      )}
 
       <fieldset className="fieldset script-lines">
         <legend>Hooks: the first 2 seconds. Write two or three so the client can pick.</legend>

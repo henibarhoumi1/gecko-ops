@@ -9,8 +9,10 @@ import {
   estimateSeconds,
   hookName,
   lineLabel,
-  SCRIPT_STATUS,
+  scriptStatus,
   STYLE_LABEL,
+  TREATMENT_KEYS,
+  treatmentLabel,
   type Script,
   type ScriptLine,
   type ScriptNote,
@@ -49,10 +51,10 @@ export function ScriptView({
   return (
     <article className={`concept script concept-${script.status}`}>
       <header className="concept-head">
-        {!isCinematic() && <span className="tag">{STYLE_LABEL[script.style]}</span>}
-        <span className={`status status-${script.status}`}>
-          {SCRIPT_STATUS[reader][script.status]}
-        </span>
+        {!isCinematic() && !(script.writtenBy === "client" && script.style === "other") && (
+          <span className="tag">{STYLE_LABEL[script.style]}</span>
+        )}
+        <span className={`status status-${script.status}`}>{scriptStatus(script, reader)}</span>
         {script.version > 1 && (
           <span className="small muted">
             {t("Version", "Version")} {script.version}
@@ -60,13 +62,15 @@ export function ScriptView({
         )}
       </header>
       <h3 dir="auto">{script.title}</h3>
-      <p className={`small script-runs${runs > script.seconds + 3 ? " over" : ""}`}>
-        {t(
-          `Runs about ${runs} s spoken · made for ${script.seconds} s`,
-          `Environ ${runs} s à l'oral · prévu pour ${script.seconds} s`,
-        )}
-        {runs > script.seconds + 3 && reader === "team" && " · too long, trim it"}
-      </p>
+      {!isCinematic() && (
+        <p className={`small script-runs${runs > script.seconds + 3 ? " over" : ""}`}>
+          {t(
+            `Runs about ${runs} s spoken · made for ${script.seconds} s`,
+            `Environ ${runs} s à l'oral · prévu pour ${script.seconds} s`,
+          )}
+          {runs > script.seconds + 3 && reader === "team" && " · too long, trim it"}
+        </p>
+      )}
 
       {changed.size > 0 && (
         <p className="small script-changed-note">
@@ -77,6 +81,17 @@ export function ScriptView({
               )
             : "Marked lines changed since the version the client read before."}
         </p>
+      )}
+
+      {script.treatment && TREATMENT_KEYS.some((k) => script.treatment?.[k]) && (
+        <dl className="treatment">
+          {TREATMENT_KEYS.filter((k) => script.treatment?.[k]).map((k) => (
+            <div key={k} className={changed.has(k) ? "changed" : ""}>
+              <dt>{treatmentLabel(k)}</dt>
+              <dd dir="auto">{script.treatment?.[k]}</dd>
+            </div>
+          ))}
+        </dl>
       )}
 
       {script.goal && (
@@ -176,6 +191,7 @@ export function ScriptView({
 
       <p className="small muted">
         {t("By", "Par")} {script.authorName || "Gecko"}
+        {script.writtenBy === "client" && reader === "team" && " (client)"}
         {script.approvedAt &&
           t(
             ` · Approved by ${script.approvedBy ?? "the client"} on ${shortDate(script.approvedAt)}`,
