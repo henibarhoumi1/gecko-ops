@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { friendlyError } from "@/lib/errors";
 import { requireSupabase } from "@/lib/supabase";
@@ -143,7 +144,16 @@ export function useOnboardingSheet(target: SheetTarget) {
     [flush],
   );
 
-  const send = useCallback(() => flush(true), [flush]);
+  const queryClient = useQueryClient();
+  // Sending moves the client's menu and Home on, so the status they read is refreshed.
+  const send = useCallback(
+    () =>
+      flush(true).then((r) => {
+        void queryClient.invalidateQueries({ queryKey: ["onboarding-pct"] });
+        return r;
+      }),
+    [flush, queryClient],
+  );
 
   return { answers, set, send, sentAt, status, error, ready: status !== "loading" };
 }
