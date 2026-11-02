@@ -9,6 +9,7 @@ import { PLAN_OPTIONS, PLANS, type PlanId } from "@/features/plans/model";
 import { ReelStrip } from "@/features/plans/ReelStrip";
 import { useScripts } from "@/features/scripts/scriptsApi";
 import { friendlyError } from "@/lib/errors";
+import { useTemplates } from "./lookApi";
 import { blankPortal, usePortalRow, useSavePortal, type PortalRow } from "./clientsApi";
 
 /** Gecko's usual steps. The first drafts land 7 days after the shoot. */
@@ -34,6 +35,7 @@ export function OverviewEditor({ clientId }: { clientId: string }) {
   const row = usePortalRow(clientId);
   const save = useSavePortal(clientId);
   const scripts = useScripts(clientId);
+  const cinematic = useTemplates().data?.[clientId] === "cinematic";
   const [draft, setDraft] = useState<PortalRow | null>(null);
   const [message, setMessage] = useState<{ tone: "info" | "error"; text: string } | null>(null);
 
@@ -112,7 +114,7 @@ export function OverviewEditor({ clientId }: { clientId: string }) {
             onChange={(e) => pickPlan(e.target.value as PlanId)}
           />
           <Field
-            label="Reels in the plan"
+            label={cinematic ? "Films in the plan" : "Reels in the plan"}
             type="number"
             min={0}
             max={200}
@@ -126,7 +128,11 @@ export function OverviewEditor({ clientId }: { clientId: string }) {
           label="What's included (one per line)"
           rows={4}
           value={draft.included.join("\n")}
-          placeholder={"15 edited reels\n1 carousel\nConcepts and strategy"}
+          placeholder={
+            cinematic
+              ? "3 short films\n12 stills\nTreatment, casting and styling"
+              : "15 edited reels\n1 carousel\nConcepts and strategy"
+          }
           onChange={(e) => patch({ included: e.target.value.split("\n").slice(0, 20) })}
         />
         <div className="row">

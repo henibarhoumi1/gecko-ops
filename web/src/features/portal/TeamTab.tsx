@@ -159,7 +159,7 @@ function InviteForm({ portal, brand, me }: { portal: ClientPortal; brand: string
   return (
     <div className="invite-teammate">
       <h2>{t("Invite someone from your team", "Inviter quelqu'un de votre équipe")}</h2>
-      <form className="invite" onSubmit={onSubmit}>
+      <form className="invite invite-role" onSubmit={onSubmit}>
         <Field
           label={t("Their email", "Son e-mail")}
           name="email"

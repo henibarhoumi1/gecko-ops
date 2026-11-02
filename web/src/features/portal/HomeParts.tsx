@@ -75,24 +75,37 @@ export function StageTracker({
 }) {
   const at = STAGES.indexOf(stage);
   return (
-    <ol className="stages" aria-label={t("Where your campaign is", "Où en est votre campagne")}>
-      {STAGES.map((s, i) => (
-        <li
-          key={s}
-          className={i < at ? "done" : i === at ? "now" : ""}
-          aria-current={i === at ? "step" : undefined}
-        >
-          <span className="stage-dot" aria-hidden="true" />
-          <span className="stage-name">{stageName(s)}</span>
-          {s === "shoot" && (
-            <span className="stage-when small">
-              {shootDate ? longDate(shootDate) : t("Date to come", "Date à venir")}
-              {shootPlace && <span className="muted"> · {shootPlace}</span>}
-            </span>
-          )}
-        </li>
-      ))}
-    </ol>
+    <>
+      <ol className="stages" aria-label={t("Where your campaign is", "Où en est votre campagne")}>
+        {STAGES.map((s, i) => (
+          <li
+            key={s}
+            className={i < at ? "done" : i === at ? "now" : ""}
+            aria-current={i === at ? "step" : undefined}
+          >
+            <span className="stage-dot" aria-hidden="true" />
+            <span className="stage-name">{stageName(s)}</span>
+            {s === "shoot" && (
+              <span className="stage-when small">
+                {shootDate ? longDate(shootDate) : t("Date to come", "Date à venir")}
+                {shootPlace && <span className="muted"> · {shootPlace}</span>}
+              </span>
+            )}
+          </li>
+        ))}
+      </ol>
+      <p className="stages-phone" aria-hidden="true">
+        <strong>
+          {t(`Step ${at + 1} of ${STAGES.length}`, `Étape ${at + 1} sur ${STAGES.length}`)} ·{" "}
+          {stageName(stage)}
+        </strong>
+        <span className="small muted">
+          {t("Shoot", "Tournage")} ·{" "}
+          {shootDate ? longDate(shootDate) : t("date to come", "date à venir")}
+          {shootPlace && ` · ${shootPlace}`}
+        </span>
+      </p>
+    </>
   );
 }
 
