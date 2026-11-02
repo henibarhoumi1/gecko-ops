@@ -9,6 +9,9 @@ import { t } from "@/lib/i18n";
 import { tw, words } from "@/lib/wording";
 import { PortalHeader, Progress, StageTracker } from "./HomeParts";
 import { currentStage } from "./stage";
+import { useClientRole, type ClientRole } from "./role";
+import type { ProductionOption } from "@/features/production/model";
+import { useMyProduction } from "@/features/production/productionApi";
 
 function useOnboardingPercent(target: SheetTarget) {
   return useQuery({
@@ -32,7 +35,13 @@ interface Todo {
 }
 
 /** Everything that waits on the client, most useful first. */
-function waitingOnYou(data: PortalData, sentAt: string | null, onboardingLoaded: boolean): Todo[] {
+function waitingOnYou(
+  data: PortalData,
+  sentAt: string | null,
+  onboardingLoaded: boolean,
+  production: ProductionOption[],
+  role: ClientRole,
+): Todo[] {
   const todo: Todo[] = [];
   const scripts = data.scripts.filter((s) => s.status === "review").length;
   const ideas = countByStatus(data.concepts).review;
@@ -81,6 +90,49 @@ function waitingOnYou(data: PortalData, sentAt: string | null, onboardingLoaded:
         "Validez celles qui vous plaisent ou dites-nous quoi changer.",
       ),
     });
+  if (role !== "viewer")
+    for (const [kind, to] of [
+      ["talent", "/talent"],
+      ["location", "/locations"],
+      ["prop", "/budget"],
+    ] as const) {
+      const n = production.filter((o) => o.kind === kind && o.status === "proposed").length;
+      if (n === 0) continue;
+      todo.push({
+        to,
+        title:
+          kind === "talent"
+            ? tw(
+                [
+                  n === 1 ? "A talent to approve" : `${n} talent profiles to approve`,
+                  n === 1 ? "Un talent à valider" : `${n} talents à valider`,
+                ],
+                [
+                  n === 1 ? "A cast member to approve" : `${n} cast members to approve`,
+                  n === 1 ? "Un profil de casting à valider" : `${n} profils de casting à valider`,
+                ],
+              )
+            : kind === "location"
+              ? tw(
+                  [
+                    n === 1 ? "A location to approve" : `${n} locations to approve`,
+                    n === 1 ? "Un lieu à valider" : `${n} lieux à valider`,
+                  ],
+                  [
+                    n === 1 ? "A set to approve" : `${n} sets to approve`,
+                    n === 1 ? "Un décor à valider" : `${n} décors à valider`,
+                  ],
+                )
+              : t(
+                  n === 1 ? "A prop to approve" : `${n} props to approve`,
+                  n === 1 ? "Un accessoire à valider" : `${n} accessoires à valider`,
+                ),
+        detail: t(
+          "Each one shows its cost against your production budget.",
+          "Chacun affiche son coût par rapport à votre budget de production.",
+        ),
+      });
+    }
   if (onboardingLoaded && !sentAt)
     todo.push({
       to: "/onboarding",
@@ -117,7 +169,15 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
   const counts = countByStatus(data.concepts);
   const o = data.overview;
   const first = data.me.split(/\s+/)[0] || data.me;
-  const todo = waitingOnYou(data, onboarding.data?.sentAt ?? null, onboarding.isSuccess);
+  const role = useClientRole();
+  const production = useMyProduction(target);
+  const todo = waitingOnYou(
+    data,
+    onboarding.data?.sentAt ?? null,
+    onboarding.isSuccess,
+    production.data?.options ?? [],
+    role,
+  );
   const scriptsReworked = data.scripts.filter((s) => s.status === "changes").length;
   const doing = [
     counts.changes > 0 &&

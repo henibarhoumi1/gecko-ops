@@ -21,6 +21,9 @@ import { t } from "@/lib/i18n";
 import { setTemplate, tw, words } from "@/lib/wording";
 import { asRole, roleName, RoleContext } from "./role";
 import { TeamTab } from "./TeamTab";
+import { ProductionTab } from "./ProductionTab";
+import { kindName } from "@/features/production/model";
+import { useMyProduction } from "@/features/production/productionApi";
 
 interface NavItem {
   to: string;
@@ -38,7 +41,14 @@ interface NavGroup {
 }
 
 /** The portal by stage of the campaign: Home, Plan, Prep, Review, then the client's own team. */
-function navGroups(badges: { ideas: number; scripts: number; cuts: number }): NavGroup[] {
+function navGroups(badges: {
+  ideas: number;
+  scripts: number;
+  cuts: number;
+  talent: number;
+  location: number;
+  prop: number;
+}): NavGroup[] {
   const groups: NavGroup[] = [
     {
       id: "home",
@@ -62,6 +72,9 @@ function navGroups(badges: { ideas: number; scripts: number; cuts: number }): Na
       to: "/onboarding",
       items: [
         { to: "/onboarding", label: t("Your brand", "Votre marque") },
+        { to: "/talent", label: kindName("talent", true), badge: badges.talent },
+        { to: "/locations", label: kindName("location", true), badge: badges.location },
+        { to: "/budget", label: t("Budget", "Budget"), badge: badges.prop },
         { to: "/shared", label: t("Notes and links", "Notes et liens") },
       ],
     },
@@ -95,6 +108,7 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
   const onBoard = path.startsWith("/board");
   const page = useMyPortal(portal);
   const videos = useMyVideos(portal);
+  const production = useMyProduction(portal);
   const target = useMemo(
     () => ({ workspaceId: portal.workspaceId, clientId: portal.clientId }),
     [portal.workspaceId, portal.clientId],
@@ -106,7 +120,20 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
   const scripts = page.data?.scripts.filter((s) => s.status === "review").length ?? 0;
   const cuts = videos.data?.videos.filter((v) => v.status === "review").length ?? 0;
   const brand = page.data?.brand ?? portal.brand;
-  const groups = navGroups({ ideas, scripts, cuts });
+  // Only people who can say yes to a cost get a badge for it.
+  const proposed = (kind: string) =>
+    role === "viewer"
+      ? 0
+      : (production.data?.options.filter((o) => o.kind === kind && o.status === "proposed")
+          .length ?? 0);
+  const groups = navGroups({
+    ideas,
+    scripts,
+    cuts,
+    talent: proposed("talent"),
+    location: proposed("location"),
+    prop: proposed("prop"),
+  });
   const group = groups.find((g) => inGroup(g, path)) ?? groups[0];
   const me = page.data?.me ?? email;
 
@@ -203,6 +230,9 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
                 }
               />
               <Route path="shared" element={<SharedTab portal={portal} />} />
+              <Route path="talent" element={<ProductionTab portal={portal} kind="talent" />} />
+              <Route path="locations" element={<ProductionTab portal={portal} kind="location" />} />
+              <Route path="budget" element={<ProductionTab portal={portal} kind="budget" />} />
               {["board", "board/:boardId"].map((p) => (
                 <Route
                   key={p}
