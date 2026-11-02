@@ -126,11 +126,13 @@ export async function uploadImage(
   t: BoardTarget,
   file: File,
   bucket = "boards",
+  /** A sub-folder under the client's, for buckets that file by record (results: one per post). */
+  folder?: string,
 ): Promise<{ path: string; ratio: number }> {
   if (!IMAGE_TYPES.includes(file.type)) throw new Error("image_type");
   const { blob, type, ext, ratio } = await prepare(file);
   if (blob.size > 5_000_000) throw new Error("image_too_big");
-  const path = `${t.workspaceId}/${t.clientId}/${newId()}.${ext}`;
+  const path = `${t.workspaceId}/${t.clientId}/${folder ? `${folder}/` : ""}${newId()}.${ext}`;
   const { error } = await requireSupabase()
     .storage.from(bucket)
     .upload(path, blob, { contentType: type, upsert: false });

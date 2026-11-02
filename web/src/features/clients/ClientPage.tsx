@@ -22,6 +22,8 @@ import { TeamShared } from "./TeamShared";
 import { TeamProduction } from "./TeamProduction";
 import { TeamMoney } from "./TeamMoney";
 import { TeamReview } from "./TeamReview";
+import { LibraryScreen } from "@/features/results/LibraryScreen";
+import { ResultsScreen } from "@/features/results/ResultsScreen";
 
 /** One client's portal, from the team's side. */
 export function ClientPage() {
@@ -48,6 +50,8 @@ export function ClientPage() {
         ["scripts", "Scripts"],
         ["production", "Production"],
         ["review", "Review"],
+        ["results", "Results"],
+        ["library", "Library"],
         ["money", "Money"],
         ...videos,
         ["whiteboard", "Whiteboard"],
@@ -59,6 +63,8 @@ export function ClientPage() {
         ["concepts", "Ideas"],
         ["scripts", "Scripts"],
         ["review", "Review"],
+        ["results", "Results"],
+        ["library", "Library"],
         ...videos,
         ["whiteboard", "Whiteboard"],
         ["shared", "Shared"],
@@ -81,7 +87,7 @@ export function ClientPage() {
           <NavLink
             key={path}
             to={`/clients/${clientId}${path ? `/${path}` : ""}`}
-            end={path !== "whiteboard" && path !== "review" && path !== "money"}
+            end={!["whiteboard", "review", "money", "results"].includes(path ?? "")}
             className="portal-tab"
           >
             {label}
@@ -131,6 +137,20 @@ export function ClientPage() {
         {["review", "review/:cutId"].map((path) => (
           <Route key={path} path={path} element={<TeamReview clientId={clientId} />} />
         ))}
+        {["results", "results/:postId"].map((path) => (
+          <Route
+            key={path}
+            path={path}
+            element={
+              <ResultsScreen
+                target={target}
+                base={`/clients/${clientId}/results`}
+                template={templates.data?.[clientId] === "cinematic" ? "cinematic" : "performance"}
+              />
+            }
+          />
+        ))}
+        <Route path="library" element={<LibraryScreen target={target} />} />
         {["whiteboard", "whiteboard/:boardId"].map((path) => (
           <Route
             key={path}

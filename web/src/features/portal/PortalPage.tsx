@@ -24,6 +24,10 @@ import { MoneyTab } from "./MoneyTab";
 import { useMyInvoices } from "@/features/invoices/invoicesApi";
 import { unpaid } from "@/features/invoices/model";
 import { useMyCuts } from "@/features/review/reviewApi";
+import { LibraryScreen } from "@/features/results/LibraryScreen";
+import { todayIso, waiting } from "@/features/results/model";
+import { ResultsScreen } from "@/features/results/ResultsScreen";
+import { useResults } from "@/features/results/resultsApi";
 import { t } from "@/lib/i18n";
 import { setTemplate, tw, words } from "@/lib/wording";
 import { asRole, roleName, RoleContext, seesMoney } from "./role";
@@ -47,7 +51,7 @@ interface NavGroup {
   items: NavItem[];
 }
 
-/** The portal by stage of the campaign: Home, Plan, Prep, Review, then the client's own team. */
+/** The portal by stage of the campaign: Home, Plan, Prep, Review, Results, then the client's own team. */
 function navGroups(badges: {
   ideas: number;
   scripts: number;
@@ -56,6 +60,7 @@ function navGroups(badges: {
   location: number;
   prop: number;
   money: number | null;
+  results: number;
 }): NavGroup[] {
   const groups: NavGroup[] = [
     {
@@ -97,7 +102,16 @@ function navGroups(badges: {
       ...(videosOn ? [{ to: "/videos", label: t("Videos", "Vidéos") }] : []),
     ],
   });
-  // Money only for the people who see it; then the group gets a broader name.
+  groups.push({
+    id: "after",
+    label: words.results(),
+    to: "/results",
+    items: [
+      { to: "/results", label: words.results(), badge: badges.results },
+      { to: "/library", label: tw(["Library", "Bibliothèque"], ["Selects", "Sélection"]) },
+    ],
+  });
+  // Money only for the people who see it.
   const more: NavItem[] = [{ to: "/team", label: t("Team", "Équipe") }];
   if (badges.money !== null)
     more.push({ to: "/money", label: t("Invoices", "Factures"), badge: badges.money });
@@ -136,7 +150,9 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
     page.data?.scripts.filter((s) => s.status === "review" && !byClient(s)).length ?? 0;
   const myCuts = useMyCuts(target);
   const cuts = myCuts.data?.cuts.filter((c) => c.status === "review").length ?? 0;
-  const invoices = useMyInvoices(target, seesMoney(role));
+  const invoices = useMyInvoices(target, Boolean(page.data) && seesMoney(role));
+  const results = useResults(target, Boolean(page.data));
+  const resultsDue = results.data?.canAdd ? waiting(results.data.posts, todayIso()).due : 0;
 
   const brand = page.data?.brand ?? portal.brand;
   // Only people who can say yes to a cost get a badge for it.
@@ -153,6 +169,7 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
     location: proposed("location"),
     prop: proposed("prop"),
     money: seesMoney(role) ? unpaid(invoices.data ?? []).length : null,
+    results: resultsDue,
   });
   const group = groups.find((g) => inGroup(g, path)) ?? groups[0];
   const me = page.data?.me ?? email;
@@ -287,6 +304,20 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
                 <Route key={p} path={p} element={<ReviewTab portal={portal} />} />
               ))}
               <Route path="delivery" element={<DeliveryTab portal={portal} />} />
+              {["results", "results/:postId"].map((p) => (
+                <Route
+                  key={p}
+                  path={p}
+                  element={
+                    <ResultsScreen
+                      target={target}
+                      base="/results"
+                      template={page.data?.template === "cinematic" ? "cinematic" : "performance"}
+                    />
+                  }
+                />
+              ))}
+              <Route path="library" element={<LibraryScreen target={target} />} />
               {["money", "money/:invoiceId"].map((p) => (
                 <Route key={p} path={p} element={<MoneyTab portal={portal} />} />
               ))}

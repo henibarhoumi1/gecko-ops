@@ -5395,3 +5395,521 @@ a.piece:hover {
 .tab-body > .notice + .money-strip {
   margin-top: 14px;
 }
+
+/* ---------- Portal v2, phase F: results and the library ---------- */
+
+.results-waiting {
+  margin: 0 0 18px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  background: var(--yellow-soft);
+  border: 1.5px solid var(--ink);
+  font-weight: 600;
+}
+
+.post-list,
+.lib-grid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.post-list {
+  display: grid;
+  gap: 8px;
+}
+
+.post-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 6px 18px;
+  align-items: start;
+  padding: 14px 16px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.post-row:hover {
+  background: var(--yellow-soft);
+}
+
+.post-row-head {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.check-cell {
+  display: grid;
+  gap: 2px;
+  padding-left: 14px;
+  border-left: 1px solid var(--line);
+  min-width: 0;
+}
+
+.check-day {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.check-cell.is-due .check-day::after {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-left: 6px;
+  border-radius: 50%;
+  background: var(--pink);
+  border: 1px solid var(--ink);
+  vertical-align: 1px;
+}
+
+.check-cell.is-shots {
+  color: var(--ink);
+}
+
+.check-figures {
+  display: grid;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.check-figures b {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.post-form,
+.read-form,
+.lib-form {
+  display: grid;
+  gap: 12px;
+  margin: 12px 0 18px;
+  background: var(--white);
+}
+
+.post-form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.figures {
+  margin: 18px 0 6px;
+}
+
+.figures dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  margin: 0;
+  border-top: 2px solid var(--ink);
+  border-bottom: 1px solid var(--line);
+}
+
+.figures dl > div {
+  padding: 12px 12px 12px 0;
+}
+
+.figures dt {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.figures dd {
+  margin: 2px 0 0;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.figures .empty dd {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.press h3,
+.checkpoint h3,
+.read h3,
+.read-form h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.press ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+.checkpoints {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin: 18px 0;
+  align-items: start;
+}
+
+.checkpoint {
+  display: grid;
+  gap: 12px;
+  border-width: 1.5px;
+}
+
+.checkpoint.is-early {
+  border-style: dashed;
+}
+
+.checkpoint-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px;
+}
+
+.metric-grid .field {
+  margin: 0;
+  min-width: 0;
+}
+
+.metric-grid input,
+.post-form-row input,
+.post-form-row select,
+.read-form input,
+.lib-form input {
+  width: 100%;
+  min-width: 0;
+}
+
+.btn-link.danger {
+  color: #a3262a;
+}
+
+/* The monthly read: a page from Gecko, taped in. */
+.monthly {
+  margin-bottom: 26px;
+}
+
+.read {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 22px 20px 18px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+
+.read::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: 22px;
+  width: 74px;
+  height: 18px;
+  background: var(--yellow);
+  transform: rotate(-3deg);
+  opacity: 0.92;
+}
+
+.read.is-draft {
+  border-style: dashed;
+}
+
+.read header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px 12px;
+}
+
+.read h4 {
+  margin: 6px 0 0;
+  font-size: 14px;
+}
+
+.read-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.read-pick {
+  display: grid;
+  gap: 2px;
+  padding: 12px 14px;
+  border-radius: 10px;
+}
+
+.read-pick.best {
+  background: var(--green-soft);
+}
+
+.read-pick.worst {
+  background: var(--pink-soft);
+}
+
+.read-pick p {
+  margin: 4px 0 0;
+}
+
+.read-label {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.read-lines,
+.read-tests {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 4px;
+}
+
+.older-reads {
+  margin-top: 14px;
+}
+
+.older-reads summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.read-form-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.read-form fieldset {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.read-form legend {
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.read-form fieldset .field {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+/* Library */
+.lib-filters {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.lib-kinds,
+.lib-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.lib-filters .field {
+  max-width: 280px;
+  margin: 0;
+}
+
+.lib-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 14px;
+  padding-bottom: 90px;
+}
+
+.lib-card {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.lib-card-body {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  padding: 0 0 10px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  align-content: start;
+}
+
+.lib-card-body:hover {
+  background: var(--yellow-soft);
+}
+
+.lib-card.is-picked .lib-card-body {
+  background: var(--pink-soft);
+  box-shadow: 0 0 0 3px var(--pink);
+}
+
+.lib-thumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--green-soft);
+}
+
+.lib-thumb img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lib-length {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--ink);
+  color: var(--white);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.lib-meta {
+  display: grid;
+  gap: 2px;
+  padding: 0 12px;
+}
+
+.lib-card-tags {
+  color: var(--ink-2);
+}
+
+.lib-usage {
+  margin-top: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--yellow-soft);
+}
+
+.lib-pick {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  background: var(--white);
+  font-weight: 700;
+}
+
+.lib-card.is-picked .lib-pick {
+  background: var(--ink);
+  color: var(--white);
+}
+
+.lib-ask {
+  position: sticky;
+  bottom: 16px;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  margin-top: -70px;
+  padding: 12px 16px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--white);
+  box-shadow: 0 6px 0 var(--ink);
+}
+
+.lib-ask > span {
+  font-weight: 700;
+}
+
+.lib-ask .field {
+  flex: 1 1 100%;
+  margin: 0;
+}
+
+.lib-ask.done {
+  background: var(--green-soft);
+}
+
+.lib-form-grid {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 16px;
+}
+
+.lib-form-fields {
+  display: grid;
+  gap: 10px;
+}
+
+.lib-form .photo-picker .prod-photos {
+  grid-template-columns: 1fr;
+}
+
+@media (max-width: 720px) {
+  .post-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .post-row-head {
+    grid-column: 1 / -1;
+  }
+
+  .post-row-head + .check-cell {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .lib-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .lib-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lib-ask {
+    bottom: 76px;
+  }
+}
+
+@media (max-width: 420px) {
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+}
