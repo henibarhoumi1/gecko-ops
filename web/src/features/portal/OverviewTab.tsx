@@ -1,11 +1,8 @@
 import { byClient } from "@/features/scripts/model";
-import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { countByStatus, shortDate } from "@/features/concepts/model";
-import { percentFilled, type Answers } from "@/features/onboarding/progress";
 import type { SheetTarget } from "@/features/onboarding/useOnboardingSheet";
-import { requireSupabase } from "@/lib/supabase";
-import { dt, paymentLines, stateLabel, type PortalData } from "./portalApi";
+import { dt, paymentLines, stateLabel, useOnboardingStatus, type PortalData } from "./portalApi";
 import { getLang, t } from "@/lib/i18n";
 import { tw, words } from "@/lib/wording";
 import { PortalHeader, Progress, StageTracker } from "./HomeParts";
@@ -17,21 +14,6 @@ import type { CutsPage } from "@/features/review/model";
 import { useMyCuts } from "@/features/review/reviewApi";
 import { useMyInvoices } from "@/features/invoices/invoicesApi";
 import { money, unpaid, type Invoice } from "@/features/invoices/model";
-
-function useOnboardingPercent(target: SheetTarget) {
-  return useQuery({
-    queryKey: ["onboarding-pct", target.workspaceId, target.clientId],
-    queryFn: async () => {
-      const { data, error } = await requireSupabase().rpc("get_client_onboarding", {
-        p_workspace_id: target.workspaceId,
-        p_client_id: target.clientId,
-      });
-      if (error) throw error;
-      const row = data as { data: Answers; sentAt: string | null };
-      return { pct: percentFilled(row.data ?? {}), sentAt: row.sentAt };
-    },
-  });
-}
 
 interface Todo {
   to: string;
@@ -250,7 +232,7 @@ function waitingOnYou(
 }
 
 export function OverviewTab({ data, target }: { data: PortalData; target: SheetTarget }) {
-  const onboarding = useOnboardingPercent(target);
+  const onboarding = useOnboardingStatus(target);
   const counts = countByStatus(data.concepts);
   const o = data.overview;
   const first = data.me.split(/\s+/)[0] || data.me;

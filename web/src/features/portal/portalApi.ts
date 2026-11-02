@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ClientPortal } from "@/features/auth/account";
+import { percentFilled, type Answers } from "@/features/onboarding/progress";
 import type { Concept, NoteKind } from "@/features/concepts/model";
 import type { PlanId } from "@/features/plans/model";
 import type { Script } from "@/features/scripts/model";
@@ -295,5 +296,25 @@ export function useRemoveTeammate(portal: ClientPortal) {
       if (error) throw error;
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: teamKey(portal) }),
+  });
+}
+
+/** How far the client is with the brand questions, and whether they sent them. Home and the menu both read it. */
+export function useOnboardingStatus(
+  target: { workspaceId: string; clientId: string },
+  enabled = true,
+) {
+  return useQuery({
+    queryKey: ["onboarding-pct", target.workspaceId, target.clientId],
+    enabled,
+    queryFn: async () => {
+      const { data, error } = await requireSupabase().rpc("get_client_onboarding", {
+        p_workspace_id: target.workspaceId,
+        p_client_id: target.clientId,
+      });
+      if (error) throw error;
+      const row = data as { data: Answers; sentAt: string | null };
+      return { pct: percentFilled(row.data ?? {}), sentAt: row.sentAt };
+    },
   });
 }

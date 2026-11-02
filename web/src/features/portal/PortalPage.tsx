@@ -1,6 +1,6 @@
 import { byClient } from "@/features/scripts/model";
-import { useMemo, type ReactNode } from "react";
-import { NavLink, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { Link, NavLink, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Button } from "@/components/Button";
 import { LangSwitch } from "@/components/LangSwitch";
 import { Logo } from "@/components/Logo";
@@ -17,7 +17,7 @@ import { ConceptsTab } from "./ConceptsTab";
 import { OverviewTab } from "./OverviewTab";
 import { ScriptsTab } from "./ScriptsTab";
 import { SharedTab } from "./SharedTab";
-import { useMyPortal, useMyVideos } from "./portalApi";
+import { useMyPortal, useMyVideos, useOnboardingStatus } from "./portalApi";
 import { VideosTab } from "./VideosTab";
 import { DeliveryTab, ReviewTab } from "./ReviewTab";
 import { MoneyTab } from "./MoneyTab";
@@ -63,14 +63,28 @@ function navGroups(badges: {
   prop: number;
   money: number | null;
   results: number;
+  /** The brand questions aren't sent yet: they come first, above Home. */
+  brandFirst: boolean;
 }): NavGroup[] {
+  const brandItem = { to: "/onboarding", label: t("Your brand", "Votre marque") };
   const groups: NavGroup[] = [
-    {
-      id: "home",
-      label: t("Home", "Accueil"),
-      to: "/",
-      items: [{ to: "/", label: t("Home", "Accueil"), end: true }],
-    },
+    badges.brandFirst
+      ? {
+          id: "home",
+          label: t("Start here", "Commencez ici"),
+          short: t("Start", "Début"),
+          to: "/onboarding",
+          items: [
+            { ...brandItem, badge: 1 },
+            { to: "/", label: t("Home", "Accueil"), end: true },
+          ],
+        }
+      : {
+          id: "home",
+          label: t("Home", "Accueil"),
+          to: "/",
+          items: [{ to: "/", label: t("Home", "Accueil"), end: true }],
+        },
     {
       id: "plan",
       label: t("Plan", "Plan"),
@@ -87,7 +101,7 @@ function navGroups(badges: {
       short: t("Prep", "Prépa"),
       to: "/onboarding",
       items: [
-        { to: "/onboarding", label: t("Your brand", "Votre marque") },
+        ...(badges.brandFirst ? [] : [brandItem]),
         { to: "/talent", label: kindName("talent", true), badge: badges.talent },
         { to: "/locations", label: kindName("location", true), badge: badges.location },
         { to: "/budget", label: t("Budget", "Budget"), badge: badges.prop },
@@ -156,6 +170,10 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
   const invoices = useMyInvoices(target, Boolean(page.data) && seesMoney(role));
   const results = useResults(target, Boolean(page.data));
   const resultsDue = results.data?.canAdd ? waiting(results.data.posts, todayIso()).due : 0;
+  const onboarding = useOnboardingStatus(target, Boolean(page.data));
+  // Until the brand questions are sent, they're the first thing a client sees and does. Viewers can't answer them.
+  const brandFirst = onboarding.isSuccess && !onboarding.data.sentAt && role !== "viewer";
+  const [welcomed, setWelcomed] = useState(readWelcomed);
 
   const brand = page.data?.brand ?? portal.brand;
   // Only people who can say yes to a cost get a badge for it.
@@ -173,6 +191,7 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
     prop: proposed("prop"),
     money: seesMoney(role) ? unpaid(invoices.data ?? []).length : null,
     results: resultsDue,
+    brandFirst,
   });
   const group = groups.find((g) => inGroup(g, path)) ?? groups[0];
   const me = page.data?.me ?? email;
@@ -251,23 +270,36 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
           {page.isError && <Notice tone="error">{friendlyError(page.error)}</Notice>}
           {page.data && (
             <Routes>
-              <Route index element={<OverviewTab data={page.data} target={target} />} />
+              <Route
+                index
+                element={
+                  onboarding.isPending ? null : brandFirst && !welcomed ? (
+                    <SendToBrand onSent={() => setWelcomed(markWelcomed())} />
+                  ) : (
+                    <OverviewTab data={page.data} target={target} />
+                  )
+                }
+              />
               <Route
                 path="onboarding"
                 element={
                   <section className="tab-body">
-                    <p className="lede">
-                      {tw(
-                        [
-                          "Everything we need before pre-production. It saves as you type, so you can stop and come back. Skip anything you're not sure about.",
-                          "Tout ce qu'il nous faut avant la préproduction. C'est enregistré au fil de la saisie : vous pouvez vous arrêter et revenir. Passez ce dont vous n'êtes pas sûr.",
-                        ],
-                        [
-                          "Everything we need to understand the brand before we write. It saves as you type, so you can stop and come back. Skip anything you're not sure about.",
-                          "Tout ce qu'il nous faut pour comprendre la marque avant d'écrire. C'est enregistré au fil de la saisie : vous pouvez vous arrêter et revenir. Passez ce dont vous n'êtes pas sûr.",
-                        ],
-                      )}
-                    </p>
+                    {brandFirst ? (
+                      <BrandWelcome name={firstName(me)} brand={brand} />
+                    ) : (
+                      <p className="lede">
+                        {tw(
+                          [
+                            "Everything we need before pre-production. It saves as you type, so you can stop and come back. Skip anything you're not sure about.",
+                            "Tout ce qu'il nous faut avant la préproduction. C'est enregistré au fil de la saisie : vous pouvez vous arrêter et revenir. Passez ce dont vous n'êtes pas sûr.",
+                          ],
+                          [
+                            "Everything we need to understand the brand before we write. It saves as you type, so you can stop and come back. Skip anything you're not sure about.",
+                            "Tout ce qu'il nous faut pour comprendre la marque avant d'écrire. C'est enregistré au fil de la saisie : vous pouvez vous arrêter et revenir. Passez ce dont vous n'êtes pas sûr.",
+                          ],
+                        )}
+                      </p>
+                    )}
                     <OnboardingForm target={target} brand={brand} mode="client" />
                   </section>
                 }
@@ -373,5 +405,58 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
         </nav>
       </div>
     </RoleContext.Provider>
+  );
+}
+
+const WELCOMED = "gecko.welcomed";
+
+/** Whether this browser has already been sent to the brand questions once. After that, Home opens normally. */
+function readWelcomed(): boolean {
+  try {
+    return Boolean(sessionStorage.getItem(WELCOMED));
+  } catch {
+    return false;
+  }
+}
+
+function markWelcomed(): true {
+  try {
+    sessionStorage.setItem(WELCOMED, "1");
+  } catch {
+    // No storage: the state below still remembers it until the page reloads.
+  }
+  return true;
+}
+
+/** Sends a new client from Home to the brand questions, once. */
+function SendToBrand({ onSent }: { onSent: () => void }) {
+  useEffect(() => onSent(), [onSent]);
+  return <Navigate to="/onboarding" replace />;
+}
+
+const firstName = (me: string) => (me.includes("@") ? "" : (me.trim().split(/\s+/)[0] ?? ""));
+
+/** What a new client reads first: why the questions come before anything else, and that they can look around. */
+function BrandWelcome({ name, brand }: { name: string; brand: string }) {
+  return (
+    <div className="brand-welcome">
+      <h2>
+        {name
+          ? t(
+              `Welcome, ${name}. Let's start with ${brand}.`,
+              `Bienvenue, ${name}. Commençons par ${brand}.`,
+            )
+          : t(`Welcome. Let's start with ${brand}.`, `Bienvenue. Commençons par ${brand}.`)}
+      </h2>
+      <p className="lede">
+        {t(
+          "Before we write a single idea, we need to know your brand: what you sell, who buys it, what you never want to see. About 15 minutes. It saves as you type, so you can stop and come back, and anything you're unsure about we'll cover on a call.",
+          "Avant d'écrire la moindre idée, il nous faut connaître votre marque : ce que vous vendez, qui l'achète, ce que vous ne voulez jamais voir. Environ 15 minutes. C'est enregistré au fil de la saisie : vous pouvez faire une pause et revenir, et ce dont vous n'êtes pas sûr, on le voit ensemble par appel.",
+        )}
+      </p>
+      <p className="small">
+        <Link to="/">{t("Look around your space first", "Découvrir votre espace d'abord")}</Link>
+      </p>
+    </div>
   );
 }
