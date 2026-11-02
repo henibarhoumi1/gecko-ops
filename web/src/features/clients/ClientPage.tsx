@@ -20,6 +20,7 @@ import { TeamConcepts } from "./TeamConcepts";
 import { TeamScripts } from "./TeamScripts";
 import { TeamShared } from "./TeamShared";
 import { TeamProduction } from "./TeamProduction";
+import { TeamReview } from "./TeamReview";
 
 /** One client's portal, from the team's side. */
 export function ClientPage() {
@@ -45,6 +46,7 @@ export function ClientPage() {
         ["concepts", "Ideas"],
         ["scripts", "Scripts"],
         ["production", "Production"],
+        ["review", "Review"],
         ...videos,
         ["whiteboard", "Whiteboard"],
         ["shared", "Shared"],
@@ -54,6 +56,7 @@ export function ClientPage() {
     : [
         ["concepts", "Ideas"],
         ["scripts", "Scripts"],
+        ["review", "Review"],
         ...videos,
         ["whiteboard", "Whiteboard"],
         ["shared", "Shared"],
@@ -76,7 +79,7 @@ export function ClientPage() {
           <NavLink
             key={path}
             to={`/clients/${clientId}${path ? `/${path}` : ""}`}
-            end={path !== "whiteboard"}
+            end={path !== "whiteboard" && path !== "review"}
             className="portal-tab"
           >
             {label}
@@ -120,6 +123,9 @@ export function ClientPage() {
         <Route path="concepts" element={<TeamConcepts clientId={clientId} />} />
         <Route path="scripts" element={<TeamScripts clientId={clientId} />} />
         <Route path="shared" element={<TeamShared clientId={clientId} />} />
+        {["review", "review/:cutId"].map((path) => (
+          <Route key={path} path={path} element={<TeamReview clientId={clientId} />} />
+        ))}
         {["whiteboard", "whiteboard/:boardId"].map((path) => (
           <Route
             key={path}
