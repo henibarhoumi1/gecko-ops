@@ -1,6 +1,7 @@
 import {
   attachmentHeader,
   finalPrefix,
+  keepAliveRequest,
   matchVideoRoute,
   safeName,
   signLink,
@@ -82,5 +83,17 @@ describe("streamHost", () => {
   it("ignores anything else", () => {
     expect(streamHost("https://evil.example.com/uid/watch")).toBeNull();
     expect(streamHost(undefined)).toBeNull();
+  });
+});
+
+describe("keepAliveRequest", () => {
+  it("asks for an invite that can never match, with the public key", () => {
+    const { url, init } = keepAliveRequest("https://abc.supabase.co/", "anon-key");
+    expect(url).toBe("https://abc.supabase.co/rest/v1/rpc/peek_client_invite");
+    expect(init.method).toBe("POST");
+    expect(init.headers).toMatchObject({ apikey: "anon-key", authorization: "Bearer anon-key" });
+    const token = JSON.parse(String(init.body)).p_token as string;
+    // The database only looks up 64-character hex codes, so this one is refused before any lookup.
+    expect(token).not.toMatch(/^[0-9a-f]{64}$/);
   });
 });

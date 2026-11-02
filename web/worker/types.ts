@@ -42,6 +42,8 @@ export interface Env {
   /** The private bucket for finals. Missing until R2 is switched on (DEPLOY.md, "Videos"). */
   FINALS?: R2Bucket;
   SUPABASE_URL: string;
+  /** The public anon key (the same one the app ships to every browser). Used by the daily keep-alive. */
+  SUPABASE_ANON_KEY: string;
   CF_ACCOUNT_ID: string;
   /** Cloudflare API token with Stream: Edit. A secret, set in the dashboard. */
   STREAM_TOKEN?: string;

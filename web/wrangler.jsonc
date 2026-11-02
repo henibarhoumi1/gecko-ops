@@ -19,6 +19,11 @@
   "vars": {
     "SUPABASE_URL": "https://ryusfpyxozqmsjoirxgm.supabase.co",
     "CF_ACCOUNT_ID": "39b689d9db4027a9ec6a5713e2e8bcc0",
+    // The public anon key, the same one the built app sends from every browser (never the secret key).
+    // The daily keep-alive below uses it. If the key is ever rotated, change it here and in the build variable.
+    "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5dXNmcHl4b3pxbXNqb2lyeGdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0NzE5OTEsImV4cCI6MjEwOTA0Nzk5MX0.F6GhYc1mD0Q5Y3Hn1SSMM19CEAw7law_0BcIfp2Rkcs",
   },
+  // Every day at 03:17 UTC the worker pings the database so a quiet week never pauses the free project.
+  "triggers": { "crons": ["17 3 * * *"] },
   "observability": { "enabled": true },
 }

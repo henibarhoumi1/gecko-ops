@@ -6,6 +6,7 @@ import {
   attachmentHeader,
   finalPrefix,
   HttpError,
+  keepAliveRequest,
   matchVideoRoute,
   safeName,
   signLink,
@@ -31,6 +32,14 @@ export default {
       console.error(error);
       return json({ error: "server_error" }, 500);
     }
+  },
+
+  // Once a day (wrangler.jsonc, "triggers"), so the free database never pauses. A failed ping shows as a
+  // failed run in the worker's logs.
+  async scheduled(_controller: unknown, env: Env): Promise<void> {
+    const { url, init } = keepAliveRequest(env.SUPABASE_URL, env.SUPABASE_ANON_KEY);
+    const res = await fetch(url, init);
+    if (!res.ok) throw new Error(`keep_alive_failed: ${res.status}`);
   },
 };
 
