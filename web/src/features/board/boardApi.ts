@@ -125,27 +125,28 @@ export const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"
 export async function uploadImage(
   t: BoardTarget,
   file: File,
+  bucket = "boards",
 ): Promise<{ path: string; ratio: number }> {
   if (!IMAGE_TYPES.includes(file.type)) throw new Error("image_type");
   const { blob, type, ext, ratio } = await prepare(file);
   if (blob.size > 5_000_000) throw new Error("image_too_big");
   const path = `${t.workspaceId}/${t.clientId}/${newId()}.${ext}`;
   const { error } = await requireSupabase()
-    .storage.from("boards")
+    .storage.from(bucket)
     .upload(path, blob, { contentType: type, upsert: false });
   if (error) throw error;
   return { path, ratio };
 }
 
 /** A short-lived link to show an image; refreshed before it runs out. */
-export function useImageUrl(path: string | undefined) {
+export function useImageUrl(path: string | undefined, bucket = "boards") {
   return useQuery({
-    queryKey: ["board-image", path],
+    queryKey: ["board-image", bucket, path],
     enabled: Boolean(path),
     staleTime: 50 * 60_000,
     queryFn: async () => {
       const { data, error } = await requireSupabase()
-        .storage.from("boards")
+        .storage.from(bucket)
         .createSignedUrl(path!, 60 * 60);
       if (error) throw error;
       return data.signedUrl;

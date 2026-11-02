@@ -17,6 +17,7 @@ import { OverviewEditor } from "./OverviewEditor";
 import { TeamConcepts } from "./TeamConcepts";
 import { TeamScripts } from "./TeamScripts";
 import { TeamShared } from "./TeamShared";
+import { TeamProduction } from "./TeamProduction";
 
 /** One client's portal, from the team's side. */
 export function ClientPage() {
@@ -40,6 +41,7 @@ export function ClientPage() {
         ["", "Overview"],
         ["concepts", "Ideas"],
         ["scripts", "Scripts"],
+        ["production", "Production"],
         ...videos,
         ["board", "Board"],
         ["shared", "Shared"],
@@ -103,6 +105,7 @@ export function ClientPage() {
                 </section>
               }
             />
+            <Route path="production" element={<TeamProduction clientId={clientId} />} />
             <Route
               path="logins"
               element={<LoginsPanel clientId={clientId} brand={client.brand} />}

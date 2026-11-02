@@ -206,6 +206,47 @@ const MESSAGES: [RegExp, string, string][] = [
     "Un champ est trop long ou invalide. Vérifiez et réessayez.",
   ],
   [
+    /spend_approver_only/,
+    "Only your owner, an approver or finance can say yes to a cost. You can still comment.",
+    "Seuls votre responsable, un valideur ou les finances peuvent accepter une dépense. Vous pouvez commenter.",
+  ],
+  [
+    /over_budget_owner/,
+    "This goes over the budget, so your owner or finance needs to approve it.",
+    "Cela dépasse le budget : votre responsable ou les finances doivent le valider.",
+  ],
+  [
+    /over_budget/,
+    "This goes over the budget. Approve it over budget, or pass.",
+    "Cela dépasse le budget. Validez-le hors budget, ou passez.",
+  ],
+  [
+    /not_waiting/,
+    "This was already decided. The page has been refreshed.",
+    "C'était déjà décidé. La page a été actualisée.",
+  ],
+  [
+    /not_approved_yet/,
+    "The client needs to approve this before it can be booked.",
+    "Le client doit d'abord valider avant la réservation.",
+  ],
+  [
+    /option_committed/,
+    "Approved costs stay on record. Change the cost instead, and it goes back to the client.",
+    "Les dépenses validées restent au dossier. Modifiez plutôt le coût : il repart chez le client.",
+  ],
+  [
+    /option_not_found/,
+    "That option is gone. The page has been refreshed.",
+    "Cette option n'existe plus. La page a été actualisée.",
+  ],
+  [
+    /invalid_option/,
+    "Give it a name, and check the link starts with https://.",
+    "Donnez-lui un nom, et vérifiez que le lien commence par https://.",
+  ],
+  [/invalid_budget/, "Enter the budget as a number of dinars.", "Indiquez le budget en dinars."],
+  [
     /approver_only/,
     "Only your owner or an approver can approve or ask for changes. You can still comment.",
     "Seuls votre responsable ou un valideur peuvent valider ou demander des changements. Vous pouvez commenter.",
