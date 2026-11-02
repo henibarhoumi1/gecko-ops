@@ -1,12 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { countByStatus, shortDate } from "@/features/concepts/model";
-import { ReelStrip } from "@/features/plans/ReelStrip";
 import { percentFilled, type Answers } from "@/features/onboarding/progress";
 import type { SheetTarget } from "@/features/onboarding/useOnboardingSheet";
 import { requireSupabase } from "@/lib/supabase";
 import { dt, paymentLines, stateLabel, type PortalData } from "./portalApi";
-import { locale, plural, t } from "@/lib/i18n";
+import { t } from "@/lib/i18n";
+import { tw, words } from "@/lib/wording";
+import { PortalHeader, Progress, StageTracker } from "./HomeParts";
+import { currentStage } from "./stage";
 
 function useOnboardingPercent(target: SheetTarget) {
   return useQuery({
@@ -20,14 +22,6 @@ function useOnboardingPercent(target: SheetTarget) {
       const row = data as { data: Answers; sentAt: string | null };
       return { pct: percentFilled(row.data ?? {}), sentAt: row.sentAt };
     },
-  });
-}
-
-function longDate(iso: string): string {
-  return new Date(`${iso}T12:00:00`).toLocaleDateString(locale(), {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
   });
 }
 
@@ -47,11 +41,26 @@ function waitingOnYou(data: PortalData, sentAt: string | null, onboardingLoaded:
       to: "/scripts",
       title:
         scripts === 1
-          ? t("A script is ready for you", "Un script vous attend")
-          : t(`${scripts} scripts are ready for you`, `${scripts} scripts vous attendent`),
-      detail: t(
-        "Pick the hook you like, comment on any line, then approve.",
-        "Choisissez l'accroche qui vous plaît, commentez n'importe quelle ligne, puis validez.",
+          ? tw(
+              ["A script is ready for you", "Un script vous attend"],
+              ["A treatment is ready for you", "Une note d'intention vous attend"],
+            )
+          : tw(
+              [`${scripts} scripts are ready for you`, `${scripts} scripts vous attendent`],
+              [
+                `${scripts} treatments are ready for you`,
+                `${scripts} notes d'intention vous attendent`,
+              ],
+            ),
+      detail: tw(
+        [
+          "Pick the hook you like, comment on any line, then approve.",
+          "Choisissez l'accroche qui vous plaît, commentez n'importe quelle ligne, puis validez.",
+        ],
+        [
+          "Read it, comment on any line, then approve.",
+          "Lisez-la, commentez n'importe quelle ligne, puis validez.",
+        ],
       ),
     });
   if (ideas > 0)
@@ -59,8 +68,14 @@ function waitingOnYou(data: PortalData, sentAt: string | null, onboardingLoaded:
       to: "/concepts",
       title:
         ideas === 1
-          ? t("An idea is waiting for you", "Une idée vous attend")
-          : t(`${ideas} ideas are waiting for you`, `${ideas} idées vous attendent`),
+          ? tw(
+              ["An idea is waiting for you", "Une idée vous attend"],
+              ["A concept is waiting for you", "Un concept vous attend"],
+            )
+          : tw(
+              [`${ideas} ideas are waiting for you`, `${ideas} idées vous attendent`],
+              [`${ideas} concepts are waiting for you`, `${ideas} concepts vous attendent`],
+            ),
       detail: t(
         "Approve the ones you like or tell us what to change.",
         "Validez celles qui vous plaisent ou dites-nous quoi changer.",
@@ -107,31 +122,45 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
   const doing = [
     counts.changes > 0 &&
       t(
-        `Reworking ${plural(counts.changes, ["idea", "ideas"], ["idée", "idées"])} from your notes.`,
-        `On retravaille ${plural(counts.changes, ["idea", "ideas"], ["idée", "idées"])} d'après vos notes.`,
+        `Reworking ${counts.changes} ${words.ideaPlural(counts.changes)} from your notes.`,
+        `On retravaille ${counts.changes} ${words.ideaPlural(counts.changes)} d'après vos notes.`,
       ),
     scriptsReworked > 0 &&
       t(
-        `Reworking ${plural(scriptsReworked, ["script", "scripts"], ["script", "scripts"])} from your notes.`,
-        `On retravaille ${plural(scriptsReworked, ["script", "scripts"], ["script", "scripts"])} d'après vos notes.`,
+        `Reworking ${scriptsReworked} ${words.scriptPlural(scriptsReworked)} from your notes.`,
+        `On retravaille ${scriptsReworked} ${words.scriptPlural(scriptsReworked)} d'après vos notes.`,
       ),
   ].filter((line): line is string => Boolean(line));
 
-  return (
-    <section className="tab-body">
-      <p className="lede">
-        {t(
-          `Welcome, ${first}. This is where your campaign lives: what needs you, what Gecko is working on, and the plan.`,
-          `Bienvenue, ${first}. Votre campagne vit ici : ce qui vous attend, ce que Gecko prépare, et le plan.`,
-        )}
-      </p>
+  const stage = currentStage(
+    o?.shootDate ?? null,
+    data.scripts.filter((x) => x.status === "approved").length + counts.approved,
+    new Date(),
+  );
 
-      <h2 className="waiting-title">{t("Waiting on you", "À vous de jouer")}</h2>
+  return (
+    <section className="tab-body home">
+      <PortalHeader
+        brand={data.brand}
+        logo={data.logo}
+        cover={data.cover}
+        campaign={o?.campaign}
+        stage={stage}
+      />
+      <StageTracker
+        stage={stage}
+        shootDate={o?.shootDate ?? null}
+        shootPlace={o?.shootPlace ?? ""}
+      />
+
+      <h2 className="waiting-title">
+        {t(`${first}, here's what needs you`, `${first}, voici ce qui vous attend`)}
+      </h2>
       {todo.length === 0 ? (
         <p className="waiting-none">
           {t(
-            "Nothing needs you right now. We'll show it here when it does.",
-            "Rien ne vous attend pour l'instant. Ça s'affichera ici le moment venu.",
+            "Nothing right now. When Gecko sends something to read or approve, it shows up here first.",
+            "Rien pour l'instant. Quand Gecko vous envoie quelque chose à lire ou à valider, ça s'affiche ici en premier.",
           )}
         </p>
       ) : (
@@ -147,14 +176,7 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
         </ul>
       )}
 
-      {o?.reels ? (
-        <ReelStrip
-          plan={o.plan ?? "custom"}
-          reels={o.reels}
-          scripts={data.scripts}
-          reader="client"
-        />
-      ) : null}
+      <Progress plan={o?.plan ?? "custom"} reels={o?.reels ?? null} scripts={data.scripts} />
 
       {doing.length > 0 && (
         <>
@@ -170,46 +192,39 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
       {!o ? (
         <p className="muted">
           {t(
-            "Gecko is setting up your campaign plan. It will show here shortly.",
-            "Gecko prépare le plan de votre campagne. Il s'affichera ici très bientôt.",
+            "Gecko is putting your campaign plan together: dates, what's included and the steps. It lands here as soon as it's ready.",
+            "Gecko prépare le plan de votre campagne : les dates, ce qui est inclus et les étapes. Il arrive ici dès qu'il est prêt.",
           )}
         </p>
       ) : (
         <>
-          {(o.campaign || o.summary) && (
+          {o.summary && (
             <div className="block">
-              {o.campaign && <h2>{o.campaign}</h2>}
-              {o.summary && <p className="pre">{o.summary}</p>}
+              <h2>{t("The plan", "Le plan")}</h2>
+              <p className="pre">{o.summary}</p>
             </div>
           )}
 
-          <div className="facts">
-            {o.included.length > 0 && (
-              <div className="fact">
-                <span className="eyebrow">{t("What's included", "Ce qui est inclus")}</span>
-                <ul>
-                  {o.included.map((item, i) => (
-                    <li key={i}>{item}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            <div className="fact">
-              <span className="eyebrow">{t("Shoot", "Tournage")}</span>
-              <strong>
-                {o.shootDate
-                  ? longDate(o.shootDate)
-                  : t("Date to be confirmed", "Date à confirmer")}
-              </strong>
-              {o.shootPlace && <span className="muted">{o.shootPlace}</span>}
+          {(o.included.length > 0 || o.nextStep) && (
+            <div className="facts">
+              {o.included.length > 0 && (
+                <div className="fact">
+                  <span className="eyebrow">{t("What's included", "Ce qui est inclus")}</span>
+                  <ul>
+                    {o.included.map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {o.nextStep && (
+                <div className="fact fact-next">
+                  <span className="eyebrow">{t("Next step", "Prochaine étape")}</span>
+                  <strong>{o.nextStep}</strong>
+                </div>
+              )}
             </div>
-            {o.nextStep && (
-              <div className="fact fact-next">
-                <span className="eyebrow">{t("Next step", "Prochaine étape")}</span>
-                <strong>{o.nextStep}</strong>
-              </div>
-            )}
-          </div>
+          )}
 
           {o.milestones.length > 0 && (
             <div className="block">

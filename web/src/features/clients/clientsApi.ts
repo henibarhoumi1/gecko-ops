@@ -9,6 +9,7 @@ import {
   type NoteRow,
 } from "@/features/concepts/model";
 import type { Milestone } from "@/features/portal/portalApi";
+import type { ClientRole } from "@/features/portal/role";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { inviteLink } from "@/lib/hosts";
 import { requireSupabase } from "@/lib/supabase";
@@ -327,6 +328,8 @@ export interface ClientAccount {
   expires: string | null;
   revoked: boolean;
   createdAt: string;
+  /** Missing on a database without roles yet. */
+  role?: ClientRole;
 }
 
 export function useClientAccounts(clientId: string) {
@@ -349,11 +352,12 @@ export function useInviteClient(clientId: string) {
   const { id: workspaceId } = useWorkspace();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (email: string): Promise<string> => {
+    mutationFn: async ({ email, role }: { email: string; role?: ClientRole }): Promise<string> => {
       const { data, error } = await requireSupabase().rpc("invite_client_account", {
         p_workspace_id: workspaceId,
         p_client_id: clientId,
         p_email: email,
+        ...(role ? { p_role: role } : {}),
       });
       if (error) throw error;
       return inviteLink("client", String(data));
@@ -371,6 +375,23 @@ export function useRevokeClientAccount(clientId: string) {
       const { error } = await requireSupabase().rpc("revoke_client_account", {
         p_workspace_id: workspaceId,
         p_account_id: accountId,
+      });
+      if (error) throw error;
+    },
+    onSettled: () =>
+      queryClient.invalidateQueries({ queryKey: ["client-accounts", workspaceId, clientId] }),
+  });
+}
+
+export function useSetClientRole(clientId: string) {
+  const { id: workspaceId } = useWorkspace();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, role }: { id: string; role: ClientRole }) => {
+      const { error } = await requireSupabase().rpc("set_client_account_role", {
+        p_workspace_id: workspaceId,
+        p_account_id: id,
+        p_role: role,
       });
       if (error) throw error;
     },

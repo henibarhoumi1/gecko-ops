@@ -7,6 +7,13 @@ export function inviteMessage(lang: MsgLang, brand: string, url: string): string
     : `Hi! Your ${brand} × Gecko portal is ready: ${url}\nOpen the link, type your name and choose a password. That's your login from now on, on your phone or computer. Everything for the campaign lives there: ideas and scripts to approve, the shoot plan, and soon your videos.`;
 }
 
+/** From an owner to someone on their own team. */
+export function teammateMessage(lang: MsgLang, brand: string, from: string, url: string): string {
+  return lang === "fr"
+    ? `Bonjour ! ${from} vous invite dans l'espace ${brand} × Gecko : ${url}\nOuvrez le lien, entrez votre nom et choisissez un mot de passe. Vous y suivrez la campagne, des premières idées aux vidéos finales.`
+    : `Hi! ${from} is inviting you to the ${brand} × Gecko space: ${url}\nOpen the link, type your name and choose a password. You'll follow the campaign there, from the first ideas to the final videos.`;
+}
+
 function count(lang: MsgLang, n: number, en: [string, string], fr: [string, string]): string {
   return `${n} ${lang === "fr" ? (n > 1 ? fr[1] : fr[0]) : n === 1 ? en[0] : en[1]}`;
 }

@@ -6,7 +6,9 @@ import type { Script } from "@/features/scripts/model";
 import type { Video } from "@/features/videos/model";
 import { videosOn } from "@/lib/features";
 import { requireSupabase } from "@/lib/supabase";
+import { inviteLink } from "@/lib/hosts";
 import { locale, t } from "@/lib/i18n";
+import type { ClientRole } from "./role";
 
 export interface Milestone {
   label: string;
@@ -36,6 +38,12 @@ export interface PortalData {
   me: string;
   /** The brand's logo as an image data URL, when Gecko added one. */
   logo?: string | null;
+  /** Performance or Cinematic; missing on a database without templates yet. */
+  template?: string;
+  /** A still from the brand's own shoot for the top of a Cinematic portal. */
+  cover?: string | null;
+  /** The signed-in person's role on the client's side; missing before roles existed (treated as owner). */
+  role?: string;
   overview: Overview | null;
   concepts: Concept[];
   scripts: Script[];
@@ -209,5 +217,83 @@ export function useVideoNote(portal: ClientPortal) {
       if (error) throw error;
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: videosKey(portal) }),
+  });
+}
+
+// ---------- the client's own team ----------
+
+export interface Teammate {
+  id: string;
+  name: string;
+  /** Only owners see other people's emails. */
+  email: string | null;
+  role: ClientRole;
+  joined: boolean;
+  expires: string | null;
+  me: boolean;
+}
+
+const teamKey = (portal: ClientPortal) => ["portal-team", portal.workspaceId, portal.clientId];
+
+export function useMyTeam(portal: ClientPortal) {
+  return useQuery({
+    queryKey: teamKey(portal),
+    queryFn: async (): Promise<Teammate[]> => {
+      const { data, error } = await requireSupabase().rpc("get_my_team", {
+        p_workspace_id: portal.workspaceId,
+        p_client_id: portal.clientId,
+      });
+      if (error) throw error;
+      return data as Teammate[];
+    },
+  });
+}
+
+/** An owner invites someone from their side; returns the link to send them. */
+export function useInviteTeammate(portal: ClientPortal) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { email: string; role: ClientRole }): Promise<string> => {
+      const { data, error } = await requireSupabase().rpc("client_invite_teammate", {
+        p_workspace_id: portal.workspaceId,
+        p_client_id: portal.clientId,
+        p_email: input.email,
+        p_role: input.role,
+      });
+      if (error) throw error;
+      return inviteLink("client", String(data));
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: teamKey(portal) }),
+  });
+}
+
+export function useSetTeammateRole(portal: ClientPortal) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { id: string; role: ClientRole }) => {
+      const { error } = await requireSupabase().rpc("client_set_teammate_role", {
+        p_workspace_id: portal.workspaceId,
+        p_client_id: portal.clientId,
+        p_account_id: input.id,
+        p_role: input.role,
+      });
+      if (error) throw error;
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: teamKey(portal) }),
+  });
+}
+
+export function useRemoveTeammate(portal: ClientPortal) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await requireSupabase().rpc("client_remove_teammate", {
+        p_workspace_id: portal.workspaceId,
+        p_client_id: portal.clientId,
+        p_account_id: id,
+      });
+      if (error) throw error;
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: teamKey(portal) }),
   });
 }

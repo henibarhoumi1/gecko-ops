@@ -1,4 +1,5 @@
 import { t } from "@/lib/i18n";
+import { words } from "@/lib/wording";
 export type ScriptStatus = "draft" | "review" | "changes" | "approved";
 export type ScriptStyle =
   | "talking-head"
@@ -177,12 +178,12 @@ export function changedParts(current: ScriptContent, previous: ScriptContent | n
 export function lineLabel(line: string | null): string {
   if (!line) return "";
   if (line === "goal") return t("Goal", "Objectif");
-  if (line === "cta") return t("Call to action", "Appel à l'action");
+  if (line === "cta") return words.cta();
   const [kind, n] = line.split("-");
   return kind === "hook" ? hookName(Number(n)) : `${t("Beat", "Séquence")} ${Number(n) + 1}`;
 }
 
-export const hookName = (i: number) => `${t("Hook", "Accroche")} ${String.fromCharCode(65 + i)}`;
+export const hookName = (i: number) => `${words.hook()} ${String.fromCharCode(65 + i)}`;
 
 /** Drops empty rows and trims every field, so the database keeps only what was written. */
 export function tidyLines(lines: ScriptLine[]): ScriptLine[] {

@@ -1,10 +1,17 @@
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
+import { Select } from "@/components/Select";
 import { Notice } from "@/components/Notice";
 import { shortDate } from "@/features/concepts/model";
 import { friendlyError } from "@/lib/errors";
-import { useClientAccounts, useInviteClient, useRevokeClientAccount } from "./clientsApi";
+import { CLIENT_ROLES, roleHint, roleName, type ClientRole } from "@/features/portal/role";
+import {
+  useClientAccounts,
+  useInviteClient,
+  useRevokeClientAccount,
+  useSetClientRole,
+} from "./clientsApi";
 import { inviteMessage, whatsappLink, type MsgLang } from "./messages";
 
 /** Who from the client can sign in to the portal, and the one-time links that let them. */
@@ -12,6 +19,9 @@ export function LoginsPanel({ clientId, brand }: { clientId: string; brand: stri
   const accounts = useClientAccounts(clientId);
   const invite = useInviteClient(clientId);
   const revoke = useRevokeClientAccount(clientId);
+  const setRole = useSetClientRole(clientId);
+  const hasOwner = accounts.data?.some((a) => !a.revoked && a.role === "owner") ?? false;
+  const [role, setInviteRole] = useState<ClientRole | "">("");
   const [link, setLink] = useState<{ email: string; url: string } | null>(null);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
@@ -24,7 +34,7 @@ export function LoginsPanel({ clientId, brand }: { clientId: string; brand: stri
     setError("");
     setCopied(false);
     try {
-      const url = await invite.mutateAsync(email);
+      const url = await invite.mutateAsync({ email, role: role || undefined });
       setLink({ email, url });
       form.reset();
     } catch (e) {
@@ -38,10 +48,20 @@ export function LoginsPanel({ clientId, brand }: { clientId: string; brand: stri
     <section className="tab-body">
       <p className="lede">
         Invite the people at {brand} who approve the work. Each link works once, for that email
-        only, for 14 days.
+        only, for 14 days. The first person becomes the owner and can invite up to 4 more from their
+        side.
       </p>
       <form className="invite" onSubmit={onInvite}>
         <Field label="Client's email" name="email" type="email" required maxLength={200} />
+        <Select
+          label="Role"
+          value={role}
+          onChange={(e) => setInviteRole(e.target.value as ClientRole | "")}
+          options={[
+            ["", hasOwner ? "Approver (default)" : "Owner (default)"],
+            ...CLIENT_ROLES.map((r) => [r, `${roleName(r)}: ${roleHint(r)}`] as const),
+          ]}
+        />
         <Button type="submit" disabled={invite.isPending}>
           Create invite link
         </Button>
@@ -92,6 +112,25 @@ export function LoginsPanel({ clientId, brand }: { clientId: string; brand: stri
                       : `Invited, link valid until ${shortDate(a.expires)}`}
               </p>
             </div>
+            {!a.revoked && a.role && (
+              <select
+                className="role-select"
+                aria-label={`Role for ${a.name || a.email}`}
+                value={a.role}
+                disabled={setRole.isPending}
+                onChange={(e) =>
+                  setRole
+                    .mutateAsync({ id: a.id, role: e.target.value as ClientRole })
+                    .catch((err: unknown) => setError(friendlyError(err)))
+                }
+              >
+                {CLIENT_ROLES.map((r) => (
+                  <option key={r} value={r}>
+                    {roleName(r)}
+                  </option>
+                ))}
+              </select>
+            )}
             {!a.revoked && (
               <Button
                 variant="link"
