@@ -59,13 +59,14 @@ export function LoginsPanel({ clientId, brand }: { clientId: string; brand: stri
           onChange={(e) => setInviteRole(e.target.value as ClientRole | "")}
           options={[
             ["", hasOwner ? "Approver (default)" : "Owner (default)"],
-            ...CLIENT_ROLES.map((r) => [r, `${roleName(r)}: ${roleHint(r)}`] as const),
+            ...CLIENT_ROLES.map((r) => [r, roleName(r)] as const),
           ]}
         />
         <Button type="submit" disabled={invite.isPending}>
           Create invite link
         </Button>
       </form>
+      <p className="small muted">{roleHint(role || (hasOwner ? "approver" : "owner"))}</p>
       {error && <Notice tone="error">{error}</Notice>}
       {link && (
         <div className="card stack invite-link">
