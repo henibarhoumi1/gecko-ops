@@ -300,6 +300,43 @@ const MESSAGES: [RegExp, string, string][] = [
     "Donnez au montage un titre de 160 caractères maximum.",
   ],
   [
+    /viewer_read_only/,
+    "You can read this but not add to it. Ask your owner if you need to.",
+    "Vous pouvez consulter, mais pas ajouter. Demandez à votre responsable si besoin.",
+  ],
+  [
+    /invalid_numbers/,
+    "Check the numbers: whole figures or decimals, nothing below zero, and a percentage up to 100.",
+    "Vérifiez les chiffres : des nombres positifs, et un pourcentage jusqu'à 100.",
+  ],
+  [
+    /invalid_post/,
+    "Check the name, the link (https) and the day it went live.",
+    "Vérifiez le nom, le lien (https) et le jour de mise en ligne.",
+  ],
+  [/post_not_found/, "That video isn't here any more.", "Cette vidéo n'est plus là."],
+  [
+    /too_many_posts|too_many_items/,
+    "That's the limit for this client.",
+    "C'est la limite pour ce client.",
+  ],
+  [
+    /read_published/,
+    "That read is published and can't change.",
+    "Ce bilan est publié et ne change plus.",
+  ],
+  [
+    /read_empty/,
+    "Write at least one thing we learned first.",
+    "Écrivez d'abord au moins un enseignement.",
+  ],
+  [
+    /read_not_found|invalid_read/,
+    "Check the read: each line has a length limit.",
+    "Vérifiez le bilan : chaque ligne a une longueur maximale.",
+  ],
+  [/item_not_found/, "That clip isn't here any more.", "Ce plan n'est plus là."],
+  [
     /cut_not_found/,
     "That cut is gone. The page has been refreshed.",
     "Ce montage n'existe plus. La page a été actualisée.",

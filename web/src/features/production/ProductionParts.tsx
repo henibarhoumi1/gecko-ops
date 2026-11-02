@@ -110,8 +110,16 @@ export function BudgetMeter({
   );
 }
 
-function Photo({ path, alt }: { path: string; alt: string }) {
-  const url = useImageUrl(path, PHOTO_BUCKET);
+function Photo({
+  path,
+  alt,
+  bucket = PHOTO_BUCKET,
+}: {
+  path: string;
+  alt: string;
+  bucket?: string;
+}) {
+  const url = useImageUrl(path, bucket);
   if (!url.data) return <span className="prod-photo loading" aria-hidden="true" />;
   return (
     <a className="prod-photo" href={url.data} target="_blank" rel="noreferrer noopener">
@@ -120,12 +128,12 @@ function Photo({ path, alt }: { path: string; alt: string }) {
   );
 }
 
-export function Photos({ paths, alt }: { paths: string[]; alt: string }) {
+export function Photos({ paths, alt, bucket }: { paths: string[]; alt: string; bucket?: string }) {
   if (paths.length === 0) return null;
   return (
     <div className={`prod-photos n${Math.min(paths.length, 3)}`}>
       {paths.map((p) => (
-        <Photo key={p} path={p} alt={alt} />
+        <Photo key={p} path={p} alt={alt} bucket={bucket} />
       ))}
     </div>
   );
@@ -137,11 +145,19 @@ export function PhotoPicker({
   value,
   onChange,
   max = 6,
+  bucket = PHOTO_BUCKET,
+  folder,
+  label = t("Photos", "Photos"),
+  addLabel = t("+ Add photos", "+ Ajouter des photos"),
 }: {
   target: ProductionTarget;
   value: string[];
   onChange: (paths: string[]) => void;
   max?: number;
+  bucket?: string;
+  folder?: string;
+  label?: string;
+  addLabel?: string;
 }) {
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
@@ -154,7 +170,7 @@ export function PhotoPicker({
     const added: string[] = [];
     try {
       for (const file of Array.from(files).slice(0, max - value.length)) {
-        added.push((await uploadImage(target, file, PHOTO_BUCKET)).path);
+        added.push((await uploadImage(target, file, bucket, folder)).path);
       }
     } catch (e) {
       setError(friendlyError(e));
@@ -167,11 +183,11 @@ export function PhotoPicker({
 
   return (
     <div className="field photo-picker">
-      <span className="label">{t("Photos", "Photos")}</span>
+      <span className="label">{label}</span>
       <div className="prod-photos n3">
         {value.map((p) => (
           <span key={p} className="picked">
-            <Photo path={p} alt="" />
+            <Photo path={p} alt="" bucket={bucket} />
             <button
               type="button"
               className="unpick"
@@ -189,7 +205,7 @@ export function PhotoPicker({
             disabled={busy}
             onClick={() => input.current?.click()}
           >
-            {busy ? t("Uploading…", "Envoi…") : t("+ Add photos", "+ Ajouter des photos")}
+            {busy ? t("Uploading…", "Envoi…") : addLabel}
           </button>
         )}
       </div>
