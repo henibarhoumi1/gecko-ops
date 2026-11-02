@@ -1,3 +1,4 @@
+import { byClient } from "@/features/scripts/model";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { countByStatus, shortDate } from "@/features/concepts/model";
@@ -43,7 +44,7 @@ function waitingOnYou(
   role: ClientRole,
 ): Todo[] {
   const todo: Todo[] = [];
-  const scripts = data.scripts.filter((s) => s.status === "review").length;
+  const scripts = data.scripts.filter((s) => s.status === "review" && !byClient(s)).length;
   const ideas = countByStatus(data.concepts).review;
   if (scripts > 0)
     todo.push({
@@ -70,6 +71,22 @@ function waitingOnYou(
           "Read it, comment on any line, then approve.",
           "Lisez-la, commentez n'importe quelle ligne, puis validez.",
         ],
+      ),
+    });
+  const yoursBack = data.scripts.filter((s) => s.status === "changes" && byClient(s)).length;
+  if (yoursBack > 0 && role !== "viewer" && role !== "finance")
+    todo.push({
+      to: "/scripts",
+      title: tw(
+        ["Gecko suggested changes to your script", "Gecko propose des changements à votre script"],
+        [
+          "Gecko suggested changes to your treatment",
+          "Gecko propose des changements à votre note d'intention",
+        ],
+      ),
+      detail: t(
+        "Read the note, then edit and send it back.",
+        "Lisez la note, puis modifiez et renvoyez.",
       ),
     });
   if (ideas > 0)
@@ -178,7 +195,7 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
     production.data?.options ?? [],
     role,
   );
-  const scriptsReworked = data.scripts.filter((s) => s.status === "changes").length;
+  const scriptsReworked = data.scripts.filter((s) => s.status === "changes" && !byClient(s)).length;
   const doing = [
     counts.changes > 0 &&
       t(

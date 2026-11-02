@@ -247,6 +247,36 @@ const MESSAGES: [RegExp, string, string][] = [
   ],
   [/invalid_budget/, "Enter the budget as a number of dinars.", "Indiquez le budget en dinars."],
   [
+    /writer_only/,
+    "Only your owner or approver can write scripts here.",
+    "Seuls votre responsable ou votre validateur peuvent écrire des scripts ici.",
+  ],
+  [
+    /gecko_approves/,
+    "Gecko reads and approves the scripts you write. Edit it instead if something changed.",
+    "Gecko relit et valide les scripts que vous écrivez. Modifiez-le si quelque chose a changé.",
+  ],
+  [
+    /script_locked/,
+    "This script is approved or with Gecko now, so it can't be edited.",
+    "Ce script est validé ou chez Gecko, il ne peut plus être modifié.",
+  ],
+  [
+    /invalid_board/,
+    "Give the board a name of up to 80 characters.",
+    "Donnez au tableau un nom de 80 caractères maximum.",
+  ],
+  [
+    /whiteboard_limit/,
+    "This client has 20 whiteboards. Rename or clear one you don't use.",
+    "Ce client a déjà 20 tableaux blancs. Renommez ou videz-en un qui ne sert plus.",
+  ],
+  [
+    /board_too_big/,
+    "This board is full. Start a new board for the next ideas.",
+    "Ce tableau est plein. Ouvrez un nouveau tableau pour la suite.",
+  ],
+  [
     /approver_only/,
     "Only your owner or an approver can approve or ask for changes. You can still comment.",
     "Seuls votre responsable ou un valideur peuvent valider ou demander des changements. Vous pouvez commenter.",

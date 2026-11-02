@@ -17,6 +17,31 @@ export interface ScriptLine {
   text?: string;
 }
 
+/** The sections of a Cinematic treatment, written before the scenes. */
+export const TREATMENT_KEYS = ["mood", "story", "music", "styling", "casting"] as const;
+export type TreatmentKey = (typeof TREATMENT_KEYS)[number];
+export type Treatment = Partial<Record<TreatmentKey, string>>;
+
+export function treatmentLabel(key: TreatmentKey): string {
+  return {
+    mood: t("Mood", "Ambiance"),
+    story: t("Story", "Histoire"),
+    music: t("Music", "Musique"),
+    styling: t("Styling", "Stylisme"),
+    casting: t("Casting", "Casting"),
+  }[key];
+}
+
+/** Keeps only the sections that have words in them. */
+export function tidyTreatment(treatment: Treatment): Treatment {
+  const out: Treatment = {};
+  for (const key of TREATMENT_KEYS) {
+    const value = (treatment[key] ?? "").trim();
+    if (value) out[key] = value;
+  }
+  return out;
+}
+
 export interface ScriptContent {
   title: string;
   style: ScriptStyle;
@@ -25,6 +50,8 @@ export interface ScriptContent {
   hooks: ScriptLine[];
   beats: ScriptLine[];
   cta: string;
+  /** Missing on a database without two-way writing yet. */
+  treatment?: Treatment;
 }
 
 export interface ScriptNote {
@@ -55,6 +82,33 @@ export interface Script extends ScriptContent {
   updatedAt: string;
   previous: ScriptContent | null;
   notes: ScriptNote[];
+  /** Who wrote the version on screen. The other side approves it. */
+  writtenBy?: "gecko" | "client";
+  /** Written by the person looking at it (client side only). */
+  mine?: boolean;
+}
+
+export const byClient = (s: Pick<Script, "writtenBy">) => s.writtenBy === "client";
+
+/** How a script's status reads, from either side, depending on who wrote this version. */
+export function scriptStatus(
+  s: Pick<Script, "status" | "writtenBy">,
+  reader: "client" | "team",
+): string {
+  if (!byClient(s)) return SCRIPT_STATUS[reader][s.status];
+  if (reader === "client")
+    return {
+      draft: t("Draft", "Brouillon"),
+      review: t("With Gecko", "Chez Gecko"),
+      changes: t("Gecko suggested changes", "Gecko propose des changements"),
+      approved: t("Approved by Gecko", "Validé par Gecko"),
+    }[s.status];
+  return {
+    draft: "Draft",
+    review: "Written by the client: needs your yes",
+    changes: "You asked the client for changes",
+    approved: "Approved by Gecko",
+  }[s.status];
 }
 
 // Labels are getters so they read in the language in use at the moment they're shown.
@@ -105,27 +159,45 @@ export const SCRIPT_STATUS: Record<"client" | "team", Record<ScriptStatus, strin
   },
 };
 
-const clientOrder = (): [ScriptStatus, string][] => [
-  ["review", t("Waiting for your approval", "En attente de votre validation")],
-  ["changes", t("Being reworked", "En cours de reprise")],
-  ["approved", t("Approved", "Validés")],
+const clientOrder = (): [string, string, (s: Script) => boolean][] => [
+  [
+    "review",
+    t("Waiting for your approval", "En attente de votre validation"),
+    (s) => s.status === "review" && !byClient(s),
+  ],
+  [
+    "changes",
+    t("Being reworked", "En cours de reprise"),
+    (s) => s.status === "changes" && !byClient(s),
+  ],
+  [
+    "yours",
+    t("Written by you, with Gecko", "Écrits par vous, chez Gecko"),
+    (s) => byClient(s) && (s.status === "review" || s.status === "changes"),
+  ],
+  ["approved", t("Approved", "Validés"), (s) => s.status === "approved"],
 ];
 
-const TEAM_ORDER: [ScriptStatus, string][] = [
-  ["changes", "Client asked for changes"],
-  ["draft", "Drafts"],
-  ["review", "With the client"],
-  ["approved", "Approved"],
+const TEAM_ORDER: [string, string, (s: Script) => boolean][] = [
+  ["client", "Written by the client: needs your yes", (s) => byClient(s) && s.status === "review"],
+  ["changes", "Client asked for changes", (s) => s.status === "changes" && !byClient(s)],
+  ["draft", "Drafts", (s) => s.status === "draft"],
+  [
+    "review",
+    "With the client",
+    (s) => (s.status === "review" && !byClient(s)) || (s.status === "changes" && byClient(s)),
+  ],
+  ["approved", "Approved", (s) => s.status === "approved"],
 ];
 
 export function groupScripts(scripts: Script[], reader: "client" | "team") {
   const order = reader === "client" ? clientOrder() : TEAM_ORDER;
   return order
-    .map(([status, title]) => ({
+    .map(([status, title, match]) => ({
       status,
       title,
       items: scripts
-        .filter((s) => s.status === status)
+        .filter(match)
         .sort((a, b) => a.position - b.position || a.createdAt.localeCompare(b.createdAt)),
     }))
     .filter((group) => group.items.length > 0);
@@ -172,6 +244,9 @@ export function changedParts(current: ScriptContent, previous: ScriptContent | n
   if (current.cta.trim() !== previous.cta.trim()) changed.add("cta");
   if (current.beats.length < previous.beats.length) changed.add("beats-removed");
   if (current.hooks.length < previous.hooks.length) changed.add("hooks-removed");
+  for (const key of TREATMENT_KEYS)
+    if ((current.treatment?.[key] ?? "").trim() !== (previous.treatment?.[key] ?? "").trim())
+      changed.add(key);
   return changed;
 }
 
@@ -221,6 +296,8 @@ export interface ScriptRow {
   author_name: string;
   created_at: string;
   updated_at: string;
+  written_by?: "gecko" | "client";
+  treatment?: Treatment;
 }
 
 export interface ScriptNoteRow {
@@ -257,6 +334,8 @@ export function scriptsFromRows(
     hooks: r.hooks,
     beats: r.beats,
     cta: r.cta,
+    treatment: r.treatment ?? {},
+    writtenBy: r.written_by ?? "gecko",
     position: r.position,
     status: r.status,
     version: r.version,

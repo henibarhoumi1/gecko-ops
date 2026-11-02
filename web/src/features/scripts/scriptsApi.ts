@@ -6,6 +6,8 @@ import {
   scriptsFromRows,
   type Script,
   type ScriptContent,
+  type ScriptLine,
+  type Treatment,
   type ScriptNoteRow,
   type ScriptRow,
   type ScriptStatus,
@@ -13,7 +15,7 @@ import {
 } from "./model";
 
 const COLUMNS =
-  "id,client_id,concept_id,title,style,seconds,goal,hooks,beats,cta,position,status,version,hook,approved_version,approved_at,approved_by,author_name,created_at,updated_at";
+  "id,client_id,concept_id,title,style,seconds,goal,hooks,beats,cta,position,status,version,hook,approved_version,approved_at,approved_by,author_name,created_at,updated_at,written_by,treatment";
 
 /** Every script of one client (or of all clients), with its notes and the version the client saw before. */
 export function useScripts(clientId: string | null) {
@@ -70,6 +72,7 @@ export function useSaveScript(clientId: string) {
         hooks: input.hooks,
         beats: input.beats,
         cta: input.cta,
+        ...(input.treatment ? { treatment: input.treatment } : {}),
         concept_id: input.conceptId,
         ...(input.status ? { status: input.status } : {}),
         ...(input.position != null ? { position: input.position } : {}),
@@ -95,7 +98,8 @@ export function useSetScriptStatus() {
   const { id: workspaceId } = useWorkspace();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: "draft" | "review" }) => {
+    /** Draft or review for Gecko's own; approved or changes on a version the client wrote. */
+    mutationFn: async ({ id, status }: { id: string; status: ScriptStatus }) => {
       const { error } = await requireSupabase().from("scripts").update({ status }).eq("id", id);
       if (error) throw error;
     },
@@ -155,6 +159,39 @@ export function useClientScriptNote(portal: ClientPortal) {
         p_version: input.version,
         p_line: input.line,
         p_hook: input.hook,
+      });
+      if (error) throw error;
+    },
+    onSettled: () =>
+      queryClient.invalidateQueries({ queryKey: ["portal", portal.workspaceId, portal.clientId] }),
+  });
+}
+
+/** The client writes a script or treatment of their own, or edits one Gecko hasn't approved yet. */
+export function useClientWriteScript(portal: ClientPortal) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: {
+      id: string | null;
+      title: string;
+      seconds: number;
+      goal: string;
+      hooks: ScriptLine[];
+      beats: ScriptLine[];
+      cta: string;
+      treatment: Treatment;
+    }) => {
+      const { error } = await requireSupabase().rpc("client_write_script", {
+        p_workspace_id: portal.workspaceId,
+        p_client_id: portal.clientId,
+        p_id: input.id,
+        p_title: input.title,
+        p_seconds: input.seconds,
+        p_goal: input.goal,
+        p_hooks: input.hooks,
+        p_beats: input.beats,
+        p_cta: input.cta,
+        p_treatment: input.treatment,
       });
       if (error) throw error;
     },

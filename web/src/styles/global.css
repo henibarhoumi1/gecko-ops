@@ -2922,7 +2922,7 @@ a.btn {
 
 @media (max-width: 720px) {
   .board-canvas {
-    height: calc(100vh - 260px);
+    height: calc(100dvh - 240px);
     min-height: 420px;
   }
 
@@ -4184,5 +4184,216 @@ a.piece:hover {
   }
   .prod-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Portal v2, phase C: writing from both sides ---------- */
+
+.treatment {
+  display: grid;
+  gap: 10px;
+  margin: 4px 0 8px;
+}
+
+.treatment div {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.treatment div.changed {
+  background: linear-gradient(90deg, var(--yellow-soft), transparent 70%);
+}
+
+.treatment dt {
+  font-weight: 600;
+}
+
+.treatment dd {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.write-script .row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.write-part {
+  display: grid;
+  gap: 10px;
+  margin: 4px 0 0;
+  padding: 14px 16px 16px;
+  border: 1.5px solid var(--edge);
+  border-radius: 12px;
+}
+
+.write-part legend {
+  padding: 0 6px;
+  font-weight: 600;
+}
+
+.write-part summary {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.write-beats {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding-left: 22px;
+}
+
+.write-beats li {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px;
+}
+
+@media (max-width: 600px) {
+  .treatment div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+}
+
+/* ---------- Portal v2, phase C: the whiteboard, on plain white ---------- */
+
+.wb-page {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.wb-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 18px;
+}
+
+.wb-tabs {
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.wb-tab {
+  flex: none;
+  padding: 6px 14px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.wb-tab.active {
+  background: var(--yellow);
+}
+
+.wb-actions,
+.wb-name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+}
+
+.wb-name input {
+  min-width: 0;
+  width: 240px;
+}
+
+.wb-confirm {
+  font-size: 0.95rem;
+}
+
+.whiteboard {
+  display: grid;
+  gap: 6px;
+}
+
+.whiteboard-canvas {
+  position: relative;
+  height: calc(100dvh - 330px);
+  min-height: 480px;
+  overflow: hidden;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+
+/* Excalidraw sets its own fonts; keep the board's chrome in ours. */
+.whiteboard-canvas .excalidraw {
+  --ui-font: var(--font);
+  --color-primary: #000000;
+  --color-primary-darker: #000000;
+  --color-primary-darkest: #000000;
+  --color-primary-light: var(--yellow-soft);
+}
+
+.portal-v2 .portal-page.board-page {
+  max-width: 1440px;
+}
+
+.wb-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+}
+
+.wb-notes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wb-note {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+  cursor: pointer;
+  transform: rotate(-3deg);
+}
+
+.wb-note:nth-child(2) {
+  transform: rotate(2deg);
+}
+
+.wb-note:hover,
+.wb-note:focus-visible {
+  transform: rotate(0) translateY(-2px);
+}
+
+/* A video on the board: framed in ink, dark while it loads, so it never vanishes into the white. */
+.wb-embed {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 1.5px solid var(--ink);
+  border-radius: 10px;
+  background: #111111;
+}
+
+.wb-status {
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  .whiteboard-canvas {
+    height: calc(100dvh - 240px);
+    min-height: 420px;
   }
 }
