@@ -11,12 +11,12 @@ export const TEMPLATES: { id: Template; label: string; hint: string }[] = [
   {
     id: "performance",
     label: "Performance",
-    hint: "Ads that sell a product: reels, hooks, calls to action. Dany Clean.",
+    hint: "Ads that sell a product: reels, hooks, calls to action, numbers that sell.",
   },
   {
     id: "cinematic",
     label: "Cinematic",
-    hint: "Image work: campaign films, stills, treatments. No hooks, no CTA. RareRich.",
+    hint: "Image work: campaign films, stills, treatments. No hooks, no calls to action.",
   },
 ];
 

@@ -46,6 +46,8 @@ interface NavItem {
 interface NavGroup {
   id: string;
   label: string;
+  /** A shorter name for the phone's bottom bar, where six sections share one row. */
+  short?: string;
   /** Where the phone's bottom bar goes for this group. */
   to: string;
   items: NavItem[];
@@ -82,6 +84,7 @@ function navGroups(badges: {
     {
       id: "prep",
       label: t("Prep", "Préparation"),
+      short: t("Prep", "Prépa"),
       to: "/onboarding",
       items: [
         { to: "/onboarding", label: t("Your brand", "Votre marque") },
@@ -107,7 +110,7 @@ function navGroups(badges: {
     label: words.results(),
     to: "/results",
     items: [
-      { to: "/results", label: words.results(), badge: badges.results },
+      { to: "/results", label: t("Numbers", "Chiffres"), badge: badges.results },
       { to: "/library", label: tw(["Library", "Bibliothèque"], ["Selects", "Sélection"]) },
     ],
   });
@@ -173,6 +176,8 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
   });
   const group = groups.find((g) => inGroup(g, path)) ?? groups[0];
   const me = page.data?.me ?? email;
+  // The page's own name, for the wide layout where the section row is hidden. Home has the brand as its title.
+  const current = group?.items.find((item) => item.to !== "/" && path === item.to);
 
   const brandMark: ReactNode = page.data?.logo ? (
     <img src={page.data.logo} alt={brand} />
@@ -229,6 +234,7 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
         </header>
 
         <main className={`page portal-page${onBoard ? " board-page" : ""}`}>
+          {current && !onBoard && <h1 className="page-title">{current.label}</h1>}
           {group && group.items.length > 1 && (
             <nav className="sub-nav" aria-label={group.label}>
               {group.items.map((item) => (
@@ -359,7 +365,7 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
                 end={g.id === "home"}
                 className={() => `bottom-link${g === group ? " active" : ""}`}
               >
-                {g.label}
+                {g.short ?? g.label}
                 <Badge n={total} />
               </NavLink>
             );

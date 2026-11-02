@@ -86,6 +86,12 @@ export function PipelinePage() {
         ))}
       </nav>
 
+      {view === "board" && open.length === 0 && (
+        <p className="muted">
+          No open leads. Add the first brand you want to work with: who to talk to, the next step
+          and when.
+        </p>
+      )}
       {view === "board" ? (
         <div className="board">
           {STEPS.map((step) => (

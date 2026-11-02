@@ -197,7 +197,7 @@ function ItemCard({
           {[item.shoot, item.shotOn && shortDate(item.shotOn)].filter(Boolean).join(" · ")}
         </span>
         {item.tags.length > 0 && (
-          <span className="lib-card-tags small">{item.tags.map(tagName).join(", ")}</span>
+          <span className="lib-card-tags small">{item.tags.map(tagName).join(" · ")}</span>
         )}
         {item.talent && (
           <span className="lib-usage small">

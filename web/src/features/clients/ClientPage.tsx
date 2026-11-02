@@ -57,7 +57,7 @@ export function ClientPage() {
         ["whiteboard", "Whiteboard"],
         ["shared", "Shared"],
         ["onboarding", "Onboarding"],
-        ["logins", "Client logins"],
+        ["logins", "Logins"],
       ]
     : [
         ["concepts", "Ideas"],

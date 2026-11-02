@@ -67,8 +67,8 @@ export function TeamProduction({ clientId }: { clientId: string }) {
         budget; anything over it needs their owner or finance. Book only what's approved, then mark
         it shot and paid so it lands on the balance invoice.
       </p>
-      <BudgetEditor target={target} budget={budget} />
       {budget && <BudgetMeter budget={budget} options={options} reader="team" />}
+      <BudgetEditor target={target} budget={budget} />
       {KINDS.map((k) => {
         const list = options.filter((o) => o.kind === k.kind);
         return (
@@ -101,7 +101,7 @@ export function TeamProduction({ clientId }: { clientId: string }) {
 
 function BudgetEditor({ target, budget }: { target: ProductionTarget; budget: Budget | null }) {
   const act = useTeamProductionActions(target);
-  const [open, setOpen] = useState(!budget || budget.cap == null);
+  const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -124,13 +124,13 @@ function BudgetEditor({ target, budget }: { target: ProductionTarget; budget: Bu
     return (
       <p className="small">
         <Button variant="link" onClick={() => setOpen(true)}>
-          Edit the budget
+          {budget?.cap == null ? "Set the budget" : "Change the budget"}
         </Button>
       </p>
     );
   return (
     <form className="card budget-form" onSubmit={onSubmit}>
-      <h3>Production budget</h3>
+      <h3>{budget?.cap == null ? "Set the production budget" : "Change the production budget"}</h3>
       <div className="row">
         <Field
           label="Cap in DT (talent, locations and props Gecko pays)"
@@ -149,11 +149,11 @@ function BudgetEditor({ target, budget }: { target: ProductionTarget; budget: Bu
       </div>
       {error && <Notice tone="error">{error}</Notice>}
       <div className="actions">
-        {budget && (
+        {
           <Button variant="secondary" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-        )}
+        }
         <Button type="submit" disabled={act.saveBudget.isPending}>
           Save budget
         </Button>

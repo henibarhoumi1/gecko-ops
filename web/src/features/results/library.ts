@@ -41,7 +41,7 @@ export const BASE_TAGS: [string, string, string][] = [
 
 export function tagName(tag: string): string {
   const base = BASE_TAGS.find(([k]) => k === tag);
-  return base ? t(base[1], base[2]) : tag;
+  return base ? t(base[1], base[2]) : tag.charAt(0).toUpperCase() + tag.slice(1);
 }
 
 /** Every tag in use, base tags first, then the rest by how often they come up. */
