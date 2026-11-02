@@ -41,6 +41,8 @@
   --pink-soft: #fbe3e4;
   --yellow: #f3df9e;
   --yellow-soft: #faf0cf;
+  --green: #9cc9b0;
+  --green-soft: #e3f0e8;
   --mat: #2e6b4e;
   --mat-deep: #1f4d37;
   --mat-minor: rgba(255, 255, 255, 0.07);
@@ -4395,5 +4397,373 @@ a.piece:hover {
   .whiteboard-canvas {
     height: calc(100dvh - 240px);
     min-height: 420px;
+  }
+}
+
+/* ---------- Portal v2, phase D: screening and delivery ---------- */
+
+.cut-list,
+.shelf,
+.screen-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cut-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+  padding: 14px 16px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.cut-row:hover {
+  background: var(--yellow-soft);
+}
+
+.cut-row.status-review {
+  background: var(--yellow-soft);
+}
+
+.cut-row.status-review:hover {
+  background: var(--yellow);
+}
+
+.cut-title {
+  font-weight: 600;
+}
+
+.screen-title {
+  margin: 4px 0 2px;
+}
+
+.screening {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+  gap: 20px;
+  align-items: start;
+  margin-top: 12px;
+}
+
+.screen-main {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* Reels are tall and films are wide; the frame holds either without cropping. */
+.screen-frame {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 240px;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: #111111;
+  user-select: none;
+}
+
+.screen-frame video {
+  display: block;
+  width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+}
+
+.screen-wait {
+  margin: 0;
+  padding: 24px;
+  color: #ffffff;
+}
+
+/* A second watermark over the player, on top of the one burned into the preview. */
+.screen-mark {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.35);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.8rem;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.screen-line {
+  position: relative;
+  height: 22px;
+  border-bottom: 1.5px solid var(--ink);
+}
+
+.screen-now {
+  position: absolute;
+  bottom: -1.5px;
+  width: 2px;
+  height: 22px;
+  background: var(--ink);
+  transform: translateX(-1px);
+}
+
+.screen-pin {
+  position: absolute;
+  bottom: 2px;
+  width: 14px;
+  height: 14px;
+  padding: 0;
+  border: 1.5px solid var(--ink);
+  border-radius: 50% 50% 50% 0;
+  background: var(--white);
+  cursor: pointer;
+  transform: translateX(-7px) rotate(-45deg);
+}
+
+.screen-pin.client {
+  background: var(--pink);
+}
+
+.screen-pin.done {
+  background: var(--green);
+}
+
+.screen-versions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+}
+
+.screen-versions p {
+  margin: 0;
+}
+
+.screen-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.screen-tab {
+  padding: 4px 10px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--white);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.screen-tab.active {
+  background: var(--yellow);
+}
+
+.screen-notes {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+
+.screen-notes h3 {
+  margin: 0;
+}
+
+.screen-note {
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+
+.screen-note.done .screen-note-body {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.screen-note.kind-approve {
+  padding: 10px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--green-soft);
+}
+
+.screen-note.kind-changes {
+  padding: 10px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--pink-soft);
+}
+
+.screen-note-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+}
+
+.screen-note-body {
+  margin: 6px 0 0;
+  white-space: pre-wrap;
+}
+
+.timecode {
+  padding: 1px 7px;
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+  background: var(--yellow);
+  font: inherit;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.timecode.whole {
+  background: var(--white);
+  cursor: default;
+}
+
+.note-done {
+  margin-left: auto;
+}
+
+.screen-form {
+  display: grid;
+  gap: 8px;
+}
+
+.screen-form textarea,
+.screen-decide-form textarea,
+.inline-form input,
+.wb-name input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+}
+
+.screen-form textarea,
+.screen-decide-form textarea {
+  min-height: 72px;
+  resize: vertical;
+}
+
+.screen-form-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 14px;
+}
+
+.screen-decide {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.screen-decide-form {
+  display: grid;
+  gap: 10px;
+}
+
+.screen-decide-form p,
+.screen-approved {
+  margin: 0;
+}
+
+.screen-approved {
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  background: var(--green-soft);
+}
+
+.screen-approved.changes {
+  background: var(--pink-soft);
+}
+
+.cut-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 10px 14px;
+  margin: 12px 0;
+}
+
+.upload-version,
+.final-form {
+  display: grid;
+  gap: 10px;
+  max-width: 560px;
+}
+
+.final-form {
+  margin-bottom: 16px;
+}
+
+.final-form h3 {
+  margin: 0;
+}
+
+.inline-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.inline-form input {
+  flex: 1 1 260px;
+  max-width: 420px;
+}
+
+.error-text {
+  color: #a3242b;
+}
+
+.cut-delete {
+  margin-top: 24px;
+}
+
+.shelf-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  padding: 14px 16px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+
+.shelf-item p {
+  margin: 2px 0 0;
+}
+
+.shelf-item.open {
+  background: var(--green-soft);
+}
+
+.shelf-lock {
+  padding: 4px 10px;
+  border: 1.5px dashed var(--ink);
+  border-radius: 999px;
+}
+
+@media (max-width: 900px) {
+  .screening {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

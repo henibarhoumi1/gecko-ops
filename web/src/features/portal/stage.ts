@@ -16,7 +16,14 @@ export function localDay(now: Date): string {
  * Plan until something is approved, then Prep until the shoot day, Shoot on the day, Edit after it. Delivery and
  * Results take over once cuts and numbers live in the portal.
  */
-export function currentStage(shootDate: string | null, approved: number, now: Date): Stage {
+export function currentStage(
+  shootDate: string | null,
+  approved: number,
+  now: Date,
+  cuts: { sent: number; delivered: number } = { sent: 0, delivered: 0 },
+): Stage {
+  if (cuts.delivered > 0) return "delivery";
+  if (cuts.sent > 0) return "edit";
   const today = localDay(now);
   if (shootDate && today === shootDate) return "shoot";
   if (shootDate && today > shootDate) return "edit";

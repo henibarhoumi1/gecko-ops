@@ -19,6 +19,8 @@ import { ScriptsTab } from "./ScriptsTab";
 import { SharedTab } from "./SharedTab";
 import { useMyPortal, useMyVideos } from "./portalApi";
 import { VideosTab } from "./VideosTab";
+import { DeliveryTab, ReviewTab } from "./ReviewTab";
+import { useMyCuts } from "@/features/review/reviewApi";
 import { t } from "@/lib/i18n";
 import { setTemplate, tw, words } from "@/lib/wording";
 import { asRole, roleName, RoleContext } from "./role";
@@ -81,13 +83,16 @@ function navGroups(badges: {
       ],
     },
   ];
-  if (videosOn)
-    groups.push({
-      id: "review",
-      label: words.review(),
-      to: "/videos",
-      items: [{ to: "/videos", label: t("Videos", "Vidéos"), badge: badges.cuts }],
-    });
+  groups.push({
+    id: "review",
+    label: words.review(),
+    to: "/review",
+    items: [
+      { to: "/review", label: tw(["Reels", "Vidéos"], ["Films", "Films"]), badge: badges.cuts },
+      { to: "/delivery", label: t("Delivery", "Livraison") },
+      ...(videosOn ? [{ to: "/videos", label: t("Videos", "Vidéos") }] : []),
+    ],
+  });
   groups.push({
     id: "team",
     label: t("Team", "Équipe"),
@@ -121,7 +126,9 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
   const ideas = page.data ? countByStatus(page.data.concepts).review : 0;
   const scripts =
     page.data?.scripts.filter((s) => s.status === "review" && !byClient(s)).length ?? 0;
-  const cuts = videos.data?.videos.filter((v) => v.status === "review").length ?? 0;
+  const myCuts = useMyCuts(target);
+  const cuts = myCuts.data?.cuts.filter((c) => c.status === "review").length ?? 0;
+
   const brand = page.data?.brand ?? portal.brand;
   // Only people who can say yes to a cost get a badge for it.
   const proposed = (kind: string) =>
@@ -266,6 +273,10 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
                 element={<ConceptsTab portal={portal} concepts={page.data.concepts} />}
               />
               <Route path="team" element={<TeamTab portal={portal} brand={brand} me={me} />} />
+              {["review", "review/:cutId"].map((p) => (
+                <Route key={p} path={p} element={<ReviewTab portal={portal} />} />
+              ))}
+              <Route path="delivery" element={<DeliveryTab portal={portal} />} />
               {videosOn && (
                 <Route
                   path="videos"

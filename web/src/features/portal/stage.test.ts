@@ -19,4 +19,11 @@ describe("currentStage", () => {
   it("reads today in local time", () => {
     expect(localDay(new Date(2026, 10, 2, 23, 30))).toBe("2026-11-02");
   });
+
+  it("moves to Edit once a cut is sent, and to Delivery once a final is out", () => {
+    expect(currentStage(null, 0, at("2026-11-02"), { sent: 1, delivered: 0 })).toBe("edit");
+    expect(currentStage("2026-11-30", 2, at("2026-11-02"), { sent: 3, delivered: 1 })).toBe(
+      "delivery",
+    );
+  });
 });

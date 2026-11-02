@@ -59,6 +59,6 @@ export const words = {
   board: () => tw(["Inspiration", "Inspiration"], ["Moodboard", "Moodboard"]),
   talent: () => tw(["Talent", "Talents"], ["Cast", "Casting"]),
   location: () => tw(["Location", "Lieu"], ["Set", "Décor"]),
-  review: () => tw(["Watch and approve", "Regarder et valider"], ["Screening", "Projection"]),
+  review: () => tw(["Review", "Validation"], ["Screening", "Projection"]),
   results: () => tw(["Results", "Résultats"], ["Impact", "Impact"]),
 };

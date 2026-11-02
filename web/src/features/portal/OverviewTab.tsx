@@ -13,6 +13,8 @@ import { currentStage } from "./stage";
 import { useClientRole, type ClientRole } from "./role";
 import type { ProductionOption } from "@/features/production/model";
 import { useMyProduction } from "@/features/production/productionApi";
+import type { CutsPage } from "@/features/review/model";
+import { useMyCuts } from "@/features/review/reviewApi";
 
 function useOnboardingPercent(target: SheetTarget) {
   return useQuery({
@@ -42,8 +44,40 @@ function waitingOnYou(
   onboardingLoaded: boolean,
   production: ProductionOption[],
   role: ClientRole,
+  cuts: CutsPage | undefined,
 ): Todo[] {
   const todo: Todo[] = [];
+  const toWatch = cuts?.cuts.filter((c) => c.status === "review").length ?? 0;
+  if (toWatch > 0)
+    todo.push({
+      to: "/review",
+      title: tw(
+        [
+          toWatch === 1 ? "A reel is ready to watch" : `${toWatch} reels are ready to watch`,
+          toWatch === 1
+            ? "Une vidéo est prête à regarder"
+            : `${toWatch} vidéos sont prêtes à regarder`,
+        ],
+        [
+          toWatch === 1 ? "A film is ready to watch" : `${toWatch} films are ready to watch`,
+          toWatch === 1 ? "Un film est prêt à regarder" : `${toWatch} films sont prêts à regarder`,
+        ],
+      ),
+      detail: t(
+        "Pause anywhere to leave a note on that moment, then approve.",
+        "Mettez sur pause n'importe où pour laisser une note sur ce moment, puis validez.",
+      ),
+    });
+  const finals = cuts?.balancePaid ? cuts.cuts.filter((c) => c.finalLink).length : 0;
+  if (finals > 0 && toWatch === 0)
+    todo.push({
+      to: "/delivery",
+      title: t(
+        finals === 1 ? "Your final file is ready" : `${finals} final files are ready`,
+        finals === 1 ? "Votre fichier final est prêt" : `${finals} fichiers finaux sont prêts`,
+      ),
+      detail: t("Clean, without the watermark.", "Propres, sans filigrane."),
+    });
   const scripts = data.scripts.filter((s) => s.status === "review" && !byClient(s)).length;
   const ideas = countByStatus(data.concepts).review;
   if (scripts > 0)
@@ -188,12 +222,14 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
   const first = data.me.split(/\s+/)[0] || data.me;
   const role = useClientRole();
   const production = useMyProduction(target);
+  const cuts = useMyCuts(target);
   const todo = waitingOnYou(
     data,
     onboarding.data?.sentAt ?? null,
     onboarding.isSuccess,
     production.data?.options ?? [],
     role,
+    cuts.data,
   );
   const scriptsReworked = data.scripts.filter((s) => s.status === "changes" && !byClient(s)).length;
   const doing = [
@@ -213,6 +249,10 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
     o?.shootDate ?? null,
     data.scripts.filter((x) => x.status === "approved").length + counts.approved,
     new Date(),
+    {
+      sent: cuts.data?.cuts.length ?? 0,
+      delivered: cuts.data?.cuts.filter((c) => c.delivered).length ?? 0,
+    },
   );
 
   return (

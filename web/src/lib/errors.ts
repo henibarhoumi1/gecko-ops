@@ -161,8 +161,8 @@ const MESSAGES: [RegExp, string, string][] = [
   [/no_preview/, "There's no cut to watch yet.", "Il n'y a pas encore de montage à regarder."],
   [
     /preview_too_big/,
-    "Previews can be up to 200 MB. Export a lighter 1080p version and try again.",
-    "Les aperçus font 200 Mo au maximum. Exportez une version 1080p plus légère et réessayez.",
+    "Previews can be up to 50 MB. Export at 720p with a lower bitrate and try again.",
+    "Les aperçus font 50 Mo au maximum. Exportez en 720p avec un débit plus bas et réessayez.",
   ],
   [
     /bad_upload|bad_part/,
@@ -180,6 +180,57 @@ const MESSAGES: [RegExp, string, string][] = [
     "Le service vidéo ne répond pas. Réessayez dans une minute.",
   ],
   [/sign_in/, "Your session ended. Sign in again.", "Votre session a expiré. Reconnectez-vous."],
+  [
+    /preview_type|mime type/i,
+    "Upload an MP4, MOV or WebM file.",
+    "Envoyez un fichier MP4, MOV ou WebM.",
+  ],
+  [
+    /exceeded the maximum allowed size|payload too large/i,
+    "That file is over 50 MB. Export at 720p with a lower bitrate.",
+    "Ce fichier dépasse 50 Mo. Exportez en 720p avec un débit plus bas.",
+  ],
+  [
+    /cut_needs_preview/,
+    "Upload a preview first. Nothing goes to the client without one.",
+    "Ajoutez d'abord un aperçu. Rien ne part chez le client sans lui.",
+  ],
+  [
+    /cut_seen/,
+    "The client has already left notes on this cut, so it stays with them.",
+    "Le client a déjà laissé des notes sur ce montage, il reste chez lui.",
+  ],
+  [
+    /cut_changed/,
+    "A newer version just arrived. The page has been refreshed: watch it, then decide.",
+    "Une nouvelle version vient d'arriver. La page a été actualisée : regardez-la, puis décidez.",
+  ],
+  [
+    /cut_not_approved/,
+    "The client approves the cut before the final file goes on the shelf.",
+    "Le client valide le montage avant que le fichier final soit livré.",
+  ],
+  [
+    /cut_delivered/,
+    "This cut is delivered. Clear its final link before uploading a new version.",
+    "Ce montage est livré. Retirez le lien final avant d'envoyer une nouvelle version.",
+  ],
+  [
+    /invalid_link/,
+    "Paste the full link, starting with https://.",
+    "Collez le lien complet, qui commence par https://.",
+  ],
+  [
+    /invalid_cut/,
+    "Give the cut a title of up to 160 characters.",
+    "Donnez au montage un titre de 160 caractères maximum.",
+  ],
+  [
+    /cut_not_found/,
+    "That cut is gone. The page has been refreshed.",
+    "Ce montage n'existe plus. La page a été actualisée.",
+  ],
+  [/too_many_cuts/, "This client has 300 cuts already.", "Ce client a déjà 300 montages."],
   [
     /invalid_note/,
     "That message couldn't be sent. Check it isn't empty and try again.",
