@@ -16,6 +16,7 @@ import {
   type ScriptNote,
 } from "./model";
 import { t } from "@/lib/i18n";
+import { tw, words } from "@/lib/wording";
 
 type CommentFn = (line: string | null, body: string) => Promise<unknown>;
 
@@ -81,7 +82,7 @@ export function ScriptView({
       {script.goal && (
         <Line id="goal" changed={changed.has("goal")} notes={byLine("goal")} onComment={onComment}>
           <p className="script-goal" dir="auto">
-            <strong>{t("The viewer should", "Le spectateur doit")}</strong> {script.goal}
+            <strong>{words.goal()}</strong> {script.goal}
           </p>
         </Line>
       )}
@@ -91,9 +92,12 @@ export function ScriptView({
           <h4>
             {script.hooks.length > 1
               ? onPick
-                ? t("Pick the hook you like best", "Choisissez l'accroche que vous préférez")
-                : t("Hook options", "Accroches possibles")
-              : t("The hook", "L'accroche")}
+                ? tw(
+                    ["Pick the hook you like best", "Choisissez l'accroche que vous préférez"],
+                    ["Pick the opening you like best", "Choisissez l'ouverture que vous préférez"],
+                  )
+                : tw(["Hook options", "Accroches possibles"], ["Opening options", "Ouvertures possibles"])
+              : tw(["The hook", "L'accroche"], ["The opening shot", "Le plan d'ouverture"])}
           </h4>
           <div className="hooks" role={onPick ? "radiogroup" : undefined}>
             {script.hooks.map((hook, i) => {
@@ -122,7 +126,7 @@ export function ScriptView({
                     </label>
                   ) : (
                     <span className="hook-name">
-                      {script.hooks.length > 1 ? hookName(i) : t("Hook", "Accroche")}
+                      {script.hooks.length > 1 ? hookName(i) : words.hook()}
                       {isPicked && script.status === "approved" && t(" · picked", " · choisie")}
                     </span>
                   )}
@@ -161,7 +165,7 @@ export function ScriptView({
       {script.cta && (
         <Line id="cta" changed={changed.has("cta")} notes={byLine("cta")} onComment={onComment}>
           <p className="script-cta" dir="auto">
-            <strong>{t("Ends on", "Finit sur")}</strong> {script.cta}
+            <strong>{tw(["Ends on", "Finit sur"], ["Final frame", "Dernier plan"])}</strong> {script.cta}
           </p>
         </Line>
       )}

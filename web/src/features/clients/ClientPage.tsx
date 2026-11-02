@@ -10,6 +10,7 @@ import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { friendlyError } from "@/lib/errors";
 import { useClients, useLogos } from "./clientsApi";
 import { LogoPanel } from "./LogoPanel";
+import { LookPanel } from "./LookPanel";
 import { ClientNudge } from "./ClientNudge";
 import { LoginsPanel } from "./LoginsPanel";
 import { OverviewEditor } from "./OverviewEditor";
@@ -85,6 +86,7 @@ export function ClientPage() {
               element={
                 <>
                   <LogoPanel clientId={clientId} brand={client.brand} />
+                  <LookPanel clientId={clientId} brand={client.brand} />
                   <OverviewEditor clientId={clientId} />
                 </>
               }

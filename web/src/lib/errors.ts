@@ -206,6 +206,47 @@ const MESSAGES: [RegExp, string, string][] = [
     "Un champ est trop long ou invalide. Vérifiez et réessayez.",
   ],
   [
+    /approver_only/,
+    "Only your owner or an approver can approve or ask for changes. You can still comment.",
+    "Seuls votre responsable ou un valideur peuvent valider ou demander des changements. Vous pouvez commenter.",
+  ],
+  [
+    /owner_only/,
+    "Only the owner of this space can do that.",
+    "Seul le responsable de cet espace peut faire ça.",
+  ],
+  [
+    /team_full/,
+    "This space holds 5 people. Remove someone before inviting a new person.",
+    "Cet espace accueille 5 personnes. Retirez quelqu'un avant d'en inviter une nouvelle.",
+  ],
+  [
+    /already_on_team/,
+    "That person is already in this space.",
+    "Cette personne fait déjà partie de cet espace.",
+  ],
+  [
+    /last_owner/,
+    "Make someone else owner first. The space always needs one.",
+    "Nommez d'abord un autre responsable. L'espace en a toujours besoin d'un.",
+  ],
+  [
+    /cannot_remove_self/,
+    "You can't remove yourself. Ask Gecko if you want to leave.",
+    "Vous ne pouvez pas vous retirer vous-même. Demandez à Gecko si vous voulez partir.",
+  ],
+  [/invalid_role/, "Pick one of the roles in the list.", "Choisissez un des rôles de la liste."],
+  [
+    /cover_type/,
+    "Use a JPG, PNG or WebP image for the cover.",
+    "Utilisez une image JPG, PNG ou WebP pour la couverture.",
+  ],
+  [
+    /cover_too_big/,
+    "That cover is too heavy to store, even shrunk. Try another still.",
+    "Cette couverture est trop lourde, même réduite. Essayez une autre image.",
+  ],
+  [
     /member_not_found/,
     "That person isn't on the team anymore. Refresh the page.",
     "Cette personne ne fait plus partie de l'équipe. Rechargez la page.",

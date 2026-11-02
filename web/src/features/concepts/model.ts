@@ -1,4 +1,5 @@
 import { locale, t } from "@/lib/i18n";
+import { tw } from "@/lib/wording";
 export type ConceptStatus = "draft" | "review" | "changes" | "approved" | "idea";
 export type ConceptFormat = "reel" | "carousel" | "static" | "other";
 export type NoteKind = "comment" | "approve" | "changes";
@@ -35,7 +36,7 @@ export interface Concept {
 // Labels are getters so they read in the language in use at the moment they're shown.
 export const FORMAT_LABEL: Record<ConceptFormat, string> = {
   get reel() {
-    return t("Reel", "Vidéo");
+    return tw(["Reel", "Vidéo"], ["Film", "Film"]);
   },
   get carousel() {
     return t("Carousel", "Carrousel");
@@ -61,10 +62,10 @@ export const STATUS_LABEL: Record<"client" | "team", Record<ConceptStatus, strin
       return t("Changes asked", "Changements demandés");
     },
     get approved() {
-      return t("Approved", "Validée");
+      return tw(["Approved", "Validée"], ["Approved", "Validé"]);
     },
     get idea() {
-      return t("Your idea", "Votre idée");
+      return tw(["Your idea", "Votre idée"], ["Your concept", "Votre concept"]);
     },
   },
   team: {
@@ -85,8 +86,8 @@ export interface ConceptGroup {
 const clientOrder = (): [ConceptStatus, string][] => [
   ["review", t("Waiting for your approval", "En attente de votre validation")],
   ["changes", t("You asked for changes", "Vous avez demandé des changements")],
-  ["approved", t("Approved", "Validées")],
-  ["idea", t("Your ideas", "Vos idées")],
+  ["approved", tw(["Approved", "Validées"], ["Approved", "Validés"])],
+  ["idea", tw(["Your ideas", "Vos idées"], ["Your concepts", "Vos concepts"])],
 ];
 
 const TEAM_ORDER: [ConceptStatus, string][] = [

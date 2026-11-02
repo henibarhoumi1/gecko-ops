@@ -3,6 +3,7 @@ import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import { TextArea } from "@/components/TextArea";
 import { friendlyError } from "@/lib/errors";
+import { canApprove, useClientRole } from "@/features/portal/role";
 import type { NoteKind } from "./model";
 import { t } from "@/lib/i18n";
 
@@ -27,6 +28,8 @@ export function ReviewActions({
 }) {
   const [mode, setMode] = useState<Mode>("idle");
   const [error, setError] = useState("");
+  // On the team's side there is no client role; the context's default lets the buttons through.
+  const allowed = canApprove(useClientRole());
 
   async function send(kind: NoteKind, body: string) {
     setError("");
@@ -54,7 +57,15 @@ export function ReviewActions({
   if (mode === "idle")
     return (
       <div className="concept-actions">
-        {canDecide && (
+        {canDecide && !allowed && (
+          <p className="small muted decide-note">
+            {t(
+              "Your owner or an approver on your side signs this off.",
+              "C'est votre responsable ou un valideur de votre équipe qui valide.",
+            )}
+          </p>
+        )}
+        {canDecide && allowed && (
           <>
             <Button onClick={() => setMode("approve")}>{t("Approve", "Valider")}</Button>
             <Button variant="secondary" onClick={() => setMode("changes")}>

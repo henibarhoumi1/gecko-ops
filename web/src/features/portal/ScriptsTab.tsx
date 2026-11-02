@@ -5,22 +5,35 @@ import { hookName, groupScripts, type Script } from "@/features/scripts/model";
 import { ScriptView } from "@/features/scripts/ScriptView";
 import { useClientScriptNote } from "@/features/scripts/scriptsApi";
 import { t } from "@/lib/i18n";
+import { tw } from "@/lib/wording";
 
 export function ScriptsTab({ portal, scripts }: { portal: ClientPortal; scripts: Script[] }) {
   const groups = groupScripts(scripts, "client");
   return (
     <section className="tab-body">
       <p className="lede">
-        {t(
-          "Each script is one reel, written the way we'll film it. Pick the hook you like, comment on any line, then approve. Once you approve, that's what we shoot.",
-          "Chaque script, c'est une vidéo, écrite comme on va la filmer. Choisissez l'accroche qui vous plaît, commentez n'importe quelle ligne, puis validez. Une fois validé, c'est ce qu'on tourne.",
+        {tw(
+          [
+            "Each script is one reel, written the way we'll film it. Pick the hook you like, comment on any line, then approve. Once you approve, that's what we shoot.",
+            "Chaque script, c'est une vidéo, écrite comme on va la filmer. Choisissez l'accroche qui vous plaît, commentez n'importe quelle ligne, puis validez. Une fois validé, c'est ce qu'on tourne.",
+          ],
+          [
+            "Each treatment describes one film: the feeling, the story, the scenes. Comment on any line, then approve. Once you approve, that's the film we make.",
+            "Chaque note d'intention décrit un film : l'émotion, l'histoire, les scènes. Commentez n'importe quelle ligne, puis validez. Une fois validée, c'est le film qu'on tourne.",
+          ],
         )}
       </p>
       {groups.length === 0 && (
         <p className="muted">
-          {t(
-            "Scripts come after you approve the ideas. They'll appear here for you to read and approve.",
-            "Les scripts arrivent après la validation des idées. Ils apparaîtront ici pour que vous les lisiez et les validiez.",
+          {tw(
+            [
+              "Scripts come after you approve the ideas. They'll appear here for you to read and approve.",
+              "Les scripts arrivent après la validation des idées. Ils apparaîtront ici pour que vous les lisiez et les validiez.",
+            ],
+            [
+              "Treatments come after you approve the concepts. They'll appear here for you to read and approve.",
+              "Les notes d'intention arrivent après la validation des concepts. Elles apparaîtront ici pour que vous les lisiez et les validiez.",
+            ],
           )}
         </p>
       )}
@@ -67,14 +80,17 @@ function ClientScript({ portal, script }: { portal: ClientPortal; script: Script
       <ReviewActions
         canDecide={canDecide}
         pending={note.isPending}
-        commentLabel={t("Comment on the whole script", "Commenter tout le script")}
+        commentLabel={tw(
+          ["Comment on the whole script", "Commenter tout le script"],
+          ["Comment on the whole treatment", "Commenter toute la note d'intention"],
+        )}
         approveNote={t(
           `You're approving version ${script.version} of "${script.title}"${
             picked !== null && script.hooks.length > 1 ? ` with ${hookName(picked)}` : ""
-          }. This is what we'll shoot.`,
+          }. ${tw(["This is what we'll shoot.", ""], ["This is the film we'll make.", ""])}`,
           `Vous validez la version ${script.version} de « ${script.title} »${
             picked !== null && script.hooks.length > 1 ? `, avec ${hookName(picked)}` : ""
-          }. C'est ce qu'on va tourner.`,
+          }. ${tw(["", "C'est ce qu'on va tourner."], ["", "C'est le film qu'on va tourner."])}`,
         )}
         onSend={(kind, body) => {
           if (kind === "approve" && script.hooks.length > 1 && picked === null)

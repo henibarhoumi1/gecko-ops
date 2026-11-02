@@ -10,6 +10,7 @@ import { groupConcepts, type Concept } from "@/features/concepts/model";
 import { friendlyError } from "@/lib/errors";
 import { useConceptNote, useDeleteIdea, useSaveIdea } from "./portalApi";
 import { t } from "@/lib/i18n";
+import { tw } from "@/lib/wording";
 
 export function ConceptsTab({ portal, concepts }: { portal: ClientPortal; concepts: Concept[] }) {
   const [adding, setAdding] = useState(false);
@@ -19,23 +20,35 @@ export function ConceptsTab({ portal, concepts }: { portal: ClientPortal; concep
     <section className="tab-body">
       <div className="page-head">
         <p className="lede">
-          {t(
-            "Each idea is one reel or post. Approve the ones you like or tell us what to change, and the approved ones become scripts.",
-            "Chaque idée, c'est une vidéo ou un post. Validez celles qui vous plaisent ou dites-nous quoi changer : les idées validées deviennent des scripts.",
+          {tw(
+            [
+              "Each idea is one reel or post. Approve the ones you like or tell us what to change, and the approved ones become scripts.",
+              "Chaque idée, c'est une vidéo ou un post. Validez celles qui vous plaisent ou dites-nous quoi changer : les idées validées deviennent des scripts.",
+            ],
+            [
+              "Each concept is one film or set of stills. Approve the ones that feel right or tell us what to change. Approved concepts become treatments.",
+              "Chaque concept, c'est un film ou une série de photos. Validez ceux qui vous parlent ou dites-nous quoi changer : les concepts validés deviennent des notes d'intention.",
+            ],
           )}
         </p>
         {!adding && (
           <Button variant="secondary" onClick={() => setAdding(true)}>
-            {t("Add your own idea", "Proposer une idée")}
+            {tw(["Add your own idea", "Proposer une idée"], ["Suggest a concept", "Proposer un concept"])}
           </Button>
         )}
       </div>
       {adding && <IdeaForm portal={portal} onDone={() => setAdding(false)} />}
       {groups.length === 0 && !adding && (
         <p className="muted">
-          {t(
-            "Gecko is working on your ideas. They'll appear here for you to read and approve.",
-            "Gecko travaille sur vos idées. Elles apparaîtront ici pour que vous les lisiez et les validiez.",
+          {tw(
+            [
+              "Gecko is working on your ideas. They'll appear here for you to read and approve.",
+              "Gecko travaille sur vos idées. Elles apparaîtront ici pour que vous les lisiez et les validiez.",
+            ],
+            [
+              "Gecko is shaping your concepts. They'll appear here for you to read and approve.",
+              "Gecko prépare vos concepts. Ils apparaîtront ici pour que vous les lisiez et les validiez.",
+            ],
           )}
         </p>
       )}
@@ -69,7 +82,7 @@ function ClientActions({ portal, concept }: { portal: ClientPortal; concept: Con
       pending={note.isPending}
       approveNote={t(
         `You're approving version ${concept.version} of "${concept.title}". Gecko goes ahead with it as written.`,
-        `Vous validez la version ${concept.version} de « ${concept.title} ». Gecko avance avec, telle qu'elle est écrite.`,
+        `Vous validez la version ${concept.version} de « ${concept.title} ». Gecko avance avec, tel quel.`,
       )}
       onSend={(kind, body) =>
         note.mutateAsync({ conceptId: concept.id, kind, body, version: concept.version })
@@ -119,7 +132,12 @@ function IdeaForm({
     const form = new FormData(event.currentTarget);
     const text = (name: string) => String(form.get(name) ?? "").trim();
     if (!text("title"))
-      return setError(t("Give your idea a short title.", "Donnez un titre court à votre idée."));
+      return setError(
+        tw(
+          ["Give your idea a short title.", "Donnez un titre court à votre idée."],
+          ["Give your concept a short title.", "Donnez un titre court à votre concept."],
+        ),
+      );
     try {
       await save.mutateAsync({
         id: idea?.id ?? null,
@@ -135,7 +153,11 @@ function IdeaForm({
 
   return (
     <form className="concept-form card" onSubmit={onSubmit}>
-      <h3>{idea ? t("Edit your idea", "Modifier votre idée") : t("Your idea", "Votre idée")}</h3>
+      <h3>
+        {idea
+          ? tw(["Edit your idea", "Modifier votre idée"], ["Edit your concept", "Modifier votre concept"])
+          : tw(["Your idea", "Votre idée"], ["Your concept", "Votre concept"])}
+      </h3>
       <Field
         label={t("Title", "Titre")}
         name="title"
@@ -144,14 +166,20 @@ function IdeaForm({
         autoFocus
       />
       <TextArea
-        label={t("The idea", "L'idée")}
+        label={tw(["The idea", "L'idée"], ["The concept", "Le concept"])}
         name="body"
         rows={4}
         defaultValue={idea?.body}
         maxLength={10000}
-        placeholder={t(
-          "Rough is fine: a scene, a line, a trend you saw.",
-          "Brut, c'est très bien : une scène, une phrase, une tendance repérée.",
+        placeholder={tw(
+          [
+            "Rough is fine: a scene, a line, a trend you saw.",
+            "Brut, c'est très bien : une scène, une phrase, une tendance repérée.",
+          ],
+          [
+            "Rough is fine: a mood, a place, a feeling, a reference.",
+            "Brut, c'est très bien : une ambiance, un lieu, une émotion, une référence.",
+          ],
         )}
       />
       <TextArea
@@ -160,7 +188,10 @@ function IdeaForm({
         rows={2}
         defaultValue={idea?.refs}
         maxLength={2000}
-        placeholder={t("Reels or videos you like", "Des vidéos qui vous plaisent")}
+        placeholder={tw(
+          ["Reels or videos you like", "Des vidéos qui vous plaisent"],
+          ["Films, photos or campaigns you like", "Des films, photos ou campagnes qui vous plaisent"],
+        )}
       />
       {error && <Notice tone="error">{error}</Notice>}
       <div className="actions">
