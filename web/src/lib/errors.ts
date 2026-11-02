@@ -3,6 +3,80 @@ import { t } from "./i18n";
 /** What people read when something fails, in English and French. Checked top to bottom; the first match wins. */
 const MESSAGES: [RegExp, string, string][] = [
   [
+    /taxes_unchecked/,
+    "No invoice goes out until the accountant has checked the tax lines.",
+    "Aucune facture ne part avant que le comptable ait vérifié les lignes de taxes.",
+  ],
+  [
+    /invoice_settings_missing|invalid_invoice_settings/,
+    "Check Gecko's invoice details: the legal name, how to pay and the tax lines.",
+    "Vérifiez les coordonnées de Gecko : raison sociale, règlement et lignes de taxes.",
+  ],
+  [
+    /invoice_needs_price/,
+    "Set the price in Overview first.",
+    "Indiquez d'abord le prix dans l'aperçu.",
+  ],
+  [
+    /invoice_exists/,
+    "This client already has that invoice. Cancel it first to make a new one.",
+    "Ce client a déjà cette facture. Annulez-la d'abord pour en refaire une.",
+  ],
+  [
+    /invoice_locked/,
+    "A sent invoice can't be changed. Cancel it and make a new one.",
+    "Une facture envoyée ne se modifie plus. Annulez-la et refaites-en une.",
+  ],
+  [
+    /invoice_cost_taken/,
+    "That cost is already on another invoice.",
+    "Ce coût figure déjà sur une autre facture.",
+  ],
+  [
+    /invoice_negative/,
+    "An invoice can't total below zero.",
+    "Une facture ne peut pas être négative.",
+  ],
+  [
+    /invoice_empty/,
+    "This invoice has nothing to bill yet.",
+    "Cette facture ne contient rien à facturer.",
+  ],
+  [
+    /invoice_needs_client_name/,
+    "Add who the invoice is billed to.",
+    "Indiquez à qui la facture est adressée.",
+  ],
+  [/invoice_needs_reason/, "Say why it's cancelled.", "Indiquez pourquoi elle est annulée."],
+  [
+    /invoice_paid/,
+    "It's marked paid. Mark it unpaid first if that was a mistake.",
+    "Elle est marquée réglée. Marquez-la non réglée d'abord si c'était une erreur.",
+  ],
+  [
+    /invoice_not_sent|invoice_not_paid/,
+    "Refresh the page: this invoice has changed.",
+    "Rechargez la page : cette facture a changé.",
+  ],
+  [/invalid_payment/, "Check the payment date.", "Vérifiez la date du paiement."],
+  [
+    /invalid_invoice/,
+    "Check the lines and dates on the invoice.",
+    "Vérifiez les lignes et les dates de la facture.",
+  ],
+  [/too_many_invoices/, "This client has too many invoices.", "Ce client a trop de factures."],
+  [
+    /money_only/,
+    "Invoices are for the owner and finance people.",
+    "Les factures sont réservées au responsable et aux finances.",
+  ],
+  [/founder_only/, "Only the founder can change this.", "Seul le fondateur peut modifier ceci."],
+  [
+    /invoice_not_found/,
+    "That invoice isn't there anymore. Refresh the page.",
+    "Cette facture n'est plus là. Rechargez la page.",
+  ],
+  [
     /invalid login credentials/i,
     "That email and password don't match.",
     "Cet e-mail et ce mot de passe ne correspondent pas.",
