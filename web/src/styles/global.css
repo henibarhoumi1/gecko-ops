@@ -185,6 +185,16 @@ a {
 .field {
   display: grid;
   gap: 6px;
+  min-width: 0;
+}
+
+/* A field never pushes past its column: inputs shrink with the layout instead of keeping the browser's own width. */
+.field input:not([type="checkbox"], [type="radio"]),
+.field select,
+.field textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .field label {
@@ -227,6 +237,7 @@ a {
   border-radius: 999px;
   padding: 12px 20px;
   border: 1px solid var(--ink);
+  white-space: nowrap;
   transition:
     background 200ms var(--ease),
     color 200ms var(--ease),
@@ -502,6 +513,7 @@ h2 {
 .ob-f select,
 .ob-asset select,
 .invite-role select,
+.money-new select,
 select.role-select {
   -webkit-appearance: none;
   appearance: none;
@@ -529,6 +541,7 @@ input[type="radio"] {
 
 .actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 10px;
 }
@@ -1872,11 +1885,33 @@ a.btn {
 }
 
 .invite {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
   gap: 10px;
-  align-items: end;
-  max-width: 560px;
+  max-width: 780px;
+}
+
+/* Email takes the room, the role dropdown stays a dropdown's width, the button keeps its words on one line.
+   Anything that doesn't fit drops to the next line instead of sliding under its neighbour. */
+.invite > .field {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.invite > .field:has(select) {
+  flex: 0 1 220px;
+}
+
+.invite select,
+.invite input {
+  width: 100%;
+  min-width: 0;
+}
+
+.invite > .btn {
+  flex: none;
+  white-space: nowrap;
 }
 
 .invite-link {
@@ -1902,10 +1937,6 @@ a.btn {
 }
 
 @media (max-width: 560px) {
-  .invite {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
   .account {
     flex-direction: column;
     align-items: flex-start;
@@ -1920,11 +1951,6 @@ a.btn {
 .team-invite {
   display: grid;
   gap: 14px;
-}
-
-.invite.invite-role {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 230px) auto;
-  max-width: 780px;
 }
 
 .invite-role select {
@@ -1952,12 +1978,6 @@ a.btn {
   width: 100%;
   padding: 0;
   margin-bottom: 2px;
-}
-
-@media (max-width: 560px) {
-  .invite.invite-role {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
 
 /* ---------- Videos ---------- */
@@ -3833,19 +3853,6 @@ a.piece:hover {
   color: rgba(255, 255, 255, 0.7);
 }
 
-.invite-teammate .invite {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 180px auto;
-  align-items: end;
-  gap: 10px;
-}
-
-@media (max-width: 620px) {
-  .invite-teammate .invite {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
 .portal-head.cine {
   margin-bottom: 28px;
 }
@@ -5095,7 +5102,7 @@ a.piece:hover {
 
 .gecko-details summary {
   cursor: pointer;
-  list-style-position: outside;
+  list-style-position: inside;
 }
 
 .gecko-details form {
@@ -5987,4 +5994,8 @@ a.piece:hover {
 
 .pay .pill {
   white-space: nowrap;
+}
+
+.money-new select {
+  padding-right: 34px;
 }
