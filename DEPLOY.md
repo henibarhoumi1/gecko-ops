@@ -41,11 +41,23 @@ The code is in the app but switched off: nobody sees a Videos tab, and the deplo
 
 The team then opens a client > Videos > New video, uploads the cut (up to 200 MB, a 1080p export is plenty), shares it, and uploads the clean final whenever it's ready, at any size. Replacing a cut or a final deletes the old file; deleting a video deletes both.
 
+## Backups and staying awake (free plan)
+Free Supabase pauses a project after a week with no use and keeps no backups we can restore. Two things cover that:
+
+- **Staying awake.** The app's worker pings the database once a day (03:17 UTC). Nothing to set up: it starts with the next deploy. To check it: Workers & Pages > `gecko-app` > Settings > Trigger events shows the daily schedule, and Logs shows each run.
+- **Weekly backup.** A GitHub Action copies the database every Monday, encrypts it and keeps it for 90 days. It skips until you add two repository secrets (GitHub > `gecko-ops` > Settings > Secrets and variables > Actions > New repository secret):
+  1. `SUPABASE_DB_URL`: Supabase > Connect (top bar) > Session pooler > copy the URI and put your database password in place of `[YOUR-PASSWORD]`. Use the Session pooler, not the Direct connection: GitHub's machines can't reach the direct one.
+  2. `BACKUP_PASSPHRASE`: a long random passphrase (40 characters or more). Save it in your password manager first: without it the backups can't be opened, and the repository is public, so it is what keeps them private.
+
+  Then Actions > backup > Run workflow, once, to check it goes green. Each run's file is under the run's Artifacts.
+
+  To restore a backup into a project: download the artifact, then `gpg --decrypt gecko-db-DATE.dump.gpg > gecko-db.dump` (it asks for the passphrase) and `pg_restore --no-owner --no-privileges --dbname "<connection string>" gecko-db.dump`. Try it on a throwaway project first, never straight onto the live one.
+
 ## Changing the database later
 New changes come as a new file in `supabase/migrations/`. Run that one file in the SQL Editor of the live project, and regenerate `supabase/setup.sql` (all migrations in order) so a brand-new project still needs only one file. `sh supabase/tests/local/run.sh` runs the database security tests on a throwaway PostgreSQL first.
 
 ## Good to know
-- Free Supabase projects pause after a week with no use, and have no backups. Opening the dashboard wakes them. Supabase Pro ($25 a month) removes the pause and adds daily backups.
+- Free Supabase projects pause after a week with no use and have no backups; the daily ping and the weekly backup above cover both. Supabase Pro ($25 a month) removes the pause and adds daily backups, and makes the weekly copy a spare.
 - Video costs at Gecko's size: R2 is free up to 10 GB, then about $0.015 per GB a month (200 GB is about $3). Stream is $5 per 1,000 stored minutes and $1 per 1,000 minutes watched; a month of 15 reels for 10 clients, two cuts each, stays inside the first $5.
 - Each press of Watch asks Cloudflare for one signed link (kept for an hour). Cloudflare limits that to about 1,000 a day, far above what 10 clients use.
 - The database enforces every role (founder, client lead, editor, production, client): what a role can't see is never sent to its browser.

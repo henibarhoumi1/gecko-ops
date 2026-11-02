@@ -138,3 +138,26 @@ export function streamHost(previewUrl: string | undefined): string | null {
     return null;
   }
 }
+
+/**
+ * The daily keep-alive. A free Supabase project pauses after a week with no use, and clients would then see an
+ * error. Once a day the worker makes one harmless read with the public key: it asks for an invite with a code
+ * that can never match, so the database answers null and nothing is read or changed.
+ */
+export function keepAliveRequest(
+  supabaseUrl: string,
+  anonKey: string,
+): { url: string; init: RequestInit } {
+  return {
+    url: `${supabaseUrl.replace(/\/+$/, "")}/rest/v1/rpc/peek_client_invite`,
+    init: {
+      method: "POST",
+      headers: {
+        apikey: anonKey,
+        authorization: `Bearer ${anonKey}`,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({ p_token: "keep-alive" }),
+    },
+  };
+}
