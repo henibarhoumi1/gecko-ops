@@ -20,6 +20,7 @@ import { TeamConcepts } from "./TeamConcepts";
 import { TeamScripts } from "./TeamScripts";
 import { TeamShared } from "./TeamShared";
 import { TeamProduction } from "./TeamProduction";
+import { TeamMoney } from "./TeamMoney";
 import { TeamReview } from "./TeamReview";
 
 /** One client's portal, from the team's side. */
@@ -47,6 +48,7 @@ export function ClientPage() {
         ["scripts", "Scripts"],
         ["production", "Production"],
         ["review", "Review"],
+        ["money", "Money"],
         ...videos,
         ["whiteboard", "Whiteboard"],
         ["shared", "Shared"],
@@ -79,7 +81,7 @@ export function ClientPage() {
           <NavLink
             key={path}
             to={`/clients/${clientId}${path ? `/${path}` : ""}`}
-            end={path !== "whiteboard" && path !== "review"}
+            end={path !== "whiteboard" && path !== "review" && path !== "money"}
             className="portal-tab"
           >
             {label}
@@ -112,6 +114,9 @@ export function ClientPage() {
               }
             />
             <Route path="production" element={<TeamProduction clientId={clientId} />} />
+            {["money", "money/:invoiceId"].map((path) => (
+              <Route key={path} path={path} element={<TeamMoney clientId={clientId} />} />
+            ))}
             <Route
               path="logins"
               element={<LoginsPanel clientId={clientId} brand={client.brand} />}

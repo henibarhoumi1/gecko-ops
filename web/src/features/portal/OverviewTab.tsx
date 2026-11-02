@@ -6,15 +6,17 @@ import { percentFilled, type Answers } from "@/features/onboarding/progress";
 import type { SheetTarget } from "@/features/onboarding/useOnboardingSheet";
 import { requireSupabase } from "@/lib/supabase";
 import { dt, paymentLines, stateLabel, type PortalData } from "./portalApi";
-import { t } from "@/lib/i18n";
+import { getLang, t } from "@/lib/i18n";
 import { tw, words } from "@/lib/wording";
 import { PortalHeader, Progress, StageTracker } from "./HomeParts";
 import { currentStage } from "./stage";
-import { useClientRole, type ClientRole } from "./role";
+import { seesMoney, useClientRole, type ClientRole } from "./role";
 import type { ProductionOption } from "@/features/production/model";
 import { useMyProduction } from "@/features/production/productionApi";
 import type { CutsPage } from "@/features/review/model";
 import { useMyCuts } from "@/features/review/reviewApi";
+import { useMyInvoices } from "@/features/invoices/invoicesApi";
+import { money, unpaid, type Invoice } from "@/features/invoices/model";
 
 function useOnboardingPercent(target: SheetTarget) {
   return useQuery({
@@ -45,8 +47,39 @@ function waitingOnYou(
   production: ProductionOption[],
   role: ClientRole,
   cuts: CutsPage | undefined,
+  invoices: Invoice[],
 ): Todo[] {
   const todo: Todo[] = [];
+  // An invoice past its due date comes first: it's the one thing that can hold up the finals.
+  const late = invoices.filter((i) => i.status === "sent" && i.overdue);
+  const toPay = unpaid(invoices);
+  if (toPay.length > 0)
+    todo.push({
+      to: "/money",
+      title: late.length
+        ? t(
+            late.length === 1 ? "An invoice is past due" : `${late.length} invoices are past due`,
+            late.length === 1
+              ? "Une facture est en retard"
+              : `${late.length} factures sont en retard`,
+          )
+        : t(
+            toPay.length === 1 ? "An invoice is waiting" : `${toPay.length} invoices are waiting`,
+            toPay.length === 1
+              ? "Une facture vous attend"
+              : `${toPay.length} factures vous attendent`,
+          ),
+      detail: t(
+        `${money(
+          toPay.reduce((s, i) => s + Number(i.total), 0),
+          getLang(),
+        )} to pay. Open it to download the PDF.`,
+        `${money(
+          toPay.reduce((s, i) => s + Number(i.total), 0),
+          getLang(),
+        )} à régler. Ouvrez-la pour télécharger le PDF.`,
+      ),
+    });
   const toWatch = cuts?.cuts.filter((c) => c.status === "review").length ?? 0;
   if (toWatch > 0)
     todo.push({
@@ -194,7 +227,8 @@ function waitingOnYou(
       ),
     });
   const o = data.overview;
-  if (o?.price != null) {
+  // Once Gecko sends invoices, they say what's due; the plan's halves would repeat them with other numbers.
+  if (o?.price != null && invoices.length === 0) {
     const half = dt(Math.round(o.price * 500) / 1000);
     if (o.depositStatus === "due")
       todo.push({
@@ -223,6 +257,7 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
   const role = useClientRole();
   const production = useMyProduction(target);
   const cuts = useMyCuts(target);
+  const invoices = useMyInvoices(target, seesMoney(role));
   const todo = waitingOnYou(
     data,
     onboarding.data?.sentAt ?? null,
@@ -230,6 +265,7 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
     production.data?.options ?? [],
     role,
     cuts.data,
+    invoices.data ?? [],
   );
   const scriptsReworked = data.scripts.filter((s) => s.status === "changes" && !byClient(s)).length;
   const doing = [
@@ -387,6 +423,12 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
                 {t(
                   "Final files are delivered once the balance is paid.",
                   "Les fichiers finaux sont livrés une fois le solde payé.",
+                )}
+                {(invoices.data?.length ?? 0) > 0 && (
+                  <>
+                    {" "}
+                    <Link to="/money">{t("See your invoices", "Voir vos factures")}</Link>
+                  </>
                 )}
               </p>
             </div>

@@ -20,10 +20,13 @@ import { SharedTab } from "./SharedTab";
 import { useMyPortal, useMyVideos } from "./portalApi";
 import { VideosTab } from "./VideosTab";
 import { DeliveryTab, ReviewTab } from "./ReviewTab";
+import { MoneyTab } from "./MoneyTab";
+import { useMyInvoices } from "@/features/invoices/invoicesApi";
+import { unpaid } from "@/features/invoices/model";
 import { useMyCuts } from "@/features/review/reviewApi";
 import { t } from "@/lib/i18n";
 import { setTemplate, tw, words } from "@/lib/wording";
-import { asRole, roleName, RoleContext } from "./role";
+import { asRole, roleName, RoleContext, seesMoney } from "./role";
 import { TeamTab } from "./TeamTab";
 import { ProductionTab } from "./ProductionTab";
 import { kindName } from "@/features/production/model";
@@ -52,6 +55,7 @@ function navGroups(badges: {
   talent: number;
   location: number;
   prop: number;
+  money: number | null;
 }): NavGroup[] {
   const groups: NavGroup[] = [
     {
@@ -93,11 +97,15 @@ function navGroups(badges: {
       ...(videosOn ? [{ to: "/videos", label: t("Videos", "Vidéos") }] : []),
     ],
   });
+  // Money only for the people who see it; then the group gets a broader name.
+  const more: NavItem[] = [{ to: "/team", label: t("Team", "Équipe") }];
+  if (badges.money !== null)
+    more.push({ to: "/money", label: t("Invoices", "Factures"), badge: badges.money });
   groups.push({
     id: "team",
-    label: t("Team", "Équipe"),
+    label: more.length > 1 ? t("More", "Plus") : t("Team", "Équipe"),
     to: "/team",
-    items: [{ to: "/team", label: t("Team", "Équipe") }],
+    items: more,
   });
   return groups;
 }
@@ -128,6 +136,7 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
     page.data?.scripts.filter((s) => s.status === "review" && !byClient(s)).length ?? 0;
   const myCuts = useMyCuts(target);
   const cuts = myCuts.data?.cuts.filter((c) => c.status === "review").length ?? 0;
+  const invoices = useMyInvoices(target, seesMoney(role));
 
   const brand = page.data?.brand ?? portal.brand;
   // Only people who can say yes to a cost get a badge for it.
@@ -143,6 +152,7 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
     talent: proposed("talent"),
     location: proposed("location"),
     prop: proposed("prop"),
+    money: seesMoney(role) ? unpaid(invoices.data ?? []).length : null,
   });
   const group = groups.find((g) => inGroup(g, path)) ?? groups[0];
   const me = page.data?.me ?? email;
@@ -277,6 +287,9 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
                 <Route key={p} path={p} element={<ReviewTab portal={portal} />} />
               ))}
               <Route path="delivery" element={<DeliveryTab portal={portal} />} />
+              {["money", "money/:invoiceId"].map((p) => (
+                <Route key={p} path={p} element={<MoneyTab portal={portal} />} />
+              ))}
               {videosOn && (
                 <Route
                   path="videos"
