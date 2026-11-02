@@ -259,8 +259,15 @@ create trigger concept_notes_role_guard before insert on public.concept_notes
   for each row execute function public.client_decision_guard();
 create trigger script_notes_role_guard before insert on public.script_notes
   for each row execute function public.client_decision_guard();
-create trigger video_notes_role_guard before insert on public.video_notes
-  for each row execute function public.client_decision_guard();
+-- Videos may not be set up on every database yet (they are switched off live).
+do $$
+begin
+  if to_regclass('public.video_notes') is not null then
+    create trigger video_notes_role_guard before insert on public.video_notes
+      for each row execute function public.client_decision_guard();
+  end if;
+end
+$$;
 
 -- ---------- the portal read ----------
 

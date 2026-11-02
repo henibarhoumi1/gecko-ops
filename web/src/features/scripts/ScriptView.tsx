@@ -16,7 +16,7 @@ import {
   type ScriptNote,
 } from "./model";
 import { t } from "@/lib/i18n";
-import { tw, words } from "@/lib/wording";
+import { isCinematic, tw, words } from "@/lib/wording";
 
 type CommentFn = (line: string | null, body: string) => Promise<unknown>;
 
@@ -49,7 +49,7 @@ export function ScriptView({
   return (
     <article className={`concept script concept-${script.status}`}>
       <header className="concept-head">
-        <span className="tag">{STYLE_LABEL[script.style]}</span>
+        {!isCinematic() && <span className="tag">{STYLE_LABEL[script.style]}</span>}
         <span className={`status status-${script.status}`}>
           {SCRIPT_STATUS[reader][script.status]}
         </span>
@@ -96,7 +96,10 @@ export function ScriptView({
                     ["Pick the hook you like best", "Choisissez l'accroche que vous préférez"],
                     ["Pick the opening you like best", "Choisissez l'ouverture que vous préférez"],
                   )
-                : tw(["Hook options", "Accroches possibles"], ["Opening options", "Ouvertures possibles"])
+                : tw(
+                    ["Hook options", "Accroches possibles"],
+                    ["Opening options", "Ouvertures possibles"],
+                  )
               : tw(["The hook", "L'accroche"], ["The opening shot", "Le plan d'ouverture"])}
           </h4>
           <div className="hooks" role={onPick ? "radiogroup" : undefined}>
@@ -165,7 +168,8 @@ export function ScriptView({
       {script.cta && (
         <Line id="cta" changed={changed.has("cta")} notes={byLine("cta")} onComment={onComment}>
           <p className="script-cta" dir="auto">
-            <strong>{tw(["Ends on", "Finit sur"], ["Final frame", "Dernier plan"])}</strong> {script.cta}
+            <strong>{tw(["Ends on", "Finit sur"], ["Final frame", "Dernier plan"])}</strong>{" "}
+            {script.cta}
           </p>
         </Line>
       )}

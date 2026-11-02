@@ -40,7 +40,10 @@ export function LookPanel({ clientId, brand }: { clientId: string; brand: string
       </div>
       <div className="template-pick" role="radiogroup" aria-label="Portal template">
         {TEMPLATES.map((option) => (
-          <label key={option.id} className={`template-option${template === option.id ? " on" : ""}`}>
+          <label
+            key={option.id}
+            className={`template-option${template === option.id ? " on" : ""}`}
+          >
             <input
               type="radio"
               name={`template-${clientId}`}

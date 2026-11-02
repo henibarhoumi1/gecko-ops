@@ -48,8 +48,8 @@ export function LoginsPanel({ clientId, brand }: { clientId: string; brand: stri
     <section className="tab-body">
       <p className="lede">
         Invite the people at {brand} who approve the work. Each link works once, for that email
-        only, for 14 days. The first person becomes the owner and can invite up to 4 more from
-        their side.
+        only, for 14 days. The first person becomes the owner and can invite up to 4 more from their
+        side.
       </p>
       <form className="invite" onSubmit={onInvite}>
         <Field label="Client's email" name="email" type="email" required maxLength={200} />

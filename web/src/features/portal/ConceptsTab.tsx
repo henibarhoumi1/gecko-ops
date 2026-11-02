@@ -33,7 +33,10 @@ export function ConceptsTab({ portal, concepts }: { portal: ClientPortal; concep
         </p>
         {!adding && (
           <Button variant="secondary" onClick={() => setAdding(true)}>
-            {tw(["Add your own idea", "Proposer une idée"], ["Suggest a concept", "Proposer un concept"])}
+            {tw(
+              ["Add your own idea", "Proposer une idée"],
+              ["Suggest a concept", "Proposer un concept"],
+            )}
           </Button>
         )}
       </div>
@@ -155,7 +158,10 @@ function IdeaForm({
     <form className="concept-form card" onSubmit={onSubmit}>
       <h3>
         {idea
-          ? tw(["Edit your idea", "Modifier votre idée"], ["Edit your concept", "Modifier votre concept"])
+          ? tw(
+              ["Edit your idea", "Modifier votre idée"],
+              ["Edit your concept", "Modifier votre concept"],
+            )
           : tw(["Your idea", "Votre idée"], ["Your concept", "Votre concept"])}
       </h3>
       <Field
@@ -190,7 +196,10 @@ function IdeaForm({
         maxLength={2000}
         placeholder={tw(
           ["Reels or videos you like", "Des vidéos qui vous plaisent"],
-          ["Films, photos or campaigns you like", "Des films, photos ou campagnes qui vous plaisent"],
+          [
+            "Films, photos or campaigns you like",
+            "Des films, photos ou campagnes qui vous plaisent",
+          ],
         )}
       />
       {error && <Notice tone="error">{error}</Notice>}
