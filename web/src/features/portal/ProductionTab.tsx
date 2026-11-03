@@ -370,7 +370,7 @@ function CostTable({ options }: { options: ProductionOption[] }) {
   const lines = options.filter((o) => isCommitted(o) && o.boughtBy === "gecko" && o.cost != null);
   if (lines.length === 0)
     return (
-      <p className="muted">
+      <p className="muted empty-state">
         {t(
           "Nothing approved yet. Each talent, place or prop you approve shows up here with its cost.",
           "Rien de validé pour l'instant. Chaque talent, lieu ou accessoire validé s'affiche ici avec son coût.",

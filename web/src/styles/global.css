@@ -463,6 +463,18 @@ a {
   margin-top: 16px;
 }
 
+/* Empty states in the portal: a calm card that says what comes next, instead of a loose grey line */
+.empty-state {
+  margin: 8px 0 0;
+  max-width: 62ch;
+  padding: 20px 22px;
+  border: 1px dashed rgba(0, 0, 0, 0.28);
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, 0.015);
+  color: var(--ink-2);
+  line-height: 1.5;
+}
+
 /* View as client: a strip above the portal that says the team is looking, read-only */
 .preview-banner {
   position: sticky;
