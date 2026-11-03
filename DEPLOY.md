@@ -77,7 +77,9 @@ In the `gecko-testing` Supabase project, Authentication > URL Configuration has 
 The testing worker pings its database daily, so the free testing project doesn't pause.
 
 ## Changing the database later
-New changes come as a new file in `supabase/migrations/`. Run that one file in the SQL Editor of the live project, and regenerate `supabase/setup.sql` (all migrations in order) so a brand-new project still needs only one file. `sh supabase/tests/local/run.sh` runs the database security tests on a throwaway PostgreSQL first.
+Every change is a new file in `supabase/migrations/`; files that are already there are never edited. **Nothing is pasted into the live project's SQL Editor any more**: changes reach production through the migration pipeline, once it is switched on (technical specification, A1–A3).
+
+Every pull request that touches `supabase/` runs the `db` checks on throwaway databases: all migrations apply and all pgTAP security tests pass; the previous version's tests still pass against the new schema; no existing migration is edited and no new one drops tables, columns or data unless the pull request has the `contract-step` label; and `supabase/setup.sql` is up to date. Regenerate it with `sh supabase/tools/gen-setup.sh` (a reference copy of the whole schema, not something to paste). `sh supabase/tests/local/run.sh` runs the tests locally.
 
 ## Good to know
 - Free Supabase projects pause after a week with no use and have no backups; the daily ping and the weekly backup above cover both. Supabase Pro ($25 a month) removes the pause and adds daily backups, and makes the weekly copy a spare.
