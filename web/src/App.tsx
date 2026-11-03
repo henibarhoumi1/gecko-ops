@@ -3,6 +3,7 @@ import { useRef, useState, type ReactElement } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import type { ClientPortal } from "@/features/auth/account";
+import { AlertsPage } from "@/features/alerts/AlertsPage";
 import { AuthProvider, useAuth } from "@/features/auth/AuthProvider";
 import { ForgotPage } from "@/features/auth/ForgotPage";
 import { InvitePage } from "@/features/auth/InvitePage";
@@ -32,6 +33,7 @@ import {
   setPreviewRole,
   type PreviewRole,
 } from "@/lib/preview";
+import { setErrorContext } from "@/lib/reportError";
 import { saveReturnTo, takeReturnTo } from "@/lib/returnTo";
 import { supabase } from "@/lib/supabase";
 
@@ -49,6 +51,7 @@ const SCREENS: Record<string, () => ReactElement> = {
     </Routes>
   ),
   team: () => <TeamPage />,
+  alerts: () => <AlertsPage />,
 };
 
 export function App() {
@@ -137,6 +140,7 @@ function Home() {
       return <Navigate to={returnTo} replace />;
   }
   if (account.kind === "client") return <ClientHome portals={account.portals} email={email} />;
+  setErrorContext({ workspaceId: account.workspace.id, clientId: null });
   const items = navFor(account.workspace.role).filter((item) => SCREENS[item.path]);
   const home = `/${items[0]?.path ?? "team"}`;
   return (
@@ -212,6 +216,7 @@ function ClientHome({ portals, email }: { portals: ClientPortal[]; email: string
     portalKey(pickPortal(portals, readRememberedPortal())),
   );
   const portal = pickPortal(portals, chosen);
+  setErrorContext({ workspaceId: portal.workspaceId, clientId: portal.clientId });
   return (
     <PortalPage
       key={portalKey(portal)}

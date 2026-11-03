@@ -1,0 +1,69 @@
+name: client-health
+
+# Every hour: did anyone hit a problem in the app? If so, this run fails, and GitHub emails Heni about the
+# failed run, so he hears within the hour. The details (which client, which page, the error) are only in
+# the team app, under Alerts: this repository is public, so the run prints counts only, never client
+# names or error text.
+#
+# The last line of the log, starting with HEALTH, gives the counts for the last hour and the last 24
+# hours, for the morning summary.
+
+on:
+  schedule:
+    - cron: "23 * * * *" # every hour at :23 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: client-health
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+    steps:
+      - name: Count problems and client actions
+        run: |
+          set -euo pipefail
+          if [ -z "$DB_URL" ]; then echo "::notice::SUPABASE_DB_URL is not set; nothing checked."; exit 0; fi
+          q() { psql "$DB_URL" -X -A -t -v ON_ERROR_STOP=1 -c "set default_transaction_read_only = on; $1" | tail -1; }
+          if [ "$(q "select to_regclass('public.client_errors') is not null")" != "t" ]; then
+            echo "::notice::Alerts are not in the live database yet."; exit 0
+          fi
+          counts=$(q "
+            select count(*) filter (where created_at > now() - interval '65 minutes') || ' ' ||
+                   count(*) filter (where created_at > now() - interval '65 minutes' and from_client) || ' ' ||
+                   count(*) filter (where created_at > now() - interval '24 hours') || ' ' ||
+                   count(*) filter (where created_at > now() - interval '24 hours' and from_client) || ' ' ||
+                   count(*) filter (where seen_at is null and workspace_id is not null)
+            from public.client_errors")
+          actions=$(q "
+            select count(*) filter (where kind = 'approve') || ' ' ||
+                   count(*) filter (where kind = 'changes') || ' ' ||
+                   count(*) filter (where kind not in ('approve', 'changes'))
+            from (
+              select kind from public.concept_notes where from_client and created_at > now() - interval '24 hours'
+              union all select kind from public.script_notes where from_client and created_at > now() - interval '24 hours'
+              union all select kind from public.cut_notes where from_client and created_at > now() - interval '24 hours'
+              union all select kind from public.production_notes where from_client and created_at > now() - interval '24 hours'
+            ) a")
+          set -- $counts $actions
+          echo "HEALTH errors_1h=$1 client_errors_1h=$2 errors_24h=$3 client_errors_24h=$4 unread=$5 approvals_24h=$6 changes_24h=$7 comments_24h=$8"
+          {
+            echo "| | last hour | last 24 hours |"
+            echo "|---|---|---|"
+            echo "| Problems (all) | $1 | $3 |"
+            echo "| Problems hit by a client | $2 | $4 |"
+            echo ""
+            echo "Client actions in the last 24 hours: $6 approvals, $7 change requests, $8 comments. Unread problems: $5."
+            echo "Details are in the team app, under Alerts."
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$1" -gt 0 ]; then
+            echo "::error::$1 new problem(s) in the app in the last hour ($2 hit by a client). Open Alerts in the team app."
+            exit 1
+          fi
