@@ -6154,3 +6154,19 @@ a.piece:hover {
   color: var(--ink-2);
   overflow-wrap: anywhere;
 }
+.site-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+  margin: 12px 0 0;
+}
+.site-stats div {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.site-stats dd {
+  margin: 4px 0 0;
+  font-size: 1.6em;
+  font-weight: 600;
+}
