@@ -147,8 +147,51 @@ function inGroup(group: NavGroup, path: string): boolean {
 
 const Badge = ({ n }: { n?: number }) => (n ? <span className="badge">{n}</span> : null);
 
+/** For someone who works with Gecko on more than one brand: pick which one this portal shows. */
+function BrandSwitch({
+  portals,
+  current,
+  onSwitch,
+}: {
+  portals: ClientPortal[];
+  current: ClientPortal;
+  onSwitch?: (next: ClientPortal) => void;
+}) {
+  if (portals.length < 2 || !onSwitch) return null;
+  const keyOf = (p: ClientPortal) => `${p.workspaceId}/${p.clientId}`;
+  return (
+    <label className="brand-switch">
+      <span className="muted">{t("Brand", "Marque")}</span>
+      <select
+        value={keyOf(current)}
+        onChange={(event) => {
+          const next = portals.find((p) => keyOf(p) === event.target.value);
+          if (next) onSwitch(next);
+        }}
+      >
+        {portals.map((p) => (
+          <option key={keyOf(p)} value={keyOf(p)}>
+            {p.brand}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
 /** What a client sees: their campaign, by stage, in the words of their template. Nothing else. */
-export function PortalPage({ portal, email }: { portal: ClientPortal; email: string }) {
+export function PortalPage({
+  portal,
+  email,
+  portals = [portal],
+  onSwitch,
+}: {
+  portal: ClientPortal;
+  email: string;
+  /** Every brand this person belongs to; with more than one, the portal shows a switcher. */
+  portals?: ClientPortal[];
+  onSwitch?: (next: ClientPortal) => void;
+}) {
   const { signOut } = useAuth();
   const path = useLocation().pathname;
   const onBoard = path.startsWith("/board") || path.startsWith("/whiteboard");
@@ -235,6 +278,7 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
           <div className="rail-me small">
             <strong dir="auto">{me}</strong>
             <span className="muted">{roleName(role)}</span>
+            <BrandSwitch portals={portals} current={portal} onSwitch={onSwitch} />
             <LangSwitch />
             <Button variant="link" onClick={() => void signOut()}>
               {t("Sign out", "Se déconnecter")}
@@ -245,6 +289,7 @@ export function PortalPage({ portal, email }: { portal: ClientPortal; email: str
         <header className="portal-bar">
           <Logo />
           <span className="portal-who small">
+            <BrandSwitch portals={portals} current={portal} onSwitch={onSwitch} />
             <LangSwitch />
             <Button variant="link" onClick={() => void signOut()}>
               {t("Sign out", "Se déconnecter")}

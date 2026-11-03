@@ -448,6 +448,37 @@ a {
   color: var(--muted);
 }
 
+/* A screen that crashed: calm message and a reload button, never a blank page */
+.crash {
+  max-width: 520px;
+  margin: 15vh auto 0;
+  padding: 24px max(16px, env(safe-area-inset-left, 0px));
+  text-align: center;
+}
+.crash h1 {
+  font-size: 1.4rem;
+  margin-bottom: 8px;
+}
+.crash .btn {
+  margin-top: 16px;
+}
+
+/* Brand switcher, for a client who works with Gecko on more than one brand */
+.brand-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.brand-switch select {
+  font: inherit;
+  max-width: 180px;
+  padding: 2px 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+}
+
 /* Client portal */
 .portal-bar {
   display: flex;
