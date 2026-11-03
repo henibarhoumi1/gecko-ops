@@ -56,7 +56,7 @@ jobs:
 
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 3.0.0
 
       - name: Confirm this is the testing project
         run: |
@@ -75,7 +75,7 @@ jobs:
             echo "::error::Testing already has a migration history; baseline refused."; exit 1
           fi
           versions=$(ls supabase/migrations/*.sql | xargs -n1 basename | cut -d_ -f1)
-          supabase migration repair --db-url "$TESTING_DB_URL" --status applied $versions
+          supabase migration repair --yes --db-url "$TESTING_DB_URL" --status applied $versions
 
       - name: Apply pending migrations
         if: env.MODE == 'push'
@@ -101,26 +101,26 @@ jobs:
           echo "ok: rolled back, nothing recorded"
 
           echo "== 2. a wrong version recorded, then repaired"
-          supabase migration repair --db-url "$U" --status applied 209901010001
+          supabase migration repair --yes --db-url "$U" --status applied 209901010001
           supabase migration list --db-url "$U" | grep -q 209901010001 || fail "the wrong version did not show"
-          supabase migration repair --db-url "$U" --status reverted 209901010001
+          supabase migration repair --yes --db-url "$U" --status reverted 209901010001
           [ "$(q "select count(*) from supabase_migrations.schema_migrations where version = '209901010001'")" = "0" ] || fail "the wrong version is still recorded"
           echo "ok: wrong version removed from the record, schema untouched"
 
           echo "== 3. a missed version, then repaired"
           last=$(ls supabase/migrations/*.sql | tail -1 | xargs basename | cut -d_ -f1)
-          supabase migration repair --db-url "$U" --status reverted "$last"
+          supabase migration repair --yes --db-url "$U" --status reverted "$last"
           supabase db push --db-url "$U" --dry-run 2>&1 | tee dry.txt
           grep -q "$last" dry.txt || fail "the dry run did not list the missed version"
-          supabase migration repair --db-url "$U" --status applied "$last"
+          supabase migration repair --yes --db-url "$U" --status applied "$last"
           echo "ok: missed version recorded again without running it"
 
           echo "== 4. a lost history, rebuilt from the export"
           q "select version from supabase_migrations.schema_migrations order by version" > export.txt
           [ -s export.txt ] || fail "nothing to export"
-          supabase migration repair --db-url "$U" --status reverted $(cat export.txt)
+          supabase migration repair --yes --db-url "$U" --status reverted $(cat export.txt)
           [ "$(q "select count(*) from supabase_migrations.schema_migrations")" = "0" ] || fail "history not emptied"
-          supabase migration repair --db-url "$U" --status applied $(cat export.txt)
+          supabase migration repair --yes --db-url "$U" --status applied $(cat export.txt)
           [ "$(q "select count(*) from supabase_migrations.schema_migrations")" = "$(wc -l < export.txt | tr -d ' ')" ] || fail "history not rebuilt"
           echo "ok: history rebuilt from the export"
 

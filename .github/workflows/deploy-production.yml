@@ -72,7 +72,7 @@ jobs:
 
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
+          version: 3.0.0
 
       - name: Fresh encrypted backup and history export
         run: |
@@ -113,7 +113,7 @@ jobs:
           done
           echo "recording as applied (not run):$live"
           echo "pending (will run):$PENDING"
-          supabase migration repair --db-url "$DB_URL" --status applied $live
+          supabase migration repair --yes --db-url "$DB_URL" --status applied $live
 
       - name: Show what will run
         run: supabase db push --db-url "$DB_URL" --dry-run --include-all
