@@ -1,6 +1,7 @@
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { Button } from "@/components/Button";
 import { t } from "@/lib/i18n";
+import { reportError } from "@/lib/reportError";
 
 interface Props {
   children: ReactNode;
@@ -20,6 +21,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, info: ErrorInfo) {
     console.error("screen crashed", error, info.componentStack);
+    reportError("crash", error);
   }
 
   render() {

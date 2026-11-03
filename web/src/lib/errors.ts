@@ -507,6 +507,13 @@ const MESSAGES: [RegExp, string, string][] = [
   ],
 ];
 
+let unknownErrorListener: ((error: unknown) => void) | null = null;
+
+/** Called with every error that has no friendly message, so it can be reported (main.tsx). */
+export function onUnknownError(listener: (error: unknown) => void): void {
+  unknownErrorListener = listener;
+}
+
 export function friendlyError(error: unknown): string {
   const text =
     error instanceof Error
@@ -515,5 +522,6 @@ export function friendlyError(error: unknown): string {
         ? String(error.message)
         : String(error);
   for (const [pattern, en, fr] of MESSAGES) if (pattern.test(text)) return t(en, fr);
+  unknownErrorListener?.(error);
   return t("Something went wrong. Try again.", "Un problème est survenu. Réessayez.");
 }

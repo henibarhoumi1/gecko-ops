@@ -6098,3 +6098,59 @@ a.piece:hover {
 .brand-welcome .small {
   margin: 0;
 }
+
+/* Alerts: problems people hit, and what clients did */
+.alerts-section {
+  margin-top: 28px;
+}
+.alerts-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.alerts-list {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.alerts-list li {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+.alerts-list li.new {
+  border-color: var(--edge);
+  background: var(--pink-soft);
+}
+.alerts-list li.seen {
+  opacity: 0.7;
+}
+.alerts-list li.action-approve {
+  border-left: 4px solid var(--green);
+}
+.alerts-list li.action-changes {
+  border-left: 4px solid var(--yellow);
+}
+.alerts-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+.alerts-message {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.85em;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.alerts-body {
+  margin: 6px 0 0;
+  color: var(--ink-2);
+  overflow-wrap: anywhere;
+}
