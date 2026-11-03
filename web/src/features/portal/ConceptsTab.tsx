@@ -42,7 +42,7 @@ export function ConceptsTab({ portal, concepts }: { portal: ClientPortal; concep
       </div>
       {adding && <IdeaForm portal={portal} onDone={() => setAdding(false)} />}
       {groups.length === 0 && !adding && (
-        <p className="muted">
+        <p className="muted empty-state">
           {tw(
             [
               "Gecko is working on your ideas. They'll appear here for you to read and approve.",

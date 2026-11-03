@@ -62,7 +62,7 @@ export function ReviewTab({ portal }: { portal: ClientPortal }) {
         )}
       </p>
       {groups.length === 0 && (
-        <p className="muted">
+        <p className="muted empty-state">
           {tw(
             [
               "Your reels show up here as soon as the first cut is ready.",
@@ -281,7 +281,7 @@ export function DeliveryTab({ portal }: { portal: ClientPortal }) {
         </Notice>
       )}
       {approved.length === 0 ? (
-        <p className="muted">
+        <p className="muted empty-state">
           {t(
             "Nothing approved yet. Approve a cut in Review and its final file comes here.",
             "Rien de validé pour l'instant. Validez un montage et son fichier final arrive ici.",

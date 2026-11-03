@@ -129,7 +129,7 @@ export function LibraryScreen({ target }: { target: ResultsTarget }) {
       )}
 
       {page.items.length === 0 ? (
-        <p className="muted">
+        <p className="muted empty-state">
           {page.team
             ? "Nothing yet. After each shoot, add the selects with a thumbnail and tags."
             : t(

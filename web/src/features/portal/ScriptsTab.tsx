@@ -41,7 +41,7 @@ export function ScriptsTab({ portal, scripts }: { portal: ClientPortal; scripts:
       </div>
       {writing && <WriteScript portal={portal} onDone={() => setWriting(false)} />}
       {groups.length === 0 && !writing && (
-        <p className="muted">
+        <p className="muted empty-state">
           {tw(
             [
               "Scripts come after you approve the ideas. They'll appear here for you to read and approve.",
