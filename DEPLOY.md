@@ -60,6 +60,18 @@ Before database changes go through the Supabase CLI, we check that the live data
 - **To run it:** Actions > schema-snapshot > Run workflow, branch `main`, target `production`. Then approve the waiting run (Review deployments > production > Approve).
 - **What you get:** the run's summary lists differences by name only. The full report is the run's artifact, encrypted with `BACKUP_PASSPHRASE`: `gpg --decrypt schema-snapshot-DATE.tgz.gpg > report.tgz` and `tar xzf report.tgz`.
 
+## Testing environment (fake data only)
+A second Supabase project, `gecko-testing`, where changes are tried before they reach real clients. It only ever holds fake brands and fake people from `supabase/seed.sql`; no production data is copied into it.
+
+1. **Create the project.** Supabase > New project, name `gecko-testing`, same organisation and region as the live one. Use "Generate a password" and save it in your password manager. (The free plan allows two active projects.)
+2. **Add two repository secrets** (GitHub > `gecko-ops` > Settings > Secrets and variables > Actions):
+   - `TESTING_DB_URL`: in the `gecko-testing` project, Connect > Session pooler, with its password in place of `[YOUR-PASSWORD]`.
+   - `TESTING_LOGIN_EMAIL`: an inbox you read. Each fake login is an alias of it, for example `you+gk-founder@gmail.com`.
+3. **Fill it.** Actions > reset-testing > Run workflow, and tick "First run" the first time only. The run refuses any database that isn't a brand-new project, and it checks it isn't production. Run it again whenever you want a clean copy; it ends by checking the testing database is built exactly as the repository says.
+4. **Sign in** on the testing app with the email link (no passwords) at your alias for each role: `+gk-founder`, `+gk-producer`, `+gk-editor`, and for the client portal `+gk-owner`, `+gk-approver`, `+gk-finance`, `+gk-viewer` (Fresh Test Co) and `+gk-cinema` (Cinema Test Studio).
+
+Like any free project, it pauses after a week without use; running reset-testing or opening it in Supabase wakes it.
+
 ## Changing the database later
 New changes come as a new file in `supabase/migrations/`. Run that one file in the SQL Editor of the live project, and regenerate `supabase/setup.sql` (all migrations in order) so a brand-new project still needs only one file. `sh supabase/tests/local/run.sh` runs the database security tests on a throwaway PostgreSQL first.
 
