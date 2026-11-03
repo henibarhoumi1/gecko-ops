@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { readBackendConfig } from "./env";
+import { guardedFetch } from "./previewGuard";
 
 const config = readBackendConfig(import.meta.env);
 
@@ -7,6 +8,8 @@ const config = readBackendConfig(import.meta.env);
 export const supabase: SupabaseClient | null = config
   ? createClient(config.url, config.anonKey, {
       auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true },
+      // View as client: refuses every write while a preview is open (previewGuard.ts).
+      global: { fetch: guardedFetch },
     })
   : null;
 

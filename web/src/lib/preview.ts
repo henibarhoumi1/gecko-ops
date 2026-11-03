@@ -1,3 +1,4 @@
+import { setPreviewing } from "./previewGuard";
 import { requireSupabase } from "./supabase";
 
 // "View as client": the Gecko owner or a producer opens a client's portal as a chosen client role,
@@ -12,6 +13,7 @@ let preview: PreviewRole | null = null;
 
 export function setPreviewRole(role: PreviewRole | null): void {
   preview = role;
+  setPreviewing(role !== null);
 }
 
 export function previewRole(): PreviewRole | null {
