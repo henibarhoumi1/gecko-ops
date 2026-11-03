@@ -3,6 +3,11 @@ import { t } from "./i18n";
 /** What people read when something fails, in English and French. Checked top to bottom; the first match wins. */
 const MESSAGES: [RegExp, string, string][] = [
   [
+    /preview_read_only/,
+    "This is a preview: nothing is saved here.",
+    "C'est un aperçu : rien n'est enregistré ici.",
+  ],
+  [
     /taxes_unchecked/,
     "No invoice goes out until the accountant has checked the tax lines.",
     "Aucune facture ne part avant que le comptable ait vérifié les lignes de taxes.",
