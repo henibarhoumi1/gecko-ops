@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { clientReadData } from "@/lib/preview";
 import { requireSupabase } from "@/lib/supabase";
 import { normaliseCuts, PREVIEW_LIMIT, PREVIEW_TYPES } from "./model";
 
@@ -24,7 +25,7 @@ async function rpc(name: string, args: Record<string, unknown>) {
 export function useMyCuts(target: CutTarget) {
   return useQuery({
     queryKey: clientKey(target),
-    queryFn: async () => normaliseCuts(await rpc("get_my_cuts", ids(target))),
+    queryFn: async () => normaliseCuts(await clientReadData("get_my_cuts", ids(target))),
     refetchInterval: 30_000,
   });
 }

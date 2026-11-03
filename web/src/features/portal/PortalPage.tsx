@@ -185,12 +185,15 @@ export function PortalPage({
   email,
   portals = [portal],
   onSwitch,
+  previewing = false,
 }: {
   portal: ClientPortal;
   email: string;
   /** Every brand this person belongs to; with more than one, the portal shows a switcher. */
   portals?: ClientPortal[];
   onSwitch?: (next: ClientPortal) => void;
+  /** View as client: the team is looking, so no sign-out button (it would sign the team member out). */
+  previewing?: boolean;
 }) {
   const { signOut } = useAuth();
   const path = useLocation().pathname;
@@ -280,9 +283,11 @@ export function PortalPage({
             <span className="muted">{roleName(role)}</span>
             <BrandSwitch portals={portals} current={portal} onSwitch={onSwitch} />
             <LangSwitch />
-            <Button variant="link" onClick={() => void signOut()}>
-              {t("Sign out", "Se déconnecter")}
-            </Button>
+            {!previewing && (
+              <Button variant="link" onClick={() => void signOut()}>
+                {t("Sign out", "Se déconnecter")}
+              </Button>
+            )}
           </div>
         </aside>
 
@@ -291,9 +296,11 @@ export function PortalPage({
           <span className="portal-who small">
             <BrandSwitch portals={portals} current={portal} onSwitch={onSwitch} />
             <LangSwitch />
-            <Button variant="link" onClick={() => void signOut()}>
-              {t("Sign out", "Se déconnecter")}
-            </Button>
+            {!previewing && (
+              <Button variant="link" onClick={() => void signOut()}>
+                {t("Sign out", "Se déconnecter")}
+              </Button>
+            )}
           </span>
         </header>
 

@@ -463,6 +463,39 @@ a {
   margin-top: 16px;
 }
 
+/* View as client: a strip above the portal that says the team is looking, read-only */
+.preview-banner {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 8px max(16px, env(safe-area-inset-left, 0px));
+  background: var(--yellow);
+  color: var(--ink);
+  font-size: 0.9rem;
+}
+.preview-banner a {
+  color: inherit;
+}
+.preview-roles {
+  display: inline-flex;
+  gap: 10px;
+}
+.preview-roles a[aria-current="page"] {
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 2px solid var(--ink);
+}
+.client-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-start;
+}
+
 /* Brand switcher, for a client who works with Gecko on more than one brand */
 .brand-switch {
   display: inline-flex;

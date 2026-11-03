@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { clientRead } from "@/lib/preview";
 import { requireSupabase } from "@/lib/supabase";
 import type { OptionKind, OptionStatus, Production, ProductionOption } from "./model";
 
@@ -25,7 +26,7 @@ export function useMyProduction(target: ProductionTarget) {
   return useQuery({
     queryKey: clientKey(target),
     queryFn: async () => {
-      const { data, error } = await requireSupabase().rpc("get_my_production", ids(target));
+      const { data, error } = await clientRead("get_my_production", ids(target));
       if (error) throw error;
       return normalise(data);
     },

@@ -14,6 +14,7 @@ import { useTemplates } from "./lookApi";
 import { LogoPanel } from "./LogoPanel";
 import { LookPanel } from "./LookPanel";
 import { ClientNudge } from "./ClientNudge";
+import { previewPath } from "@/lib/preview";
 import { LoginsPanel } from "./LoginsPanel";
 import { OverviewEditor } from "./OverviewEditor";
 import { TeamConcepts } from "./TeamConcepts";
@@ -81,7 +82,20 @@ export function ClientPage() {
         )}
         {client.brand}
       </h1>
-      <ClientNudge clientId={clientId} />
+      <div className="client-actions">
+        <ClientNudge clientId={clientId} />
+        {lead && (
+          <a
+            className="btn btn-secondary"
+            href={previewPath(clientId)}
+            target="_blank"
+            rel="noopener"
+            title="Opens the portal exactly as this client sees it, read-only, in a new tab"
+          >
+            View as client
+          </a>
+        )}
+      </div>
       <nav className="portal-tabs" aria-label={client.brand}>
         {tabs.map(([path, label]) => (
           <NavLink
