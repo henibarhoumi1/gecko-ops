@@ -1,0 +1,64 @@
+name: db
+
+# Database checks on every pull request that touches supabase/ (technical specification, A1–A3, PR 4).
+# All of them run on throwaway databases on GitHub's machines; none connects to production or testing.
+#   tests          every migration applies without error, then every pgTAP security test passes
+#   compatibility  the base branch's tests still pass against the new migrations, so the app that is live
+#                  today keeps working while the new schema is deployed
+#   safety         existing migration files are never edited; new ones don't destroy data unless the pull
+#                  request carries the "contract-step" label; supabase/setup.sql is up to date
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+    paths: ["supabase/**", ".github/workflows/db.yml"]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PostgreSQL 16 and pgTAP
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-16 postgresql-16-pgtap
+      - name: Migrations and pgTAP tests
+        run: sh supabase/tests/local/run.sh
+
+  compatibility:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install PostgreSQL 16 and pgTAP
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-16 postgresql-16-pgtap
+      - name: The base branch's tests against this branch's migrations
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/base"
+          git archive "$BASE" supabase/tests | tar -x -C "$RUNNER_TEMP/base"
+          sh supabase/tests/local/run.sh "$RUNNER_TEMP/base/supabase/tests"
+
+  safety:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: No edited migrations, no destructive statements
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: sh supabase/tools/no-destroy.sh "$BASE" "$LABELS"
+      - name: supabase/setup.sql is generated from the migrations
+        run: sh supabase/tools/gen-setup.sh --check

@@ -1,4 +1,5 @@
--- Gecko Ops database setup. Paste all of this into Supabase > SQL Editor and press Run, once.
+-- Gecko Ops database schema, generated from supabase/migrations by supabase/tools/gen-setup.sh.
+-- Do not edit by hand and do not paste into the live database: changes go through the migration pipeline.
 
 -- ==== 202610140001_phase0_foundation.sql ====
 create extension if not exists pgcrypto with schema extensions;
@@ -3847,7 +3848,6 @@ revoke all on function public.peek_client_invite(text) from public;
 grant execute on function public.peek_client_invite(text) to anon, authenticated;
 
 -- ==== 202611020003_plans.sql ====
-
 -- Plans: which Gecko offer a client is on (the Test, a monthly plan, or something custom) and how many reels it
 -- holds. The client's Home counts reels against it: scripts approved, and later videos delivered.
 -- Moving a client from the Test to a monthly plan is a change of plan on the same overview.
@@ -3900,7 +3900,6 @@ revoke all on function public.get_my_portal(uuid, text) from public, anon;
 grant execute on function public.get_my_portal(uuid, text) to authenticated;
 
 -- ==== 202611030001_boards.sql ====
-
 -- Boards: a shared canvas per client, for moodboards, shot lists, call sheets and anything else Gecko and the
 -- client plan together. A board holds cards (notes, to-dos, links, videos played from their link, images,
 -- tables, columns, arrows) and other boards. The team and the client both edit it.
@@ -4650,6 +4649,7 @@ grant execute on function public.invite_client_account(uuid, text, text, text),
 revoke all on function public.get_my_portal(uuid, text) from public, anon;
 grant execute on function public.get_my_portal(uuid, text) to authenticated;
 
+-- ==== 202611060001_production.sql ====
 -- Portal v2, phase B: talent, locations, props and the production budget.
 -- Gecko proposes options (a model, an Airbnb, a prop), the client approves them against one budget per client,
 -- and every approved cost is something Gecko pays upfront and puts on the balance invoice.
@@ -6123,6 +6123,7 @@ begin
 end
 $$;
 
+-- ==== 202611090001_invoices.sql ====
 -- Portal v2, phase E: invoices.
 -- Invoices are built from what's already in the app: the plan price on the client's overview, the 50/50 split,
 -- and the talent, location and props costs Gecko paid upfront (phase B). Nobody retypes them.
@@ -6786,6 +6787,7 @@ grant execute on function public.get_invoice_settings(uuid), public.save_invoice
   public.get_my_invoices(uuid, text)
   to authenticated;
 
+-- ==== 202611100001_results_and_library.sql ====
 -- Portal v2, phase F: results and the library.
 --
 -- Results. Gecko doesn't run the ads, so the numbers come from the client (or their media buyer). Each video that
@@ -7457,6 +7459,28 @@ begin
       with check (bucket_id = 'library' and public.library_file_access(name, true))$p$;
     execute $p$create policy library_delete on storage.objects for delete to authenticated
       using (bucket_id = 'library' and public.library_file_access(name, true))$p$;
+  end if;
+end
+$$;
+
+-- ==== 202611110001_reconcile_video_notes_guard.sql ====
+-- Reconciliation after the live-schema snapshot (supabase/DRIFT.md, 3 Nov 2026).
+--
+-- Production was built by pasting these files into the SQL editor, and 202611010001_videos.sql was left
+-- out because videos are switched off live. 202611050001 adds the approver-only guard to video notes only
+-- when the video_notes table already exists, so applying the videos file now, after it, would leave video
+-- notes without that guard: a viewer or finance login could then approve a video. This adds the guard
+-- wherever it is missing. On a database built from every file in order it already exists, and nothing
+-- changes.
+
+do $$
+begin
+  if to_regclass('public.video_notes') is not null and not exists (
+    select 1 from pg_catalog.pg_trigger
+    where tgrelid = to_regclass('public.video_notes') and tgname = 'video_notes_role_guard' and not tgisinternal
+  ) then
+    create trigger video_notes_role_guard before insert on public.video_notes
+      for each row execute function public.client_decision_guard();
   end if;
 end
 $$;
