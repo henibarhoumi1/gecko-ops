@@ -1,8 +1,8 @@
 name: web
 
+# Runs on every pull request (no path filter), because "check" is a required status for merging into main.
 on:
   pull_request:
-    paths: ["web/**", ".github/workflows/web.yml"]
   push:
     branches: [main]
     paths: ["web/**", ".github/workflows/web.yml"]
