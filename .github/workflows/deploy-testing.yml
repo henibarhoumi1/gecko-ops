@@ -101,8 +101,13 @@ jobs:
           echo "ok: rolled back, nothing recorded"
 
           echo "== 2. a wrong version recorded, then repaired"
+          # repair --status applied reads the file, so record a stray file's version, then delete the file:
+          # the history now holds a version the repository doesn't have.
+          printf -- '-- rehearsal only\n' > supabase/migrations/209901010001_rehearsal_wrong.sql
           supabase migration repair --yes --db-url "$U" --status applied 209901010001
-          supabase migration list --db-url "$U" | grep -q 209901010001 || fail "the wrong version did not show"
+          rm supabase/migrations/209901010001_rehearsal_wrong.sql
+          supabase migration list --db-url "$U" | tee wrong.txt
+          grep -q 209901010001 wrong.txt || fail "the wrong version did not show"
           supabase migration repair --yes --db-url "$U" --status reverted 209901010001
           [ "$(q "select count(*) from supabase_migrations.schema_migrations where version = '209901010001'")" = "0" ] || fail "the wrong version is still recorded"
           echo "ok: wrong version removed from the record, schema untouched"
