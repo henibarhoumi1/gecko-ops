@@ -70,7 +70,11 @@ A second Supabase project, `gecko-testing`, where changes are tried before they 
 3. **Fill it.** Actions > reset-testing > Run workflow, and tick "First run" the first time only. The run refuses any database that isn't a brand-new project, and it checks it isn't production. Run it again whenever you want a clean copy; it ends by checking the testing database is built exactly as the repository says.
 4. **Sign in** on the testing app with the email link (no passwords) at your alias for each role: `+gk-founder`, `+gk-producer`, `+gk-editor`, and for the client portal `+gk-owner`, `+gk-approver`, `+gk-finance`, `+gk-viewer` (Fresh Test Co) and `+gk-cinema` (Cinema Test Studio).
 
-Like any free project, it pauses after a week without use; running reset-testing or opening it in Supabase wakes it.
+**The testing app** is a second Cloudflare worker, `gecko-app-testing` (gecko-app-testing.henibarhoumi1.workers.dev): the same code built from `main`, talking to the testing project. Its Cloudflare build settings: root directory `/web`, build command `GECKO_BACKEND=testing npm run build`, deploy command `npx wrangler deploy --env testing`. Pull-request previews use the testing project too (`web/vite.config.ts` picks it for any branch but `main`), so a preview never sees real client data.
+
+In the `gecko-testing` Supabase project, Authentication > URL Configuration has the testing app as Site URL, and redirect URLs for the testing app and the previews (`https://*-gecko-app.henibarhoumi1.workers.dev/**`), so email sign-in links land back on them.
+
+The testing worker pings its database daily, so the free testing project doesn't pause.
 
 ## Changing the database later
 New changes come as a new file in `supabase/migrations/`. Run that one file in the SQL Editor of the live project, and regenerate `supabase/setup.sql` (all migrations in order) so a brand-new project still needs only one file. `sh supabase/tests/local/run.sh` runs the database security tests on a throwaway PostgreSQL first.

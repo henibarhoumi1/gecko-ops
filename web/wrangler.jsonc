@@ -24,13 +24,27 @@
     "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5dXNmcHl4b3pxbXNqb2lyeGdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0NzE5OTEsImV4cCI6MjEwOTA0Nzk5MX0.F6GhYc1mD0Q5Y3Hn1SSMM19CEAw7law_0BcIfp2Rkcs",
   },
   // Pull-request previews ("Previews Base" builds, deploy command `npx wrangler preview`) don't inherit the vars
-  // above, so they are repeated here. Same public values: there is one Supabase project, so a preview signs in to
-  // the live data. Previews don't run the cron below, so only the live app pings the database.
+  // above, so they are set here, and they point at the TESTING project (fake data only), like the app they
+  // serve (vite.config.ts picks the testing backend for any branch but main). Previews don't run the cron.
   "previews": {
     "vars": {
-      "SUPABASE_URL": "https://ryusfpyxozqmsjoirxgm.supabase.co",
+      "SUPABASE_URL": "https://arzjqtysedaxktzyoxuf.supabase.co",
       "CF_ACCOUNT_ID": "39b689d9db4027a9ec6a5713e2e8bcc0",
-      "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5dXNmcHl4b3pxbXNqb2lyeGdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0NzE5OTEsImV4cCI6MjEwOTA0Nzk5MX0.F6GhYc1mD0Q5Y3Hn1SSMM19CEAw7law_0BcIfp2Rkcs",
+      "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyempxdHlzZWRheGt0enlveHVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2NTUxOTksImV4cCI6MjEwOTIzMTE5OX0.pN85_gbvJS7r4IYbjWzVWWy6i2DxlxDaHkEkfBjyhNs",
+    },
+  },
+  // The testing app, gecko-app-testing: built from main with GECKO_BACKEND=testing and deployed with
+  // `npx wrangler deploy --env testing` (DEPLOY.md, "Testing environment"). Same code, testing project, fake
+  // data. Its daily ping keeps the free testing project from pausing.
+  "env": {
+    "testing": {
+      "name": "gecko-app-testing",
+      "vars": {
+        "SUPABASE_URL": "https://arzjqtysedaxktzyoxuf.supabase.co",
+        "CF_ACCOUNT_ID": "39b689d9db4027a9ec6a5713e2e8bcc0",
+        "SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyempxdHlzZWRheGt0enlveHVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2NTUxOTksImV4cCI6MjEwOTIzMTE5OX0.pN85_gbvJS7r4IYbjWzVWWy6i2DxlxDaHkEkfBjyhNs",
+      },
+      "triggers": { "crons": ["29 3 * * *"] },
     },
   },
   // Every day at 03:17 UTC the worker pings the database so a quiet week never pauses the free project.

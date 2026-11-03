@@ -67,4 +67,4 @@ Rollback, if step 3 fails: the failing file's transaction rolls back and nothing
 
 ## Sign-off
 
-- [ ] Heni: the differences above are understood, and decisions 1 and 2 are approved.
+- [x] Heni: the differences above are understood, and decisions 1 and 2 are approved. Approved by Heni in chat ("yess"), 3 Nov 2026, 02:49 Tunis time.
