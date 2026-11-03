@@ -3,7 +3,13 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import { friendlyError } from "@/lib/errors";
-import { AREA_LABEL, describeAction, useAlerts, useMarkErrorsSeen } from "./alertsApi";
+import {
+  AREA_LABEL,
+  describeAction,
+  useAlerts,
+  useMarkErrorsSeen,
+  useSiteStats,
+} from "./alertsApi";
 
 const PERIODS: [number, string][] = [
   [1, "Last 24 hours"],
@@ -26,6 +32,9 @@ export function AlertsPage() {
   const [days, setDays] = useState(7);
   const alerts = useAlerts(days);
   const markSeen = useMarkErrorsSeen();
+  const site = useSiteStats(days);
+  const totals = site.data?.totals ?? {};
+  const siteLeads = site.data?.leads ?? [];
   const errors = alerts.data?.errors ?? [];
   const activity = alerts.data?.activity ?? [];
   const unseen = errors.filter((e) => !e.seen).length;
@@ -88,6 +97,45 @@ export function AlertsPage() {
                   </span>
                 </div>
                 <code className="alerts-message">{e.message}</code>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
+      <section className="alerts-section">
+        <h2>Website</h2>
+        <p className="muted small">
+          Counted on the public site, with no personal data. Every brief and message sent from the
+          site is also saved in the Pipeline.
+        </p>
+        <dl className="site-stats">
+          {(
+            [
+              ["view", "Page views"],
+              ["brief_start", "Briefs started"],
+              ["brief_done", "Briefs sent"],
+              ["contact_done", "Messages sent"],
+              ["wa_click", "WhatsApp taps"],
+            ] as const
+          ).map(([key, label]) => (
+            <div key={key}>
+              <dt className="muted small">{label}</dt>
+              <dd>{(totals[key] ?? 0).toLocaleString("en-GB")}</dd>
+            </div>
+          ))}
+        </dl>
+        {siteLeads.length > 0 && (
+          <ul className="alerts-list">
+            {siteLeads.map((l) => (
+              <li key={l.id}>
+                <div className="alerts-meta">
+                  <span>
+                    <strong>{l.brand}</strong> sent {l.form === "brief" ? "a brief" : "a message"}{" "}
+                    <Link to="/pipeline">Open the Pipeline</Link>
+                  </span>
+                  <span className="muted small">{when(l.at)}</span>
+                </div>
               </li>
             ))}
           </ul>

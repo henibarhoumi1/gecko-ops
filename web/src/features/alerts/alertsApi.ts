@@ -91,3 +91,28 @@ export const AREA_LABEL: Record<AlertError["area"], string> = {
   request: "Action failed",
   unexpected: "Unexpected error",
 };
+
+export interface SiteStats {
+  totals: Partial<
+    Record<"view" | "brief_start" | "brief_done" | "contact_done" | "wa_click", number>
+  >;
+  leads: { id: string; at: string; brand: string; form: string | null; stage: string }[];
+}
+
+/** Website visits, brief steps and the leads the site sent to the Pipeline. Founder and producers only. */
+export function useSiteStats(days: number) {
+  const { id: workspaceId } = useWorkspace();
+  return useQuery({
+    queryKey: ["site-stats", workspaceId, days],
+    queryFn: async (): Promise<SiteStats> => {
+      const { data, error } = await requireSupabase().rpc("get_site_stats", {
+        p_workspace_id: workspaceId,
+        p_days: days,
+      });
+      if (error) throw error;
+      const result = (data ?? {}) as Partial<SiteStats>;
+      return { totals: result.totals ?? {}, leads: result.leads ?? [] };
+    },
+    refetchInterval: 5 * 60_000,
+  });
+}
