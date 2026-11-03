@@ -53,6 +53,13 @@ Free Supabase pauses a project after a week with no use and keeps no backups we 
 
   To restore a backup into a project: download the artifact, then `gpg --decrypt gecko-db-DATE.dump.gpg > gecko-db.dump` (it asks for the passphrase) and `pg_restore --no-owner --no-privileges --dbname "<connection string>" gecko-db.dump`. Try it on a throwaway project first, never straight onto the live one.
 
+## Schema snapshot (compare the live database with the repository)
+Before database changes go through the Supabase CLI, we check that the live database is built exactly as the files in `supabase/migrations/` say. The `schema-snapshot` workflow does that. It reads only the database's structure (tables, functions, security rules, grants, storage bucket settings), never client rows, inside a read-only transaction that is rolled back.
+
+- **Once, before the first run:** GitHub > `gecko-ops` > Settings > Environments > New environment, name it `production`, tick **Required reviewers** and add yourself, then save. The live job refuses to start without this rule.
+- **To run it:** Actions > schema-snapshot > Run workflow, branch `main`, target `production`. Then approve the waiting run (Review deployments > production > Approve).
+- **What you get:** the run's summary lists differences by name only. The full report is the run's artifact, encrypted with `BACKUP_PASSPHRASE`: `gpg --decrypt schema-snapshot-DATE.tgz.gpg > report.tgz` and `tar xzf report.tgz`.
+
 ## Changing the database later
 New changes come as a new file in `supabase/migrations/`. Run that one file in the SQL Editor of the live project, and regenerate `supabase/setup.sql` (all migrations in order) so a brand-new project still needs only one file. `sh supabase/tests/local/run.sh` runs the database security tests on a throwaway PostgreSQL first.
 
