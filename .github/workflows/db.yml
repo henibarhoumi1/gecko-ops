@@ -1,6 +1,6 @@
 name: db
 
-# Database checks on every pull request that touches supabase/ (technical specification, A1–A3, PR 4).
+# Database checks on every pull request (technical specification, A1–A3, PR 4).
 # All of them run on throwaway databases on GitHub's machines; none connects to production or testing.
 #   tests          every migration applies without error, then every pgTAP security test passes
 #   compatibility  the base branch's tests still pass against the new migrations, so the app that is live
@@ -10,8 +10,8 @@ name: db
 
 on:
   pull_request:
+    # No path filter: tests, compatibility and safety are required statuses for merging into main.
     types: [opened, synchronize, reopened, labeled, unlabeled]
-    paths: ["supabase/**", ".github/workflows/db.yml"]
 
 permissions:
   contents: read

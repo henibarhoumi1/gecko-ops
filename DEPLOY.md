@@ -76,6 +76,10 @@ In the `gecko-testing` Supabase project, Authentication > URL Configuration has 
 
 The testing worker pings its database daily, so the free testing project doesn't pause.
 
+## Migration pipeline
+- **Testing:** every merge to `main` that adds a migration runs `deploy-testing`, which pushes it to the `gecko-testing` database with the Supabase CLI and checks testing is built exactly as the repository says. It refuses any database that isn't the marked testing project. Manual modes: `push`, `baseline` (once, after a reset) and `rehearse` (practises the history recovery cases).
+- **Production:** `deploy-production` is built but switched off until the production baseline. When it is on (repository variable `PRODUCTION_PIPELINE` = `on`), it runs only by hand from `main`, after your approval in the `production` environment, and always starts with a fresh encrypted backup and an export of the migration history.
+
 ## Changing the database later
 Every change is a new file in `supabase/migrations/`; files that are already there are never edited. **Nothing is pasted into the live project's SQL Editor any more**: changes reach production through the migration pipeline, once it is switched on (technical specification, A1–A3).
 

@@ -1,0 +1,137 @@
+name: deploy-testing
+
+# The migration pipeline, on the TESTING database only (technical specification, A1–A3, PR 5).
+# Every merge to main that adds a migration pushes it to testing with the Supabase CLI, then checks testing
+# is built exactly as the repository says. Never touches production: testing-guard.sh refuses unless
+# TESTING_DB_URL names a different project from production and carries the testing marker.
+#
+# Manual modes (Actions > deploy-testing > Run workflow):
+#   push       apply pending migrations (the same as a merge)
+#   baseline   record every migration as applied in testing's history, once, when testing was built
+#              without the CLI (reset-testing). Refused if testing already has a history.
+#   rehearse   rehearse the history recovery cases on testing before production's baseline (PR 6):
+#              a failing file must roll back and record nothing; a wrong version recorded, a missed
+#              version and a lost history must each be repaired with `supabase migration repair`.
+
+on:
+  push:
+    branches: [main]
+    paths: ["supabase/migrations/**"]
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "push, baseline (once) or rehearse"
+        type: choice
+        options: [push, baseline, rehearse]
+        default: push
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-testing
+  cancel-in-progress: false
+
+jobs:
+  testing:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      TESTING_DB_URL: ${{ secrets.TESTING_DB_URL }}
+      PRODUCTION_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      MODE: ${{ inputs.mode || 'push' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install the PostgreSQL 17 client
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc \
+            https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" \
+            | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17
+          echo "/usr/lib/postgresql/17/bin" >> "$GITHUB_PATH"
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Confirm this is the testing project
+        run: |
+          if [ -z "$TESTING_DB_URL" ] || [ -z "$PRODUCTION_DB_URL" ]; then
+            echo "::error::TESTING_DB_URL and SUPABASE_DB_URL are both needed."; exit 1
+          fi
+          supabase --version
+          sh supabase/tools/testing-guard.sh
+
+      - name: Record the history once (baseline)
+        if: env.MODE == 'baseline'
+        run: |
+          set -euo pipefail
+          has=$(psql "$TESTING_DB_URL" -X -A -t -c "select to_regclass('supabase_migrations.schema_migrations') is not null")
+          if [ "$has" = "t" ] && [ "$(psql "$TESTING_DB_URL" -X -A -t -c "select count(*) from supabase_migrations.schema_migrations")" != "0" ]; then
+            echo "::error::Testing already has a migration history; baseline refused."; exit 1
+          fi
+          versions=$(ls supabase/migrations/*.sql | xargs -n1 basename | cut -d_ -f1)
+          supabase migration repair --db-url "$TESTING_DB_URL" --status applied $versions
+
+      - name: Apply pending migrations
+        if: env.MODE == 'push'
+        run: |
+          supabase migration list --db-url "$TESTING_DB_URL"
+          supabase db push --db-url "$TESTING_DB_URL" --yes
+
+      - name: Rehearse the history recovery cases
+        if: env.MODE == 'rehearse'
+        run: |
+          set -euo pipefail
+          U="$TESTING_DB_URL"
+          q() { psql "$U" -X -A -t -v ON_ERROR_STOP=1 -c "$1"; }
+          fail() { echo "::error::$1"; exit 1; }
+          supabase migration list --db-url "$U" | tee before.txt
+
+          echo "== 1. a failing file rolls back and records nothing"
+          printf 'create table public.rehearsal_probe (x int);\nselect 1 / 0;\n' > supabase/migrations/209912319999_rehearsal_fail.sql
+          if supabase db push --db-url "$U" --yes; then fail "the failing migration was accepted"; fi
+          [ "$(q "select to_regclass('public.rehearsal_probe') is null")" = "t" ] || fail "the failing file left a table behind"
+          [ "$(q "select count(*) from supabase_migrations.schema_migrations where version = '209912319999'")" = "0" ] || fail "the failing file was recorded"
+          rm supabase/migrations/209912319999_rehearsal_fail.sql
+          echo "ok: rolled back, nothing recorded"
+
+          echo "== 2. a wrong version recorded, then repaired"
+          supabase migration repair --db-url "$U" --status applied 209901010001
+          supabase migration list --db-url "$U" | grep -q 209901010001 || fail "the wrong version did not show"
+          supabase migration repair --db-url "$U" --status reverted 209901010001
+          [ "$(q "select count(*) from supabase_migrations.schema_migrations where version = '209901010001'")" = "0" ] || fail "the wrong version is still recorded"
+          echo "ok: wrong version removed from the record, schema untouched"
+
+          echo "== 3. a missed version, then repaired"
+          last=$(ls supabase/migrations/*.sql | tail -1 | xargs basename | cut -d_ -f1)
+          supabase migration repair --db-url "$U" --status reverted "$last"
+          supabase db push --db-url "$U" --dry-run 2>&1 | tee dry.txt
+          grep -q "$last" dry.txt || fail "the dry run did not list the missed version"
+          supabase migration repair --db-url "$U" --status applied "$last"
+          echo "ok: missed version recorded again without running it"
+
+          echo "== 4. a lost history, rebuilt from the export"
+          q "select version from supabase_migrations.schema_migrations order by version" > export.txt
+          [ -s export.txt ] || fail "nothing to export"
+          supabase migration repair --db-url "$U" --status reverted $(cat export.txt)
+          [ "$(q "select count(*) from supabase_migrations.schema_migrations")" = "0" ] || fail "history not emptied"
+          supabase migration repair --db-url "$U" --status applied $(cat export.txt)
+          [ "$(q "select count(*) from supabase_migrations.schema_migrations")" = "$(wc -l < export.txt | tr -d ' ')" ] || fail "history not rebuilt"
+          echo "ok: history rebuilt from the export"
+
+          echo "== after: the record matches the repository and nothing is pending"
+          supabase migration list --db-url "$U" | tee after.txt
+          supabase db push --db-url "$U" --dry-run 2>&1 | tee final.txt
+          for v in $(ls supabase/migrations/*.sql | xargs -n1 basename | cut -d_ -f1); do
+            [ "$(q "select count(*) from supabase_migrations.schema_migrations where version = '$v'")" = "1" ] || fail "$v is not recorded"
+          done
+          [ "$(q "select count(*) from supabase_migrations.schema_migrations")" = "$(ls supabase/migrations/*.sql | wc -l | tr -d ' ')" ] || fail "extra versions recorded"
+          echo "All four recovery cases rehearsed." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Check testing is built exactly as the repository says
+        run: sh supabase/tools/compare-with-repo.sh "$TESTING_DB_URL" "The testing database"
