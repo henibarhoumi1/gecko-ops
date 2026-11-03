@@ -13,7 +13,7 @@ export interface Member {
 
 export const ROLE_LABEL: Record<Role, string> = {
   founder: "Founder",
-  sales: "Client lead",
+  sales: "Producer",
   editor: "Editor",
   assistant: "Production",
 };

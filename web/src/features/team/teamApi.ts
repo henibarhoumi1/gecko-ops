@@ -7,7 +7,7 @@ import { requireSupabase } from "@/lib/supabase";
 /** Roles the founder can invite. The founder role is never handed out. */
 export const INVITE_ROLES: readonly (readonly [Exclude<Role, "founder">, string])[] = [
   ["editor", "Editor, picked clients only"],
-  ["sales", "Client lead, all clients"],
+  ["sales", "Producer / project manager, all clients"],
 ];
 
 /** Creates a one-time team invite for that email and returns the link to send. */
