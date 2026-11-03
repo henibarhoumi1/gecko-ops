@@ -1,0 +1,80 @@
+name: reset-testing
+
+# Rebuilds the TESTING database: every migration in order, then supabase/seed.sql (fake brands, fake team,
+# one login per role). Fake data only. It never touches production: supabase/tools/reset-testing.sh refuses
+# unless the testing and production connection strings name different Supabase projects and the database
+# carries the testing marker, which a first run creates only on a brand-new, empty project.
+# Afterwards it checks the testing database is built exactly as the repository says.
+#
+# Needs repository secrets (DEPLOY.md, "Testing environment"):
+#   TESTING_DB_URL       Session pooler connection string of the gecko-testing project
+#   TESTING_LOGIN_EMAIL  an inbox you read; each fake login is a +gk-<role> alias of it
+#   SUPABASE_DB_URL      production's, read only to learn its project id; never connected to here
+
+on:
+  workflow_dispatch:
+    inputs:
+      first_run:
+        description: "First run on the brand-new gecko-testing project (marks it as testing)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: reset-testing
+  cancel-in-progress: false
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TESTING_DB_URL: ${{ secrets.TESTING_DB_URL }}
+      PRODUCTION_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      LOGIN_BASE: ${{ secrets.TESTING_LOGIN_EMAIL }}
+    steps:
+      - name: Check the secrets are set
+        run: |
+          if [ -z "$TESTING_DB_URL" ] || [ -z "$PRODUCTION_DB_URL" ] || [ -z "$LOGIN_BASE" ]; then
+            echo "::error::TESTING_DB_URL, TESTING_LOGIN_EMAIL and SUPABASE_DB_URL are all needed (DEPLOY.md, Testing environment)."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - name: Install the PostgreSQL 17 client
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc \
+            https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" \
+            | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17
+          echo "/usr/lib/postgresql/17/bin" >> "$GITHUB_PATH"
+
+      - name: Rebuild the testing database
+        run: sh supabase/tools/reset-testing.sh ${{ inputs.first_run && '--first-run' || '' }}
+
+      - name: Check testing is built exactly as the repository says
+        env:
+          PGHOST: localhost
+          PGPORT: "5432"
+          PGUSER: postgres
+          PGPASSWORD: postgres
+        run: |
+          set -euo pipefail
+          sh supabase/tools/snapshot.sh "$TESTING_DB_URL" testing.raw
+          python3 supabase/tools/normalise.py listing testing.raw testing.tsv
+          major=$(awk -F'\t' '$1 == "fact" && $2 == "server_version_major" { print $3 }' testing.tsv)
+          case "$major" in ''|*[!0-9]*) echo "::error::Could not read the testing PostgreSQL version."; exit 1 ;; esac
+          docker run -d --name expected-db -e POSTGRES_PASSWORD=postgres -p 5432:5432 "postgres:$major" > /dev/null
+          for i in $(seq 1 30); do pg_isready -q && break; sleep 2; done
+          pg_isready
+          sh supabase/tools/build-expected.sh expected.raw
+          python3 supabase/tools/normalise.py listing expected.raw expected.tsv
+          python3 supabase/tools/normalise.py diff expected.tsv testing.tsv --summary summary.md --expect-identical \
+            || { cat summary.md >> "$GITHUB_STEP_SUMMARY"; exit 1; }
+          echo "Testing database rebuilt and identical to the repository (PostgreSQL $major)." >> "$GITHUB_STEP_SUMMARY"

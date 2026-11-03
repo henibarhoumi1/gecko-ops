@@ -79,6 +79,9 @@ jobs:
           test "$(psql -X -At -d gecko_expected -c "select count(*) from pg_class where relname = 'ro_probe'")" = 0
           echo "The write was refused, as it must be."
 
+      - name: Load the testing seed, so it keeps working as the schema changes
+        run: psql -X -q -d gecko_expected -v ON_ERROR_STOP=1 -v login_base=ci@example.com -f supabase/seed.sql
+
       - uses: actions/upload-artifact@v4
         with:
           name: expected-schema-pg${{ matrix.pg }}
