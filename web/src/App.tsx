@@ -25,6 +25,13 @@ import { AppShell } from "@/features/shell/AppShell";
 import { navFor } from "@/features/shell/nav";
 import { WorkspaceProvider } from "@/features/workspace/WorkspaceContext";
 import { setTeamMode, t, useLang } from "@/lib/i18n";
+import {
+  PREVIEW_ROLES,
+  parsePreviewPath,
+  previewPath,
+  setPreviewRole,
+  type PreviewRole,
+} from "@/lib/preview";
 import { saveReturnTo, takeReturnTo } from "@/lib/returnTo";
 import { supabase } from "@/lib/supabase";
 
@@ -47,6 +54,8 @@ const SCREENS: Record<string, () => ReactElement> = {
 export function App() {
   // Switching language redraws the screens (the router remounts; the session and loaded data stay).
   const lang = useLang();
+  // View as client opens in its own tab at /preview/<client>/<role>.
+  const preview = parsePreviewPath(window.location.pathname);
   if (!supabase) {
     return (
       <main className="page">
@@ -61,17 +70,23 @@ export function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <TeamEnglish />
-          <BrowserRouter key={lang}>
-            <Routes>
-              <Route path="/invite/:code" element={<InvitePage />} />
-              <Route path="/sign-in" element={<SignedOutOnly page={<SignInPage />} />} />
-              <Route path="/sign-up" element={<SignedOutOnly page={<SignUpPage />} />} />
-              <Route path="/forgot" element={<SignedOutOnly page={<ForgotPage />} />} />
-              <Route path="/reset" element={<ResetPage />} />
-              <Route path="/*" element={<Home />} />
-            </Routes>
-          </BrowserRouter>
+          {preview ? (
+            <PreviewApp key={lang} clientId={preview.clientId} role={preview.role} />
+          ) : (
+            <>
+              <TeamEnglish />
+              <BrowserRouter key={lang}>
+                <Routes>
+                  <Route path="/invite/:code" element={<InvitePage />} />
+                  <Route path="/sign-in" element={<SignedOutOnly page={<SignInPage />} />} />
+                  <Route path="/sign-up" element={<SignedOutOnly page={<SignUpPage />} />} />
+                  <Route path="/forgot" element={<SignedOutOnly page={<ForgotPage />} />} />
+                  <Route path="/reset" element={<ResetPage />} />
+                  <Route path="/*" element={<Home />} />
+                </Routes>
+              </BrowserRouter>
+            </>
+          )}
         </AuthProvider>
       </QueryClientProvider>
     </ErrorBoundary>
@@ -113,6 +128,11 @@ function Home() {
   const returnTo = back.current;
   if (returnTo) {
     back.current = null;
+    // View as client lives outside this router, so it needs a full page load.
+    if (returnTo.startsWith("/preview/")) {
+      window.location.replace(returnTo);
+      return <Loading />;
+    }
     if (returnTo !== location.pathname + location.search + location.hash)
       return <Navigate to={returnTo} replace />;
   }
@@ -131,6 +151,57 @@ function Home() {
         </Route>
       </Routes>
     </WorkspaceProvider>
+  );
+}
+
+/** View as client: a client's portal exactly as the chosen client role sees it, read-only, for the team. */
+function PreviewApp({ clientId, role }: { clientId: string; role: PreviewRole }) {
+  const { state } = useAuth();
+  setTeamMode(false);
+  if (state.status === "loading") return <Loading />;
+  if (state.status !== "ready" || state.account.kind !== "member") {
+    if (state.status === "signed-out") saveReturnTo(previewPath(clientId, role));
+    return (
+      <main className="page">
+        <h1>View as client</h1>
+        <p className="muted">
+          Only the Gecko owner and producers can open this, signed in to the team app.{" "}
+          <a href="/sign-in">Sign in</a>
+        </p>
+      </main>
+    );
+  }
+  const workspace = state.account.workspace;
+  if (workspace.role !== "founder" && workspace.role !== "sales") {
+    return (
+      <main className="page">
+        <h1>View as client</h1>
+        <p className="muted">Only the Gecko owner and producers can view a portal as the client.</p>
+      </main>
+    );
+  }
+  setPreviewRole(role);
+  const portal = { workspaceId: workspace.id, clientId, brand: "" };
+  return (
+    <BrowserRouter basename={previewPath(clientId, role)}>
+      <div className="preview-banner" role="note">
+        <strong>Viewing as the client</strong>
+        <span className="preview-roles">
+          {PREVIEW_ROLES.map((r) => (
+            <a
+              key={r}
+              href={previewPath(clientId, r)}
+              aria-current={r === role ? "page" : undefined}
+            >
+              {r[0]!.toUpperCase() + r.slice(1)}
+            </a>
+          ))}
+        </span>
+        <span className="muted">Read-only: nothing you click here is saved.</span>
+        <a href={`/clients/${encodeURIComponent(clientId)}`}>Back to the team app</a>
+      </div>
+      <PortalPage portal={portal} email="" previewing />
+    </BrowserRouter>
   );
 }
 

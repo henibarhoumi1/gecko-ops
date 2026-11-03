@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { clientRead } from "@/lib/preview";
 import type { ClientPortal } from "@/features/auth/account";
 import { percentFilled, type Answers } from "@/features/onboarding/progress";
 import type { Concept, NoteKind } from "@/features/concepts/model";
@@ -57,7 +58,7 @@ export function useMyPortal(portal: ClientPortal) {
   return useQuery({
     queryKey: key(portal),
     queryFn: async (): Promise<PortalData> => {
-      const { data, error } = await requireSupabase().rpc("get_my_portal", {
+      const { data, error } = await clientRead("get_my_portal", {
         p_workspace_id: portal.workspaceId,
         p_client_id: portal.clientId,
       });
@@ -240,7 +241,7 @@ export function useMyTeam(portal: ClientPortal) {
   return useQuery({
     queryKey: teamKey(portal),
     queryFn: async (): Promise<Teammate[]> => {
-      const { data, error } = await requireSupabase().rpc("get_my_team", {
+      const { data, error } = await clientRead("get_my_team", {
         p_workspace_id: portal.workspaceId,
         p_client_id: portal.clientId,
       });

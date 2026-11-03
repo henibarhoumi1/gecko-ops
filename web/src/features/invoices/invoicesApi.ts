@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { clientReadData } from "@/lib/preview";
 import { requireSupabase } from "@/lib/supabase";
 import type { Lang } from "@/lib/i18n";
 import {
@@ -32,7 +33,8 @@ export function useMyInvoices(target: InvoiceTarget, enabled: boolean) {
   return useQuery({
     queryKey: clientKey(target),
     enabled,
-    queryFn: async () => ((await rpc("get_my_invoices", ids(target))) ?? []) as Invoice[],
+    queryFn: async () =>
+      ((await clientReadData("get_my_invoices", ids(target))) ?? []) as Invoice[],
     refetchInterval: 60_000,
   });
 }
