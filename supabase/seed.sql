@@ -6,6 +6,9 @@
 --
 -- Logins: each fake person gets an address made from the psql variable login_base, so all sign-in links
 -- reach one inbox. With login_base = name@example.com, the founder is name+gk-founder@example.com.
+-- The client owner is login_base itself, with no alias: Supabase's built-in email (used by the free
+-- testing project) only sends to the project team's own addresses, so that is the login Heni can open to
+-- see the portal as a client. That owner belongs to both fake brands, so the brand switcher shows too.
 -- Nobody has a password; sign in with the email link. Run with:
 --   psql -v ON_ERROR_STOP=1 -v login_base=name@example.com -f supabase/seed.sql
 
@@ -59,7 +62,7 @@ $$;
 select pg_temp.add_login('a0000000-0000-4000-8000-000000000001', pg_temp.login('founder'), 'Heni (test)');
 select pg_temp.add_login('a0000000-0000-4000-8000-000000000002', pg_temp.login('producer'), 'Sami Producer');
 select pg_temp.add_login('a0000000-0000-4000-8000-000000000003', pg_temp.login('editor'), 'Lina Editor');
-select pg_temp.add_login('a0000000-0000-4000-8000-000000000011', pg_temp.login('owner'), 'Olfa Owner');
+select pg_temp.add_login('a0000000-0000-4000-8000-000000000011', current_setting('gecko.login_base'), 'Olfa Owner');
 select pg_temp.add_login('a0000000-0000-4000-8000-000000000012', pg_temp.login('approver'), 'Amine Approver');
 select pg_temp.add_login('a0000000-0000-4000-8000-000000000013', pg_temp.login('finance'), 'Fatma Finance');
 select pg_temp.add_login('a0000000-0000-4000-8000-000000000014', pg_temp.login('viewer'), 'Victor Viewer');
@@ -81,11 +84,12 @@ select 'b0000000-0000-4000-8000-000000000001', 'test-fresh', 'editor'
 where to_regclass('public.client_assignments') is not null;
 
 insert into public.client_accounts (workspace_id, client_id, email, display_name, user_id, accepted_at, invited_by, role) values
-  ('b0000000-0000-4000-8000-000000000001', 'test-fresh', pg_temp.login('owner'), 'Olfa Owner', 'a0000000-0000-4000-8000-000000000011', now(), 'a0000000-0000-4000-8000-000000000001', 'owner'),
+  ('b0000000-0000-4000-8000-000000000001', 'test-fresh', current_setting('gecko.login_base'), 'Olfa Owner', 'a0000000-0000-4000-8000-000000000011', now(), 'a0000000-0000-4000-8000-000000000001', 'owner'),
   ('b0000000-0000-4000-8000-000000000001', 'test-fresh', pg_temp.login('approver'), 'Amine Approver', 'a0000000-0000-4000-8000-000000000012', now(), 'a0000000-0000-4000-8000-000000000001', 'approver'),
   ('b0000000-0000-4000-8000-000000000001', 'test-fresh', pg_temp.login('finance'), 'Fatma Finance', 'a0000000-0000-4000-8000-000000000013', now(), 'a0000000-0000-4000-8000-000000000001', 'finance'),
   ('b0000000-0000-4000-8000-000000000001', 'test-fresh', pg_temp.login('viewer'), 'Victor Viewer', 'a0000000-0000-4000-8000-000000000014', now(), 'a0000000-0000-4000-8000-000000000001', 'viewer'),
-  ('b0000000-0000-4000-8000-000000000001', 'test-cinema', pg_temp.login('cinema'), 'Cyrine Cinema', 'a0000000-0000-4000-8000-000000000021', now(), 'a0000000-0000-4000-8000-000000000001', 'owner');
+  ('b0000000-0000-4000-8000-000000000001', 'test-cinema', pg_temp.login('cinema'), 'Cyrine Cinema', 'a0000000-0000-4000-8000-000000000021', now(), 'a0000000-0000-4000-8000-000000000001', 'owner'),
+  ('b0000000-0000-4000-8000-000000000001', 'test-cinema', current_setting('gecko.login_base'), 'Olfa Owner', 'a0000000-0000-4000-8000-000000000011', now(), 'a0000000-0000-4000-8000-000000000001', 'approver');
 
 -- ---------- the team sets up both portals ----------
 select pg_temp.act_as('a0000000-0000-4000-8000-000000000001');
