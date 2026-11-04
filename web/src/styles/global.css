@@ -6254,10 +6254,9 @@ a.piece:hover {
   background: var(--yellow);
 }
 .today-row {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: baseline;
-  justify-content: space-between;
   gap: 4px 12px;
   min-width: 0;
 }

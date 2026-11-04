@@ -1,7 +1,7 @@
 {
  "cuts": [
   {
-   "id": "bd479737-468c-4571-ae85-c9fc50e74dd6",
+   "id": "09b6fb20-206d-4bdf-aad3-163dfc1bd0ce",
    "notes": [],
    "title": "Routine du matin, montage 1",
    "status": "review",
@@ -9,20 +9,20 @@
    "position": 0,
    "versions": [
     {
-     "path": "10000000-0000-4000-8000-0000000009a1/maison/bd479737-468c-4571-ae85-c9fc50e74dd6/v1.mp4",
+     "path": "10000000-0000-4000-8000-0000000009a1/maison/09b6fb20-206d-4bdf-aad3-163dfc1bd0ce/v1.mp4",
      "size": 12000000,
      "seconds": 31.5,
      "version": 1,
-     "createdAt": "2026-11-04T16:48:45.872594+01:00",
+     "createdAt": "2026-11-04T17:31:45.366162+01:00",
      "uploadedBy": "Heni",
      "whatChanged": "Premier montage"
     }
    ],
-   "createdAt": "2026-11-04T16:48:45.872594+01:00",
+   "createdAt": "2026-11-04T17:31:45.366162+01:00",
    "delivered": false,
    "finalLink": null,
    "finalNote": "",
-   "updatedAt": "2026-11-04T16:48:45.872594+01:00",
+   "updatedAt": "2026-11-04T17:31:45.366162+01:00",
    "approvedAt": null,
    "approvedBy": null,
    "authorName": "",

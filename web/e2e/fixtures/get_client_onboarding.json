@@ -1,5 +1,7 @@
 {
- "data": {},
- "sentAt": null,
- "updatedAt": null
+ "data": {
+  "brand": "Maison Lumière"
+ },
+ "sentAt": "2026-10-31T17:31:45.366162+01:00",
+ "updatedAt": "2026-11-04T17:31:45.366162+01:00"
 }
