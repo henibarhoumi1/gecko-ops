@@ -4,7 +4,13 @@ const paths = (role: Parameters<typeof navFor>[0]) => navFor(role).map((n) => n.
 
 describe("navFor", () => {
   it("gives the founder everything", () => {
-    expect(paths("founder")).toEqual(["pipeline", "clients", "team", "alerts"]);
+    expect(paths("founder")).toEqual(["today", "pipeline", "clients", "team", "alerts"]);
+  });
+
+  it("lands the founder and producers on Today, editors on their clients", () => {
+    expect(paths("founder")[0]).toBe("today");
+    expect(paths("sales")[0]).toBe("today");
+    expect(paths("editor")[0]).toBe("clients");
   });
 
   it("keeps the pipeline to the founder and client leads", () => {

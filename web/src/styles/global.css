@@ -6170,3 +6170,202 @@ a.piece:hover {
   font-size: 1.6em;
   font-weight: 600;
 }
+
+/* Today: the founder's and producers' home. Black on white, hierarchy by size and weight. */
+.today .page-head {
+  align-items: flex-end;
+}
+.today h1 {
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.today-sum {
+  margin: 8px 0 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.today-date-now {
+  margin: 0;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.today-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+  gap: 28px 32px;
+  margin-top: 24px;
+}
+.today-section {
+  min-width: 0;
+  border-top: 2px solid var(--ink);
+  padding-top: 14px;
+}
+.today-section h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0;
+  font-size: 1.3rem;
+  letter-spacing: -0.02em;
+}
+.today-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+}
+.today-count {
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  padding: 2px 8px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+}
+.today-sub {
+  margin: 14px 0 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.today-list {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.today-list > li {
+  padding: 12px 14px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--white);
+  min-width: 0;
+}
+.today-list.compact > li {
+  padding: 10px 12px;
+}
+.today-list > li.why-changes {
+  background: var(--pink-soft);
+}
+.today-list > li.slow .today-wait {
+  background: var(--yellow);
+}
+.today-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  min-width: 0;
+}
+.today-row > :first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.today-wait {
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+.today-title {
+  display: block;
+  margin-top: 4px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.today-quote {
+  margin: 6px 0 0;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.today-group {
+  margin-top: 14px;
+}
+.today-group + .today-group {
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.today-group .today-list {
+  margin-top: 8px;
+}
+.btn.btn-small {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
+.today-date {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr);
+  gap: 12px;
+  align-items: baseline;
+}
+.today-when {
+  display: flex;
+  flex-direction: column;
+  font-variant-numeric: tabular-nums;
+}
+.today-what {
+  overflow-wrap: anywhere;
+}
+.today-kind {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 1px 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid var(--ink);
+  border-radius: 4px;
+}
+.today-date.kind-shoot .today-kind {
+  background: var(--ink);
+  color: var(--white);
+}
+.today-date.kind-drafts .today-kind {
+  background: var(--pink);
+  border-color: var(--pink);
+}
+.today-list.late > li {
+  background: var(--yellow-soft);
+}
+@media (max-width: 520px) {
+  .today-date {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .today-when {
+    flex-direction: row;
+    gap: 8px;
+  }
+}
+
+/* Portal Home: what Gecko did since the client's last visit */
+.since-visit {
+  margin: 0 0 20px;
+  padding: 14px 16px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--pink-soft);
+}
+.since-visit-head {
+  margin: 0;
+  font-weight: 700;
+}
+.since-visit ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.since-visit li {
+  font-weight: 600;
+}
+.since-visit a {
+  color: var(--ink);
+}

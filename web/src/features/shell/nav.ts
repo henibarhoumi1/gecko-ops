@@ -10,6 +10,7 @@ const ALL: readonly Role[] = ["founder", "sales", "editor", "assistant"];
 
 /** Top-level sections, in sidebar order. Who sees what matches the database's role rules. */
 export const NAV: readonly NavItem[] = [
+  { path: "today", label: "Today", roles: ["founder", "sales"] },
   { path: "pipeline", label: "Pipeline", roles: ["founder", "sales"] },
   { path: "clients", label: "Clients", roles: ["founder", "sales", "editor"] },
   { path: "team", label: "Team", roles: ALL },
