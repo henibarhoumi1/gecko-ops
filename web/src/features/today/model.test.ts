@@ -42,7 +42,9 @@ describe("today model", () => {
 
   it("links each item to its tab", () => {
     expect(linkFor({ client_id: "dany", part: "cut", id: "x" })).toBe("/clients/dany/review");
-    expect(linkFor({ client_id: "dany", part: "invoice", id: "inv" })).toBe("/clients/dany/money/inv");
+    expect(linkFor({ client_id: "dany", part: "invoice", id: "inv" })).toBe(
+      "/clients/dany/money/inv",
+    );
     expect(linkFor({ client_id: "rare rich", part: "concept", id: "x" })).toBe(
       "/clients/rare%20rich/concepts",
     );

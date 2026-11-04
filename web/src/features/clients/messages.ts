@@ -36,7 +36,12 @@ export function nudgeMessage(lang: MsgLang, waiting: Waiting, url: string): stri
       count(lang, waiting.scripts, ["script", "scripts"], ["script", "scripts"]),
     cuts > 0 && count(lang, cuts, ["video", "videos"], ["vidéo", "vidéos"]),
     options > 0 &&
-      count(lang, options, ["shoot choice", "shoot choices"], ["choix de tournage", "choix de tournage"]),
+      count(
+        lang,
+        options,
+        ["shoot choice", "shoot choices"],
+        ["choix de tournage", "choix de tournage"],
+      ),
   ].filter((p): p is string => Boolean(p));
   const total = waiting.ideas + waiting.scripts + cuts + options;
   if (parts.length === 0)
@@ -45,7 +50,9 @@ export function nudgeMessage(lang: MsgLang, waiting: Waiting, url: string): stri
       : `Hi! There's an update on your Gecko portal: ${url}`;
   const and = lang === "fr" ? " et " : " and ";
   const list =
-    parts.length === 1 ? parts[0] : `${parts.slice(0, -1).join(", ")}${and}${parts[parts.length - 1]}`;
+    parts.length === 1
+      ? parts[0]
+      : `${parts.slice(0, -1).join(", ")}${and}${parts[parts.length - 1]}`;
   return lang === "fr"
     ? `Bonjour ! ${list} ${total > 1 ? "vous attendent" : "vous attend"} sur votre espace Gecko : ${url}\nValidez ou dites-nous quoi changer, directement là-bas.`
     : `Hi! ${list} ${total > 1 ? "are" : "is"} waiting for you on your Gecko portal: ${url}\nApprove or tell us what to change, right there.`;

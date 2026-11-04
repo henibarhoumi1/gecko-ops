@@ -42,7 +42,10 @@ export function SinceLastVisit({ target }: { target: Target }) {
     month: "short",
   });
   return (
-    <section className="since-visit" aria-label={t("New since your last visit", "Nouveau depuis votre dernière visite")}>
+    <section
+      className="since-visit"
+      aria-label={t("New since your last visit", "Nouveau depuis votre dernière visite")}
+    >
       <p className="since-visit-head">
         {t(`New since your last visit, ${day}`, `Nouveau depuis votre dernière visite, ${day}`)}
       </p>

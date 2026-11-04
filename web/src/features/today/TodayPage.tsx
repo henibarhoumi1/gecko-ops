@@ -149,7 +149,9 @@ export function TodayPage() {
                             {partName(i.part)}: {i.title}
                           </Link>
                           <span className="today-wait">
-                            {i.part === "invoice" && i.due ? `due ${when(i.due, t.today).toLowerCase()}` : waited(days)}
+                            {i.part === "invoice" && i.due
+                              ? `due ${when(i.due, t.today).toLowerCase()}`
+                              : waited(days)}
                           </span>
                         </div>
                       </li>
@@ -168,7 +170,11 @@ export function TodayPage() {
               <h3 className="today-sub">Slipped</h3>
               <ul className="today-list dates late">
                 {late.map((d) => (
-                  <DateRow key={`${d.kind}-${d.client_id}-${d.label}-${d.date}`} d={d} today={t.today} />
+                  <DateRow
+                    key={`${d.kind}-${d.client_id}-${d.label}-${d.date}`}
+                    d={d}
+                    today={t.today}
+                  />
                 ))}
               </ul>
             </>
@@ -181,7 +187,11 @@ export function TodayPage() {
           ) : (
             <ul className="today-list dates">
               {coming.map((d) => (
-                <DateRow key={`${d.kind}-${d.client_id}-${d.label}-${d.date}`} d={d} today={t.today} />
+                <DateRow
+                  key={`${d.kind}-${d.client_id}-${d.label}-${d.date}`}
+                  d={d}
+                  today={t.today}
+                />
               ))}
             </ul>
           )}

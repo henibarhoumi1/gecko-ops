@@ -1,7 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { newsLines, type News } from "./news";
 
-const none: News = { since: "2026-11-02T10:00:00Z", ideas: 0, scripts: 0, cuts: 0, options: 0, replies: 0, delivered: 0, invoices: 0 };
+const none: News = {
+  since: "2026-11-02T10:00:00Z",
+  ideas: 0,
+  scripts: 0,
+  cuts: 0,
+  options: 0,
+  replies: 0,
+  delivered: 0,
+  invoices: 0,
+};
 
 describe("new since your last visit", () => {
   it("says nothing when nothing changed", () => {
