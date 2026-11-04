@@ -35,8 +35,9 @@
 :root {
   --white: #ffffff;
   --ink: #000000;
-  --ink-2: #3b3835;
-  --muted: #6b6762;
+  /* No grey text anywhere: secondary text is ink too, quieter only by size and weight (as on the website). */
+  --ink-2: #000000;
+  --muted: #000000;
   --pink: #f4c1c4;
   --pink-soft: #fbe3e4;
   --yellow: #f3df9e;
@@ -3617,7 +3618,6 @@ a.btn {
   margin: 10px 0 0;
   font-size: 14px;
   font-weight: 600;
-  opacity: 0.85;
 }
 
 /* Plan, Prep, Shoot, Edit, Delivery, Results on one line. */
@@ -3926,7 +3926,7 @@ a.piece:hover {
 }
 
 .cover-well.empty .muted {
-  color: rgba(255, 255, 255, 0.7);
+  color: #ffffff;
 }
 
 .portal-head.cine {
@@ -4627,7 +4627,7 @@ a.piece:hover {
   padding: 3px 8px;
   border-radius: 6px;
   background: rgba(0, 0, 0, 0.35);
-  color: rgba(255, 255, 255, 0.85);
+  color: #ffffff;
   font-size: 0.8rem;
   font-weight: 600;
   pointer-events: none;
@@ -6127,7 +6127,7 @@ a.piece:hover {
   background: var(--pink-soft);
 }
 .alerts-list li.seen {
-  opacity: 0.7;
+  background: var(--white);
 }
 .alerts-list li.action-approve {
   border-left: 4px solid var(--green);
