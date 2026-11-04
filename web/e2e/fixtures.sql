@@ -28,6 +28,10 @@ insert into public.client_portals (workspace_id, client_id, campaign, summary, i
 insert into public.client_accounts (workspace_id, client_id, email, display_name, user_id, accepted_at, invited_by, role) values
   ('10000000-0000-4000-8000-0000000009a1', 'maison', 'owner@phone.test', 'Yasmine Ben Abdallah', '00000000-0000-4000-8000-0000000009a2', now() - interval '5 days', '00000000-0000-4000-8000-0000000009a1', 'owner');
 
+-- The brand questions are sent, so the client lands on Home (with New since your last visit).
+insert into public.client_onboarding (workspace_id, client_id, data, sent_at) values
+  ('10000000-0000-4000-8000-0000000009a1', 'maison', '{"brand":"Maison Lumière"}', now() - interval '4 days');
+
 insert into public.concepts (workspace_id, client_id, title, body, refs, status, position) values
   ('10000000-0000-4000-8000-0000000009a1', 'maison', 'La routine de 7 heures du matin', 'Une maman pressée, trois produits, trente secondes. On montre la texture en très gros plan et le résultat à la lumière du jour.', 'https://www.instagram.com/reel/example', 'review', 0),
   ('10000000-0000-4000-8000-0000000009a1', 'maison', 'Avant/après : peau déshydratée après l''hiver', 'Split screen, même lumière, même cadre. Le jour 1 et le jour 14.', '', 'review', 1),

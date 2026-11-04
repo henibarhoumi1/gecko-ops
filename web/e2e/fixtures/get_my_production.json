@@ -7,7 +7,7 @@
  },
  "options": [
   {
-   "id": "c96fe143-21d3-4846-bb8d-5e339bfe046a",
+   "id": "5a992377-0bc7-4900-be4d-74563afbfd7a",
    "cost": 300.0,
    "kind": "location",
    "link": "",
@@ -22,7 +22,7 @@
    "details": "Grande fenêtre, lumière du matin jusqu'à 11 h.",
    "boughtBy": "gecko",
    "costNote": "",
-   "createdAt": "2026-11-04T16:48:45.872594+01:00",
+   "createdAt": "2026-11-04T17:31:45.366162+01:00",
    "decidedAt": null,
    "decidedBy": "",
    "authorName": "",
@@ -32,7 +32,7 @@
    "releaseOnFile": null
   },
   {
-   "id": "a3f1d5ac-d3b5-429f-a215-94a08ea58d2b",
+   "id": "894c33ed-f0db-4473-a90f-56c243d6d51c",
    "cost": 80.0,
    "kind": "prop",
    "link": "",
@@ -47,7 +47,7 @@
    "details": "",
    "boughtBy": "gecko",
    "costNote": "",
-   "createdAt": "2026-11-04T16:48:45.872594+01:00",
+   "createdAt": "2026-11-04T17:31:45.366162+01:00",
    "decidedAt": null,
    "decidedBy": "",
    "authorName": "",
@@ -57,7 +57,7 @@
    "releaseOnFile": null
   },
   {
-   "id": "01b1ad9a-5130-4038-862f-c5b6772da676",
+   "id": "fc95d9ea-035e-4f07-8c69-7f85a7689864",
    "cost": 450.0,
    "kind": "talent",
    "link": "",
@@ -72,7 +72,7 @@
    "details": "Naturelle face caméra, déjà travaillé en cosmétique, peau mixte.",
    "boughtBy": "gecko",
    "costNote": "",
-   "createdAt": "2026-11-04T16:48:45.872594+01:00",
+   "createdAt": "2026-11-04T17:31:45.366162+01:00",
    "decidedAt": null,
    "decidedBy": "",
    "authorName": "",

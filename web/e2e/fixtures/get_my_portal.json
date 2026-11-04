@@ -6,7 +6,7 @@
  "cover": null,
  "scripts": [
   {
-   "id": "05954298-5737-40ed-bc9a-e73eaec03609",
+   "id": "90ae25f2-aeaa-499d-bf99-7d22b4dccfc2",
    "cta": "Commandez le coffret découverte sur maisonlumiere.tn",
    "goal": "Faire découvrir la gamme et donner envie d'essayer le coffret découverte.",
    "hook": null,
@@ -47,9 +47,9 @@
    "position": 0,
    "previous": null,
    "conceptId": null,
-   "createdAt": "2026-11-04T16:48:45.872594+01:00",
+   "createdAt": "2026-11-04T17:31:45.366162+01:00",
    "treatment": {},
-   "updatedAt": "2026-11-04T16:48:45.872594+01:00",
+   "updatedAt": "2026-11-04T17:31:45.366162+01:00",
    "writtenBy": "gecko",
    "approvedAt": null,
    "approvedBy": null,
@@ -57,7 +57,7 @@
    "approvedVersion": null
   },
   {
-   "id": "f938470c-e372-4a69-82b2-79e9f881cb1b",
+   "id": "50abe45e-78dd-4502-aaee-c199a578a87d",
    "cta": "Découvrez la gamme",
    "goal": "Prouver le résultat.",
    "hook": null,
@@ -82,9 +82,9 @@
    "position": 1,
    "previous": null,
    "conceptId": null,
-   "createdAt": "2026-11-04T16:48:45.872594+01:00",
+   "createdAt": "2026-11-04T17:31:45.366162+01:00",
    "treatment": {},
-   "updatedAt": "2026-11-04T16:48:45.872594+01:00",
+   "updatedAt": "2026-11-04T17:31:45.366162+01:00",
    "writtenBy": "gecko",
    "approvedAt": null,
    "approvedBy": null,
@@ -94,7 +94,7 @@
  ],
  "concepts": [
   {
-   "id": "d7e9c677-6bcb-46df-bb9c-8a319cc40090",
+   "id": "50a6660c-71f2-46b2-83a7-b66891a7f075",
    "body": "Une maman pressée, trois produits, trente secondes. On montre la texture en très gros plan et le résultat à la lumière du jour.",
    "refs": "https://www.instagram.com/reel/example",
    "notes": [],
@@ -103,8 +103,8 @@
    "status": "review",
    "version": 1,
    "position": 0,
-   "createdAt": "2026-11-04T16:48:45.872594+01:00",
-   "updatedAt": "2026-11-04T16:48:45.872594+01:00",
+   "createdAt": "2026-11-04T17:31:45.366162+01:00",
+   "updatedAt": "2026-11-04T17:31:45.366162+01:00",
    "approvedAt": null,
    "approvedBy": null,
    "authorName": "",
@@ -112,16 +112,16 @@
    "approvedVersion": null
   },
   {
-   "id": "6e098d8c-fe33-48f0-a066-22a9433db5be",
+   "id": "2f86a95f-b7e3-47b6-9507-3d0cc2df66c4",
    "body": "Split screen, même lumière, même cadre. Le jour 1 et le jour 14.",
    "refs": "",
    "notes": [
     {
-     "id": "c400a8af-3b3b-497a-9566-fe6d6445756b",
+     "id": "970bf797-3d7a-4158-b3a2-c9e5cfc5db0e",
      "body": "On pourrait le faire avec un vrai mouchoir de la marque ?",
      "kind": "comment",
      "version": 1,
-     "createdAt": "2026-11-04T16:48:45.872594+01:00",
+     "createdAt": "2026-11-04T17:31:45.366162+01:00",
      "authorName": "Yasmine Ben Abdallah",
      "fromClient": true
     }
@@ -131,8 +131,8 @@
    "status": "review",
    "version": 1,
    "position": 1,
-   "createdAt": "2026-11-04T16:48:45.872594+01:00",
-   "updatedAt": "2026-11-04T16:48:45.872594+01:00",
+   "createdAt": "2026-11-04T17:31:45.366162+01:00",
+   "updatedAt": "2026-11-04T17:31:45.366162+01:00",
    "approvedAt": null,
    "approvedBy": null,
    "authorName": "",
@@ -140,7 +140,7 @@
    "approvedVersion": null
   },
   {
-   "id": "64df808a-4e1e-40b0-8a59-5e6f28618d1a",
+   "id": "28e3b837-30cc-4e6e-a2df-b409dfc0d43c",
    "body": "La fondatrice raconte l'origine de la marque face caméra.",
    "refs": "",
    "notes": [],
@@ -149,9 +149,9 @@
    "status": "approved",
    "version": 1,
    "position": 3,
-   "createdAt": "2026-11-04T16:48:45.872594+01:00",
-   "updatedAt": "2026-11-04T16:48:45.872594+01:00",
-   "approvedAt": "2026-11-01T16:48:45.872594+01:00",
+   "createdAt": "2026-11-04T17:31:45.366162+01:00",
+   "updatedAt": "2026-11-04T17:31:45.366162+01:00",
+   "approvedAt": "2026-11-01T17:31:45.366162+01:00",
    "approvedBy": "Yasmine",
    "authorName": "",
    "fromClient": false,
@@ -172,7 +172,7 @@
   ],
   "nextStep": "Validez les trois scripts restants avant vendredi.",
   "shootDate": "2026-11-19",
-  "updatedAt": "2026-11-04T16:48:45.872594+01:00",
+  "updatedAt": "2026-11-04T17:31:45.366162+01:00",
   "milestones": [
    {
     "date": "2026-10-29",
