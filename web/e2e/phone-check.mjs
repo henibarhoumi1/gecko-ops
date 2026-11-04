@@ -24,8 +24,22 @@ const b64 = (o) => Buffer.from(JSON.stringify(o)).toString("base64url");
 const session = (sub, email) => {
   const exp = Math.floor(Date.now() / 1000) + 3600 * 24;
   const token = `${b64({ alg: "HS256", typ: "JWT" })}.${b64({ sub, email, role: "authenticated", aud: "authenticated", exp })}.e2e`;
-  const user = { id: sub, aud: "authenticated", role: "authenticated", email, app_metadata: {}, user_metadata: {} };
-  return { access_token: token, token_type: "bearer", expires_in: 86400, expires_at: exp, refresh_token: "e2e", user };
+  const user = {
+    id: sub,
+    aud: "authenticated",
+    role: "authenticated",
+    email,
+    app_metadata: {},
+    user_metadata: {},
+  };
+  return {
+    access_token: token,
+    token_type: "bearer",
+    expires_in: 86400,
+    expires_at: exp,
+    refresh_token: "e2e",
+    user,
+  };
 };
 
 const PEOPLE = {
@@ -58,7 +72,9 @@ const SIZES = [
   { name: "360", width: 360, height: 740 },
 ];
 
-const server = spawn("npx", ["vite", "preview", "--port", "4173", "--strictPort"], { stdio: "inherit" });
+const server = spawn("npx", ["vite", "preview", "--port", "4173", "--strictPort"], {
+  stdio: "inherit",
+});
 await new Promise((r) => setTimeout(r, 4000));
 
 const browser = await chromium.launch();
@@ -116,7 +132,11 @@ try {
           const inScroller = (el) => {
             for (let p = el.parentElement; p; p = p.parentElement) {
               const s = getComputedStyle(p);
-              if (/(auto|scroll|hidden|clip)/.test(s.overflowX) && p !== document.body && p !== document.documentElement)
+              if (
+                /(auto|scroll|hidden|clip)/.test(s.overflowX) &&
+                p !== document.body &&
+                p !== document.documentElement
+              )
                 return true;
             }
             return false;
@@ -124,28 +144,61 @@ try {
           const name = (el) =>
             el.tagName.toLowerCase() +
             (el.id ? `#${el.id}` : "") +
-            (typeof el.className === "string" && el.className ? `.${el.className.trim().split(/\s+/).slice(0, 3).join(".")}` : "");
+            (typeof el.className === "string" && el.className
+              ? `.${el.className.trim().split(/\s+/).slice(0, 3).join(".")}`
+              : "");
           const wide = [];
           for (const el of document.querySelectorAll("body *")) {
             const r = el.getBoundingClientRect();
             if (r.width === 0 || r.height === 0) continue;
             if ((r.right > vw + 1 || r.left < -1) && !inScroller(el)) {
-              wide.push({ el: name(el), left: Math.round(r.left), right: Math.round(r.right), text: (el.textContent ?? "").trim().slice(0, 60) });
+              wide.push({
+                el: name(el),
+                left: Math.round(r.left),
+                right: Math.round(r.right),
+                text: (el.textContent ?? "").trim().slice(0, 60),
+              });
             }
           }
           // Keep the outermost offenders only.
           const tiny = [];
           for (const el of document.querySelectorAll("button, a, input, select, [role=button]")) {
             const r = el.getBoundingClientRect();
-            if (r.width > 0 && r.height > 0 && (r.height < 32 || r.width < 32) && getComputedStyle(el).display !== "inline")
-              tiny.push({ el: name(el), w: Math.round(r.width), h: Math.round(r.height), text: (el.textContent ?? "").trim().slice(0, 40) });
+            if (
+              r.width > 0 &&
+              r.height > 0 &&
+              (r.height < 32 || r.width < 32) &&
+              getComputedStyle(el).display !== "inline"
+            )
+              tiny.push({
+                el: name(el),
+                w: Math.round(r.width),
+                h: Math.round(r.height),
+                text: (el.textContent ?? "").trim().slice(0, 40),
+              });
           }
-          return { vw, scroll, wide: wide.slice(0, 25), tiny: tiny.slice(0, 25), title: document.title };
+          return {
+            vw,
+            scroll,
+            wide: wide.slice(0, 25),
+            tiny: tiny.slice(0, 25),
+            title: document.title,
+          };
         });
         const file = `${who}-${size.name}${path === "/" ? "-home" : path.replace(/\//g, "-")}.png`;
         await page.screenshot({ path: join(out, file), fullPage: true });
-        report.push({ who, size: size.name, path, overflow: found.scroll > found.vw, ...found, errors: [...errors], file });
-        console.log(`${who} ${size.name} ${path}: scroll ${found.scroll}/${found.vw}, wide ${found.wide.length}, errors ${errors.length}`);
+        report.push({
+          who,
+          size: size.name,
+          path,
+          overflow: found.scroll > found.vw,
+          ...found,
+          errors: [...errors],
+          file,
+        });
+        console.log(
+          `${who} ${size.name} ${path}: scroll ${found.scroll}/${found.vw}, wide ${found.wide.length}, errors ${errors.length}`,
+        );
       }
       await context.close();
     }
@@ -156,4 +209,6 @@ try {
 }
 writeFileSync(join(out, "report.json"), JSON.stringify(report, null, 2));
 const bad = report.filter((r) => r.overflow || r.wide.length);
-console.log(bad.length ? `${bad.length} screens wider than the phone` : "every screen fits the phone");
+console.log(
+  bad.length ? `${bad.length} screens wider than the phone` : "every screen fits the phone",
+);
