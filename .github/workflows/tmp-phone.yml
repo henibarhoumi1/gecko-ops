@@ -1,0 +1,35 @@
+name: tmp-phone
+# Temporary: phone check of the client portal against fake data; results pushed to app-phone-results.
+on:
+  push:
+    branches: [today-and-news]
+permissions:
+  contents: write
+jobs:
+  phone:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm run build
+        env:
+          VITE_SUPABASE_URL: http://localhost:54321
+          VITE_SUPABASE_ANON_KEY: e2e-public
+      - run: npm i --no-save playwright@1.49.1 && npx playwright install --with-deps chromium
+      - run: node e2e/phone-check.mjs /tmp/phone-out
+      - name: Push results
+        if: always()
+        run: |
+          cd /tmp/phone-out
+          git init -q && git checkout -q -b app-phone-results
+          git config user.name "gecko-phone" && git config user.email "phone@users.noreply.github.com"
+          git add -A && git commit -qm "Phone check $GITHUB_SHA"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" app-phone-results
