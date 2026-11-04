@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: &screens ["web/src/features/portal/**", "web/src/features/today/**", "web/src/styles/**", "web/e2e/**"]
+    paths: ["web/src/features/portal/**", "web/src/features/today/**", "web/src/styles/**", "web/e2e/**"]
   pull_request:
-    paths: *screens
+    paths: ["web/src/features/portal/**", "web/src/features/today/**", "web/src/styles/**", "web/e2e/**"]
 permissions:
   contents: write
 jobs:
