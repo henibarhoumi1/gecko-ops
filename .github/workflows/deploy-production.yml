@@ -123,3 +123,21 @@ jobs:
 
       - name: Check production is built exactly as the repository says
         run: sh supabase/tools/compare-with-repo.sh "$DB_URL" "Production"
+
+  # The live app (Cloudflare worker gecko-app) builds from the release branch, not from main. Once the database
+  # is updated and checked, release moves to the same commit, so the live app never runs ahead of the database.
+  # The first run creates the branch.
+  release-app:
+    needs: production
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Move the release branch to this commit
+        run: |
+          git push origin "$GITHUB_SHA:refs/heads/release"
+          echo "The live app now builds $GITHUB_SHA." >> "$GITHUB_STEP_SUMMARY"

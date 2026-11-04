@@ -80,6 +80,12 @@ The testing worker pings its database daily, so the free testing project doesn't
 - **Testing:** every merge to `main` that adds a migration runs `deploy-testing`, which pushes it to the `gecko-testing` database with the Supabase CLI and checks testing is built exactly as the repository says. It refuses any database that isn't the marked testing project. Manual modes: `push`, `baseline` (once, after a reset) and `rehearse` (practises the history recovery cases).
 - **Production:** `deploy-production` is built but switched off until the production baseline. When it is on (repository variable `PRODUCTION_PIPELINE` = `on`), it runs only by hand from `main`, after your approval in the `production` environment, and always starts with a fresh encrypted backup and an export of the migration history.
 
+## Releasing the live app
+
+The live app (`gecko-app`) should build from the `release` branch, not from `main`. Merges to `main` update the testing app and the previews; the live app changes only when you run **deploy-production** and approve it: the database is updated and checked first, then the run moves `release` to the same commit and Cloudflare rebuilds the live app. So the live app never runs code the live database doesn't have yet.
+
+One-time switch, after the first deploy-production run that includes this step (it creates the `release` branch): Cloudflare > Workers & Pages > `gecko-app` > Settings > Build > Branch control > Production branch: `release`. Leave `gecko-app-testing` on `main`.
+
 ## Alerts (hearing about problems)
 - When a page crashes or an action fails for anyone signed in, the browser reports it (only the error text, the page path and which client). The founder and producers see these, plus what clients approved, asked to change or commented on, under **Alerts** in the team app.
 - The `client-health` workflow runs every hour. If anyone hit a problem in the last hour, the run fails and GitHub emails Heni about it. It prints counts only, because the repository is public.
