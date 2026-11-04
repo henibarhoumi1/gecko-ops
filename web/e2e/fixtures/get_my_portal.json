@@ -1,0 +1,203 @@
+{
+ "me": "Yasmine Ben Abdallah",
+ "logo": null,
+ "role": "owner",
+ "brand": "Maison Lumière Cosmétiques",
+ "cover": null,
+ "scripts": [
+  {
+   "id": "05954298-5737-40ed-bc9a-e73eaec03609",
+   "cta": "Commandez le coffret découverte sur maisonlumiere.tn",
+   "goal": "Faire découvrir la gamme et donner envie d'essayer le coffret découverte.",
+   "hook": null,
+   "mine": null,
+   "beats": [
+    {
+     "see": "Gros plan sur le flacon posé sur le lavabo, lumière du matin.",
+     "hear": "Ma peau tiraillait tous les matins.",
+     "text": "Peau qui tiraille ?"
+    },
+    {
+     "see": "Elle applique le sérum, texture en macro.",
+     "hear": "Le sérum d'abord, il pénètre en dix secondes."
+    },
+    {
+     "see": "Résultat à la fenêtre, elle sourit.",
+     "hear": "Et voilà, prête.",
+     "text": "Coffret découverte -20 %"
+    }
+   ],
+   "hooks": [
+    {
+     "text": "Ma peau tiraillait tous les matins. Jusqu'à ça."
+    },
+    {
+     "text": "Trois produits, trente secondes, zéro excuse."
+    },
+    {
+     "text": "Le secret de ma peau en hiver ? Il tient dans ma main."
+    }
+   ],
+   "notes": [],
+   "style": "ugc",
+   "title": "Routine du matin, version 30 secondes",
+   "status": "review",
+   "seconds": 30,
+   "version": 1,
+   "position": 0,
+   "previous": null,
+   "conceptId": null,
+   "createdAt": "2026-11-04T16:48:45.872594+01:00",
+   "treatment": {},
+   "updatedAt": "2026-11-04T16:48:45.872594+01:00",
+   "writtenBy": "gecko",
+   "approvedAt": null,
+   "approvedBy": null,
+   "authorName": "",
+   "approvedVersion": null
+  },
+  {
+   "id": "f938470c-e372-4a69-82b2-79e9f881cb1b",
+   "cta": "Découvrez la gamme",
+   "goal": "Prouver le résultat.",
+   "hook": null,
+   "mine": null,
+   "beats": [
+    {
+     "see": "Split screen.",
+     "hear": "Même lumière, même cadre."
+    }
+   ],
+   "hooks": [
+    {
+     "text": "Jour 1. Jour 14."
+    }
+   ],
+   "notes": [],
+   "style": "problem-fix",
+   "title": "Avant/après en 14 jours",
+   "status": "review",
+   "seconds": 20,
+   "version": 1,
+   "position": 1,
+   "previous": null,
+   "conceptId": null,
+   "createdAt": "2026-11-04T16:48:45.872594+01:00",
+   "treatment": {},
+   "updatedAt": "2026-11-04T16:48:45.872594+01:00",
+   "writtenBy": "gecko",
+   "approvedAt": null,
+   "approvedBy": null,
+   "authorName": "",
+   "approvedVersion": null
+  }
+ ],
+ "concepts": [
+  {
+   "id": "d7e9c677-6bcb-46df-bb9c-8a319cc40090",
+   "body": "Une maman pressée, trois produits, trente secondes. On montre la texture en très gros plan et le résultat à la lumière du jour.",
+   "refs": "https://www.instagram.com/reel/example",
+   "notes": [],
+   "title": "La routine de 7 heures du matin",
+   "format": "reel",
+   "status": "review",
+   "version": 1,
+   "position": 0,
+   "createdAt": "2026-11-04T16:48:45.872594+01:00",
+   "updatedAt": "2026-11-04T16:48:45.872594+01:00",
+   "approvedAt": null,
+   "approvedBy": null,
+   "authorName": "",
+   "fromClient": false,
+   "approvedVersion": null
+  },
+  {
+   "id": "6e098d8c-fe33-48f0-a066-22a9433db5be",
+   "body": "Split screen, même lumière, même cadre. Le jour 1 et le jour 14.",
+   "refs": "",
+   "notes": [
+    {
+     "id": "c400a8af-3b3b-497a-9566-fe6d6445756b",
+     "body": "On pourrait le faire avec un vrai mouchoir de la marque ?",
+     "kind": "comment",
+     "version": 1,
+     "createdAt": "2026-11-04T16:48:45.872594+01:00",
+     "authorName": "Yasmine Ben Abdallah",
+     "fromClient": true
+    }
+   ],
+   "title": "Avant/après : peau déshydratée après l'hiver",
+   "format": "reel",
+   "status": "review",
+   "version": 1,
+   "position": 1,
+   "createdAt": "2026-11-04T16:48:45.872594+01:00",
+   "updatedAt": "2026-11-04T16:48:45.872594+01:00",
+   "approvedAt": null,
+   "approvedBy": null,
+   "authorName": "",
+   "fromClient": false,
+   "approvedVersion": null
+  },
+  {
+   "id": "64df808a-4e1e-40b0-8a59-5e6f28618d1a",
+   "body": "La fondatrice raconte l'origine de la marque face caméra.",
+   "refs": "",
+   "notes": [],
+   "title": "Interview fondatrice : pourquoi Maison Lumière",
+   "format": "reel",
+   "status": "approved",
+   "version": 1,
+   "position": 3,
+   "createdAt": "2026-11-04T16:48:45.872594+01:00",
+   "updatedAt": "2026-11-04T16:48:45.872594+01:00",
+   "approvedAt": "2026-11-01T16:48:45.872594+01:00",
+   "approvedBy": "Yasmine",
+   "authorName": "",
+   "fromClient": false,
+   "approvedVersion": 1
+  }
+ ],
+ "overview": {
+  "plan": "regular",
+  "price": 2900.0,
+  "reels": 10,
+  "summary": "Dix reels pour présenter la nouvelle gamme hydratante : routines du matin, avant/après, témoignages et démonstrations produit, tournés en une journée à La Marsa.",
+  "campaign": "Lancement de la gamme hydratante printemps",
+  "included": [
+   "10 reels verticaux",
+   "1 journée de tournage",
+   "Sous-titres FR et AR",
+   "Une série de changements par reel"
+  ],
+  "nextStep": "Validez les trois scripts restants avant vendredi.",
+  "shootDate": "2026-11-19",
+  "updatedAt": "2026-11-04T16:48:45.872594+01:00",
+  "milestones": [
+   {
+    "date": "2026-10-29",
+    "done": true,
+    "label": "Idées validées"
+   },
+   {
+    "date": "2026-11-08",
+    "done": false,
+    "label": "Scripts validés"
+   },
+   {
+    "date": "2026-11-19",
+    "done": false,
+    "label": "Shoot day"
+   },
+   {
+    "date": "2026-11-26",
+    "done": false,
+    "label": "Premiers montages"
+   }
+  ],
+  "shootPlace": "Studio lumière naturelle, La Marsa",
+  "balanceStatus": "later",
+  "depositStatus": "due"
+ },
+ "template": "performance"
+}

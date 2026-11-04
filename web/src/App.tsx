@@ -22,6 +22,7 @@ import {
   rememberPortal,
 } from "@/features/portal/portalChoice";
 import { TeamPage } from "@/features/team/TeamPage";
+import { TodayPage } from "@/features/today/TodayPage";
 import { AppShell } from "@/features/shell/AppShell";
 import { navFor } from "@/features/shell/nav";
 import { WorkspaceProvider } from "@/features/workspace/WorkspaceContext";
@@ -43,6 +44,7 @@ const queryClient = new QueryClient({
 
 /** One screen per section in the sidebar (see nav.ts). */
 const SCREENS: Record<string, () => ReactElement> = {
+  today: () => <TodayPage />,
   pipeline: () => <PipelinePage />,
   clients: () => (
     <Routes>

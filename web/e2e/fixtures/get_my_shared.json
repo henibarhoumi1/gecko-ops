@@ -1,0 +1,24 @@
+{
+ "items": [
+  {
+   "id": "1922a09b-8a76-4234-a9e5-2d5a05674907",
+   "url": "https://www.instagram.com/reel/example2",
+   "body": "Lumineux, simple, pas trop « pub ».",
+   "kind": "reference",
+   "mine": null,
+   "title": "Le ton qu'on aime",
+   "answer": "",
+   "status": null,
+   "createdAt": "2026-11-04T16:48:45.872594+01:00",
+   "answeredAt": null,
+   "answeredBy": "",
+   "authorName": "Yasmine",
+   "fromClient": true
+  }
+ ],
+ "brandNotes": {
+  "body": "",
+  "updatedAt": null,
+  "updatedBy": ""
+ }
+}

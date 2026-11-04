@@ -15,6 +15,7 @@ import { friendlyError } from "@/lib/errors";
 import { videosOn } from "@/lib/features";
 import { ConceptsTab } from "./ConceptsTab";
 import { OverviewTab } from "./OverviewTab";
+import { SinceLastVisit } from "./SinceLastVisit";
 import { ScriptsTab } from "./ScriptsTab";
 import { SharedTab } from "./SharedTab";
 import { useMyPortal, useMyVideos, useOnboardingStatus } from "./portalApi";
@@ -328,7 +329,10 @@ export function PortalPage({
                   onboarding.isPending ? null : brandFirst && !welcomed ? (
                     <SendToBrand onSent={() => setWelcomed(markWelcomed())} />
                   ) : (
-                    <OverviewTab data={page.data} target={target} />
+                    <>
+                      <SinceLastVisit target={target} />
+                      <OverviewTab data={page.data} target={target} />
+                    </>
                   )
                 }
               />

@@ -18,23 +18,41 @@ function count(lang: MsgLang, n: number, en: [string, string], fr: [string, stri
   return `${n} ${lang === "fr" ? (n > 1 ? fr[1] : fr[0]) : n === 1 ? en[0] : en[1]}`;
 }
 
+/** What is waiting on the client, counted by kind. Cuts and options are optional so older callers still work. */
+export interface Waiting {
+  ideas: number;
+  scripts: number;
+  cuts?: number;
+  options?: number;
+}
+
 /** A nudge that says what is waiting on the client, with the portal link. */
-export function nudgeMessage(
-  lang: MsgLang,
-  waiting: { ideas: number; scripts: number },
-  url: string,
-): string {
+export function nudgeMessage(lang: MsgLang, waiting: Waiting, url: string): string {
+  const cuts = waiting.cuts ?? 0;
+  const options = waiting.options ?? 0;
   const parts = [
     waiting.ideas > 0 && count(lang, waiting.ideas, ["idea", "ideas"], ["idée", "idées"]),
     waiting.scripts > 0 &&
       count(lang, waiting.scripts, ["script", "scripts"], ["script", "scripts"]),
+    cuts > 0 && count(lang, cuts, ["video", "videos"], ["vidéo", "vidéos"]),
+    options > 0 &&
+      count(
+        lang,
+        options,
+        ["shoot choice", "shoot choices"],
+        ["choix de tournage", "choix de tournage"],
+      ),
   ].filter((p): p is string => Boolean(p));
-  const total = waiting.ideas + waiting.scripts;
+  const total = waiting.ideas + waiting.scripts + cuts + options;
   if (parts.length === 0)
     return lang === "fr"
       ? `Bonjour ! Il y a du nouveau sur votre espace Gecko : ${url}`
       : `Hi! There's an update on your Gecko portal: ${url}`;
-  const list = parts.join(lang === "fr" ? " et " : " and ");
+  const and = lang === "fr" ? " et " : " and ";
+  const list =
+    parts.length === 1
+      ? parts[0]
+      : `${parts.slice(0, -1).join(", ")}${and}${parts[parts.length - 1]}`;
   return lang === "fr"
     ? `Bonjour ! ${list} ${total > 1 ? "vous attendent" : "vous attend"} sur votre espace Gecko : ${url}\nValidez ou dites-nous quoi changer, directement là-bas.`
     : `Hi! ${list} ${total > 1 ? "are" : "is"} waiting for you on your Gecko portal: ${url}\nApprove or tell us what to change, right there.`;

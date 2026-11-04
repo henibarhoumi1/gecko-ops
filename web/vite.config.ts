@@ -13,7 +13,8 @@ const TESTING_BACKEND = {
   anonKey:
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyempxdHlzZWRheGt0enlveHVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2NTUxOTksImV4cCI6MjEwOTIzMTE5OX0.pN85_gbvJS7r4IYbjWzVWWy6i2DxlxDaHkEkfBjyhNs",
 };
-const LIVE_BRANCHES = ["main", "production"];
+// "release" is the branch the live app builds from (deploy-production moves it after the database is updated).
+const LIVE_BRANCHES = ["main", "release", "production"];
 const branch = env.WORKERS_CI_BRANCH;
 if (env.GECKO_BACKEND === "testing" || (branch && !LIVE_BRANCHES.includes(branch))) {
   env.VITE_SUPABASE_URL = TESTING_BACKEND.url;

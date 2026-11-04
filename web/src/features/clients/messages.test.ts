@@ -17,4 +17,15 @@ describe("client messages", () => {
     expect(nudgeMessage("fr", { ideas: 0, scripts: 3 }, "u")).toContain("3 scripts vous attendent");
     expect(nudgeMessage("en", { ideas: 0, scripts: 0 }, "u")).toContain("update");
   });
+  it("counts videos and shoot choices too", () => {
+    expect(nudgeMessage("en", { ideas: 1, scripts: 2, cuts: 1 }, "u")).toContain(
+      "1 idea, 2 scripts and 1 video are waiting",
+    );
+    expect(nudgeMessage("fr", { ideas: 0, scripts: 0, cuts: 2 }, "u")).toContain(
+      "2 vidéos vous attendent",
+    );
+    expect(nudgeMessage("en", { ideas: 0, scripts: 0, options: 1 }, "u")).toContain(
+      "1 shoot choice is waiting",
+    );
+  });
 });

@@ -1,0 +1,112 @@
+{
+ "us": [
+  {
+   "at": "2026-11-04T16:48:45.872594+01:00",
+   "id": "6e098d8c-fe33-48f0-a066-22a9433db5be",
+   "why": "comment",
+   "body": "On pourrait le faire avec un vrai mouchoir de la marque ?",
+   "part": "concept",
+   "brand": "Maison Lumière Cosmétiques",
+   "title": "Avant/après : peau déshydratée après l'hiver",
+   "client_id": "maison"
+  }
+ ],
+ "dates": [
+  {
+   "date": "2026-11-08",
+   "kind": "milestone",
+   "brand": "Maison Lumière Cosmétiques",
+   "label": "Scripts validés",
+   "client_id": "maison"
+  },
+  {
+   "date": "2026-11-19",
+   "kind": "shoot",
+   "brand": "Maison Lumière Cosmétiques",
+   "label": "Shoot · Studio lumière naturelle, La Marsa",
+   "client_id": "maison"
+  },
+  {
+   "date": "2026-11-26",
+   "kind": "drafts",
+   "brand": "Maison Lumière Cosmétiques",
+   "label": "First drafts due (7 days after the shoot)",
+   "client_id": "maison"
+  },
+  {
+   "date": "2026-11-26",
+   "kind": "milestone",
+   "brand": "Maison Lumière Cosmétiques",
+   "label": "Premiers montages",
+   "client_id": "maison"
+  }
+ ],
+ "leads": [],
+ "today": "2026-11-04",
+ "client": [
+  {
+   "at": "2026-11-04T16:48:45.872594+01:00",
+   "id": "d7e9c677-6bcb-46df-bb9c-8a319cc40090",
+   "due": null,
+   "part": "concept",
+   "brand": "Maison Lumière Cosmétiques",
+   "title": "La routine de 7 heures du matin",
+   "client_id": "maison"
+  },
+  {
+   "at": "2026-11-04T16:48:45.872594+01:00",
+   "id": "6e098d8c-fe33-48f0-a066-22a9433db5be",
+   "due": null,
+   "part": "concept",
+   "brand": "Maison Lumière Cosmétiques",
+   "title": "Avant/après : peau déshydratée après l'hiver",
+   "client_id": "maison"
+  },
+  {
+   "at": "2026-11-04T16:48:45.872594+01:00",
+   "id": "05954298-5737-40ed-bc9a-e73eaec03609",
+   "due": null,
+   "part": "script",
+   "brand": "Maison Lumière Cosmétiques",
+   "title": "Routine du matin, version 30 secondes",
+   "client_id": "maison"
+  },
+  {
+   "at": "2026-11-04T16:48:45.872594+01:00",
+   "id": "f938470c-e372-4a69-82b2-79e9f881cb1b",
+   "due": null,
+   "part": "script",
+   "brand": "Maison Lumière Cosmétiques",
+   "title": "Avant/après en 14 jours",
+   "client_id": "maison"
+  },
+  {
+   "at": "2026-11-04T16:48:45.872594+01:00",
+   "id": "bd479737-468c-4571-ae85-c9fc50e74dd6",
+   "due": null,
+   "part": "cut",
+   "brand": "Maison Lumière Cosmétiques",
+   "title": "Routine du matin, montage 1",
+   "client_id": "maison"
+  },
+  {
+   "at": "2026-11-04T16:48:45.872594+01:00",
+   "id": "01b1ad9a-5130-4038-862f-c5b6772da676",
+   "due": null,
+   "part": "production",
+   "brand": "Maison Lumière Cosmétiques",
+   "title": "Salma, 29 ans, créatrice UGC",
+   "client_id": "maison"
+  },
+  {
+   "at": "2026-11-04T16:48:45.872594+01:00",
+   "id": "c96fe143-21d3-4846-bb8d-5e339bfe046a",
+   "due": null,
+   "part": "production",
+   "brand": "Maison Lumière Cosmétiques",
+   "title": "Appartement lumineux, salle de bain blanche",
+   "client_id": "maison"
+  }
+ ],
+ "problems": 0
+}
