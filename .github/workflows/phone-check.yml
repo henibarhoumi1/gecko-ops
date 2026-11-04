@@ -1,8 +1,12 @@
-name: tmp-phone
-# Temporary: phone check of the client portal against fake data; results pushed to app-phone-results.
+name: phone-check
+# Opens every client portal screen and the team's Today at phone sizes against fake data (web/e2e), and
+# reports anything wider than the screen. Screenshots and report.json go to the app-phone-results branch.
+# Run it by hand (Actions > phone-check > Run workflow), or it runs when the portal's screens change.
 on:
+  workflow_dispatch:
   push:
-    branches: [today-and-news]
+    branches: [main]
+    paths: ["web/src/features/portal/**", "web/src/features/today/**", "web/src/styles/**", "web/e2e/**"]
 permissions:
   contents: write
 jobs:
