@@ -50,17 +50,32 @@ export const TEMPLATES: ScriptStyle[] = [
 function guides(): Record<string, TemplateGuide> {
   return {
     "problem-fix": {
-      hook: t("Name the pain in the first second. No product yet.", "Nommez le problème dès la première seconde. Pas encore de produit."),
-      lead: t("Make it hurt: why this problem is so annoying.", "Faites-le ressentir : pourquoi ce problème est si pénible."),
+      hook: t(
+        "Name the pain in the first second. No product yet.",
+        "Nommez le problème dès la première seconde. Pas encore de produit.",
+      ),
+      lead: t(
+        "Make it hurt: why this problem is so annoying.",
+        "Faites-le ressentir : pourquoi ce problème est si pénible.",
+      ),
       body: [
-        t("The product steps in and fixes it, on camera.", "Le produit arrive et règle le problème, à l'écran."),
+        t(
+          "The product steps in and fixes it, on camera.",
+          "Le produit arrive et règle le problème, à l'écran.",
+        ),
         t("The result, clearly visible.", "Le résultat, bien visible."),
       ],
       cta: t("What to do now, and why today.", "Quoi faire maintenant, et pourquoi aujourd'hui."),
     },
     "before-after": {
-      hook: t("Open on the after: the best-looking result first.", "Ouvrez sur l'après : le plus beau résultat d'abord."),
-      lead: t("Rewind to the before. Same light, same frame.", "Retour à l'avant. Même lumière, même cadre."),
+      hook: t(
+        "Open on the after: the best-looking result first.",
+        "Ouvrez sur l'après : le plus beau résultat d'abord.",
+      ),
+      lead: t(
+        "Rewind to the before. Same light, same frame.",
+        "Retour à l'avant. Même lumière, même cadre.",
+      ),
       body: [
         t("What changed: the product in use.", "Ce qui a changé : le produit en action."),
         t("Close-up proof of the result.", "La preuve du résultat, en gros plan."),
@@ -68,16 +83,25 @@ function guides(): Record<string, TemplateGuide> {
       cta: t("Get the same result: where and how.", "Obtenez le même résultat : où et comment."),
     },
     founder: {
-      hook: t("A bold line from the founder, straight to camera.", "Une phrase forte du fondateur, face caméra."),
+      hook: t(
+        "A bold line from the founder, straight to camera.",
+        "Une phrase forte du fondateur, face caméra.",
+      ),
       lead: t("Why I started this.", "Pourquoi j'ai commencé."),
       body: [
         t("What makes it different from the rest.", "Ce qui le rend différent des autres."),
-        t("Proof: a customer, a number, a moment.", "La preuve : un client, un chiffre, un moment."),
+        t(
+          "Proof: a customer, a number, a moment.",
+          "La preuve : un client, un chiffre, un moment.",
+        ),
       ],
       cta: t("An invitation from the founder.", "Une invitation du fondateur."),
     },
     review: {
-      hook: t("A real reaction: the first second of trying it.", "Une vraie réaction : la première seconde d'essai."),
+      hook: t(
+        "A real reaction: the first second of trying it.",
+        "Une vraie réaction : la première seconde d'essai.",
+      ),
       lead: t("My problem before.", "Mon problème avant."),
       body: [
         t("First try: what I noticed.", "Premier essai : ce que j'ai remarqué."),
@@ -86,7 +110,10 @@ function guides(): Record<string, TemplateGuide> {
       cta: t("Where to get it, in my own words.", "Où l'acheter, avec mes mots."),
     },
     reasons: {
-      hook: t("\u201c3 reasons [who] love [product]\u201d", "\u00ab 3 raisons pour lesquelles [qui] adorent [produit] \u00bb"),
+      hook: t(
+        "\u201c3 reasons [who] love [product]\u201d",
+        "\u00ab 3 raisons pour lesquelles [qui] adorent [produit] \u00bb",
+      ),
       lead: t("Optional: who this is for.", "Facultatif : pour qui c'est."),
       body: [
         t("Reason 1, shown, not told.", "Raison 1, montrée, pas racontée."),

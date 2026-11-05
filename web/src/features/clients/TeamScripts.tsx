@@ -16,13 +16,7 @@ import {
   type Script,
 } from "@/features/scripts/model";
 import { ScriptView } from "@/features/scripts/ScriptView";
-import {
-  AdParts,
-  adDraft,
-  draftBeats,
-  noWords,
-  type AdDraft,
-} from "@/features/scripts/AdParts";
+import { AdParts, adDraft, draftBeats, noWords, type AdDraft } from "@/features/scripts/AdParts";
 import {
   useDeleteScript,
   useSaveScript,
@@ -256,7 +250,6 @@ function TeamScript({
   );
 }
 
-
 function ScriptForm({
   clientId,
   script,
@@ -396,11 +389,7 @@ function ScriptForm({
         </fieldset>
       )}
 
-      <AdParts
-        draft={draft}
-        onChange={setDraft}
-        hookNote="write 2 or 3, the client picks"
-      />
+      <AdParts draft={draft} onChange={setDraft} hookNote="write 2 or 3, the client picks" />
       <p className={`small script-runs${runs > seconds + 3 ? " over" : ""}`}>
         Runs about {runs} s spoken with the first hook · made for {seconds} s
         {runs > seconds + 3 && " · too long, trim it"}

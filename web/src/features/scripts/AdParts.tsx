@@ -34,7 +34,11 @@ export function adDraft(
   const beats = script?.beats ?? [];
   return {
     style: s,
-    hooks: script?.hooks.length ? script.hooks : firstHook ? [{ hear: firstHook }, {}] : blankLines(2),
+    hooks: script?.hooks.length
+      ? script.hooks
+      : firstHook
+        ? [{ hear: firstHook }, {}]
+        : blankLines(2),
     lead: beats.find((b) => b.part === "lead") ?? {},
     body: beats.some((b) => b.part !== "lead")
       ? beats.filter((b) => b.part !== "lead")
@@ -45,10 +49,7 @@ export function adDraft(
 
 /** The scene lines to save: the lead first, then the body parts, each marked with its part. */
 export const draftBeats = (d: AdDraft): ScriptLine[] =>
-  tidyLines([
-    { ...d.lead, part: "lead" },
-    ...d.body.map((b) => ({ ...b, part: "body" as const })),
-  ]);
+  tidyLines([{ ...d.lead, part: "lead" }, ...d.body.map((b) => ({ ...b, part: "body" as const }))]);
 
 /** The template picker and the four parts of the ad. Used by the team and by the client in the portal. */
 export function AdParts({
@@ -117,9 +118,16 @@ export function AdParts({
       <fieldset className="fieldset script-lines">
         <legend>
           <span className="part-tag">2</span> Lead{" "}
-          <span className="muted">· {t("the next line, sets it up", "la suite, qui pose le sujet")}</span>
+          <span className="muted">
+            · {t("the next line, sets it up", "la suite, qui pose le sujet")}
+          </span>
         </legend>
-        <LineEditor name="Lead" hint={guide.lead} line={draft.lead} onChange={(lead) => set({ lead })} />
+        <LineEditor
+          name="Lead"
+          hint={guide.lead}
+          line={draft.lead}
+          onChange={(lead) => set({ lead })}
+        />
       </fieldset>
 
       <fieldset className="fieldset script-lines">

@@ -15,12 +15,7 @@ import {
   type Treatment,
 } from "@/features/scripts/model";
 import { useClientWriteScript } from "@/features/scripts/scriptsApi";
-import {
-  AdParts,
-  adDraft,
-  draftBeats,
-  type AdDraft,
-} from "@/features/scripts/AdParts";
+import { AdParts, adDraft, draftBeats, type AdDraft } from "@/features/scripts/AdParts";
 import { friendlyError } from "@/lib/errors";
 import { t } from "@/lib/i18n";
 import { isCinematic, tw, words } from "@/lib/wording";
@@ -155,64 +150,62 @@ export function WriteScript({
 
       {cine ? (
         <>
-      <fieldset className="write-part">
-        <legend>
-          {t("The opening shot", "Le plan d'ouverture")}
-        </legend>
-        <div className="row">
-          <TextArea
-            label={t("What we see", "Ce qu'on voit")}
-            name="hook-see"
-            rows={2}
-            maxLength={1000}
-            defaultValue={script?.hooks[0]?.see}
-          />
-          <TextArea
-            label={t("What we hear", "Ce qu'on entend")}
-            name="hook-hear"
-            rows={2}
-            maxLength={1000}
-            defaultValue={script?.hooks[0]?.hear}
-          />
-        </div>
-      </fieldset>
-
-      <fieldset className="write-part">
-        <legend>{t("The scenes", "Les scènes")}</legend>
-        <ol className="write-beats">
-          {beats.map((beat, i) => (
-            <li key={i}>
+          <fieldset className="write-part">
+            <legend>{t("The opening shot", "Le plan d'ouverture")}</legend>
+            <div className="row">
               <TextArea
-                label={t(`What we see, moment ${i + 1}`, `Ce qu'on voit, moment ${i + 1}`)}
+                label={t("What we see", "Ce qu'on voit")}
+                name="hook-see"
                 rows={2}
                 maxLength={1000}
-                value={beat.see ?? ""}
-                onChange={(e) => setBeat(i, "see", e.target.value)}
+                defaultValue={script?.hooks[0]?.see}
               />
               <TextArea
                 label={t("What we hear", "Ce qu'on entend")}
+                name="hook-hear"
                 rows={2}
                 maxLength={1000}
-                value={beat.hear ?? ""}
-                onChange={(e) => setBeat(i, "hear", e.target.value)}
+                defaultValue={script?.hooks[0]?.hear}
               />
-            </li>
-          ))}
-        </ol>
-        {beats.length < 40 && (
-          <Button variant="link" onClick={() => setBeats((list) => [...list, {}])}>
-            {t("+ Add a moment", "+ Ajouter un moment")}
-          </Button>
-        )}
-      </fieldset>
+            </div>
+          </fieldset>
 
-      <Field
-        label={t("The final frame", "Le dernier plan")}
-        name="cta"
-        maxLength={300}
-        defaultValue={script?.cta}
-        placeholder={t("The logo on white", "Le logo sur fond blanc")}
-      />
+          <fieldset className="write-part">
+            <legend>{t("The scenes", "Les scènes")}</legend>
+            <ol className="write-beats">
+              {beats.map((beat, i) => (
+                <li key={i}>
+                  <TextArea
+                    label={t(`What we see, moment ${i + 1}`, `Ce qu'on voit, moment ${i + 1}`)}
+                    rows={2}
+                    maxLength={1000}
+                    value={beat.see ?? ""}
+                    onChange={(e) => setBeat(i, "see", e.target.value)}
+                  />
+                  <TextArea
+                    label={t("What we hear", "Ce qu'on entend")}
+                    rows={2}
+                    maxLength={1000}
+                    value={beat.hear ?? ""}
+                    onChange={(e) => setBeat(i, "hear", e.target.value)}
+                  />
+                </li>
+              ))}
+            </ol>
+            {beats.length < 40 && (
+              <Button variant="link" onClick={() => setBeats((list) => [...list, {}])}>
+                {t("+ Add a moment", "+ Ajouter un moment")}
+              </Button>
+            )}
+          </fieldset>
+
+          <Field
+            label={t("The final frame", "Le dernier plan")}
+            name="cta"
+            maxLength={300}
+            defaultValue={script?.cta}
+            placeholder={t("The logo on white", "Le logo sur fond blanc")}
+          />
         </>
       ) : (
         <AdParts
