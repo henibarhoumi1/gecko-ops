@@ -98,7 +98,7 @@ select extensions.lives_ok(
   'the new templates are valid styles');
 select extensions.throws_ok(
   $$insert into public.scripts (workspace_id, client_id, title, style) values ('10000000-0000-4000-8000-000000000401', 'c-wr', 'Bad', 'listicle')$$,
-  '23514', 'an unknown template is refused');
+  '23514', null, 'an unknown template is refused');
 
 select * from extensions.finish();
 rollback;
