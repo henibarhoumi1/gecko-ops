@@ -54,25 +54,46 @@ function all(): Partial<Record<ScriptStyle, Template>> {
       goal: "sell",
       when: t("A clear pain the product solves.", "Un vrai problème que le produit règle."),
       best: [15, 30],
-      hook: t("Name the pain in the first second. No product yet.", "Nommez le problème dès la première seconde. Pas encore de produit."),
-      lead: t("Make it hurt: why this problem is so annoying.", "Faites-le ressentir : pourquoi ce problème est si pénible."),
+      hook: t(
+        "Name the pain in the first second. No product yet.",
+        "Nommez le problème dès la première seconde. Pas encore de produit.",
+      ),
+      lead: t(
+        "Make it hurt: why this problem is so annoying.",
+        "Faites-le ressentir : pourquoi ce problème est si pénible.",
+      ),
       body: [
-        t("The product steps in and fixes it, on camera.", "Le produit arrive et règle le problème, à l'écran."),
+        t(
+          "The product steps in and fixes it, on camera.",
+          "Le produit arrive et règle le problème, à l'écran.",
+        ),
         t("The result, clearly visible.", "Le résultat, bien visible."),
       ],
       cta: t("What to do now, and why today.", "Quoi faire maintenant, et pourquoi aujourd'hui."),
       hooks: [
         t("Stop doing [the annoying thing] like this.", "Arrêtez de faire [la corvée] comme ça."),
-        t("If [problem] drives you crazy, watch this.", "Si [problème] vous rend fou, regardez ça."),
-        t("I wasted [time / money] on [problem] until this.", "J'ai perdu [temps / argent] avec [problème] jusqu'à ça."),
+        t(
+          "If [problem] drives you crazy, watch this.",
+          "Si [problème] vous rend fou, regardez ça.",
+        ),
+        t(
+          "I wasted [time / money] on [problem] until this.",
+          "J'ai perdu [temps / argent] avec [problème] jusqu'à ça.",
+        ),
       ],
     },
     "before-after": {
       goal: "sell",
       when: t("The result can be seen.", "Le résultat se voit."),
       best: [9, 20],
-      hook: t("Open on the after: the best-looking result first.", "Ouvrez sur l'après : le plus beau résultat d'abord."),
-      lead: t("Rewind to the before. Same light, same frame.", "Retour à l'avant. Même lumière, même cadre."),
+      hook: t(
+        "Open on the after: the best-looking result first.",
+        "Ouvrez sur l'après : le plus beau résultat d'abord.",
+      ),
+      lead: t(
+        "Rewind to the before. Same light, same frame.",
+        "Retour à l'avant. Même lumière, même cadre.",
+      ),
       body: [
         t("What changed: the product in use.", "Ce qui a changé : le produit en action."),
         t("Close-up proof of the result.", "La preuve du résultat, en gros plan."),
@@ -86,26 +107,50 @@ function all(): Partial<Record<ScriptStyle, Template>> {
     },
     "us-vs-them": {
       goal: "sell",
-      when: t("You beat the usual option on something visible.", "Vous battez l'option habituelle sur un point visible."),
+      when: t(
+        "You beat the usual option on something visible.",
+        "Vous battez l'option habituelle sur un point visible.",
+      ),
       best: [15, 30],
-      hook: t("Side by side: the usual way vs yours.", "Côte à côte : la méthode habituelle contre la vôtre."),
-      lead: t("Same test, same conditions. No tricks.", "Même test, mêmes conditions. Sans triche."),
+      hook: t(
+        "Side by side: the usual way vs yours.",
+        "Côte à côte : la méthode habituelle contre la vôtre.",
+      ),
+      lead: t(
+        "Same test, same conditions. No tricks.",
+        "Même test, mêmes conditions. Sans triche.",
+      ),
       body: [
-        t("Round 1: the difference people care about most.", "Round 1 : la différence qui compte le plus."),
+        t(
+          "Round 1: the difference people care about most.",
+          "Round 1 : la différence qui compte le plus.",
+        ),
         t("Round 2: the one they didn't expect.", "Round 2 : celle qu'on n'attendait pas."),
       ],
       cta: t("Why switch, and where to start.", "Pourquoi changer, et par où commencer."),
       hooks: [
-        t("[Usual product] vs [your product]. Same test.", "[Produit habituel] contre [votre produit]. Même test."),
-        t("I tested the cheap one and ours. Honest result.", "J'ai testé le moins cher et le nôtre. Résultat honnête."),
+        t(
+          "[Usual product] vs [your product]. Same test.",
+          "[Produit habituel] contre [votre produit]. Même test.",
+        ),
+        t(
+          "I tested the cheap one and ours. Honest result.",
+          "J'ai testé le moins cher et le nôtre. Résultat honnête.",
+        ),
         t("Which one would you pick?", "Lequel vous choisiriez ?"),
       ],
     },
     demo: {
       goal: "sell",
-      when: t("The product is satisfying or surprising to watch.", "Le produit est satisfaisant ou surprenant à regarder."),
+      when: t(
+        "The product is satisfying or surprising to watch.",
+        "Le produit est satisfaisant ou surprenant à regarder.",
+      ),
       best: [15, 30],
-      hook: t("The most satisfying moment of use, first.", "Le moment d'utilisation le plus satisfaisant, d'abord."),
+      hook: t(
+        "The most satisfying moment of use, first.",
+        "Le moment d'utilisation le plus satisfaisant, d'abord.",
+      ),
       lead: t("What it is, in one line.", "Ce que c'est, en une phrase."),
       body: [
         t("How it works: step by step, hands on.", "Comment ça marche : étape par étape, en main."),
@@ -124,20 +169,34 @@ function all(): Partial<Record<ScriptStyle, Template>> {
       best: [9, 15],
       hook: t("The offer itself, big and first.", "L'offre elle-même, en grand et en premier."),
       lead: t("What you get, shown, not listed.", "Ce qu'on reçoit, montré, pas listé."),
-      body: [t("Why it's worth it: one strong reason.", "Pourquoi ça vaut le coup : une raison forte.")],
+      body: [
+        t("Why it's worth it: one strong reason.", "Pourquoi ça vaut le coup : une raison forte."),
+      ],
       cta: t("The deadline and how to get it.", "La date limite et comment en profiter."),
       hooks: [
-        t("[Offer] until [date]. Only this week.", "[Offre] jusqu'au [date]. Cette semaine seulement."),
-        t("First [number] orders get [bonus].", "Les [nombre] premières commandes reçoivent [bonus]."),
+        t(
+          "[Offer] until [date]. Only this week.",
+          "[Offre] jusqu'au [date]. Cette semaine seulement.",
+        ),
+        t(
+          "First [number] orders get [bonus].",
+          "Les [nombre] premières commandes reçoivent [bonus].",
+        ),
         t("Last day for this price.", "Dernier jour à ce prix."),
       ],
       fixed: true,
     },
     review: {
       goal: "trust",
-      when: t("A real customer, or a creator, tries it.", "Un vrai client, ou un créateur, l'essaie."),
+      when: t(
+        "A real customer, or a creator, tries it.",
+        "Un vrai client, ou un créateur, l'essaie.",
+      ),
       best: [15, 45],
-      hook: t("A real reaction: the first second of trying it.", "Une vraie réaction : la première seconde d'essai."),
+      hook: t(
+        "A real reaction: the first second of trying it.",
+        "Une vraie réaction : la première seconde d'essai.",
+      ),
       lead: t("My problem before.", "Mon problème avant."),
       body: [
         t("First try: what I noticed.", "Premier essai : ce que j'ai remarqué."),
@@ -152,26 +211,47 @@ function all(): Partial<Record<ScriptStyle, Template>> {
     },
     founder: {
       goal: "trust",
-      when: t("The person behind the brand is the story.", "La personne derrière la marque est l'histoire."),
+      when: t(
+        "The person behind the brand is the story.",
+        "La personne derrière la marque est l'histoire.",
+      ),
       best: [30, 60],
-      hook: t("A bold line from the founder, straight to camera.", "Une phrase forte du fondateur, face caméra."),
+      hook: t(
+        "A bold line from the founder, straight to camera.",
+        "Une phrase forte du fondateur, face caméra.",
+      ),
       lead: t("Why I started this.", "Pourquoi j'ai commencé."),
       body: [
         t("What makes it different from the rest.", "Ce qui le rend différent des autres."),
-        t("Proof: a customer, a number, a moment.", "La preuve : un client, un chiffre, un moment."),
+        t(
+          "Proof: a customer, a number, a moment.",
+          "La preuve : un client, un chiffre, un moment.",
+        ),
       ],
       cta: t("An invitation from the founder.", "Une invitation du fondateur."),
       hooks: [
-        t("I started [brand] because [frustration].", "J'ai créé [marque] parce que [frustration]."),
+        t(
+          "I started [brand] because [frustration].",
+          "J'ai créé [marque] parce que [frustration].",
+        ),
         t("Everyone told me not to do this.", "Tout le monde m'a dit de ne pas le faire."),
-        t("Here's what we do that nobody else does.", "Voilà ce qu'on fait et que personne ne fait."),
+        t(
+          "Here's what we do that nobody else does.",
+          "Voilà ce qu'on fait et que personne ne fait.",
+        ),
       ],
     },
     reasons: {
       goal: "trust",
-      when: t("Several good reasons, none of them huge alone.", "Plusieurs bonnes raisons, aucune énorme seule."),
+      when: t(
+        "Several good reasons, none of them huge alone.",
+        "Plusieurs bonnes raisons, aucune énorme seule.",
+      ),
       best: [15, 30],
-      hook: t("“3 reasons [who] love [product]”", "« 3 raisons pour lesquelles [qui] adorent [produit] »"),
+      hook: t(
+        "“3 reasons [who] love [product]”",
+        "« 3 raisons pour lesquelles [qui] adorent [produit] »",
+      ),
       lead: t("Optional: who this is for.", "Facultatif : pour qui c'est."),
       body: [
         t("Reason 1, shown, not told.", "Raison 1, montrée, pas racontée."),
@@ -180,26 +260,44 @@ function all(): Partial<Record<ScriptStyle, Template>> {
       ],
       cta: t("The easiest next step.", "L'étape suivante la plus simple."),
       hooks: [
-        t("3 reasons [who] switched to [product].", "3 raisons pour lesquelles [qui] passent à [produit]."),
-        t("3 things I wish I knew before buying [category].", "3 choses à savoir avant d'acheter [catégorie]."),
+        t(
+          "3 reasons [who] switched to [product].",
+          "3 raisons pour lesquelles [qui] passent à [produit].",
+        ),
+        t(
+          "3 things I wish I knew before buying [category].",
+          "3 choses à savoir avant d'acheter [catégorie].",
+        ),
         t("Number 3 surprised me.", "La n°3 m'a surpris."),
       ],
       fixed: true,
     },
     "comment-reply": {
       goal: "trust",
-      when: t("People keep asking the same question or doubt.", "On vous pose toujours la même question ou le même doute."),
+      when: t(
+        "People keep asking the same question or doubt.",
+        "On vous pose toujours la même question ou le même doute.",
+      ),
       best: [15, 30],
-      hook: t("A real comment on screen: “Replying to @…”", "Un vrai commentaire à l'écran : « Réponse à @… »"),
+      hook: t(
+        "A real comment on screen: “Replying to @…”",
+        "Un vrai commentaire à l'écran : « Réponse à @… »",
+      ),
       lead: t("Repeat the doubt in your own words.", "Reformulez le doute avec vos mots."),
       body: [
         t("Answer it by showing, not arguing.", "Répondez en montrant, pas en argumentant."),
         t("The proof that settles it.", "La preuve qui règle la question."),
       ],
-      cta: t("Invite the next question, or the order.", "Invitez la prochaine question, ou la commande."),
+      cta: t(
+        "Invite the next question, or the order.",
+        "Invitez la prochaine question, ou la commande.",
+      ),
       hooks: [
         t("“Does it really work?” Let me show you.", "« Ça marche vraiment ? » Je vous montre."),
-        t("“Why is it so expensive?” Fair question.", "« Pourquoi c'est si cher ? » Bonne question."),
+        t(
+          "“Why is it so expensive?” Fair question.",
+          "« Pourquoi c'est si cher ? » Bonne question.",
+        ),
         t("You asked, here's the answer.", "Vous avez demandé, voilà la réponse."),
       ],
     },
@@ -207,10 +305,16 @@ function all(): Partial<Record<ScriptStyle, Template>> {
       goal: "trust",
       when: t("How it's made is impressive or human.", "La fabrication impressionne ou touche."),
       best: [15, 45],
-      hook: t("The most surprising moment of making it.", "Le moment le plus surprenant de la fabrication."),
+      hook: t(
+        "The most surprising moment of making it.",
+        "Le moment le plus surprenant de la fabrication.",
+      ),
       lead: t("Where we are and who's doing it.", "Où on est et qui le fait."),
       body: [
-        t("The process: the steps people never see.", "Le processus : les étapes qu'on ne voit jamais."),
+        t(
+          "The process: the steps people never see.",
+          "Le processus : les étapes qu'on ne voit jamais.",
+        ),
         t("The care: the detail that shows quality.", "Le soin : le détail qui montre la qualité."),
       ],
       cta: t("From us to you: where to get it.", "De chez nous à chez vous : où l'acheter."),
@@ -222,11 +326,19 @@ function all(): Partial<Record<ScriptStyle, Template>> {
     },
     pov: {
       goal: "stop",
-      when: t("A moment your customer instantly recognises.", "Un moment que votre client reconnaît tout de suite."),
+      when: t(
+        "A moment your customer instantly recognises.",
+        "Un moment que votre client reconnaît tout de suite.",
+      ),
       best: [7, 15],
-      hook: t("“POV: [a relatable moment]” as text on screen.", "« POV : [un moment qu'on reconnaît] » en texte à l'écran."),
+      hook: t(
+        "“POV: [a relatable moment]” as text on screen.",
+        "« POV : [un moment qu'on reconnaît] » en texte à l'écran.",
+      ),
       lead: t("Play the moment from their eyes.", "Jouez le moment à travers ses yeux."),
-      body: [t("The twist: the product changes the moment.", "Le twist : le produit change le moment.")],
+      body: [
+        t("The twist: the product changes the moment.", "Le twist : le produit change le moment."),
+      ],
       cta: t("A light line, then the product.", "Une phrase légère, puis le produit."),
       hooks: [
         t("POV: you finally found [solution].", "POV : vous avez enfin trouvé [solution]."),
@@ -236,17 +348,29 @@ function all(): Partial<Record<ScriptStyle, Template>> {
     },
     skit: {
       goal: "stop",
-      when: t("A funny, true-to-life situation around the product.", "Une situation drôle et vraie autour du produit."),
+      when: t(
+        "A funny, true-to-life situation around the product.",
+        "Une situation drôle et vraie autour du produit.",
+      ),
       best: [15, 30],
-      hook: t("Drop in mid-scene: the funniest line first.", "Entrez en pleine scène : la réplique la plus drôle d'abord."),
+      hook: t(
+        "Drop in mid-scene: the funniest line first.",
+        "Entrez en pleine scène : la réplique la plus drôle d'abord.",
+      ),
       lead: t("Who's who, in one beat.", "Qui est qui, en un temps."),
       body: [
         t("The situation gets worse.", "La situation empire."),
-        t("The product saves the day, in character.", "Le produit sauve la situation, dans le rôle."),
+        t(
+          "The product saves the day, in character.",
+          "Le produit sauve la situation, dans le rôle.",
+        ),
       ],
       cta: t("A punchline that names the brand.", "Une chute qui nomme la marque."),
       hooks: [
-        t("When your neighbour gets her [product] before you.", "Quand la voisine reçoit son [produit] avant vous."),
+        t(
+          "When your neighbour gets her [product] before you.",
+          "Quand la voisine reçoit son [produit] avant vous.",
+        ),
         t("Me explaining [product] to my mum.", "Moi qui explique [produit] à ma mère."),
         t("Types of people when [situation].", "Les types de personnes quand [situation]."),
       ],
@@ -264,16 +388,25 @@ function all(): Partial<Record<ScriptStyle, Template>> {
       ],
       cta: t("The lesson, and the product's part in it.", "La leçon, et le rôle du produit."),
       hooks: [
-        t("I almost gave up on [thing]. Then this happened.", "J'ai failli abandonner [chose]. Puis c'est arrivé."),
+        t(
+          "I almost gave up on [thing]. Then this happened.",
+          "J'ai failli abandonner [chose]. Puis c'est arrivé.",
+        ),
         t("The day [unexpected thing] happened.", "Le jour où [chose inattendue] est arrivée."),
         t("Nobody believed me until [proof].", "Personne ne me croyait jusqu'à [preuve]."),
       ],
     },
     unboxing: {
       goal: "stop",
-      when: t("The packaging or the first look is a moment.", "L'emballage ou la découverte est un moment."),
+      when: t(
+        "The packaging or the first look is a moment.",
+        "L'emballage ou la découverte est un moment.",
+      ),
       best: [15, 30],
-      hook: t("Hands on the box, a sound, the first reveal.", "Les mains sur la boîte, un son, la première découverte."),
+      hook: t(
+        "Hands on the box, a sound, the first reveal.",
+        "Les mains sur la boîte, un son, la première découverte.",
+      ),
       lead: t("What's in it, one thing at a time.", "Ce qu'il y a dedans, une chose à la fois."),
       body: [
         t("The detail that feels premium.", "Le détail qui fait premium."),
@@ -281,7 +414,10 @@ function all(): Partial<Record<ScriptStyle, Template>> {
       ],
       cta: t("Get yours: where and how fast.", "Recevez le vôtre : où et en combien de temps."),
       hooks: [
-        t("Unboxing the [product] everyone's asking about.", "Unboxing du [produit] dont tout le monde parle."),
+        t(
+          "Unboxing the [product] everyone's asking about.",
+          "Unboxing du [produit] dont tout le monde parle.",
+        ),
         t("Look what just arrived.", "Regardez ce qui vient d'arriver."),
         t("The packaging alone…", "Rien que l'emballage…"),
       ],
@@ -310,7 +446,10 @@ export function anyHooks(): string[] {
     t("[Number] [result] in [time].", "[Chiffre] [résultat] en [durée]."),
     t("Nobody talks about this, but…", "Personne n'en parle, mais…"),
     t("If you [who you're for], watch this.", "Si vous êtes [cible], regardez ça."),
-    t("[Number] people already switched. Here's why.", "[Nombre] personnes ont déjà changé. Voilà pourquoi."),
+    t(
+      "[Number] people already switched. Here's why.",
+      "[Nombre] personnes ont déjà changé. Voilà pourquoi.",
+    ),
   ];
 }
 
@@ -324,7 +463,10 @@ export function bodyFor(tpl: Template, seconds: number): string[] {
   if (seconds > 40 && tpl.body.length < 4)
     return [
       ...tpl.body,
-      t("More proof: another angle, a customer, a close-up.", "Encore une preuve : un autre angle, un client, un gros plan."),
+      t(
+        "More proof: another angle, a customer, a close-up.",
+        "Encore une preuve : un autre angle, un client, un gros plan.",
+      ),
     ];
   return tpl.body;
 }

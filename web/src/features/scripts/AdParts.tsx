@@ -80,7 +80,8 @@ export function AdParts({
   // A hook idea fills the first empty hook option, or adds one.
   const emptyHook = hooks.findIndex((h) => noWords([h]));
   function takeHook(line: string) {
-    if (emptyHook >= 0) set({ hooks: hooks.map((h, j) => (j === emptyHook ? { ...h, hear: line } : h)) });
+    if (emptyHook >= 0)
+      set({ hooks: hooks.map((h, j) => (j === emptyHook ? { ...h, hear: line } : h)) });
     else if (hooks.length < 3) set({ hooks: [...hooks, { hear: line }] });
   }
   const canAddHook = emptyHook >= 0 || hooks.length < 3;
@@ -164,7 +165,12 @@ export function AdParts({
             · {times[1]} · {t("sets it up", "pose le sujet")}
           </span>
         </legend>
-        <LineEditor name="Lead" hint={tpl.lead} line={draft.lead} onChange={(lead) => set({ lead })} />
+        <LineEditor
+          name="Lead"
+          hint={tpl.lead}
+          line={draft.lead}
+          onChange={(lead) => set({ lead })}
+        />
       </fieldset>
 
       <fieldset className="fieldset script-lines">
@@ -188,7 +194,9 @@ export function AdParts({
               i > 0
                 ? () =>
                     set({
-                      body: body.map((b, j) => (j === i - 1 ? body[i]! : j === i ? body[i - 1]! : b)),
+                      body: body.map((b, j) =>
+                        j === i - 1 ? body[i]! : j === i ? body[i - 1]! : b,
+                      ),
                     })
                 : undefined
             }
