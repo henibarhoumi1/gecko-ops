@@ -1,0 +1,113 @@
+{
+ "us": [
+  {
+   "at": "2026-11-05T01:06:18.649113+01:00",
+   "id": "e07f885e-a96a-402b-b10f-3eb2c3735127",
+   "why": "comment",
+   "body": "Could we use a tissue with our logo?",
+   "part": "concept",
+   "brand": "Lumière Skincare",
+   "title": "Before and after: winter skin",
+   "client_id": "maison"
+  },
+  {
+   "at": "2026-11-05T01:06:18.649113+01:00",
+   "id": "fb4b2403-bbae-48a3-b755-00fc0c67938c",
+   "why": "comment",
+   "body": "Can the price show up sooner?",
+   "part": "cut",
+   "brand": "Lumière Skincare",
+   "title": "Morning routine, cut 1",
+   "client_id": "maison"
+  }
+ ],
+ "dates": [
+  {
+   "date": "2026-11-09",
+   "kind": "milestone",
+   "brand": "Lumière Skincare",
+   "label": "Scripts approved",
+   "client_id": "maison"
+  },
+  {
+   "date": "2026-11-20",
+   "kind": "shoot",
+   "brand": "Lumière Skincare",
+   "label": "Shoot · Daylight studio, La Marsa",
+   "client_id": "maison"
+  },
+  {
+   "date": "2026-11-27",
+   "kind": "drafts",
+   "brand": "Lumière Skincare",
+   "label": "First drafts due (7 days after the shoot)",
+   "client_id": "maison"
+  },
+  {
+   "date": "2026-11-27",
+   "kind": "milestone",
+   "brand": "Lumière Skincare",
+   "label": "First drafts",
+   "client_id": "maison"
+  }
+ ],
+ "leads": [],
+ "today": "2026-11-05",
+ "client": [
+  {
+   "at": "2026-11-05T01:06:18.649113+01:00",
+   "id": "dd30d9cb-e361-440b-bc06-ebde55155a5e",
+   "due": null,
+   "part": "concept",
+   "brand": "Lumière Skincare",
+   "title": "The 7 a.m. routine",
+   "client_id": "maison"
+  },
+  {
+   "at": "2026-11-05T01:06:18.649113+01:00",
+   "id": "e07f885e-a96a-402b-b10f-3eb2c3735127",
+   "due": null,
+   "part": "concept",
+   "brand": "Lumière Skincare",
+   "title": "Before and after: winter skin",
+   "client_id": "maison"
+  },
+  {
+   "at": "2026-11-05T01:06:18.649113+01:00",
+   "id": "d7f44dbd-0cf4-4bd7-b60e-cf06236853ca",
+   "due": null,
+   "part": "script",
+   "brand": "Lumière Skincare",
+   "title": "Before and after in 14 days",
+   "client_id": "maison"
+  },
+  {
+   "at": "2026-11-05T01:06:18.649113+01:00",
+   "id": "fb4b2403-bbae-48a3-b755-00fc0c67938c",
+   "due": null,
+   "part": "cut",
+   "brand": "Lumière Skincare",
+   "title": "Morning routine, cut 1",
+   "client_id": "maison"
+  },
+  {
+   "at": "2026-11-05T01:06:18.649113+01:00",
+   "id": "5a55c17e-f4ea-4185-99cd-05c32c98b97c",
+   "due": null,
+   "part": "production",
+   "brand": "Lumière Skincare",
+   "title": "Salma, 29, UGC creator",
+   "client_id": "maison"
+  },
+  {
+   "at": "2026-11-05T01:06:18.649113+01:00",
+   "id": "96e4917b-20e4-433c-8b1f-ac85a5308bf9",
+   "due": null,
+   "part": "production",
+   "brand": "Lumière Skincare",
+   "title": "Bright flat, white bathroom",
+   "client_id": "maison"
+  }
+ ],
+ "problems": 0
+}

@@ -1,0 +1,34 @@
+{
+ "cuts": [
+  {
+   "id": "fb4b2403-bbae-48a3-b755-00fc0c67938c",
+   "notes": [],
+   "title": "Morning routine, cut 1",
+   "status": "review",
+   "version": 1,
+   "position": 0,
+   "versions": [
+    {
+     "path": "10000000-0000-4000-8000-0000000009a1/maison/fb4b2403-bbae-48a3-b755-00fc0c67938c/v1.mp4",
+     "size": 12000000,
+     "seconds": 31.5,
+     "version": 1,
+     "createdAt": "2026-11-05T01:06:18.649113+01:00",
+     "uploadedBy": "Heni",
+     "whatChanged": "First cut"
+    }
+   ],
+   "createdAt": "2026-11-05T01:06:18.649113+01:00",
+   "delivered": false,
+   "finalLink": null,
+   "finalNote": "",
+   "updatedAt": "2026-11-05T01:06:18.649113+01:00",
+   "approvedAt": null,
+   "approvedBy": null,
+   "authorName": "",
+   "deliveredAt": null,
+   "approvedVersion": null
+  }
+ ],
+ "balancePaid": false
+}

@@ -1,0 +1,24 @@
+{
+ "items": [
+  {
+   "id": "0decc756-6518-4825-8bec-1517b7be51c7",
+   "url": "https://www.instagram.com/reel/example2",
+   "body": "Bright, simple, not too ad-like.",
+   "kind": "reference",
+   "mine": null,
+   "title": "The tone we like",
+   "answer": "",
+   "status": null,
+   "createdAt": "2026-11-05T01:06:18.649113+01:00",
+   "answeredAt": null,
+   "answeredBy": "",
+   "authorName": "Yasmine",
+   "fromClient": true
+  }
+ ],
+ "brandNotes": {
+  "body": "",
+  "updatedAt": null,
+  "updatedBy": ""
+ }
+}
