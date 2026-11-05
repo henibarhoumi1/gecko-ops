@@ -7,7 +7,7 @@
  },
  "options": [
   {
-   "id": "96e4917b-20e4-433c-8b1f-ac85a5308bf9",
+   "id": "ba568a32-b5f9-47c5-b3b9-0f30b3fdf542",
    "cost": 300.0,
    "kind": "location",
    "link": "",
@@ -22,7 +22,7 @@
    "details": "Big window, morning light until 11 a.m.",
    "boughtBy": "gecko",
    "costNote": "",
-   "createdAt": "2026-11-05T01:06:18.649113+01:00",
+   "createdAt": "2026-11-05T01:11:12.723117+01:00",
    "decidedAt": null,
    "decidedBy": "",
    "authorName": "",
@@ -32,7 +32,7 @@
    "releaseOnFile": null
   },
   {
-   "id": "8fc6cd4c-a867-48e6-8b70-dcdedc3e33fa",
+   "id": "fb0414c3-3895-492e-b3dd-f61761bfb5db",
    "cost": 80.0,
    "kind": "prop",
    "link": "",
@@ -47,7 +47,7 @@
    "details": "",
    "boughtBy": "gecko",
    "costNote": "",
-   "createdAt": "2026-11-05T01:06:18.649113+01:00",
+   "createdAt": "2026-11-05T01:11:12.723117+01:00",
    "decidedAt": null,
    "decidedBy": "",
    "authorName": "",
@@ -57,7 +57,7 @@
    "releaseOnFile": null
   },
   {
-   "id": "5a55c17e-f4ea-4185-99cd-05c32c98b97c",
+   "id": "c709c0d1-1804-4db4-802e-84a4ba2c2a0f",
    "cost": 450.0,
    "kind": "talent",
    "link": "",
@@ -72,7 +72,7 @@
    "details": "Natural on camera, has worked with skincare before.",
    "boughtBy": "gecko",
    "costNote": "",
-   "createdAt": "2026-11-05T01:06:18.649113+01:00",
+   "createdAt": "2026-11-05T01:11:12.723117+01:00",
    "decidedAt": null,
    "decidedBy": "",
    "authorName": "",

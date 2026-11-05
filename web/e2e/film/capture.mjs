@@ -75,6 +75,18 @@ try {
         return { height: document.documentElement.scrollHeight, items: pick };
       });
       console.log(name, boxes[name].height);
+      // Open the first reel in Review: the player, the timeline and the notes.
+      if (path === "/review") {
+        const item = page.getByText("Morning routine, cut 1").first();
+        if (await item.count()) {
+          await item.click();
+          await page.waitForTimeout(1200);
+          await page.evaluate(() => document.querySelectorAll("video").forEach((v) => { v.muted = true; v.currentTime = 1.5; v.pause(); }));
+          await page.waitForTimeout(500);
+          await page.screenshot({ path: join(out, `${state}-review-open.png`), fullPage: true });
+          console.log(`${state}-review-open`);
+        }
+      }
     }
     await context.close();
   }

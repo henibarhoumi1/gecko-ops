@@ -1,1 +1,36 @@
-[]
+[
+ {
+  "id": "9e5b02ef-e3d6-40cc-b845-750684374083",
+  "kind": "deposit",
+  "lang": "en",
+  "note": "",
+  "lines": [
+   {
+    "qty": 1,
+    "unit": 1450,
+    "label": "Regular plan, first month",
+    "detail": "10 reels"
+   }
+  ],
+  "taxes": [],
+  "title": "Deposit, 50%",
+  "total": 1450.0,
+  "billTo": {},
+  "number": "GK-2026-001",
+  "paidOn": "2026-10-26",
+  "seller": {},
+  "sentAt": "2026-10-24T01:11:12.723117+01:00",
+  "status": "paid",
+  "dueDate": "2026-10-31",
+  "overdue": false,
+  "paidHow": "Bank transfer",
+  "subtotal": 1450.0,
+  "taxTotal": 0.0,
+  "voidedAt": null,
+  "createdAt": "2026-11-05T01:11:12.723117+01:00",
+  "issueDate": "2026-10-24",
+  "updatedAt": "2026-11-05T01:11:12.723117+01:00",
+  "authorName": "",
+  "voidReason": ""
+ }
+]

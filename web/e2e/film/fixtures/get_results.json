@@ -1,5 +1,10 @@
 {
- "cuts": [],
+ "cuts": [
+  {
+   "id": "2a8a12cc-03e9-4a43-8372-4cdb1502fdf5",
+   "title": "Before and after, cut 2"
+  }
+ ],
  "team": false,
  "posts": [],
  "reads": [],

@@ -53,6 +53,20 @@ insert into public.cut_versions (cut_id, workspace_id, client_id, version, path,
 select id, workspace_id, client_id, 1, workspace_id::text || '/maison/' || id::text || '/v1.mp4', 12000000, 31.5, 'First cut', 'Heni'
 from public.cuts where title = 'Morning routine, cut 1';
 
+-- A second reel already approved and delivered, so Delivery has a final file.
+insert into public.cuts (workspace_id, client_id, title, status, version, position, approved_version, approved_at, approved_by, final_link, final_note, delivered_at) values
+  ('10000000-0000-4000-8000-0000000009a1', 'maison', 'Before and after, cut 2', 'approved', 2, 1, 2, now() - interval '1 day', 'Yasmine Ben Abdallah',
+   'https://example.com/lumiere/before-and-after-final', '9:16 and 4:5, with and without subtitles', now() - interval '20 hours');
+insert into public.cut_versions (cut_id, workspace_id, client_id, version, path, size, seconds, what_changed, uploaded_by)
+select id, workspace_id, client_id, v, workspace_id::text || '/maison/' || id::text || '/v' || v || '.mp4', 11000000, 22.0,
+       case v when 1 then 'First cut' else 'Price shown in the first second' end, 'Heni'
+from public.cuts, generate_series(1, 2) v where title = 'Before and after, cut 2';
+
+-- The deposit, sent and paid.
+insert into public.invoices (workspace_id, client_id, kind, status, number, lang, title, issue_date, due_date, lines, subtotal, total, sent_at, paid_on, paid_how) values
+  ('10000000-0000-4000-8000-0000000009a1', 'maison', 'deposit', 'paid', 'GK-2026-001', 'en', 'Deposit, 50%', current_date - 12, current_date - 5,
+   '[{"label":"Regular plan, first month","detail":"10 reels","qty":1,"unit":1450}]', 1450, 1450, now() - interval '12 days', current_date - 10, 'Bank transfer');
+
 insert into public.production_options (workspace_id, client_id, kind, name, role, details, cost, when_note, status) values
   ('10000000-0000-4000-8000-0000000009a1', 'maison', 'talent', 'Salma, 29, UGC creator', 'main', 'Natural on camera, has worked with skincare before.', 450, 'Free on the shoot day', 'proposed'),
   ('10000000-0000-4000-8000-0000000009a1', 'maison', 'location', 'Bright flat, white bathroom', 'La Marsa', 'Big window, morning light until 11 a.m.', 300, '', 'proposed'),
@@ -67,7 +81,7 @@ create function pg_temp.act_as(p_user text) returns void language sql as $$
 $$;
 
 select set_config('fx.script', (select id::text from public.scripts where title like 'Morning routine%' limit 1), true);
-select set_config('fx.cut', (select id::text from public.cuts limit 1), true);
+select set_config('fx.cut', (select id::text from public.cuts where title = 'Morning routine, cut 1'), true);
 select set_config('fx.concept', (select id::text from public.concepts where title like 'Before and after: winter%' limit 1), true);
 set local role authenticated;
 select pg_temp.act_as('00000000-0000-4000-8000-0000000009a2');
