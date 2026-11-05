@@ -65,7 +65,9 @@ from public.cuts, generate_series(1, 2) v where title = 'Before and after, cut 2
 -- The deposit, sent and paid.
 insert into public.invoices (workspace_id, client_id, kind, status, number, lang, title, issue_date, due_date, lines, subtotal, total, sent_at, paid_on, paid_how) values
   ('10000000-0000-4000-8000-0000000009a1', 'maison', 'deposit', 'paid', 'GK-2026-001', 'en', 'Deposit, 50%', current_date - 12, current_date - 5,
-   '[{"label":"Regular plan, first month","detail":"10 reels","qty":1,"unit":1450}]', 1450, 1450, now() - interval '12 days', current_date - 10, 'Bank transfer');
+   '[{"label":"Regular plan, first month","detail":"10 reels","qty":1,"unit":1450}]', 1450, 1450, now() - interval '12 days', current_date - 10, 'Bank transfer'),
+  ('10000000-0000-4000-8000-0000000009a1', 'maison', 'balance', 'paid', 'GK-2026-002', 'en', 'Balance, 50%', current_date - 1, current_date + 6,
+   '[{"label":"Regular plan, first month","detail":"10 reels","qty":1,"unit":1450}]', 1450, 1450, now() - interval '1 day', current_date, 'Bank transfer');
 
 insert into public.production_options (workspace_id, client_id, kind, name, role, details, cost, when_note, status) values
   ('10000000-0000-4000-8000-0000000009a1', 'maison', 'talent', 'Salma, 29, UGC creator', 'main', 'Natural on camera, has worked with skincare before.', 450, 'Free on the shoot day', 'proposed'),

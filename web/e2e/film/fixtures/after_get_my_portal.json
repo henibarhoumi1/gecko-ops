@@ -6,7 +6,7 @@
  "cover": null,
  "scripts": [
   {
-   "id": "a64d4430-c62b-4f32-b56d-b083788149fc",
+   "id": "004221a2-1488-47ae-af4f-53995d3dbd0a",
    "cta": "Order the starter kit online",
    "goal": "Introduce the range and make people want the starter kit.",
    "hook": 0,
@@ -40,13 +40,13 @@
    ],
    "notes": [
     {
-     "id": "78fff531-1cb2-4bce-8c06-36708ecc2e56",
+     "id": "9c445f83-e2ab-4f3d-999f-c34e3bca42c1",
      "body": "",
      "hook": 0,
      "kind": "approve",
      "line": null,
      "version": 1,
-     "createdAt": "2026-11-05T01:11:12.723117+01:00",
+     "createdAt": "2026-11-05T01:14:35.952624+01:00",
      "authorName": "Yasmine Ben Abdallah",
      "fromClient": true
     }
@@ -59,17 +59,17 @@
    "position": 0,
    "previous": null,
    "conceptId": null,
-   "createdAt": "2026-11-05T01:11:12.723117+01:00",
+   "createdAt": "2026-11-05T01:14:35.952624+01:00",
    "treatment": {},
-   "updatedAt": "2026-11-05T01:11:12.723117+01:00",
+   "updatedAt": "2026-11-05T01:14:35.952624+01:00",
    "writtenBy": "gecko",
-   "approvedAt": "2026-11-05T01:11:12.723117+01:00",
+   "approvedAt": "2026-11-05T01:14:35.952624+01:00",
    "approvedBy": "Yasmine Ben Abdallah",
    "authorName": "",
    "approvedVersion": 1
   },
   {
-   "id": "a4f911d0-a8b2-4f56-b2da-a90d64640f6f",
+   "id": "2c5a921d-a51e-4712-bd8d-205862008792",
    "cta": "Discover the range",
    "goal": "Prove the result.",
    "hook": null,
@@ -94,9 +94,9 @@
    "position": 1,
    "previous": null,
    "conceptId": null,
-   "createdAt": "2026-11-05T01:11:12.723117+01:00",
+   "createdAt": "2026-11-05T01:14:35.952624+01:00",
    "treatment": {},
-   "updatedAt": "2026-11-05T01:11:12.723117+01:00",
+   "updatedAt": "2026-11-05T01:14:35.952624+01:00",
    "writtenBy": "gecko",
    "approvedAt": null,
    "approvedBy": null,
@@ -106,7 +106,7 @@
  ],
  "concepts": [
   {
-   "id": "c18d7949-8df6-4741-943a-f3a9a63df882",
+   "id": "eeb5b6fc-e69e-4af5-bc47-25ea1502f103",
    "body": "A busy mum, three products, thirty seconds. Texture in extreme close-up, the result in daylight.",
    "refs": "https://www.instagram.com/reel/example",
    "notes": [],
@@ -115,8 +115,8 @@
    "status": "review",
    "version": 1,
    "position": 0,
-   "createdAt": "2026-11-05T01:11:12.723117+01:00",
-   "updatedAt": "2026-11-05T01:11:12.723117+01:00",
+   "createdAt": "2026-11-05T01:14:35.952624+01:00",
+   "updatedAt": "2026-11-05T01:14:35.952624+01:00",
    "approvedAt": null,
    "approvedBy": null,
    "authorName": "",
@@ -124,16 +124,16 @@
    "approvedVersion": null
   },
   {
-   "id": "2949d858-f49a-4887-8322-bc94847a42f8",
+   "id": "8ba4805e-72af-4a08-946e-e4ecf838e37f",
    "body": "Split screen, same light, same frame. Day 1 and day 14.",
    "refs": "",
    "notes": [
     {
-     "id": "d60b6be3-7306-4082-b3e9-fe402a9ae8ba",
+     "id": "bcfe4050-abdd-43d7-8659-c37df9c6d8e3",
      "body": "Could we use a tissue with our logo?",
      "kind": "comment",
      "version": 1,
-     "createdAt": "2026-11-05T01:11:12.723117+01:00",
+     "createdAt": "2026-11-05T01:14:35.952624+01:00",
      "authorName": "Yasmine Ben Abdallah",
      "fromClient": true
     }
@@ -143,8 +143,8 @@
    "status": "review",
    "version": 1,
    "position": 1,
-   "createdAt": "2026-11-05T01:11:12.723117+01:00",
-   "updatedAt": "2026-11-05T01:11:12.723117+01:00",
+   "createdAt": "2026-11-05T01:14:35.952624+01:00",
+   "updatedAt": "2026-11-05T01:14:35.952624+01:00",
    "approvedAt": null,
    "approvedBy": null,
    "authorName": "",
@@ -152,7 +152,7 @@
    "approvedVersion": null
   },
   {
-   "id": "dcc60d52-7ed7-4b67-8752-b40babe12f13",
+   "id": "8709f13c-c123-44ea-ac3a-d2a3e52e6078",
    "body": "The founder tells the brand story to camera.",
    "refs": "",
    "notes": [],
@@ -161,9 +161,9 @@
    "status": "approved",
    "version": 1,
    "position": 3,
-   "createdAt": "2026-11-05T01:11:12.723117+01:00",
-   "updatedAt": "2026-11-05T01:11:12.723117+01:00",
-   "approvedAt": "2026-11-02T01:11:12.723117+01:00",
+   "createdAt": "2026-11-05T01:14:35.952624+01:00",
+   "updatedAt": "2026-11-05T01:14:35.952624+01:00",
+   "approvedAt": "2026-11-02T01:14:35.952624+01:00",
    "approvedBy": "Yasmine",
    "authorName": "",
    "fromClient": false,
@@ -184,7 +184,7 @@
   ],
   "nextStep": "Approve the last scripts before Friday.",
   "shootDate": "2026-11-20",
-  "updatedAt": "2026-11-05T01:11:12.723117+01:00",
+  "updatedAt": "2026-11-05T01:14:35.952624+01:00",
   "milestones": [
    {
     "date": "2026-10-30",

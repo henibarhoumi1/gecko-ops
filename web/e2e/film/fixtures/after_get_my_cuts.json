@@ -1,16 +1,16 @@
 {
  "cuts": [
   {
-   "id": "214a0e04-3351-4368-b524-7a5310fe8534",
+   "id": "a1f411cc-40bd-4e35-a78c-aa3e685e981f",
    "notes": [
     {
      "at": 4.2,
-     "id": "31c4326a-1589-4c10-a505-2005dc685974",
+     "id": "3a70616f-fed6-45c4-8224-4d27e2d2ab2f",
      "body": "Can the price show up sooner?",
      "done": false,
      "kind": "comment",
      "version": 1,
-     "createdAt": "2026-11-05T01:11:12.723117+01:00",
+     "createdAt": "2026-11-05T01:14:35.952624+01:00",
      "authorName": "Yasmine Ben Abdallah",
      "fromClient": true
     }
@@ -21,20 +21,20 @@
    "position": 0,
    "versions": [
     {
-     "path": "10000000-0000-4000-8000-0000000009a1/maison/214a0e04-3351-4368-b524-7a5310fe8534/v1.mp4",
+     "path": "10000000-0000-4000-8000-0000000009a1/maison/a1f411cc-40bd-4e35-a78c-aa3e685e981f/v1.mp4",
      "size": 12000000,
      "seconds": 31.5,
      "version": 1,
-     "createdAt": "2026-11-05T01:11:12.723117+01:00",
+     "createdAt": "2026-11-05T01:14:35.952624+01:00",
      "uploadedBy": "Heni",
      "whatChanged": "First cut"
     }
    ],
-   "createdAt": "2026-11-05T01:11:12.723117+01:00",
+   "createdAt": "2026-11-05T01:14:35.952624+01:00",
    "delivered": false,
    "finalLink": null,
    "finalNote": "",
-   "updatedAt": "2026-11-05T01:11:12.723117+01:00",
+   "updatedAt": "2026-11-05T01:14:35.952624+01:00",
    "approvedAt": null,
    "approvedBy": null,
    "authorName": "",
@@ -42,7 +42,7 @@
    "approvedVersion": null
   },
   {
-   "id": "2a8a12cc-03e9-4a43-8372-4cdb1502fdf5",
+   "id": "aba7221e-bfc2-4df4-a345-ae7167a748c0",
    "notes": [],
    "title": "Before and after, cut 2",
    "status": "approved",
@@ -50,33 +50,33 @@
    "position": 1,
    "versions": [
     {
-     "path": "10000000-0000-4000-8000-0000000009a1/maison/2a8a12cc-03e9-4a43-8372-4cdb1502fdf5/v1.mp4",
+     "path": "10000000-0000-4000-8000-0000000009a1/maison/aba7221e-bfc2-4df4-a345-ae7167a748c0/v1.mp4",
      "size": 11000000,
      "seconds": 22.0,
      "version": 1,
-     "createdAt": "2026-11-05T01:11:12.723117+01:00",
+     "createdAt": "2026-11-05T01:14:35.952624+01:00",
      "uploadedBy": "Heni",
      "whatChanged": "First cut"
     },
     {
-     "path": "10000000-0000-4000-8000-0000000009a1/maison/2a8a12cc-03e9-4a43-8372-4cdb1502fdf5/v2.mp4",
+     "path": "10000000-0000-4000-8000-0000000009a1/maison/aba7221e-bfc2-4df4-a345-ae7167a748c0/v2.mp4",
      "size": 11000000,
      "seconds": 22.0,
      "version": 2,
-     "createdAt": "2026-11-05T01:11:12.723117+01:00",
+     "createdAt": "2026-11-05T01:14:35.952624+01:00",
      "uploadedBy": "Heni",
      "whatChanged": "Price shown in the first second"
     }
    ],
-   "createdAt": "2026-11-05T01:11:12.723117+01:00",
+   "createdAt": "2026-11-05T01:14:35.952624+01:00",
    "delivered": true,
    "finalLink": null,
    "finalNote": "",
-   "updatedAt": "2026-11-05T01:11:12.723117+01:00",
-   "approvedAt": "2026-11-04T01:11:12.723117+01:00",
+   "updatedAt": "2026-11-05T01:14:35.952624+01:00",
+   "approvedAt": "2026-11-04T01:14:35.952624+01:00",
    "approvedBy": "Yasmine Ben Abdallah",
    "authorName": "",
-   "deliveredAt": "2026-11-04T05:11:12.723117+01:00",
+   "deliveredAt": "2026-11-04T05:14:35.952624+01:00",
    "approvedVersion": 2
   }
  ],
