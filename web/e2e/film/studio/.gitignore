@@ -1,0 +1,7 @@
+# Built or copied in by build.sh / setup: frames, sound, the film, captures, clip frames, fonts.
+frames/
+preview/
+qc/
+audio.wav
+*.mp4
+assets/
