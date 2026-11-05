@@ -25,6 +25,9 @@ insert into public.client_portals (workspace_id, client_id, campaign, summary, i
      jsonb_build_object('label', 'Shoot day', 'date', (current_date + 15)::text, 'done', false),
      jsonb_build_object('label', 'First drafts', 'date', (current_date + 22)::text, 'done', false)),
    2900, 'regular', 10);
+-- Deposit and balance paid: the final file opens in Delivery.
+update public.client_portals set deposit_status = 'paid', balance_status = 'paid'
+where workspace_id = '10000000-0000-4000-8000-0000000009a1' and client_id = 'maison';
 insert into public.client_accounts (workspace_id, client_id, email, display_name, user_id, accepted_at, invited_by, role) values
   ('10000000-0000-4000-8000-0000000009a1', 'maison', 'owner@phone.test', 'Yasmine Ben Abdallah', '00000000-0000-4000-8000-0000000009a2', now() - interval '5 days', '00000000-0000-4000-8000-0000000009a1', 'owner');
 

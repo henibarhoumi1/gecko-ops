@@ -1,6 +1,6 @@
 [
  {
-  "id": "e55eb59c-591b-40a3-a08f-336fe251214a",
+  "id": "995d1116-5c25-4928-8a06-318f621876a8",
   "kind": "balance",
   "lang": "en",
   "note": "",
@@ -19,7 +19,7 @@
   "number": "GK-2026-002",
   "paidOn": "2026-11-05",
   "seller": {},
-  "sentAt": "2026-11-04T01:14:35.952624+01:00",
+  "sentAt": "2026-11-04T01:18:29.183678+01:00",
   "status": "paid",
   "dueDate": "2026-11-11",
   "overdue": false,
@@ -27,14 +27,14 @@
   "subtotal": 1450.0,
   "taxTotal": 0.0,
   "voidedAt": null,
-  "createdAt": "2026-11-05T01:14:35.952624+01:00",
+  "createdAt": "2026-11-05T01:18:29.183678+01:00",
   "issueDate": "2026-11-04",
-  "updatedAt": "2026-11-05T01:14:35.952624+01:00",
+  "updatedAt": "2026-11-05T01:18:29.183678+01:00",
   "authorName": "",
   "voidReason": ""
  },
  {
-  "id": "9f7aa216-45ba-46d3-99e9-9ab295267317",
+  "id": "8029d374-5d95-4b9c-ac7f-a10ea3b0172a",
   "kind": "deposit",
   "lang": "en",
   "note": "",
@@ -53,7 +53,7 @@
   "number": "GK-2026-001",
   "paidOn": "2026-10-26",
   "seller": {},
-  "sentAt": "2026-10-24T01:14:35.952624+01:00",
+  "sentAt": "2026-10-24T01:18:29.183678+01:00",
   "status": "paid",
   "dueDate": "2026-10-31",
   "overdue": false,
@@ -61,9 +61,9 @@
   "subtotal": 1450.0,
   "taxTotal": 0.0,
   "voidedAt": null,
-  "createdAt": "2026-11-05T01:14:35.952624+01:00",
+  "createdAt": "2026-11-05T01:18:29.183678+01:00",
   "issueDate": "2026-10-24",
-  "updatedAt": "2026-11-05T01:14:35.952624+01:00",
+  "updatedAt": "2026-11-05T01:18:29.183678+01:00",
   "authorName": "",
   "voidReason": ""
  }
