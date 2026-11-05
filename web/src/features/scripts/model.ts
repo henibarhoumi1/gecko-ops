@@ -46,47 +46,95 @@ export const TEMPLATES: ScriptStyle[] = [
   "other",
 ];
 
-export const TEMPLATE_GUIDE: Record<string, TemplateGuide> = {
-  "problem-fix": {
-    hook: "Name the pain in the first second. No product yet.",
-    lead: "Make it hurt: why this problem is so annoying.",
-    body: ["The product steps in and fixes it, on camera.", "The result, clearly visible."],
-    cta: "What to do now, and why today.",
-  },
-  "before-after": {
-    hook: "Open on the after: the best-looking result first.",
-    lead: "Rewind to the before. Same light, same frame.",
-    body: ["What changed: the product in use.", "Close-up proof of the result."],
-    cta: "Get the same result: where and how.",
-  },
-  founder: {
-    hook: "A bold line from the founder, straight to camera.",
-    lead: "Why I started this.",
-    body: ["What makes it different from the rest.", "Proof: a customer, a number, a moment."],
-    cta: "An invitation from the founder.",
-  },
-  review: {
-    hook: "A real reaction: the first second of trying it.",
-    lead: "My problem before.",
-    body: ["First try: what I noticed.", "After a few days: the result."],
-    cta: "Where to get it, in my own words.",
-  },
-  reasons: {
-    hook: "\u201c3 reasons [who] love [product]\u201d",
-    lead: "Optional: who this is for.",
-    body: ["Reason 1, shown, not told.", "Reason 2, shown.", "Reason 3: the strongest, last."],
-    cta: "The easiest next step.",
-  },
-  other: {
-    hook: "Stop the scroll in the first second.",
-    lead: "Set up the problem or the promise.",
-    body: ["Show it.", "Prove it."],
-    cta: "One clear next step.",
-  },
-};
+/** What each part of the ad is for, per template. Built on each call so it reads in the language in use. */
+function guides(): Record<string, TemplateGuide> {
+  return {
+    "problem-fix": {
+      hook: t(
+        "Name the pain in the first second. No product yet.",
+        "Nommez le problème dès la première seconde. Pas encore de produit.",
+      ),
+      lead: t(
+        "Make it hurt: why this problem is so annoying.",
+        "Faites-le ressentir : pourquoi ce problème est si pénible.",
+      ),
+      body: [
+        t(
+          "The product steps in and fixes it, on camera.",
+          "Le produit arrive et règle le problème, à l'écran.",
+        ),
+        t("The result, clearly visible.", "Le résultat, bien visible."),
+      ],
+      cta: t("What to do now, and why today.", "Quoi faire maintenant, et pourquoi aujourd'hui."),
+    },
+    "before-after": {
+      hook: t(
+        "Open on the after: the best-looking result first.",
+        "Ouvrez sur l'après : le plus beau résultat d'abord.",
+      ),
+      lead: t(
+        "Rewind to the before. Same light, same frame.",
+        "Retour à l'avant. Même lumière, même cadre.",
+      ),
+      body: [
+        t("What changed: the product in use.", "Ce qui a changé : le produit en action."),
+        t("Close-up proof of the result.", "La preuve du résultat, en gros plan."),
+      ],
+      cta: t("Get the same result: where and how.", "Obtenez le même résultat : où et comment."),
+    },
+    founder: {
+      hook: t(
+        "A bold line from the founder, straight to camera.",
+        "Une phrase forte du fondateur, face caméra.",
+      ),
+      lead: t("Why I started this.", "Pourquoi j'ai commencé."),
+      body: [
+        t("What makes it different from the rest.", "Ce qui le rend différent des autres."),
+        t(
+          "Proof: a customer, a number, a moment.",
+          "La preuve : un client, un chiffre, un moment.",
+        ),
+      ],
+      cta: t("An invitation from the founder.", "Une invitation du fondateur."),
+    },
+    review: {
+      hook: t(
+        "A real reaction: the first second of trying it.",
+        "Une vraie réaction : la première seconde d'essai.",
+      ),
+      lead: t("My problem before.", "Mon problème avant."),
+      body: [
+        t("First try: what I noticed.", "Premier essai : ce que j'ai remarqué."),
+        t("After a few days: the result.", "Après quelques jours : le résultat."),
+      ],
+      cta: t("Where to get it, in my own words.", "Où l'acheter, avec mes mots."),
+    },
+    reasons: {
+      hook: t(
+        "\u201c3 reasons [who] love [product]\u201d",
+        "\u00ab 3 raisons pour lesquelles [qui] adorent [produit] \u00bb",
+      ),
+      lead: t("Optional: who this is for.", "Facultatif : pour qui c'est."),
+      body: [
+        t("Reason 1, shown, not told.", "Raison 1, montrée, pas racontée."),
+        t("Reason 2, shown.", "Raison 2, montrée."),
+        t("Reason 3: the strongest, last.", "Raison 3 : la plus forte, en dernier."),
+      ],
+      cta: t("The easiest next step.", "L'étape suivante la plus simple."),
+    },
+    other: {
+      hook: t("Stop the scroll in the first second.", "Arrêtez le scroll dès la première seconde."),
+      lead: t("Set up the problem or the promise.", "Posez le problème ou la promesse."),
+      body: [t("Show it.", "Montrez-le."), t("Prove it.", "Prouvez-le.")],
+      cta: t("One clear next step.", "Une seule étape suivante, claire."),
+    },
+  };
+}
 
-export const templateGuide = (style: ScriptStyle): TemplateGuide =>
-  TEMPLATE_GUIDE[style] ?? TEMPLATE_GUIDE.other!;
+export const templateGuide = (style: ScriptStyle): TemplateGuide => {
+  const all = guides();
+  return all[style] ?? all.other!;
+};
 
 /** The sections of a Cinematic treatment, written before the scenes. */
 export const TREATMENT_KEYS = ["mood", "story", "music", "styling", "casting"] as const;

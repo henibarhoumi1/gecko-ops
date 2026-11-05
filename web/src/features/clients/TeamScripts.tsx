@@ -7,10 +7,6 @@ import { Select } from "@/components/Select";
 import {
   estimateSeconds,
   groupScripts,
-  hookName,
-  STYLE_LABEL,
-  TEMPLATES,
-  templateGuide,
   tidyLines,
   tidyTreatment,
   TREATMENT_KEYS,
@@ -18,10 +14,9 @@ import {
   byClient,
   type Treatment,
   type Script,
-  type ScriptLine,
-  type ScriptStyle,
 } from "@/features/scripts/model";
 import { ScriptView } from "@/features/scripts/ScriptView";
+import { AdParts, adDraft, draftBeats, noWords, type AdDraft } from "@/features/scripts/AdParts";
 import {
   useDeleteScript,
   useSaveScript,
@@ -255,9 +250,6 @@ function TeamScript({
   );
 }
 
-const blank = (n: number): ScriptLine[] => Array.from({ length: n }, () => ({}));
-const isEmpty = (lines: ScriptLine[]) => tidyLines(lines).length === 0;
-
 function ScriptForm({
   clientId,
   script,
@@ -276,43 +268,21 @@ function ScriptForm({
   const concepts = useConcepts(clientId);
   const approved = (concepts.data ?? []).filter((c) => c.status === "approved");
   const startIdea = approved.find((c) => c.id === fromIdea);
-  const [style, setStyle] = useState<ScriptStyle>(script?.style ?? "problem-fix");
-  const guide = templateGuide(style);
-  const [hooks, setHooks] = useState<ScriptLine[]>(
-    script?.hooks.length
-      ? script.hooks
-      : startIdea?.hook
-        ? [{ hear: startIdea.hook }, {}]
-        : blank(2),
-  );
-  const [lead, setLead] = useState<ScriptLine>(script?.beats.find((b) => b.part === "lead") ?? {});
-  const [body, setBody] = useState<ScriptLine[]>(
-    script?.beats.some((b) => b.part !== "lead")
-      ? script.beats.filter((b) => b.part !== "lead")
-      : blank(guide.body.length),
+  const [draft, setDraft] = useState<AdDraft>(() =>
+    adDraft(script, "problem-fix", startIdea?.hook),
   );
   const [title, setTitle] = useState(script?.title ?? startIdea?.title ?? "");
   const [conceptId, setConceptId] = useState(script?.conceptId ?? startIdea?.id ?? "");
   const [seconds, setSeconds] = useState(script?.seconds ?? 30);
-  const [cta, setCta] = useState(script?.cta ?? "");
   const templates = useTemplates();
   const cinematic =
     templates.data?.[clientId] === "cinematic" ||
     TREATMENT_KEYS.some((k) => script?.treatment?.[k]);
   const [error, setError] = useState("");
   const shared = script && script.status !== "draft";
-  const beats = tidyLines([
-    { ...lead, part: "lead" },
-    ...body.map((b) => ({ ...b, part: "body" as const })),
-  ]);
-  const runs = estimateSeconds({ hooks: tidyLines(hooks), beats, cta });
+  const beats = draftBeats(draft);
+  const runs = estimateSeconds({ hooks: tidyLines(draft.hooks), beats, cta: draft.cta });
   const idea = approved.find((c) => c.id === conceptId);
-
-  // A new template sets how many body parts there are, as long as none has words in it yet.
-  function pickTemplate(next: ScriptStyle) {
-    setStyle(next);
-    if (isEmpty(body)) setBody(blank(templateGuide(next).body.length));
-  }
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -324,12 +294,12 @@ function ScriptForm({
         id: script?.id ?? null,
         conceptId: conceptId || null,
         title: title.trim(),
-        style,
+        style: draft.style,
         seconds,
         goal: String(form.get("goal") ?? "").trim(),
-        hooks: tidyLines(hooks),
+        hooks: tidyLines(draft.hooks),
         beats,
-        cta: cta.trim(),
+        cta: draft.cta.trim(),
         ...(cinematic
           ? {
               treatment: tidyTreatment(
@@ -350,30 +320,19 @@ function ScriptForm({
   return (
     <form className="card stack concept-edit script-edit" onSubmit={onSubmit}>
       <h3>{script ? `Edit "${script.title}"` : "New script"}</h3>
-      <div className="row">
-        <Select
-          label="For the idea"
-          name="concept"
-          value={conceptId}
-          onChange={(e) => {
-            setConceptId(e.target.value);
-            const concept = approved.find((c) => c.id === e.target.value);
-            if (concept && !title.trim()) setTitle(concept.title);
-            if (concept?.hook && isEmpty(hooks)) setHooks([{ hear: concept.hook }, {}]);
-          }}
-          options={[["", "No idea yet"], ...approved.map((c) => [c.id, c.title] as const)]}
-        />
-        <Select
-          label="Template"
-          name="style"
-          value={style}
-          onChange={(e) => pickTemplate(e.target.value as ScriptStyle)}
-          options={[
-            ...TEMPLATES.map((k) => [k, STYLE_LABEL[k]] as const),
-            ...(TEMPLATES.includes(style) ? [] : [[style, STYLE_LABEL[style]] as const]),
-          ]}
-        />
-      </div>
+      <Select
+        label="For the idea"
+        name="concept"
+        value={conceptId}
+        onChange={(e) => {
+          setConceptId(e.target.value);
+          const concept = approved.find((c) => c.id === e.target.value);
+          if (concept && !title.trim()) setTitle(concept.title);
+          if (concept?.hook && noWords(draft.hooks))
+            setDraft({ ...draft, hooks: [{ hear: concept.hook }, {}] });
+        }}
+        options={[["", "No idea yet"], ...approved.map((c) => [c.id, c.title] as const)]}
+      />
       {idea && (
         <div className="script-idea">
           <p className="small">
@@ -430,81 +389,7 @@ function ScriptForm({
         </fieldset>
       )}
 
-      <fieldset className="fieldset script-lines">
-        <legend>
-          <span className="part-tag">1</span> Hook{" "}
-          <span className="muted">· first 1–3 seconds · write 2 or 3, the client picks</span>
-        </legend>
-        <p className="part-hint">{guide.hook}</p>
-        {hooks.map((hook, i) => (
-          <LineEditor
-            key={i}
-            name={hookName(i)}
-            line={hook}
-            onChange={(next) => setHooks(hooks.map((h, j) => (j === i ? next : h)))}
-            onRemove={
-              hooks.length > 1 ? () => setHooks(hooks.filter((_, j) => j !== i)) : undefined
-            }
-          />
-        ))}
-        {hooks.length < 3 && (
-          <Button variant="link" onClick={() => setHooks([...hooks, {}])}>
-            Add a hook option
-          </Button>
-        )}
-      </fieldset>
-
-      <fieldset className="fieldset script-lines">
-        <legend>
-          <span className="part-tag">2</span> Lead{" "}
-          <span className="muted">· the next line, sets it up</span>
-        </legend>
-        <LineEditor name="Lead" hint={guide.lead} line={lead} onChange={setLead} />
-      </fieldset>
-
-      <fieldset className="fieldset script-lines">
-        <legend>
-          <span className="part-tag">3</span> Body{" "}
-          <span className="muted">· each part keeps them watching</span>
-        </legend>
-        {body.map((part, i) => (
-          <LineEditor
-            key={i}
-            name={`Body ${i + 1}`}
-            hint={guide.body[i]}
-            line={part}
-            onChange={(next) => setBody(body.map((b, j) => (j === i ? next : b)))}
-            onRemove={body.length > 1 ? () => setBody(body.filter((_, j) => j !== i)) : undefined}
-            onUp={
-              i > 0
-                ? () =>
-                    setBody(
-                      body.map((b, j) => (j === i - 1 ? body[i]! : j === i ? body[i - 1]! : b)),
-                    )
-                : undefined
-            }
-          />
-        ))}
-        {body.length < 8 && (
-          <Button variant="link" onClick={() => setBody([...body, {}])}>
-            Add a body part
-          </Button>
-        )}
-      </fieldset>
-
-      <fieldset className="fieldset script-lines">
-        <legend>
-          <span className="part-tag">4</span> CTA <span className="muted">· the last frame</span>
-        </legend>
-        <Field
-          label="What the viewer does next"
-          name="cta"
-          value={cta}
-          onChange={(e) => setCta(e.target.value)}
-          maxLength={300}
-          placeholder={guide.cta}
-        />
-      </fieldset>
+      <AdParts draft={draft} onChange={setDraft} hookNote="write 2 or 3, the client picks" />
       <p className={`small script-runs${runs > seconds + 3 ? " over" : ""}`}>
         Runs about {runs} s spoken with the first hook · made for {seconds} s
         {runs > seconds + 3 && " · too long, trim it"}
@@ -536,75 +421,5 @@ function ScriptForm({
         )}
       </div>
     </form>
-  );
-}
-
-function LineEditor({
-  name,
-  hint,
-  line,
-  onChange,
-  onRemove,
-  onUp,
-}: {
-  name: string;
-  /** What this part is for, from the template. */
-  hint?: string;
-  line: ScriptLine;
-  onChange: (line: ScriptLine) => void;
-  onRemove?: () => void;
-  onUp?: () => void;
-}) {
-  const set = (key: keyof ScriptLine) => (e: { target: { value: string } }) =>
-    onChange({ ...line, [key]: e.target.value });
-  return (
-    <div className="line-edit">
-      <div className="line-edit-head">
-        <strong>{name}</strong>
-        {hint && <span className="part-hint inline">{hint}</span>}
-        {onUp && (
-          <button type="button" className="line-comment" onClick={onUp}>
-            Move up
-          </button>
-        )}
-        {onRemove && (
-          <button type="button" className="line-comment" onClick={onRemove}>
-            Remove
-          </button>
-        )}
-      </div>
-      <div className="line-edit-cols">
-        <label>
-          <span>We see</span>
-          <textarea
-            dir="auto"
-            rows={2}
-            maxLength={1000}
-            value={line.see ?? ""}
-            onChange={set("see")}
-          />
-        </label>
-        <label>
-          <span>We hear</span>
-          <textarea
-            dir="auto"
-            rows={2}
-            maxLength={1000}
-            value={line.hear ?? ""}
-            onChange={set("hear")}
-          />
-        </label>
-        <label>
-          <span>On screen</span>
-          <textarea
-            dir="auto"
-            rows={2}
-            maxLength={300}
-            value={line.text ?? ""}
-            onChange={set("text")}
-          />
-        </label>
-      </div>
-    </div>
   );
 }

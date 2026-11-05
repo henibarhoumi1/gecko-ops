@@ -11,6 +11,7 @@ import {
   type ScriptNoteRow,
   type ScriptRow,
   type ScriptStatus,
+  type ScriptStyle,
   type ScriptVersionRow,
 } from "./model";
 
@@ -180,6 +181,8 @@ export function useClientWriteScript(portal: ClientPortal) {
       beats: ScriptLine[];
       cta: string;
       treatment: Treatment;
+      /** The template, sent only when the client picked one. */
+      style?: ScriptStyle;
     }) => {
       const { error } = await requireSupabase().rpc("client_write_script", {
         p_workspace_id: portal.workspaceId,
@@ -192,6 +195,7 @@ export function useClientWriteScript(portal: ClientPortal) {
         p_beats: input.beats,
         p_cta: input.cta,
         p_treatment: input.treatment,
+        ...(input.style ? { p_style: input.style } : {}),
       });
       if (error) throw error;
     },
