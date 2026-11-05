@@ -20,7 +20,7 @@ import { friendlyError } from "@/lib/errors";
 import { t } from "@/lib/i18n";
 import { isCinematic, tw, words } from "@/lib/wording";
 
-const LENGTHS = [15, 20, 30, 45, 60, 90] as const;
+const LENGTHS = [9, 15, 20, 30, 45, 60, 90] as const;
 
 function treatmentHint(key: (typeof TREATMENT_KEYS)[number]): string {
   return {
@@ -49,7 +49,8 @@ export function WriteScript({
   const cine = isCinematic();
   const [beats, setBeats] = useState<ScriptLine[]>(script?.beats.length ? script.beats : [{}, {}]);
   // Everyone but film clients writes the ad in parts, the same way the team does.
-  const [draft, setDraft] = useState<AdDraft>(() => adDraft(script));
+  const [seconds, setSeconds] = useState(script?.seconds ?? (cine ? 45 : 30));
+  const [draft, setDraft] = useState<AdDraft>(() => adDraft(script, undefined, undefined, seconds));
   const [error, setError] = useState("");
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -116,7 +117,8 @@ export function WriteScript({
         <Select
           label={t("Length", "Durée")}
           name="seconds"
-          defaultValue={String(script?.seconds ?? (cine ? 45 : 30))}
+          value={String(seconds)}
+          onChange={(e) => setSeconds(Number(e.target.value))}
           options={LENGTHS.map((n) => [String(n), `${n} s`] as const)}
         />
       </div>
@@ -211,6 +213,7 @@ export function WriteScript({
         <AdParts
           draft={draft}
           onChange={setDraft}
+          seconds={seconds}
           hookNote={t("write 1 to 3, Gecko helps pick", "écrivez-en 1 à 3, Gecko aide à choisir")}
         />
       )}

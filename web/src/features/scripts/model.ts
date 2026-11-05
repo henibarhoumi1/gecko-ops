@@ -1,7 +1,8 @@
 import { t } from "@/lib/i18n";
 import { words } from "@/lib/wording";
+import { template } from "./templates";
 export type ScriptStatus = "draft" | "review" | "changes" | "approved";
-/** The template a script was written from. The last five are older styles, kept for scripts already written. */
+/** The template a script was written from (see templates.ts). talking-head, ugc and voiceover are older styles, kept for scripts already written. */
 export type ScriptStyle =
   | "problem-fix"
   | "before-after"
@@ -9,6 +10,13 @@ export type ScriptStyle =
   | "review"
   | "reasons"
   | "other"
+  | "us-vs-them"
+  | "offer"
+  | "comment-reply"
+  | "bts"
+  | "pov"
+  | "storytime"
+  | "unboxing"
   | "talking-head"
   | "demo"
   | "skit"
@@ -37,103 +45,12 @@ export interface TemplateGuide {
   cta: string;
 }
 
-export const TEMPLATES: ScriptStyle[] = [
-  "problem-fix",
-  "before-after",
-  "founder",
-  "review",
-  "reasons",
-  "other",
-];
+export { TEMPLATES } from "./templates";
 
-/** What each part of the ad is for, per template. Built on each call so it reads in the language in use. */
-function guides(): Record<string, TemplateGuide> {
-  return {
-    "problem-fix": {
-      hook: t(
-        "Name the pain in the first second. No product yet.",
-        "Nommez le problème dès la première seconde. Pas encore de produit.",
-      ),
-      lead: t(
-        "Make it hurt: why this problem is so annoying.",
-        "Faites-le ressentir : pourquoi ce problème est si pénible.",
-      ),
-      body: [
-        t(
-          "The product steps in and fixes it, on camera.",
-          "Le produit arrive et règle le problème, à l'écran.",
-        ),
-        t("The result, clearly visible.", "Le résultat, bien visible."),
-      ],
-      cta: t("What to do now, and why today.", "Quoi faire maintenant, et pourquoi aujourd'hui."),
-    },
-    "before-after": {
-      hook: t(
-        "Open on the after: the best-looking result first.",
-        "Ouvrez sur l'après : le plus beau résultat d'abord.",
-      ),
-      lead: t(
-        "Rewind to the before. Same light, same frame.",
-        "Retour à l'avant. Même lumière, même cadre.",
-      ),
-      body: [
-        t("What changed: the product in use.", "Ce qui a changé : le produit en action."),
-        t("Close-up proof of the result.", "La preuve du résultat, en gros plan."),
-      ],
-      cta: t("Get the same result: where and how.", "Obtenez le même résultat : où et comment."),
-    },
-    founder: {
-      hook: t(
-        "A bold line from the founder, straight to camera.",
-        "Une phrase forte du fondateur, face caméra.",
-      ),
-      lead: t("Why I started this.", "Pourquoi j'ai commencé."),
-      body: [
-        t("What makes it different from the rest.", "Ce qui le rend différent des autres."),
-        t(
-          "Proof: a customer, a number, a moment.",
-          "La preuve : un client, un chiffre, un moment.",
-        ),
-      ],
-      cta: t("An invitation from the founder.", "Une invitation du fondateur."),
-    },
-    review: {
-      hook: t(
-        "A real reaction: the first second of trying it.",
-        "Une vraie réaction : la première seconde d'essai.",
-      ),
-      lead: t("My problem before.", "Mon problème avant."),
-      body: [
-        t("First try: what I noticed.", "Premier essai : ce que j'ai remarqué."),
-        t("After a few days: the result.", "Après quelques jours : le résultat."),
-      ],
-      cta: t("Where to get it, in my own words.", "Où l'acheter, avec mes mots."),
-    },
-    reasons: {
-      hook: t(
-        "\u201c3 reasons [who] love [product]\u201d",
-        "\u00ab 3 raisons pour lesquelles [qui] adorent [produit] \u00bb",
-      ),
-      lead: t("Optional: who this is for.", "Facultatif : pour qui c'est."),
-      body: [
-        t("Reason 1, shown, not told.", "Raison 1, montrée, pas racontée."),
-        t("Reason 2, shown.", "Raison 2, montrée."),
-        t("Reason 3: the strongest, last.", "Raison 3 : la plus forte, en dernier."),
-      ],
-      cta: t("The easiest next step.", "L'étape suivante la plus simple."),
-    },
-    other: {
-      hook: t("Stop the scroll in the first second.", "Arrêtez le scroll dès la première seconde."),
-      lead: t("Set up the problem or the promise.", "Posez le problème ou la promesse."),
-      body: [t("Show it.", "Montrez-le."), t("Prove it.", "Prouvez-le.")],
-      cta: t("One clear next step.", "Une seule étape suivante, claire."),
-    },
-  };
-}
-
+/** What each part of the ad is for, in the template's words. */
 export const templateGuide = (style: ScriptStyle): TemplateGuide => {
-  const all = guides();
-  return all[style] ?? all.other!;
+  const { hook, lead, body, cta } = template(style);
+  return { hook, lead, body, cta };
 };
 
 /** The sections of a Cinematic treatment, written before the scenes. */
@@ -264,6 +181,27 @@ export const STYLE_LABEL: Record<ScriptStyle, string> = {
   },
   get other() {
     return t("Blank", "Libre");
+  },
+  get "us-vs-them"() {
+    return t("Us vs them", "Nous contre eux");
+  },
+  get offer() {
+    return t("Offer + deadline", "Offre + date limite");
+  },
+  get "comment-reply"() {
+    return t("Reply to a comment", "Réponse à un commentaire");
+  },
+  get bts() {
+    return t("Behind the scenes", "Les coulisses");
+  },
+  get pov() {
+    return t("POV", "POV");
+  },
+  get storytime() {
+    return t("Storytime", "Storytime");
+  },
+  get unboxing() {
+    return t("Unboxing", "Unboxing");
   },
 };
 

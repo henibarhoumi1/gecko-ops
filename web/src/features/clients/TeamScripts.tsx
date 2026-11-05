@@ -269,7 +269,7 @@ function ScriptForm({
   const approved = (concepts.data ?? []).filter((c) => c.status === "approved");
   const startIdea = approved.find((c) => c.id === fromIdea);
   const [draft, setDraft] = useState<AdDraft>(() =>
-    adDraft(script, "problem-fix", startIdea?.hook),
+    adDraft(script, "problem-fix", startIdea?.hook, script?.seconds ?? 30),
   );
   const [title, setTitle] = useState(script?.title ?? startIdea?.title ?? "");
   const [conceptId, setConceptId] = useState(script?.conceptId ?? startIdea?.id ?? "");
@@ -389,7 +389,12 @@ function ScriptForm({
         </fieldset>
       )}
 
-      <AdParts draft={draft} onChange={setDraft} hookNote="write 2 or 3, the client picks" />
+      <AdParts
+        draft={draft}
+        onChange={setDraft}
+        seconds={seconds}
+        hookNote="write 2 or 3, the client picks"
+      />
       <p className={`small script-runs${runs > seconds + 3 ? " over" : ""}`}>
         Runs about {runs} s spoken with the first hook · made for {seconds} s
         {runs > seconds + 3 && " · too long, trim it"}
