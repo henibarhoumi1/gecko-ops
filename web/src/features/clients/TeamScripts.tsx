@@ -56,9 +56,9 @@ export function TeamScripts({ clientId }: { clientId: string }) {
     <section className="tab-body">
       <div className="page-head">
         <p className="lede">
-          One script per reel, built Hook → Lead → Body → CTA. Pick the idea and a template; write two
-          or three hooks so the client can pick. Once approved, a script is locked: editing it sends a
-          new version back to the client.
+          One script per reel, built Hook → Lead → Body → CTA. Pick the idea and a template; write
+          two or three hooks so the client can pick. Once approved, a script is locked: editing it
+          sends a new version back to the client.
         </p>
         {!adding && <Button onClick={() => setAdding(true)}>New script</Button>}
       </div>
@@ -279,7 +279,11 @@ function ScriptForm({
   const [style, setStyle] = useState<ScriptStyle>(script?.style ?? "problem-fix");
   const guide = templateGuide(style);
   const [hooks, setHooks] = useState<ScriptLine[]>(
-    script?.hooks.length ? script.hooks : startIdea?.hook ? [{ hear: startIdea.hook }, {}] : blank(2),
+    script?.hooks.length
+      ? script.hooks
+      : startIdea?.hook
+        ? [{ hear: startIdea.hook }, {}]
+        : blank(2),
   );
   const [lead, setLead] = useState<ScriptLine>(script?.beats.find((b) => b.part === "lead") ?? {});
   const [body, setBody] = useState<ScriptLine[]>(
@@ -428,7 +432,8 @@ function ScriptForm({
 
       <fieldset className="fieldset script-lines">
         <legend>
-          <span className="part-tag">1</span> Hook <span className="muted">· first 1–3 seconds · write 2 or 3, the client picks</span>
+          <span className="part-tag">1</span> Hook{" "}
+          <span className="muted">· first 1–3 seconds · write 2 or 3, the client picks</span>
         </legend>
         <p className="part-hint">{guide.hook}</p>
         {hooks.map((hook, i) => (
@@ -451,14 +456,16 @@ function ScriptForm({
 
       <fieldset className="fieldset script-lines">
         <legend>
-          <span className="part-tag">2</span> Lead <span className="muted">· the next line, sets it up</span>
+          <span className="part-tag">2</span> Lead{" "}
+          <span className="muted">· the next line, sets it up</span>
         </legend>
         <LineEditor name="Lead" hint={guide.lead} line={lead} onChange={setLead} />
       </fieldset>
 
       <fieldset className="fieldset script-lines">
         <legend>
-          <span className="part-tag">3</span> Body <span className="muted">· each part keeps them watching</span>
+          <span className="part-tag">3</span> Body{" "}
+          <span className="muted">· each part keeps them watching</span>
         </legend>
         {body.map((part, i) => (
           <LineEditor

@@ -37,7 +37,14 @@ export interface TemplateGuide {
   cta: string;
 }
 
-export const TEMPLATES: ScriptStyle[] = ["problem-fix", "before-after", "founder", "review", "reasons", "other"];
+export const TEMPLATES: ScriptStyle[] = [
+  "problem-fix",
+  "before-after",
+  "founder",
+  "review",
+  "reasons",
+  "other",
+];
 
 export const TEMPLATE_GUIDE: Record<string, TemplateGuide> = {
   "problem-fix": {

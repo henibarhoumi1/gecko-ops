@@ -62,7 +62,12 @@ describe("helpers", () => {
   it("names lines the way people say them", () => {
     expect(lineLabel("hook-1")).toBe("Hook B");
     expect(lineLabel("beat-0")).toBe("Part 1");
-    expect(lineLabel("beat-1", [{ part: "lead", hear: "x" }, { part: "body", see: "y" }])).toBe("Body 1");
+    expect(
+      lineLabel("beat-1", [
+        { part: "lead", hear: "x" },
+        { part: "body", see: "y" },
+      ]),
+    ).toBe("Body 1");
     expect(lineLabel("cta")).toBe("Call to action");
   });
 
@@ -78,7 +83,11 @@ describe("helpers", () => {
 
 describe("ad structure", () => {
   it("names lead and body parts, counting old lines as body", () => {
-    const beats = [{ part: "lead" as const, hear: "a" }, { part: "body" as const, see: "b" }, { see: "c" }];
+    const beats = [
+      { part: "lead" as const, hear: "a" },
+      { part: "body" as const, see: "b" },
+      { see: "c" },
+    ];
     expect(partLabel(beats, 0)).toBe("Lead");
     expect(partLabel(beats, 1)).toBe("Body 1");
     expect(partLabel(beats, 2)).toBe("Body 2");
@@ -100,4 +109,3 @@ describe("ad structure", () => {
     expect(templateGuide("talking-head")).toEqual(templateGuide("other"));
   });
 });
-
