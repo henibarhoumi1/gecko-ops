@@ -57,13 +57,26 @@ try {
       return json("{}");
     });
     const page = await context.newPage();
+    // The first screen as the phone shows it (with the tab bar), then the whole page with fixed bars hidden, so the
+    // film can scroll the page under one tab bar.
+    const shoot = async (name) => {
+      await page.evaluate(() => scrollTo(0, 0));
+      await page.screenshot({ path: join(out, `${name}-view.png`) });
+      await page.addStyleTag({ content: "[data-film-hide]{visibility:hidden !important}" });
+      await page.evaluate(() => document.querySelectorAll("body *").forEach((el) => {
+        const cs = getComputedStyle(el);
+        if ((cs.position === "fixed" || cs.position === "sticky") && el.getBoundingClientRect().top > innerHeight / 2) el.setAttribute("data-film-hide", "");
+      }));
+      await page.screenshot({ path: join(out, `${name}.png`), fullPage: true });
+      await page.evaluate(() => document.querySelectorAll("[data-film-hide]").forEach((el) => el.removeAttribute("data-film-hide")));
+    };
     for (const path of PAGES) {
       await page.goto(`${APP}${path}`, { waitUntil: "networkidle" });
       await page.waitForTimeout(900);
       await page.evaluate(() => document.querySelectorAll("video").forEach((v) => { v.muted = true; v.currentTime = 1.5; v.pause(); }));
       await page.waitForTimeout(400);
       const name = `${state}${path === "/" ? "-home" : path.replace(/\//g, "-")}`;
-      await page.screenshot({ path: join(out, `${name}.png`), fullPage: true });
+      await shoot(name);
       boxes[name] = await page.evaluate(() => {
         const pick = [];
         const r = (el) => { const b = el.getBoundingClientRect(); return [Math.round(b.left), Math.round(b.top + scrollY), Math.round(b.width), Math.round(b.height)]; };
@@ -83,7 +96,7 @@ try {
           await page.waitForTimeout(1200);
           await page.evaluate(() => document.querySelectorAll("video").forEach((v) => { v.muted = true; v.currentTime = 1.5; v.pause(); }));
           await page.waitForTimeout(500);
-          await page.screenshot({ path: join(out, `${state}-review-open.png`), fullPage: true });
+          await shoot(`${state}-review-open`);
           console.log(`${state}-review-open`);
         }
       }
