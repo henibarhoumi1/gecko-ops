@@ -1,0 +1,215 @@
+{
+ "me": "Yasmine Ben Abdallah",
+ "logo": null,
+ "role": "owner",
+ "brand": "Lumière Skincare",
+ "cover": null,
+ "scripts": [
+  {
+   "id": "60ebfa4d-5e18-4b26-8d77-754669562148",
+   "cta": "Order the starter kit online",
+   "goal": "Introduce the range and make people want the starter kit.",
+   "hook": 0,
+   "mine": null,
+   "beats": [
+    {
+     "see": "Close-up of the bottle by the sink, morning light.",
+     "hear": "My skin felt tight every morning.",
+     "text": "Tight skin?"
+    },
+    {
+     "see": "She applies the serum, texture in macro.",
+     "hear": "Serum first. It sinks in in ten seconds."
+    },
+    {
+     "see": "The result by the window, she smiles.",
+     "hear": "Done. Ready.",
+     "text": "Starter kit -20%"
+    }
+   ],
+   "hooks": [
+    {
+     "text": "My skin felt tight every morning. Until this."
+    },
+    {
+     "text": "Three products. Thirty seconds. No excuses."
+    },
+    {
+     "text": "My winter skin secret fits in my hand."
+    }
+   ],
+   "notes": [
+    {
+     "id": "bc9802f8-841f-4c47-b340-da329d1f4020",
+     "body": "",
+     "hook": 0,
+     "kind": "approve",
+     "line": null,
+     "version": 1,
+     "createdAt": "2026-11-05T01:18:29.183678+01:00",
+     "authorName": "Yasmine Ben Abdallah",
+     "fromClient": true
+    }
+   ],
+   "style": "ugc",
+   "title": "Morning routine, 30 seconds",
+   "status": "approved",
+   "seconds": 30,
+   "version": 1,
+   "position": 0,
+   "previous": null,
+   "conceptId": null,
+   "createdAt": "2026-11-05T01:18:29.183678+01:00",
+   "treatment": {},
+   "updatedAt": "2026-11-05T01:18:29.183678+01:00",
+   "writtenBy": "gecko",
+   "approvedAt": "2026-11-05T01:18:29.183678+01:00",
+   "approvedBy": "Yasmine Ben Abdallah",
+   "authorName": "",
+   "approvedVersion": 1
+  },
+  {
+   "id": "d8784c2a-e3c4-43f1-b542-dc7b368bf9ad",
+   "cta": "Discover the range",
+   "goal": "Prove the result.",
+   "hook": null,
+   "mine": null,
+   "beats": [
+    {
+     "see": "Split screen.",
+     "hear": "Same light, same frame."
+    }
+   ],
+   "hooks": [
+    {
+     "text": "Day 1. Day 14."
+    }
+   ],
+   "notes": [],
+   "style": "problem-fix",
+   "title": "Before and after in 14 days",
+   "status": "review",
+   "seconds": 20,
+   "version": 1,
+   "position": 1,
+   "previous": null,
+   "conceptId": null,
+   "createdAt": "2026-11-05T01:18:29.183678+01:00",
+   "treatment": {},
+   "updatedAt": "2026-11-05T01:18:29.183678+01:00",
+   "writtenBy": "gecko",
+   "approvedAt": null,
+   "approvedBy": null,
+   "authorName": "",
+   "approvedVersion": null
+  }
+ ],
+ "concepts": [
+  {
+   "id": "a4c4a24b-5378-45c9-aa30-5ee86ebb3e31",
+   "body": "A busy mum, three products, thirty seconds. Texture in extreme close-up, the result in daylight.",
+   "refs": "https://www.instagram.com/reel/example",
+   "notes": [],
+   "title": "The 7 a.m. routine",
+   "format": "reel",
+   "status": "review",
+   "version": 1,
+   "position": 0,
+   "createdAt": "2026-11-05T01:18:29.183678+01:00",
+   "updatedAt": "2026-11-05T01:18:29.183678+01:00",
+   "approvedAt": null,
+   "approvedBy": null,
+   "authorName": "",
+   "fromClient": false,
+   "approvedVersion": null
+  },
+  {
+   "id": "055abacb-c8a9-4983-8a54-b1e3aa163f02",
+   "body": "Split screen, same light, same frame. Day 1 and day 14.",
+   "refs": "",
+   "notes": [
+    {
+     "id": "417ea417-64e6-4deb-bf3a-3a4116b757db",
+     "body": "Could we use a tissue with our logo?",
+     "kind": "comment",
+     "version": 1,
+     "createdAt": "2026-11-05T01:18:29.183678+01:00",
+     "authorName": "Yasmine Ben Abdallah",
+     "fromClient": true
+    }
+   ],
+   "title": "Before and after: winter skin",
+   "format": "reel",
+   "status": "review",
+   "version": 1,
+   "position": 1,
+   "createdAt": "2026-11-05T01:18:29.183678+01:00",
+   "updatedAt": "2026-11-05T01:18:29.183678+01:00",
+   "approvedAt": null,
+   "approvedBy": null,
+   "authorName": "",
+   "fromClient": false,
+   "approvedVersion": null
+  },
+  {
+   "id": "90cf0500-b4ae-492a-b9d0-66f30006172a",
+   "body": "The founder tells the brand story to camera.",
+   "refs": "",
+   "notes": [],
+   "title": "Founder interview: why Lumière",
+   "format": "reel",
+   "status": "approved",
+   "version": 1,
+   "position": 3,
+   "createdAt": "2026-11-05T01:18:29.183678+01:00",
+   "updatedAt": "2026-11-05T01:18:29.183678+01:00",
+   "approvedAt": "2026-11-02T01:18:29.183678+01:00",
+   "approvedBy": "Yasmine",
+   "authorName": "",
+   "fromClient": false,
+   "approvedVersion": 1
+  }
+ ],
+ "overview": {
+  "plan": "regular",
+  "price": 2900.0,
+  "reels": 10,
+  "summary": "Ten reels for the new hydration range: morning routines, before and after, testimonials and product demos, shot in one day in La Marsa.",
+  "campaign": "Spring hydration launch",
+  "included": [
+   "10 vertical reels",
+   "1 shoot day",
+   "FR and AR subtitles",
+   "One round of changes per reel"
+  ],
+  "nextStep": "Approve the last scripts before Friday.",
+  "shootDate": "2026-11-20",
+  "updatedAt": "2026-11-05T01:18:29.183678+01:00",
+  "milestones": [
+   {
+    "date": "2026-10-30",
+    "done": true,
+    "label": "Ideas approved"
+   },
+   {
+    "date": "2026-11-09",
+    "done": false,
+    "label": "Scripts approved"
+   },
+   {
+    "date": "2026-11-20",
+    "done": false,
+    "label": "Shoot day"
+   },
+   {
+    "date": "2026-11-27",
+    "done": false,
+    "label": "First drafts"
+   }
+  ],
+  "shootPlace": "Daylight studio, La Marsa",
+  "balanceStatus": "paid",
+  "depositStatus": "paid"
+ },
+ "template": "performance"
+}

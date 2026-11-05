@@ -1,7 +1,8 @@
 #!/bin/sh
 # Rebuilds web/e2e/fixtures/*.json: what the portal's read functions return for a fake client, taken from a
 # throwaway PostgreSQL 16 built from the migrations (same as supabase/tests/local/run.sh). Run it after a
-# migration changes what a portal read returns. Needs postgresql-16. Usage: sh web/e2e/make-fixtures.sh
+# migration changes what a portal read returns. Needs postgresql-16.
+# Usage: sh web/e2e/make-fixtures.sh [file.sql] [out dir]   (defaults: web/e2e/fixtures.sql, web/e2e/fixtures)
 set -e
 B=/usr/lib/postgresql/16/bin; D=$(mktemp -d); HERE=$(cd "$(dirname "$0")" && pwd); ROOT="$HERE/../.."
 "$B/initdb" -D "$D/data" -A trust -U postgres >/dev/null
@@ -13,9 +14,10 @@ $P -c "create database t" && $P -d t -c 'alter database t set search_path = "$us
 $P -d t -f "$ROOT/supabase/tests/local/supabase_stub.sql"
 for f in "$ROOT"/supabase/migrations/*.sql; do $P -d t -f "$f"; done
 rm -f /tmp/fixtures.tsv
-$P -d t -f "$HERE/fixtures.sql" >/dev/null
-mkdir -p "$HERE/fixtures"
-python3 - "$HERE/fixtures" <<'PY'
+SQL=${1:-$HERE/fixtures.sql}; OUT=${2:-$HERE/fixtures}
+$P -d t -f "$SQL" >/dev/null
+mkdir -p "$OUT"
+python3 - "$OUT" <<'PY'
 import json, sys
 out = sys.argv[1]
 for line in open("/tmp/fixtures.tsv", encoding="utf-8"):

@@ -1,0 +1,84 @@
+{
+ "cuts": [
+  {
+   "id": "f8e4ca2b-f493-4cac-9cc5-03dd08ae6e94",
+   "notes": [
+    {
+     "at": 4.2,
+     "id": "dd6f27ec-cd6f-4015-b3e3-977765bac6f3",
+     "body": "Can the price show up sooner?",
+     "done": false,
+     "kind": "comment",
+     "version": 1,
+     "createdAt": "2026-11-05T01:18:29.183678+01:00",
+     "authorName": "Yasmine Ben Abdallah",
+     "fromClient": true
+    }
+   ],
+   "title": "Morning routine, cut 1",
+   "status": "review",
+   "version": 1,
+   "position": 0,
+   "versions": [
+    {
+     "path": "10000000-0000-4000-8000-0000000009a1/maison/f8e4ca2b-f493-4cac-9cc5-03dd08ae6e94/v1.mp4",
+     "size": 12000000,
+     "seconds": 31.5,
+     "version": 1,
+     "createdAt": "2026-11-05T01:18:29.183678+01:00",
+     "uploadedBy": "Heni",
+     "whatChanged": "First cut"
+    }
+   ],
+   "createdAt": "2026-11-05T01:18:29.183678+01:00",
+   "delivered": false,
+   "finalLink": null,
+   "finalNote": "",
+   "updatedAt": "2026-11-05T01:18:29.183678+01:00",
+   "approvedAt": null,
+   "approvedBy": null,
+   "authorName": "",
+   "deliveredAt": null,
+   "approvedVersion": null
+  },
+  {
+   "id": "b6efa7c0-c831-4c08-9712-ab05d8ccd163",
+   "notes": [],
+   "title": "Before and after, cut 2",
+   "status": "approved",
+   "version": 2,
+   "position": 1,
+   "versions": [
+    {
+     "path": "10000000-0000-4000-8000-0000000009a1/maison/b6efa7c0-c831-4c08-9712-ab05d8ccd163/v1.mp4",
+     "size": 11000000,
+     "seconds": 22.0,
+     "version": 1,
+     "createdAt": "2026-11-05T01:18:29.183678+01:00",
+     "uploadedBy": "Heni",
+     "whatChanged": "First cut"
+    },
+    {
+     "path": "10000000-0000-4000-8000-0000000009a1/maison/b6efa7c0-c831-4c08-9712-ab05d8ccd163/v2.mp4",
+     "size": 11000000,
+     "seconds": 22.0,
+     "version": 2,
+     "createdAt": "2026-11-05T01:18:29.183678+01:00",
+     "uploadedBy": "Heni",
+     "whatChanged": "Price shown in the first second"
+    }
+   ],
+   "createdAt": "2026-11-05T01:18:29.183678+01:00",
+   "delivered": true,
+   "finalLink": "https://example.com/lumiere/before-and-after-final",
+   "finalNote": "9:16 and 4:5, with and without subtitles",
+   "updatedAt": "2026-11-05T01:18:29.183678+01:00",
+   "approvedAt": "2026-11-04T01:18:29.183678+01:00",
+   "approvedBy": "Yasmine Ben Abdallah",
+   "authorName": "",
+   "deliveredAt": "2026-11-04T05:18:29.183678+01:00",
+   "approvedVersion": 2
+  }
+ ],
+ "balancePaid": true
+}

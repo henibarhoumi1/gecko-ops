@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Gecko · One link. The whole project.</title>
+<!--
+  GECKO product film, 15 s, 1080×1920, 30 fps.
+  Every frame is a pure function of the frame number: render(f) sets every element, nothing animates on its own
+  (the Remotion way, without Remotion). render.py steps f = 0…449 and screenshots each frame.
+  Scenes (frames):  0–64 chaos · 64–128 one link · 128–338 the journey (5 × 42) · 338–450 the end.
+  The music grid is 14 frames a beat (128.6 BPM) with downbeats on 128 + 14n, so cuts land on the beat.
+  Portal screens are real captures of the Gecko client portal (fake brand data), made by web/e2e/film in gecko-ops.
+-->
+<style>
+@font-face { font-family: 'Gecko Sans'; font-weight: 100 900; src: url('assets/fonts/inter-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Gecko Sans'; font-weight: 100 900; src: url('assets/fonts/inter-latin-ext.woff2') format('woff2'); unicode-range: U+0100-02BA, U+1E00-1EFF; }
+:root { --ink: #000; --paper: #fff; --pink: #F4C1C4; --pink-soft: #FBE3E4; --yellow: #F3DF9E; --blue: #C5DDF2; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--paper); }
+body { font-family: 'Gecko Sans', Arial, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; font-optical-sizing: auto; }
+#stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: var(--paper); }
+.scene { position: absolute; inset: 0; display: none; }
+.abs { position: absolute; left: 0; top: 0; will-change: transform; }
+
+/* ---------- 1. chaos ---------- */
+.frag { position: absolute; left: 0; top: 0; transform-origin: 50% 50%; font-size: 35px; font-weight: 600; letter-spacing: -0.01em; white-space: nowrap; }
+.bubble { padding: 22px 30px; border-radius: 30px 30px 30px 8px; background: var(--paper); border: 3px solid var(--ink); box-shadow: 0 18px 40px rgba(0,0,0,.10); }
+.bubble.me { border-radius: 30px 30px 8px 30px; background: var(--ink); color: #fff; }
+.file { display: flex; align-items: center; gap: 18px; padding: 20px 28px 20px 20px; border-radius: 20px; background: var(--paper); border: 3px solid var(--ink); box-shadow: 0 18px 40px rgba(0,0,0,.10); }
+.file i { width: 48px; height: 58px; border: 3px solid var(--ink); border-radius: 6px 16px 6px 6px; flex: none; position: relative; }
+.file i::after { content: ''; position: absolute; left: 9px; right: 9px; top: 20px; height: 3px; background: var(--ink); box-shadow: 0 10px 0 var(--ink); }
+.file small { display: block; font-size: 21px; font-weight: 500; margin-top: 4px; }
+.link { padding: 18px 28px; border-radius: 999px; background: var(--yellow); border: 3px solid var(--ink); font-weight: 600; }
+.link u { text-decoration-thickness: 3px; text-underline-offset: 5px; }
+.voice { display: flex; align-items: center; gap: 18px; padding: 20px 28px; border-radius: 30px 30px 30px 8px; background: var(--paper); border: 3px solid var(--ink); box-shadow: 0 18px 40px rgba(0,0,0,.10); }
+.voice b { width: 52px; height: 52px; border-radius: 50%; background: var(--ink); display: grid; place-items: center; flex: none; }
+.voice b::after { content: ''; border-left: 18px solid #fff; border-top: 11px solid transparent; border-bottom: 11px solid transparent; margin-left: 5px; }
+.voice span { display: flex; gap: 6px; align-items: center; height: 52px; }
+.voice span i { width: 6px; border-radius: 3px; background: var(--ink); }
+.thumb { width: 210px; height: 373px; border-radius: 26px; overflow: hidden; border: 3px solid var(--ink); box-shadow: 0 18px 40px rgba(0,0,0,.14); background: #000; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.badge { position: absolute; right: -14px; top: -14px; min-width: 52px; height: 52px; padding: 0 14px; border-radius: 999px; background: var(--pink); border: 3px solid var(--ink); display: grid; place-items: center; font-size: 26px; font-weight: 800; }
+#chaosTitle { position: absolute; left: 72px; top: 1430px; font-weight: 800; font-size: 150px; line-height: .9; letter-spacing: -0.055em; }
+#chaosTitle span { display: block; }
+.mk { background: linear-gradient(var(--pink), var(--pink)) 0 88% / var(--mk, 100%) 34% no-repeat; }
+
+/* ---------- 2. one link ---------- */
+#s2 { background: var(--ink); color: #fff; }
+.big { position: absolute; left: 72px; font-weight: 800; font-size: 330px; line-height: .86; letter-spacing: -0.06em; }
+#pill { position: absolute; left: 0; top: 0; background: var(--paper); border: 4px solid var(--ink); color: var(--ink); display: flex; align-items: center; gap: 26px; overflow: hidden; }
+#pill .fav { width: 92px; height: 92px; border-radius: 50%; background: var(--ink); flex: none; display: grid; place-items: center; }
+#pill .fav img { width: 30px; height: auto; filter: invert(1); }
+#pill .url { font-size: 50px; font-weight: 600; letter-spacing: -0.02em; white-space: nowrap; }
+#pill .url b { font-weight: 800; }
+#pill .caret { display: inline-block; width: 4px; height: 56px; background: var(--ink); vertical-align: -10px; margin-left: 4px; }
+
+/* ---------- 3. journey ---------- */
+#s3 { background: var(--blue); }
+#phone { position: absolute; left: 0; top: 0; width: 720px; height: 1516px; border-radius: 96px; background: var(--paper); border: 4px solid var(--ink); transform-origin: 50% 0; box-shadow: 0 50px 90px rgba(10, 40, 70, .18); }
+#screen { position: absolute; left: 14px; top: 14px; width: 684px; height: 1480px; border-radius: 82px; overflow: hidden; background: var(--paper); }
+.page { position: absolute; left: 0; top: 0; width: 684px; transform-origin: 0 0; }
+.page img.full { display: block; width: 684px; height: auto; }
+.tabbar { position: absolute; left: 0; bottom: 0; width: 684px; height: 96px; overflow: hidden; background: var(--paper); }
+.tabbar img { position: absolute; left: 0; bottom: 0; width: 684px; }
+.video { position: absolute; overflow: hidden; background: #000; }
+.video img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 32%; }
+.mark { position: absolute; background: var(--pink); mix-blend-mode: multiply; transform-origin: 0 50%; border-radius: 3px; }
+.video .wm { position: absolute; right: 18px; top: 16px; padding: 8px 14px; border-radius: 999px; background: rgba(0,0,0,.55); color: #fff; font-size: 20px; font-weight: 600; }
+.ring { position: absolute; border: 5px solid var(--ink); border-radius: 999px; pointer-events: none; }
+#cursor { position: absolute; left: 0; top: 0; width: 64px; height: 64px; margin: -6px 0 0 -8px; z-index: 30; }
+#cursor svg { width: 100%; height: 100%; overflow: visible; }
+#cursor path { fill: var(--ink); stroke: #fff; stroke-width: 2.2; stroke-linejoin: round; }
+#tapRing { position: absolute; width: 90px; height: 90px; margin: -45px 0 0 -45px; border-radius: 50%; border: 6px solid var(--pink); z-index: 29; }
+.stepHead { position: absolute; left: 72px; top: 96px; width: 936px; z-index: 20; }
+.stepNum { font-size: 36px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; display: flex; gap: 14px; align-items: center; }
+.stepNum em { font-style: normal; font-weight: 600; }
+.stepTitle { position: relative; height: 128px; overflow: hidden; margin-top: 6px; }
+.stepTitle div { position: absolute; left: 0; top: 0; font-size: 116px; font-weight: 800; letter-spacing: -0.055em; line-height: 1.05; white-space: nowrap; }
+.rail { display: flex; gap: 12px; margin-top: 18px; }
+.rail i { flex: 1; height: 8px; border-radius: 4px; background: rgba(0,0,0,.14); position: relative; overflow: hidden; }
+.rail i b { position: absolute; inset: 0; background: var(--ink); transform-origin: 0 50%; }
+.callout { position: absolute; left: 0; top: 0; z-index: 40; padding: 26px 38px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 44px; font-weight: 800; letter-spacing: -0.03em; white-space: nowrap; display: flex; align-items: center; gap: 18px; box-shadow: 0 24px 50px rgba(0,0,0,.22); }
+.callout svg { width: 44px; height: 44px; }
+.note { position: absolute; left: 0; top: 0; z-index: 40; width: 520px; padding: 28px 32px; border-radius: 30px 30px 30px 8px; background: var(--yellow); border: 4px solid var(--ink); box-shadow: 0 24px 50px rgba(0,0,0,.18); }
+.note b { display: block; font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+.note p { font-size: 38px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.12; }
+.note .t { display: inline-block; margin-left: 10px; padding: 2px 12px; border-radius: 999px; background: var(--ink); color: #fff; font-size: 22px; vertical-align: 4px; }
+
+/* ---------- 4. the end ---------- */
+#s4 { background: var(--paper); }
+#endA, #endB { position: absolute; left: 72px; font-weight: 800; letter-spacing: -0.06em; line-height: .9; white-space: nowrap; }
+#endA { font-size: 200px; top: 610px; }
+#endB { font-size: 112px; top: 826px; }
+#endLogo { position: absolute; left: 72px; top: 1232px; width: 360px; }
+#endHandle { position: absolute; left: 76px; top: 1500px; font-size: 40px; font-weight: 700; letter-spacing: -0.02em; }
+#endRule { position: absolute; left: 72px; right: 72px; top: 1150px; height: 4px; background: var(--ink); transform-origin: 0 50%; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- 1. Chaos: the project scattered across chats, links and files -->
+  <section class="scene" id="s1">
+    <div id="frags"></div>
+    <div id="chaosTitle"><span id="ct1">Your project,</span><span id="ct2"><span class="mk" id="ctMk">everywhere.</span></span></div>
+  </section>
+
+  <!-- 2. One link -->
+  <section class="scene" id="s2">
+    <div class="big" id="w1" style="top: 330px">One</div>
+    <div class="big" id="w2" style="top: 620px">link.</div>
+    <div id="pill"><span class="fav"><img src="assets/mono.svg" alt=""></span><span class="url" id="url"></span></div>
+  </section>
+
+  <!-- 3. The journey, inside the real portal -->
+  <section class="scene" id="s3">
+    <div class="stepHead" id="stepHead">
+      <div class="stepNum"><span id="stepN">01</span><em>/ 05</em></div>
+      <div class="stepTitle" id="stepTitle"></div>
+      <div class="rail" id="rail"><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i></div>
+    </div>
+    <div id="phone">
+      <div id="screen">
+        <div id="pages"></div>
+        <div class="tabbar" id="tabbar"><img id="tabImg" alt=""></div>
+      </div>
+    </div>
+    <div class="callout" id="callA"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg><span id="callAText">Approved</span></div>
+    <div class="note" id="note"><b>Yasmine <span class="t">0:04</span></b><p id="noteText"></p></div>
+    <div id="tapRing"></div>
+    <div id="cursor"><svg viewBox="0 0 20 20"><path d="M3 2l14 7.5-6.2 1.7L8 17.6z"/></svg></div>
+  </section>
+
+  <!-- 4. The end -->
+  <section class="scene" id="s4">
+    <div id="endA">One link.</div>
+    <div id="endB"><span class="mk" id="endMk">The whole project.</span></div>
+    <div id="endRule"></div>
+    <img id="endLogo" src="assets/logo.svg" alt="gecko.]">
+    <div id="endHandle">@geckocreativestudio</div>
+  </section>
+</div>
+
+<script src="screens.js"></script>
+<script>
+// ---------- helpers ----------
+const $ = (id) => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const seg = (f, a, b) => clamp((f - a) / (b - a));
+const E = {
+  outExpo: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)),
+  inExpo: (t) => (t === 0 ? 0 : Math.pow(2, 10 * t - 10)),
+  inOut: (t) => (t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2),
+  outCubic: (t) => 1 - Math.pow(1 - t, 3),
+  inCubic: (t) => t * t * t,
+  outBack: (t) => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); },
+  inOutQuint: (t) => (t < .5 ? 16 * t ** 5 : 1 - Math.pow(-2 * t + 2, 5) / 2),
+};
+const show = (id, on) => { $(id).style.visibility = on ? 'visible' : 'hidden'; };
+const scene = (id, on) => { $(id).style.display = on ? 'block' : 'none'; };
+const tf = (el, x, y, s = 1, r = 0) => { el.style.transform = `translate(${x.toFixed(2)}px, ${y.toFixed(2)}px) scale(${s.toFixed(4)}) rotate(${r.toFixed(2)}deg)`; };
+
+// ---------- timeline ----------
+const T = { chaos: 0, one: 64, link: 72, pill: 86, tap: 114, morph: 114, journey: 128, step: 42, end: 338, endB: 352, logo: 380, handle: 394, total: 450 };
+const STEPS = ['Brief & quote', 'Scripts', 'Shoot', 'First draft', 'Final files'];
+
+// ---------- 1. chaos fragments (old way: chats, links, files) ----------
+const FR = [
+  { at: 0,  x: 70,  y: 150,  r: -4, html: '<div class="bubble">did you get the script?</div>' },
+  { at: 0,  x: 520, y: 290,  r: 5,  html: '<div class="file"><i></i><div>script_v3_FINAL(2).docx<small>Shared in a chat · 214 KB</small></div></div>' },
+  { at: 15, x: 140, y: 420,  r: 3,  html: '<div class="voice"><b></b><span>' + [18,34,26,44,30,20,38,24,40,16,28,36].map((h) => `<i style="height:${h}px"></i>`).join('') + '</span><small style="font-size:24px;font-weight:700">0:47</small></div>' },
+  { at: 20, x: 720, y: 520,  r: -7, html: '<div class="thumb"><img src="assets/thumb2.jpg" alt=""></div>' },
+  { at: 24, x: 60,  y: 620,  r: -2, html: '<div class="link"><u>drive / preview_v2.mp4</u></div>' },
+  { at: 28, x: 380, y: 760,  r: 6,  html: '<div class="bubble me">which version is the last one??</div>' },
+  { at: 31, x: 40,  y: 900,  r: -5, html: '<div class="file"><i></i><div>invoice_deposit.pdf<small>Sent by email</small></div></div>' },
+  { at: 34, x: 560, y: 960,  r: 3,  html: '<div class="bubble">link expired 🙃</div>'.replace('🙃', '') },
+  { at: 37, x: 300, y: 1060, r: -3, html: '<div class="bubble">Re: Re: Re: notes on cut 2</div>' },
+  { at: 39, x: 820, y: 1020, r: 4,  html: '<div class="thumb" style="width:170px;height:302px"><img src="assets/thumb3.jpg" alt=""></div>' },
+  { at: 41, x: 620, y: 1150, r: -6, html: '<div class="bubble me">can you resend?</div>' },
+  { at: 43, x: 360, y: 1270, r: 2,  html: '<div class="link"><u>wetransfer / finals_ALL.zip</u></div>' },
+];
+const fragEls = FR.map((d) => { const el = document.createElement('div'); el.className = 'frag'; el.innerHTML = d.html; $('frags').appendChild(el); return el; });
+// badges of unread counts on two bubbles
+[[0, '3'], [5, '12']].forEach(([i, n]) => { const b = document.createElement('span'); b.className = 'badge'; b.textContent = n; fragEls[i].firstElementChild.style.position = 'relative'; fragEls[i].firstElementChild.appendChild(b); });
+
+// ---------- 3. portal pages ----------
+// Each page: a full-page capture (tab bar hidden) shown at 684 px wide = 1.754 × portal CSS px, and its tab bar.
+const S = 684 / 390;
+const PAGES = {};
+function addPage(key, src, view) {
+  const el = document.createElement('div'); el.className = 'page'; el.style.visibility = 'hidden';
+  el.innerHTML = `<img class="full" src="${src}" alt="">`;
+  $('pages').appendChild(el); PAGES[key] = { el, view };
+}
+const V = window.FILM_SCREENS; // set by screens.js: page files and the boxes the film needs
+for (const [k, p] of Object.entries(V.pages)) addPage(k, p.src, p.view);
+// The reel playing in the player (real Gecko work, Glucélia 2026), as a frame sequence.
+const vid = document.createElement('div'); vid.className = 'video'; vid.innerHTML = '<img id="vidImg" alt=""><span class="wm">Gecko · preview</span>';
+const markEl = document.createElement('div'); markEl.className = 'mark';
+let pageVid = null;
+
+function hidePages() { for (const p of Object.values(PAGES)) p.el.style.visibility = 'hidden'; }
+// Shows a page scrolled to `offset` (portal px), shifted by dy screen px (for the push between steps).
+function pageAt(key, offset, f, dy = 0, tab = true) {
+  const p = PAGES[key]; p.el.style.visibility = 'visible';
+  p.el.style.transform = `translateY(${(-offset * S + dy).toFixed(2)}px)`;
+  if (tab) $('tabImg').src = V.pages[key].view;
+  const box = V.pages[key].video;
+  if (box) {
+    if (vid.parentNode !== p.el) p.el.appendChild(vid);
+    vid.style.cssText = `left:${box[0] * S}px;top:${box[1] * S}px;width:${box[2] * S}px;height:${box[3] * S}px;visibility:inherit`;
+    const n = 1 + (Math.floor(f) % 360); $('vidImg').src = `assets/clip/f${String(n).padStart(3, '0')}.jpg`;
+  }
+}
+
+// ---------- layout constants ----------
+const PH = { x: 180, y: 360, w: 720, h: 1516 };
+const screenPt = (px, py, offset) => [PH.x + 14 + px * S, PH.y + 14 + (py - offset) * S];
+
+// ---------- render ----------
+function render(f) {
+  // scene visibility (hard cuts)
+  const sc = f < T.one ? 1 : f < T.journey ? 2 : f < T.end ? 3 : 4;
+  ['s1', 's2', 's3', 's4'].forEach((id, i) => scene(id, sc === i + 1));
+  // the pill also lives across the morph into scene 3
+  if (sc === 1) renderChaos(f);
+  if (sc === 2) renderLink(f);
+  if (sc === 3) renderJourney(f);
+  if (sc === 4) renderEnd(f);
+}
+
+function renderChaos(f) {
+  // everything is pulled into one point at the end
+  const suck = E.inExpo(seg(f, 50, 64));
+  const cam = lerp(1, 1.06, E.outCubic(seg(f, 0, 50)));
+  FR.forEach((d, i) => {
+    const el = fragEls[i];
+    const t = seg(f, d.at, d.at + 7);
+    const vis = f >= d.at;
+    el.style.visibility = vis ? 'visible' : 'hidden';
+    if (!vis) return;
+    const s = lerp(.55, 1, E.outBack(t));
+    const jitter = Math.sin((f + i * 7) * .35) * 2.2 * (1 - suck);
+    const cx = 540, cy = 760;
+    const w = el.offsetWidth, h = el.offsetHeight;
+    let x = d.x, y = d.y;
+    x = lerp(x, cx - w / 2, suck); y = lerp(y, cy - h / 2, suck);
+    const xx = cx + (x - cx) * cam, yy = cy + (y - cy) * cam;
+    tf(el, xx, yy + jitter, s * cam * (1 - .92 * suck), d.r * (1 + 3 * suck) + jitter * .4);
+    el.style.opacity = 1 - seg(f, 61, 64);
+  });
+  // headline: hard cuts, then pulled in too
+  show('ct1', f >= 26); show('ct2', f >= 38);
+  $('ctMk').style.setProperty('--mk', `${E.outExpo(seg(f, 39, 47)) * 100}%`);
+  const ct = $('chaosTitle');
+  ct.style.transform = `translateY(${lerp(0, -680, suck).toFixed(1)}px) scale(${lerp(1, .2, suck).toFixed(3)})`;
+  ct.style.transformOrigin = '50% 0';
+  ct.style.opacity = 1 - seg(f, 60, 64);
+}
+
+const URL_TXT = 'client.gecko-creative.com';
+function renderLink(f) {
+  show('w1', f >= T.one); show('w2', f >= T.link);
+  // the words step up and away once the link arrives
+  const up = E.inOutQuint(seg(f, 84, 100));
+  $('w1').style.transform = `translateY(${-up * 160}px)`; $('w2').style.transform = `translateY(${-up * 160}px)`;
+  // pill: pops in, the address types, the pointer taps, it opens into the phone
+  const pill = $('pill');
+  const pin = E.outBack(seg(f, T.pill, T.pill + 8));
+  const morph = E.inOutQuint(seg(f, T.morph + 2, T.journey));
+  const from = { x: 72, y: 1090, w: 936, h: 150, r: 75 };
+  const x = lerp(from.x, PH.x, morph), y = lerp(from.y, PH.y, morph), w = lerp(from.w, PH.w, morph), h = lerp(from.h, PH.h, morph);
+  pill.style.cssText = `visibility:${f >= T.pill ? 'visible' : 'hidden'};width:${w}px;height:${h}px;border-radius:${lerp(75, 96, morph)}px;padding:0 ${lerp(29, 40, morph)}px;transform:translate(${x}px,${y}px) scale(${lerp(.6, 1, pin) * (f >= T.tap && f < T.tap + 4 ? .97 : 1)})`;
+  const n = Math.round(clamp((f - 90) / 20) * URL_TXT.length);
+  const typed = URL_TXT.slice(0, n);
+  const host = typed.replace('gecko-creative', '<b>gecko-creative</b>');
+  $('url').innerHTML = (n > 0 ? host : '') + (f < T.tap && Math.floor(f / 6) % 2 === 0 ? '<span class="caret"></span>' : '');
+  $('url').style.opacity = 1 - seg(f, T.morph + 2, T.morph + 6);
+  pill.querySelector('.fav').style.opacity = 1 - seg(f, T.morph + 2, T.morph + 6);
+  // the background turns blue on the tap (a cut, in the Gecko way)
+  $('s2').style.background = f >= T.tap + 2 ? 'var(--blue)' : 'var(--ink)';
+  if (f >= T.tap + 2) { show('w1', false); show('w2', false); }
+}
+
+// journey: which screen, how far scrolled, what the pointer does, per step
+function renderJourney(f) {
+  const lf = f - T.journey; // 0…209
+  const k = Math.min(4, Math.floor(lf / T.step));
+  const sf = lf - k * T.step; // frame within the step, 0…41
+  const ph = $('phone');
+  // phone: lands from the morph (already in place), breathes very little; step 3 pushes in on the timeline
+  let zoom = 1, zy = 0;
+  if (k === 2) { const z = E.inOutQuint(seg(sf, 6, 26)); zoom = lerp(1, V.zoom.s, z); zy = lerp(0, V.zoom.y, z); }
+  if (k === 3 && sf < 8) { const z = 1 - E.inOutQuint(seg(sf, 0, 8)); zoom = lerp(1, V.zoom.s, z); zy = lerp(0, V.zoom.y, z); }
+  tf(ph, PH.x, PH.y + zy, zoom);
+  // header: number, title (wipes up), rail
+  $('stepN').textContent = String((k > 0 && sf < 4 ? k - 1 : k) + 1).padStart(2, '0');
+  const tt = $('stepTitle');
+  if (tt.dataset.k !== String(k)) { tt.innerHTML = `<div id="tNew">${STEPS[k]}<span style="color:var(--ink)">.</span></div>` + (k > 0 ? `<div id="tOld">${STEPS[k - 1]}.</div>` : ''); tt.dataset.k = String(k); }
+  const w = E.outExpo(seg(sf, 0, 10));
+  const tNew = $('tNew'), tOld = $('tOld');
+  tNew.style.transform = `translateY(${(1 - w) * 128}px)`;
+  if (tOld) tOld.style.transform = `translateY(${-w * 128}px)`;
+  if (lf < 10) tNew.style.transform = `translateY(${(1 - E.outExpo(seg(lf, 0, 10))) * 128}px)`;
+  [...$('rail').children].forEach((i, j) => { i.firstElementChild.style.transform = `scaleX(${j < k ? 1 : j === k ? seg(sf, 0, 41) : 0})`; });
+  $('stepHead').style.transform = `translateY(${(1 - E.outExpo(seg(lf, 0, 12))) * 40}px)`;
+  $('stepHead').style.opacity = seg(lf, 0, 6);
+  // screen content
+  const st = V.steps[k];
+  // the push between steps: the old screen leaves upwards while the new one arrives from below
+  const p = st.plan(sf); // { page, offset, cursor, press, tapT, call, note, mark }
+  const push = E.outExpo(seg(sf, 0, 11));
+  hidePages();
+  if (k > 0 && push < 1) {
+    const pp = V.steps[k - 1].plan(T.step - 1);
+    pageAt(pp.page, pp.offset, f, -push * 1480, false);
+  }
+  pageAt(p.page, p.offset, f, (1 - push) * 1480, true);
+  $('tabbar').style.visibility = 'visible';
+  // pointer (in portal coordinates of the current page)
+  const cur = $('cursor'), ring = $('tapRing');
+  if (p.cursor) {
+    const [cx, cy] = screenPt(p.cursor[0], p.cursor[1], 0);
+    const X = PH.x + (cx - PH.x) * zoom, Y = PH.y + zy + (cy - PH.y) * zoom;
+    cur.style.visibility = 'visible'; tf(cur, X, Y, p.press ? .86 : 1);
+    if (p.tapT != null && p.tapT >= 0 && p.tapT < 1) { ring.style.visibility = 'visible'; ring.style.opacity = 1 - p.tapT; tf(ring, X, Y, .3 + 1.6 * E.outCubic(p.tapT)); } else ring.style.visibility = 'hidden';
+  } else { cur.style.visibility = 'hidden'; ring.style.visibility = 'hidden'; }
+  // callout chip beside the phone
+  const ca = $('callA');
+  if (p.call) { ca.style.visibility = 'visible'; $('callAText').textContent = p.call.text; const s = E.outBack(clamp(p.call.t)); tf(ca, p.call.x, p.call.y, lerp(.4, 1, s), p.call.r ?? -3); ca.style.opacity = 1; } else ca.style.visibility = 'hidden';
+  // the pink marker drawn under a line of the page (in page coordinates)
+  if (p.mark) {
+    const pe = PAGES[p.page].el; if (markEl.parentNode !== pe) pe.appendChild(markEl);
+    const [mx, my, mw, mh] = p.mark.box;
+    markEl.style.cssText = `visibility:visible;left:${mx * S}px;top:${my * S}px;width:${mw * S}px;height:${mh * S}px;transform:scaleX(${p.mark.t})`;
+  } else markEl.style.visibility = 'hidden';
+  const no = $('note');
+  if (p.note) { no.style.visibility = 'visible'; const s = E.outBack(clamp(p.note.t)); const o = E.inOutQuint(p.note.out || 0); tf(no, lerp(p.note.x, 260, o), lerp(p.note.y, 1420, o), lerp(.5, 1, s) * lerp(1, .35, o), lerp(2.5, 0, o)); no.style.opacity = 1 - seg(p.note.out || 0, .7, 1); const txt = 'Can the price show up sooner?'; $('noteText').textContent = txt.slice(0, Math.round(clamp(p.note.type) * txt.length)); } else no.style.visibility = 'hidden';
+}
+
+function renderEnd(f) {
+  const lf = f - T.end;
+  show('endA', true);
+  const a = E.outExpo(seg(lf, 0, 10));
+  $('endA').style.transform = `translateY(${(1 - a) * 60}px)`;
+  show('endB', f >= T.endB);
+  $('endB').style.transform = `translateY(${(1 - E.outExpo(seg(f, T.endB, T.endB + 10))) * 50}px)`;
+  $('endMk').style.setProperty('--mk', `${E.inOut(seg(f, T.endB + 4, T.endB + 20)) * 100}%`);
+  $('endRule').style.transform = `scaleX(${E.inOutQuint(seg(f, T.endB + 14, T.logo + 4))})`;
+  show('endLogo', f >= T.logo);
+  const l = E.outBack(seg(f, T.logo, T.logo + 10));
+  $('endLogo').style.transform = `translateY(${(1 - l) * 40}px) scale(${lerp(.92, 1, l)})`; $('endLogo').style.transformOrigin = '0 100%';
+  show('endHandle', f >= T.handle);
+  $('endHandle').style.transform = `translateY(${(1 - E.outExpo(seg(f, T.handle, T.handle + 10))) * 24}px)`;
+}
+
+// preload every image, then report ready
+window.ready = (async () => {
+  const srcs = [...document.images].map((i) => i.src);
+  for (let n = 1; n <= 360; n++) srcs.push(new URL(`assets/clip/f${String(n).padStart(3, '0')}.jpg`, location.href).href);
+  for (const p of Object.values(V.pages)) srcs.push(new URL(p.view, location.href).href);
+  await Promise.all(srcs.map((s) => new Promise((r) => { const i = new Image(); i.onload = i.onerror = () => (i.decode ? i.decode().catch(() => {}).then(r) : r()); i.src = s; })));
+  await document.fonts.ready;
+  render(0);
+  return true;
+})();
+</script>
+</body>
+</html>
