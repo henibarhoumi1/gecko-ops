@@ -15,6 +15,12 @@ import {
   type Treatment,
 } from "@/features/scripts/model";
 import { useClientWriteScript } from "@/features/scripts/scriptsApi";
+import {
+  AdParts,
+  adDraft,
+  draftBeats,
+  type AdDraft,
+} from "@/features/scripts/AdParts";
 import { friendlyError } from "@/lib/errors";
 import { t } from "@/lib/i18n";
 import { isCinematic, tw, words } from "@/lib/wording";
@@ -47,6 +53,8 @@ export function WriteScript({
   const write = useClientWriteScript(portal);
   const cine = isCinematic();
   const [beats, setBeats] = useState<ScriptLine[]>(script?.beats.length ? script.beats : [{}, {}]);
+  // Everyone but film clients writes the ad in parts, the same way the team does.
+  const [draft, setDraft] = useState<AdDraft>(() => adDraft(script));
   const [error, setError] = useState("");
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -54,10 +62,9 @@ export function WriteScript({
     const form = new FormData(event.currentTarget);
     const text = (name: string) => String(form.get(name) ?? "").trim();
     if (!text("title")) return setError(t("Give it a short title.", "Donnez-lui un titre court."));
-    const hooks = tidyLines([
-      { see: text("hook-see"), hear: text("hook-hear") },
-      { see: text("hook2-see"), hear: text("hook2-hear") },
-    ]);
+    const hooks = cine
+      ? tidyLines([{ see: text("hook-see"), hear: text("hook-hear") }])
+      : tidyLines(draft.hooks);
     const treatment: Treatment = {};
     for (const key of TREATMENT_KEYS) treatment[key] = text(`t-${key}`);
     try {
@@ -67,9 +74,10 @@ export function WriteScript({
         seconds: Number(text("seconds")) || 30,
         goal: text("goal"),
         hooks,
-        beats: tidyLines(beats),
-        cta: text("cta"),
+        beats: cine ? tidyLines(beats) : draftBeats(draft),
+        cta: cine ? text("cta") : draft.cta.trim(),
         treatment: tidyTreatment(treatment),
+        ...(cine ? {} : { style: draft.style }),
       });
       onDone();
     } catch (e) {
@@ -145,12 +153,11 @@ export function WriteScript({
         </fieldset>
       )}
 
+      {cine ? (
+        <>
       <fieldset className="write-part">
         <legend>
-          {tw(
-            ["How it opens (the first 3 seconds)", "L'ouverture (les 3 premières secondes)"],
-            ["The opening shot", "Le plan d'ouverture"],
-          )}
+          {t("The opening shot", "Le plan d'ouverture")}
         </legend>
         <div className="row">
           <TextArea
@@ -168,33 +175,10 @@ export function WriteScript({
             defaultValue={script?.hooks[0]?.hear}
           />
         </div>
-        {!cine && (
-          <details open={Boolean(script?.hooks[1])}>
-            <summary className="small">
-              {t("Add a second opening to compare", "Ajouter une deuxième ouverture à comparer")}
-            </summary>
-            <div className="row">
-              <TextArea
-                label={t("What we see", "Ce qu'on voit")}
-                name="hook2-see"
-                rows={2}
-                maxLength={1000}
-                defaultValue={script?.hooks[1]?.see}
-              />
-              <TextArea
-                label={t("What we hear", "Ce qu'on entend")}
-                name="hook2-hear"
-                rows={2}
-                maxLength={1000}
-                defaultValue={script?.hooks[1]?.hear}
-              />
-            </div>
-          </details>
-        )}
       </fieldset>
 
       <fieldset className="write-part">
-        <legend>{cine ? t("The scenes", "Les scènes") : t("Then what happens", "Ensuite")}</legend>
+        <legend>{t("The scenes", "Les scènes")}</legend>
         <ol className="write-beats">
           {beats.map((beat, i) => (
             <li key={i}>
@@ -212,14 +196,6 @@ export function WriteScript({
                 value={beat.hear ?? ""}
                 onChange={(e) => setBeat(i, "hear", e.target.value)}
               />
-              {!cine && (
-                <Field
-                  label={t("Words on screen", "Texte à l'écran")}
-                  maxLength={300}
-                  value={beat.text ?? ""}
-                  onChange={(e) => setBeat(i, "text", e.target.value)}
-                />
-              )}
             </li>
           ))}
         </ol>
@@ -231,15 +207,20 @@ export function WriteScript({
       </fieldset>
 
       <Field
-        label={tw(["How it ends", "La fin"], ["The final frame", "Le dernier plan"])}
+        label={t("The final frame", "Le dernier plan")}
         name="cta"
         maxLength={300}
         defaultValue={script?.cta}
-        placeholder={tw(
-          ["Order on our site, delivery in 48 h", "Commandez sur notre site, livraison en 48 h"],
-          ["The logo on white", "Le logo sur fond blanc"],
-        )}
+        placeholder={t("The logo on white", "Le logo sur fond blanc")}
       />
+        </>
+      ) : (
+        <AdParts
+          draft={draft}
+          onChange={setDraft}
+          hookNote={t("write 1 to 3, Gecko helps pick", "écrivez-en 1 à 3, Gecko aide à choisir")}
+        />
+      )}
       {error && <Notice tone="error">{error}</Notice>}
       <div className="actions">
         <Button variant="secondary" onClick={onDone} disabled={write.isPending}>
