@@ -6368,3 +6368,72 @@ a.piece:hover {
 .since-visit a {
   color: var(--ink);
 }
+
+/* Writing room: the script form's parts (Hook → Lead → Body → CTA), the idea it's written for, approving for a client */
+.part-tag {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--white);
+  font-size: 0.75rem;
+  font-weight: 700;
+  vertical-align: 1px;
+}
+.part-hint {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.part-hint::before {
+  content: "→ ";
+}
+.part-hint.inline {
+  margin: 0 auto 0 8px;
+  font-weight: 500;
+}
+.script-idea {
+  padding: 12px 14px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--yellow-soft);
+}
+.script-idea p {
+  margin: 0;
+}
+.script-idea-hook {
+  margin: 6px 0 4px !important;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.concept-hook {
+  margin: 4px 0 8px;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.concept-hook span {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--pink-soft);
+  font-size: 0.75rem;
+  font-weight: 700;
+  vertical-align: 2px;
+}
+.approve-for {
+  flex-basis: 100%;
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--pink-soft);
+}
+.approve-for p {
+  margin: 0;
+}

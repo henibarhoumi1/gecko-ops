@@ -18,6 +18,8 @@ export interface Concept {
   id: string;
   title: string;
   format: ConceptFormat;
+  /** The first words of the ad. Missing on a database without the writing room yet. */
+  hook?: string;
   body: string;
   refs: string;
   position: number;
@@ -163,6 +165,7 @@ export interface ConceptRow {
   format: ConceptFormat;
   body: string;
   refs: string;
+  hook?: string;
   position: number;
   from_client: boolean;
   status: ConceptStatus;
@@ -193,6 +196,7 @@ export function fromRows(rows: ConceptRow[], notes: NoteRow[]): Concept[] {
     format: r.format,
     body: r.body,
     refs: r.refs,
+    hook: r.hook ?? "",
     position: r.position,
     fromClient: r.from_client,
     status: r.status,

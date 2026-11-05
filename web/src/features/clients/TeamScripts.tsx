@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Notice } from "@/components/Notice";
@@ -8,6 +9,8 @@ import {
   groupScripts,
   hookName,
   STYLE_LABEL,
+  TEMPLATES,
+  templateGuide,
   tidyLines,
   tidyTreatment,
   TREATMENT_KEYS,
@@ -30,13 +33,19 @@ import { friendlyError } from "@/lib/errors";
 import { useConcepts } from "./clientsApi";
 import { useTemplates } from "./lookApi";
 import { TextArea } from "@/components/TextArea";
-
-const STYLES = Object.entries(STYLE_LABEL) as [ScriptStyle, string][];
+import { ApproveForClient } from "./ApproveForClient";
 
 /** The team writes scripts, shares them, and works through the client's line comments. */
 export function TeamScripts({ clientId }: { clientId: string }) {
   const scripts = useScripts(clientId);
-  const [adding, setAdding] = useState(false);
+  // ?idea=… comes from "Write the script" on an approved idea: the form opens linked to it.
+  const [params, setParams] = useSearchParams();
+  const fromIdea = params.get("idea") ?? undefined;
+  const [adding, setAdding] = useState(Boolean(fromIdea));
+  const done = () => {
+    setAdding(false);
+    if (fromIdea) setParams({}, { replace: true });
+  };
 
   if (scripts.isPending) return <p className="muted">Loading scripts…</p>;
   if (scripts.isError) return <Notice tone="error">{friendlyError(scripts.error)}</Notice>;
@@ -47,14 +56,14 @@ export function TeamScripts({ clientId }: { clientId: string }) {
     <section className="tab-body">
       <div className="page-head">
         <p className="lede">
-          One script per reel. Write two or three hooks so the client can pick, keep each beat to
-          what we see, what we hear and the words on screen. Once approved, a script is locked:
-          editing it sends a new version back to the client.
+          One script per reel, built Hook → Lead → Body → CTA. Pick the idea and a template; write
+          two or three hooks so the client can pick. Once approved, a script is locked: editing it
+          sends a new version back to the client.
         </p>
         {!adding && <Button onClick={() => setAdding(true)}>New script</Button>}
       </div>
       {adding && (
-        <ScriptForm clientId={clientId} position={nextPosition} onDone={() => setAdding(false)} />
+        <ScriptForm clientId={clientId} position={nextPosition} fromIdea={fromIdea} onDone={done} />
       )}
       {groups.length === 0 && !adding && <p className="muted">No scripts yet.</p>}
       {groups.map((group) => (
@@ -64,7 +73,12 @@ export function TeamScripts({ clientId }: { clientId: string }) {
           </h2>
           <div className="concepts">
             {group.items.map((script) => (
-              <TeamScript key={script.id} clientId={clientId} script={script} />
+              <TeamScript
+                key={script.id}
+                clientId={clientId}
+                script={script}
+                nextPosition={nextPosition}
+              />
             ))}
           </div>
         </div>
@@ -73,9 +87,18 @@ export function TeamScripts({ clientId }: { clientId: string }) {
   );
 }
 
-function TeamScript({ clientId, script }: { clientId: string; script: Script }) {
+function TeamScript({
+  clientId,
+  script,
+  nextPosition,
+}: {
+  clientId: string;
+  script: Script;
+  nextPosition: number;
+}) {
   const [mode, setMode] = useState<"idle" | "edit" | "delete" | "changes">("idle");
   const status = useSetScriptStatus();
+  const save = useSaveScript(clientId);
   const remove = useDeleteScript();
   const note = useTeamScriptNote(clientId);
   const [error, setError] = useState("");
@@ -123,6 +146,15 @@ function TeamScript({ clientId, script }: { clientId: string; script: Script }) 
               Share with the client
             </Button>
           )}
+          {!byClient(script) && (script.status === "review" || script.status === "changes") && (
+            <ApproveForClient
+              clientId={clientId}
+              kind="script"
+              id={script.id}
+              version={script.version}
+              hooks={script.hooks.length}
+            />
+          )}
           <Button variant="secondary" onClick={() => setMode("edit")}>
             {byClient(script) && script.status !== "draft"
               ? "Rewrite it (Gecko's version goes to the client)"
@@ -139,6 +171,30 @@ function TeamScript({ clientId, script }: { clientId: string; script: Script }) 
               Take back to draft
             </Button>
           )}
+          <Button
+            variant="link"
+            disabled={save.isPending}
+            onClick={() =>
+              void run(
+                save.mutateAsync({
+                  id: null,
+                  conceptId: script.conceptId,
+                  title: `${script.title} (copy)`.slice(0, 160),
+                  style: script.style,
+                  seconds: script.seconds,
+                  goal: script.goal,
+                  hooks: script.hooks,
+                  beats: script.beats,
+                  cta: script.cta,
+                  ...(script.treatment ? { treatment: script.treatment } : {}),
+                  status: "draft",
+                  position: nextPosition,
+                }),
+              )
+            }
+          >
+            Duplicate
+          </Button>
           <Button variant="link" onClick={() => setMode("delete")}>
             Delete
           </Button>
@@ -200,24 +256,43 @@ function TeamScript({ clientId, script }: { clientId: string; script: Script }) 
 }
 
 const blank = (n: number): ScriptLine[] => Array.from({ length: n }, () => ({}));
+const isEmpty = (lines: ScriptLine[]) => tidyLines(lines).length === 0;
 
 function ScriptForm({
   clientId,
   script,
   position,
+  fromIdea,
   onDone,
 }: {
   clientId: string;
   script?: Script;
   position?: number;
+  /** Writing the script of an approved idea: it starts linked to it. */
+  fromIdea?: string;
   onDone: () => void;
 }) {
   const save = useSaveScript(clientId);
   const concepts = useConcepts(clientId);
-  const [hooks, setHooks] = useState<ScriptLine[]>(script?.hooks.length ? script.hooks : blank(2));
-  const [beats, setBeats] = useState<ScriptLine[]>(script?.beats.length ? script.beats : blank(3));
-  const [title, setTitle] = useState(script?.title ?? "");
-  const [conceptId, setConceptId] = useState(script?.conceptId ?? "");
+  const approved = (concepts.data ?? []).filter((c) => c.status === "approved");
+  const startIdea = approved.find((c) => c.id === fromIdea);
+  const [style, setStyle] = useState<ScriptStyle>(script?.style ?? "problem-fix");
+  const guide = templateGuide(style);
+  const [hooks, setHooks] = useState<ScriptLine[]>(
+    script?.hooks.length
+      ? script.hooks
+      : startIdea?.hook
+        ? [{ hear: startIdea.hook }, {}]
+        : blank(2),
+  );
+  const [lead, setLead] = useState<ScriptLine>(script?.beats.find((b) => b.part === "lead") ?? {});
+  const [body, setBody] = useState<ScriptLine[]>(
+    script?.beats.some((b) => b.part !== "lead")
+      ? script.beats.filter((b) => b.part !== "lead")
+      : blank(guide.body.length),
+  );
+  const [title, setTitle] = useState(script?.title ?? startIdea?.title ?? "");
+  const [conceptId, setConceptId] = useState(script?.conceptId ?? startIdea?.id ?? "");
   const [seconds, setSeconds] = useState(script?.seconds ?? 30);
   const [cta, setCta] = useState(script?.cta ?? "");
   const templates = useTemplates();
@@ -226,8 +301,18 @@ function ScriptForm({
     TREATMENT_KEYS.some((k) => script?.treatment?.[k]);
   const [error, setError] = useState("");
   const shared = script && script.status !== "draft";
-  const runs = estimateSeconds({ hooks: tidyLines(hooks), beats: tidyLines(beats), cta });
-  const approved = (concepts.data ?? []).filter((c) => c.status === "approved");
+  const beats = tidyLines([
+    { ...lead, part: "lead" },
+    ...body.map((b) => ({ ...b, part: "body" as const })),
+  ]);
+  const runs = estimateSeconds({ hooks: tidyLines(hooks), beats, cta });
+  const idea = approved.find((c) => c.id === conceptId);
+
+  // A new template sets how many body parts there are, as long as none has words in it yet.
+  function pickTemplate(next: ScriptStyle) {
+    setStyle(next);
+    if (isEmpty(body)) setBody(blank(templateGuide(next).body.length));
+  }
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -239,11 +324,11 @@ function ScriptForm({
         id: script?.id ?? null,
         conceptId: conceptId || null,
         title: title.trim(),
-        style: String(form.get("style")) as ScriptStyle,
+        style,
         seconds,
         goal: String(form.get("goal") ?? "").trim(),
         hooks: tidyLines(hooks),
-        beats: tidyLines(beats),
+        beats,
         cta: cta.trim(),
         ...(cinematic
           ? {
@@ -266,36 +351,51 @@ function ScriptForm({
     <form className="card stack concept-edit script-edit" onSubmit={onSubmit}>
       <h3>{script ? `Edit "${script.title}"` : "New script"}</h3>
       <div className="row">
-        <Field
-          label="Title"
-          name="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          maxLength={160}
-          autoFocus
-          required
-        />
         <Select
-          label="Style"
-          name="style"
-          defaultValue={script?.style ?? "talking-head"}
-          options={STYLES}
-        />
-      </div>
-      <div className="row">
-        <Select
-          label="From the approved idea"
+          label="For the idea"
           name="concept"
           value={conceptId}
           onChange={(e) => {
             setConceptId(e.target.value);
             const concept = approved.find((c) => c.id === e.target.value);
             if (concept && !title.trim()) setTitle(concept.title);
+            if (concept?.hook && isEmpty(hooks)) setHooks([{ hear: concept.hook }, {}]);
           }}
-          options={[["", "None"], ...approved.map((c) => [c.id, c.title] as const)]}
+          options={[["", "No idea yet"], ...approved.map((c) => [c.id, c.title] as const)]}
+        />
+        <Select
+          label="Template"
+          name="style"
+          value={style}
+          onChange={(e) => pickTemplate(e.target.value as ScriptStyle)}
+          options={[
+            ...TEMPLATES.map((k) => [k, STYLE_LABEL[k]] as const),
+            ...(TEMPLATES.includes(style) ? [] : [[style, STYLE_LABEL[style]] as const]),
+          ]}
+        />
+      </div>
+      {idea && (
+        <div className="script-idea">
+          <p className="small">
+            <strong>The idea</strong>
+            {idea.format ? ` · ${idea.format}` : ""}
+          </p>
+          {idea.hook && <p className="script-idea-hook">&ldquo;{idea.hook}&rdquo;</p>}
+          {idea.body && <p className="small">{idea.body}</p>}
+        </div>
+      )}
+      <div className="row">
+        <Field
+          label="Title"
+          name="title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          maxLength={160}
+          autoFocus={!startIdea}
+          required
         />
         <Field
-          label="Made for (seconds)"
+          label="Length (seconds)"
           name="seconds"
           type="number"
           min={5}
@@ -331,7 +431,11 @@ function ScriptForm({
       )}
 
       <fieldset className="fieldset script-lines">
-        <legend>Hooks: the first 2 seconds. Write two or three so the client can pick.</legend>
+        <legend>
+          <span className="part-tag">1</span> Hook{" "}
+          <span className="muted">· first 1–3 seconds · write 2 or 3, the client picks</span>
+        </legend>
+        <p className="part-hint">{guide.hook}</p>
         {hooks.map((hook, i) => (
           <LineEditor
             key={i}
@@ -351,41 +455,56 @@ function ScriptForm({
       </fieldset>
 
       <fieldset className="fieldset script-lines">
-        <legend>Beats: the rest of the reel, in order.</legend>
-        {beats.map((beat, i) => (
+        <legend>
+          <span className="part-tag">2</span> Lead{" "}
+          <span className="muted">· the next line, sets it up</span>
+        </legend>
+        <LineEditor name="Lead" hint={guide.lead} line={lead} onChange={setLead} />
+      </fieldset>
+
+      <fieldset className="fieldset script-lines">
+        <legend>
+          <span className="part-tag">3</span> Body{" "}
+          <span className="muted">· each part keeps them watching</span>
+        </legend>
+        {body.map((part, i) => (
           <LineEditor
             key={i}
-            name={`Beat ${i + 1}`}
-            line={beat}
-            onChange={(next) => setBeats(beats.map((b, j) => (j === i ? next : b)))}
-            onRemove={
-              beats.length > 1 ? () => setBeats(beats.filter((_, j) => j !== i)) : undefined
-            }
+            name={`Body ${i + 1}`}
+            hint={guide.body[i]}
+            line={part}
+            onChange={(next) => setBody(body.map((b, j) => (j === i ? next : b)))}
+            onRemove={body.length > 1 ? () => setBody(body.filter((_, j) => j !== i)) : undefined}
             onUp={
               i > 0
                 ? () =>
-                    setBeats(
-                      beats.map((b, j) => (j === i - 1 ? beats[i]! : j === i ? beats[i - 1]! : b)),
+                    setBody(
+                      body.map((b, j) => (j === i - 1 ? body[i]! : j === i ? body[i - 1]! : b)),
                     )
                 : undefined
             }
           />
         ))}
-        {beats.length < 40 && (
-          <Button variant="link" onClick={() => setBeats([...beats, {}])}>
-            Add a beat
+        {body.length < 8 && (
+          <Button variant="link" onClick={() => setBody([...body, {}])}>
+            Add a body part
           </Button>
         )}
       </fieldset>
 
-      <Field
-        label="Ends on (call to action)"
-        name="cta"
-        value={cta}
-        onChange={(e) => setCta(e.target.value)}
-        maxLength={300}
-        placeholder="Link in bio, delivery across Tunisia"
-      />
+      <fieldset className="fieldset script-lines">
+        <legend>
+          <span className="part-tag">4</span> CTA <span className="muted">· the last frame</span>
+        </legend>
+        <Field
+          label="What the viewer does next"
+          name="cta"
+          value={cta}
+          onChange={(e) => setCta(e.target.value)}
+          maxLength={300}
+          placeholder={guide.cta}
+        />
+      </fieldset>
       <p className={`small script-runs${runs > seconds + 3 ? " over" : ""}`}>
         Runs about {runs} s spoken with the first hook · made for {seconds} s
         {runs > seconds + 3 && " · too long, trim it"}
@@ -422,12 +541,15 @@ function ScriptForm({
 
 function LineEditor({
   name,
+  hint,
   line,
   onChange,
   onRemove,
   onUp,
 }: {
   name: string;
+  /** What this part is for, from the template. */
+  hint?: string;
   line: ScriptLine;
   onChange: (line: ScriptLine) => void;
   onRemove?: () => void;
@@ -439,6 +561,7 @@ function LineEditor({
     <div className="line-edit">
       <div className="line-edit-head">
         <strong>{name}</strong>
+        {hint && <span className="part-hint inline">{hint}</span>}
         {onUp && (
           <button type="button" className="line-comment" onClick={onUp}>
             Move up

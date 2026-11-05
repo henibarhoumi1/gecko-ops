@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Notice } from "@/components/Notice";
@@ -12,6 +13,7 @@ import {
   type ConceptFormat,
 } from "@/features/concepts/model";
 import { friendlyError } from "@/lib/errors";
+import { ApproveForClient } from "./ApproveForClient";
 import {
   useAddNote,
   useConcepts,
@@ -66,6 +68,7 @@ function TeamConcept({ clientId, concept }: { clientId: string; concept: Concept
   const status = useSetConceptStatus();
   const remove = useDeleteConcept();
   const note = useAddNote(clientId);
+  const navigate = useNavigate();
   const [error, setError] = useState("");
 
   const run = (action: Promise<unknown>, after: () => void = () => setMode("idle")) =>
@@ -85,6 +88,23 @@ function TeamConcept({ clientId, concept }: { clientId: string; concept: Concept
             >
               Share with the client
             </Button>
+          )}
+          {concept.status === "approved" && (
+            <Button
+              onClick={() =>
+                navigate(`/clients/${encodeURIComponent(clientId)}/scripts?idea=${concept.id}`)
+              }
+            >
+              Write the script
+            </Button>
+          )}
+          {(concept.status === "review" || concept.status === "changes") && (
+            <ApproveForClient
+              clientId={clientId}
+              kind="concept"
+              id={concept.id}
+              version={concept.version}
+            />
           )}
           <Button variant="secondary" onClick={() => setMode("edit")}>
             Edit
@@ -187,6 +207,7 @@ function ConceptForm({
         format: text("format") as ConceptFormat,
         body: text("body"),
         refs: text("refs"),
+        hook: text("hook"),
         ...(concept ? {} : { status: form.get("share") ? "review" : "draft", position }),
       });
       onDone();
@@ -214,13 +235,20 @@ function ConceptForm({
           options={FORMATS}
         />
       </div>
+      <Field
+        label="Hook line: the first words of the ad"
+        name="hook"
+        defaultValue={concept?.hook}
+        maxLength={200}
+        placeholder="Your skin feels tight every morning? Not anymore."
+      />
       <TextArea
         label="The idea"
         name="body"
-        rows={8}
+        rows={6}
         defaultValue={concept?.body}
         maxLength={10000}
-        placeholder={"Hook (first 2 seconds):\nStory:\nOn screen:\nCall to action:"}
+        placeholder="What happens, in a few lines: who, where, what we show, how it ends."
       />
       <TextArea
         label="References (one link per line)"
@@ -236,7 +264,7 @@ function ConceptForm({
       )}
       {shared && (
         <p className="small muted">
-          Changing the title, format, idea or references makes a new version, and the client
+          Changing the title, format, hook, idea or references makes a new version, and the client
           approves it again.
         </p>
       )}

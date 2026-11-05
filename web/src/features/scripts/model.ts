@@ -1,21 +1,92 @@
 import { t } from "@/lib/i18n";
 import { words } from "@/lib/wording";
 export type ScriptStatus = "draft" | "review" | "changes" | "approved";
+/** The template a script was written from. The last five are older styles, kept for scripts already written. */
 export type ScriptStyle =
+  | "problem-fix"
+  | "before-after"
+  | "founder"
+  | "review"
+  | "reasons"
+  | "other"
   | "talking-head"
   | "demo"
-  | "problem-fix"
   | "skit"
   | "ugc"
-  | "voiceover"
-  | "other";
+  | "voiceover";
+
+/** Which part of the ad a scene line is. The hook and the CTA have their own fields. */
+export type ScriptPart = "lead" | "body";
 
 /** One row of a script: what we see, what we hear, and the words on screen. */
 export interface ScriptLine {
   see?: string;
   hear?: string;
   text?: string;
+  part?: ScriptPart;
 }
+
+/**
+ * Every ad follows the same shape: Hook (the first 1–3 s) → Lead (sets up the problem or the promise) → Body (1 to
+ * 3 parts that keep people watching: show it, prove it) → CTA. A template only changes what each part is for.
+ */
+export interface TemplateGuide {
+  hook: string;
+  lead: string;
+  body: string[];
+  cta: string;
+}
+
+export const TEMPLATES: ScriptStyle[] = [
+  "problem-fix",
+  "before-after",
+  "founder",
+  "review",
+  "reasons",
+  "other",
+];
+
+export const TEMPLATE_GUIDE: Record<string, TemplateGuide> = {
+  "problem-fix": {
+    hook: "Name the pain in the first second. No product yet.",
+    lead: "Make it hurt: why this problem is so annoying.",
+    body: ["The product steps in and fixes it, on camera.", "The result, clearly visible."],
+    cta: "What to do now, and why today.",
+  },
+  "before-after": {
+    hook: "Open on the after: the best-looking result first.",
+    lead: "Rewind to the before. Same light, same frame.",
+    body: ["What changed: the product in use.", "Close-up proof of the result."],
+    cta: "Get the same result: where and how.",
+  },
+  founder: {
+    hook: "A bold line from the founder, straight to camera.",
+    lead: "Why I started this.",
+    body: ["What makes it different from the rest.", "Proof: a customer, a number, a moment."],
+    cta: "An invitation from the founder.",
+  },
+  review: {
+    hook: "A real reaction: the first second of trying it.",
+    lead: "My problem before.",
+    body: ["First try: what I noticed.", "After a few days: the result."],
+    cta: "Where to get it, in my own words.",
+  },
+  reasons: {
+    hook: "\u201c3 reasons [who] love [product]\u201d",
+    lead: "Optional: who this is for.",
+    body: ["Reason 1, shown, not told.", "Reason 2, shown.", "Reason 3: the strongest, last."],
+    cta: "The easiest next step.",
+  },
+  other: {
+    hook: "Stop the scroll in the first second.",
+    lead: "Set up the problem or the promise.",
+    body: ["Show it.", "Prove it."],
+    cta: "One clear next step.",
+  },
+};
+
+export const templateGuide = (style: ScriptStyle): TemplateGuide =>
+  TEMPLATE_GUIDE[style] ?? TEMPLATE_GUIDE.other!;
 
 /** The sections of a Cinematic treatment, written before the scenes. */
 export const TREATMENT_KEYS = ["mood", "story", "music", "styling", "casting"] as const;
@@ -113,6 +184,18 @@ export function scriptStatus(
 
 // Labels are getters so they read in the language in use at the moment they're shown.
 export const STYLE_LABEL: Record<ScriptStyle, string> = {
+  get "before-after"() {
+    return t("Before / After", "Avant / Après");
+  },
+  get founder() {
+    return t("Founder story", "Histoire du fondateur");
+  },
+  get review() {
+    return t("Honest review (UGC)", "Avis sincère (UGC)");
+  },
+  get reasons() {
+    return t("3 reasons", "3 raisons");
+  },
   get "talking-head"() {
     return t("Talking head", "Face caméra");
   },
@@ -120,7 +203,7 @@ export const STYLE_LABEL: Record<ScriptStyle, string> = {
     return t("Product demo", "Démo produit");
   },
   get "problem-fix"() {
-    return t("Problem and fix", "Problème et solution");
+    return t("Problem → Fix", "Problème → Solution");
   },
   get skit() {
     return t("Skit", "Sketch");
@@ -132,7 +215,7 @@ export const STYLE_LABEL: Record<ScriptStyle, string> = {
     return t("Voiceover on footage", "Voix off sur images");
   },
   get other() {
-    return t("Other", "Autre");
+    return t("Blank", "Libre");
   },
 };
 
@@ -250,12 +333,20 @@ export function changedParts(current: ScriptContent, previous: ScriptContent | n
   return changed;
 }
 
-export function lineLabel(line: string | null): string {
+/** "Lead", "Body 1", "Body 2"…: the name of a scene line from its part. Lines from before parts count as body. */
+export function partLabel(beats: ScriptLine[], i: number): string {
+  if (beats[i]?.part === "lead") return t("Lead", "Mise en place");
+  const n = beats.slice(0, i + 1).filter((b) => b.part !== "lead").length;
+  return `${t("Body", "Corps")} ${n}`;
+}
+
+export function lineLabel(line: string | null, beats?: ScriptLine[]): string {
   if (!line) return "";
   if (line === "goal") return t("Goal", "Objectif");
   if (line === "cta") return words.cta();
   const [kind, n] = line.split("-");
-  return kind === "hook" ? hookName(Number(n)) : `${t("Beat", "Séquence")} ${Number(n) + 1}`;
+  if (kind === "hook") return hookName(Number(n));
+  return beats ? partLabel(beats, Number(n)) : `${t("Part", "Partie")} ${Number(n) + 1}`;
 }
 
 export const hookName = (i: number) => `${words.hook()} ${String.fromCharCode(65 + i)}`;
@@ -269,6 +360,7 @@ export function tidyLines(lines: ScriptLine[]): ScriptLine[] {
         const value = (line[key] ?? "").trim();
         if (value) out[key] = value;
       }
+      if (Object.keys(out).length > 0 && line.part) out.part = line.part;
       return out;
     })
     .filter((line) => Object.keys(line).length > 0);

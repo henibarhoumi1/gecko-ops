@@ -152,6 +152,16 @@ const MESSAGES: [RegExp, string, string][] = [
     "Gecko a modifié ce script pendant votre lecture. La nouvelle version est affichée : relisez-la et décidez à nouveau.",
   ],
   [
+    /founder_only/,
+    "Only the founder can approve for a client.",
+    "Seul le fondateur peut valider pour un client.",
+  ],
+  [
+    /cut_changed/,
+    "This video changed while you were looking at it. The new version is shown now; check it and decide again.",
+    "Cette vidéo a changé pendant que vous la regardiez. La nouvelle version est affichée : vérifiez-la et décidez à nouveau.",
+  ],
+  [
     /hook_required/,
     "Pick the hook you like first, then approve.",
     "Choisissez d'abord l'accroche qui vous plaît, puis validez.",

@@ -208,7 +208,7 @@ export function useSaveLogo(clientId: string) {
 // ---------- concepts ----------
 
 const CONCEPT_COLUMNS =
-  "id,title,format,body,refs,position,from_client,status,version,approved_version,approved_at,approved_by,author_name,created_at,updated_at";
+  "id,title,format,hook,body,refs,position,from_client,status,version,approved_version,approved_at,approved_by,author_name,created_at,updated_at";
 
 /** Every concept of one client (or of all clients, for the list), with its conversation. */
 export function useConcepts(clientId: string | null) {
@@ -248,6 +248,7 @@ export interface ConceptInput {
   format: ConceptFormat;
   body: string;
   refs: string;
+  hook: string;
   status?: ConceptStatus;
   position?: number;
 }
@@ -263,6 +264,7 @@ export function useSaveConcept(clientId: string) {
         format: input.format,
         body: input.body,
         refs: input.refs,
+        hook: input.hook,
         ...(input.status ? { status: input.status } : {}),
         ...(input.position != null ? { position: input.position } : {}),
       };
@@ -397,5 +399,38 @@ export function useSetClientRole(clientId: string) {
     },
     onSettled: () =>
       queryClient.invalidateQueries({ queryKey: ["client-accounts", workspaceId, clientId] }),
+  });
+}
+
+/**
+ * The founder approves an idea, a script or a video for the client, after the client said yes on a call. Recorded
+ * as the client's decision, made by the founder ("Heni for Yasmine · on a call").
+ */
+export function useApproveForClient(clientId: string) {
+  const { id: workspaceId } = useWorkspace();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: {
+      kind: "concept" | "script" | "cut";
+      id: string;
+      version: number;
+      hook?: number | null;
+    }) => {
+      const { error } = await requireSupabase().rpc("team_approve_for_client", {
+        p_workspace_id: workspaceId,
+        p_client_id: clientId,
+        p_kind: input.kind,
+        p_id: input.id,
+        p_version: input.version,
+        p_hook: input.hook ?? null,
+      });
+      if (error) throw error;
+    },
+    onSettled: () =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["concepts", workspaceId] }),
+        queryClient.invalidateQueries({ queryKey: ["scripts", workspaceId] }),
+        queryClient.invalidateQueries({ queryKey: ["cuts", workspaceId, clientId] }),
+      ]),
   });
 }
