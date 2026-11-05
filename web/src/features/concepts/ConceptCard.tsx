@@ -42,6 +42,11 @@ export function ConceptCard({
         )}
       </header>
       <h3>{concept.title}</h3>
+      {concept.hook && (
+        <p className="concept-hook" dir="auto">
+          <span>{t("Hook", "Accroche")}</span> &ldquo;{concept.hook}&rdquo;
+        </p>
+      )}
       {concept.body && <p className="concept-body">{concept.body}</p>}
       {refs.length > 0 && (
         <ul className="refs">

@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { changedParts, estimateSeconds, lineLabel, tidyLines, type ScriptContent } from "./model";
+import {
+  changedParts,
+  estimateSeconds,
+  lineLabel,
+  partLabel,
+  TEMPLATES,
+  templateGuide,
+  tidyLines,
+  type ScriptContent,
+} from "./model";
 
 const base: ScriptContent = {
   title: "Coffee spill",
@@ -52,7 +61,8 @@ describe("changedParts", () => {
 describe("helpers", () => {
   it("names lines the way people say them", () => {
     expect(lineLabel("hook-1")).toBe("Hook B");
-    expect(lineLabel("beat-0")).toBe("Beat 1");
+    expect(lineLabel("beat-0")).toBe("Part 1");
+    expect(lineLabel("beat-1", [{ part: "lead", hear: "x" }, { part: "body", see: "y" }])).toBe("Body 1");
     expect(lineLabel("cta")).toBe("Call to action");
   });
 
@@ -65,3 +75,29 @@ describe("helpers", () => {
     ).toEqual([{ see: "Wide" }]);
   });
 });
+
+describe("ad structure", () => {
+  it("names lead and body parts, counting old lines as body", () => {
+    const beats = [{ part: "lead" as const, hear: "a" }, { part: "body" as const, see: "b" }, { see: "c" }];
+    expect(partLabel(beats, 0)).toBe("Lead");
+    expect(partLabel(beats, 1)).toBe("Body 1");
+    expect(partLabel(beats, 2)).toBe("Body 2");
+  });
+
+  it("keeps the part only on lines with words", () => {
+    expect(tidyLines([{ part: "lead" }, { part: "body", see: " shot " }])).toEqual([
+      { see: "shot", part: "body" },
+    ]);
+  });
+
+  it("gives every template a hook, a lead, body parts and a CTA", () => {
+    for (const key of TEMPLATES) {
+      const g = templateGuide(key);
+      expect(g.hook && g.lead && g.cta).toBeTruthy();
+      expect(g.body.length).toBeGreaterThan(1);
+    }
+    expect(templateGuide("reasons").body).toHaveLength(3);
+    expect(templateGuide("talking-head")).toEqual(templateGuide("other"));
+  });
+});
+

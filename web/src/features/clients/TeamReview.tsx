@@ -15,6 +15,7 @@ import {
 import { useCutActions, useCuts, type CutTarget } from "@/features/review/reviewApi";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { friendlyError } from "@/lib/errors";
+import { ApproveForClient } from "./ApproveForClient";
 
 const GROUP: Record<CutStatus, string> = {
   changes: "Client asked for changes",
@@ -179,6 +180,14 @@ function TeamScreening({
           >
             Send V{cut.version} to the client
           </Button>
+        )}
+        {(cut.status === "review" || cut.status === "changes") && cut.version > 0 && (
+          <ApproveForClient
+            clientId={target.clientId}
+            kind="cut"
+            id={cut.id}
+            version={cut.version}
+          />
         )}
         {cut.status === "review" && !cut.notes.some((n) => n.fromClient) && (
           <Button

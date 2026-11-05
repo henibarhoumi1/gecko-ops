@@ -1,4 +1,4 @@
-import { useState, type FormEvent, type ReactNode } from "react";
+import { createContext, useContext, useState, type FormEvent, type ReactNode } from "react";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import { TextArea } from "@/components/TextArea";
@@ -8,6 +8,7 @@ import {
   changedParts,
   estimateSeconds,
   hookName,
+  partLabel,
   lineLabel,
   scriptStatus,
   STYLE_LABEL,
@@ -19,6 +20,9 @@ import {
 } from "./model";
 import { t } from "@/lib/i18n";
 import { isCinematic, tw, words } from "@/lib/wording";
+
+// The script's scene lines, so a comment can say "Body 2" rather than a number.
+const BeatsContext = createContext<ScriptLine[]>([]);
 
 type CommentFn = (line: string | null, body: string) => Promise<unknown>;
 
@@ -49,6 +53,7 @@ export function ScriptView({
   const general = script.notes.filter((n) => n.line === null);
 
   return (
+    <BeatsContext.Provider value={script.beats}>
     <article className={`concept script concept-${script.status}`}>
       <header className="concept-head">
         {!isCinematic() && !(script.writtenBy === "client" && script.style === "other") && (
@@ -156,29 +161,36 @@ export function ScriptView({
         </section>
       )}
 
-      {script.beats.length > 0 && (
-        <section className="script-part">
-          <h4>{t("Then", "Ensuite")}</h4>
-          <ol className="beats">
-            {script.beats.map((beat, i) => (
-              <li key={i}>
-                <Line
-                  id={`beat-${i}`}
-                  changed={changed.has(`beat-${i}`)}
-                  notes={byLine(`beat-${i}`)}
-                  onComment={onComment}
-                  className="beat"
-                >
-                  <span className="beat-n" aria-hidden="true">
-                    {i + 1}
-                  </span>
-                  <LineText line={beat} />
-                </Line>
-              </li>
-            ))}
-          </ol>
-        </section>
-      )}
+      {/* Lead, then the body parts, in the order they play. */}
+      {(["lead", "body"] as const).map((part) => {
+        const rows = script.beats
+          .map((beat, i) => ({ beat, i }))
+          .filter(({ beat }) => (part === "lead" ? beat.part === "lead" : beat.part !== "lead"));
+        if (rows.length === 0) return null;
+        return (
+          <section key={part} className="script-part">
+            <h4>{part === "lead" ? t("Lead", "Mise en place") : t("Body", "Corps")}</h4>
+            <ol className="beats">
+              {rows.map(({ beat, i }) => (
+                <li key={i}>
+                  <Line
+                    id={`beat-${i}`}
+                    changed={changed.has(`beat-${i}`)}
+                    notes={byLine(`beat-${i}`)}
+                    onComment={onComment}
+                    className="beat"
+                  >
+                    <span className="beat-n" aria-hidden="true">
+                      {part === "lead" ? "L" : partLabel(script.beats, i).replace(/\D+/g, "")}
+                    </span>
+                    <LineText line={beat} />
+                  </Line>
+                </li>
+              ))}
+            </ol>
+          </section>
+        );
+      })}
 
       {script.cta && (
         <Line id="cta" changed={changed.has("cta")} notes={byLine("cta")} onComment={onComment}>
@@ -201,6 +213,7 @@ export function ScriptView({
       <Notes notes={general} />
       {children}
     </article>
+    </BeatsContext.Provider>
   );
 }
 
@@ -249,6 +262,7 @@ function Line({
   className?: string;
   children: ReactNode;
 }) {
+  const beats = useContext(BeatsContext);
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -279,7 +293,7 @@ function Line({
         <button
           type="button"
           className="line-comment"
-          aria-label={t(`Comment on ${lineLabel(id)}`, `Commenter : ${lineLabel(id)}`)}
+          aria-label={t(`Comment on ${lineLabel(id, beats)}`, `Commenter : ${lineLabel(id, beats)}`)}
           onClick={() => setOpen(true)}
         >
           {t("Comment", "Commenter")}
@@ -288,7 +302,7 @@ function Line({
       {open && (
         <form className="concept-form" onSubmit={onSubmit}>
           <TextArea
-            label={t(`Your comment on ${lineLabel(id)}`, `Votre commentaire : ${lineLabel(id)}`)}
+            label={t(`Your comment on ${lineLabel(id, beats)}`, `Votre commentaire : ${lineLabel(id, beats)}`)}
             name="body"
             rows={2}
             maxLength={4000}
