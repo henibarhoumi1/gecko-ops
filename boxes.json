@@ -1,0 +1,4790 @@
+{
+ "before-home": {
+  "height": 2578,
+  "items": [
+   {
+    "tag": "button",
+    "cls": "on",
+    "text": "EN",
+    "box": [
+     228,
+     16,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "",
+    "text": "FR",
+    "box": [
+     266,
+     16,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Sign out",
+    "box": [
+     317,
+     22,
+     57,
+     16
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "1 new video to watch",
+    "box": [
+     33,
+     139,
+     152,
+     23
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "1 new video to watch",
+    "box": [
+     33,
+     140,
+     152,
+     19
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "2 new scripts to read",
+    "box": [
+     203,
+     139,
+     152,
+     23
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "2 new scripts to read",
+    "box": [
+     203,
+     140,
+     152,
+     19
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "2 new ideas",
+    "box": [
+     33,
+     168,
+     87,
+     23
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "2 new ideas",
+    "box": [
+     33,
+     169,
+     87,
+     19
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "2 shoot choices to make",
+    "box": [
+     138,
+     168,
+     176,
+     23
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "2 shoot choices to make",
+    "box": [
+     138,
+     169,
+     176,
+     19
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "1 final video delivered",
+    "box": [
+     33,
+     196,
+     158,
+     23
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "1 final video delivered",
+    "box": [
+     33,
+     197,
+     158,
+     19
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "1 new invoice",
+    "box": [
+     209,
+     196,
+     98,
+     23
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "1 new invoice",
+    "box": [
+     209,
+     197,
+     98,
+     19
+    ]
+   },
+   {
+    "tag": "h1",
+    "cls": "head-brand",
+    "text": "Lumière Skincare",
+    "box": [
+     16,
+     280,
+     252,
+     34
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "done",
+    "text": "Plan",
+    "box": [
+     16,
+     442,
+     60,
+     13
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "done",
+    "text": "Prep",
+    "box": [
+     76,
+     442,
+     60,
+     13
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "done",
+    "text": "ShootFriday 20 November · Daylight studio, La Marsa",
+    "box": [
+     135,
+     442,
+     60,
+     13
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "done",
+    "text": "Edit",
+    "box": [
+     195,
+     442,
+     60,
+     13
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "now",
+    "text": "Delivery",
+    "box": [
+     255,
+     442,
+     60,
+     13
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "Results",
+    "box": [
+     314,
+     442,
+     60,
+     13
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "waiting-title",
+    "text": "Yasmine, here's what needs you",
+    "box": [
+     16,
+     537,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "A reel is ready to watchPause anywhere to leave a note on that moment,",
+    "box": [
+     16,
+     572,
+     358,
+     95
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "waiting-item",
+    "text": "A reel is ready to watchPause anywhere to leave a note on that moment,",
+    "box": [
+     16,
+     572,
+     358,
+     95
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "2 scripts are ready for youPick the hook you like, comment on any line",
+    "box": [
+     16,
+     667,
+     358,
+     96
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "waiting-item",
+    "text": "2 scripts are ready for youPick the hook you like, comment on any line",
+    "box": [
+     16,
+     668,
+     358,
+     95
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "2 ideas are waiting for youApprove the ones you like or tell us what t",
+    "box": [
+     16,
+     762,
+     358,
+     96
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "waiting-item",
+    "text": "2 ideas are waiting for youApprove the ones you like or tell us what t",
+    "box": [
+     16,
+     763,
+     358,
+     95
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "A talent to approveEach one shows its cost against your production bud",
+    "box": [
+     16,
+     858,
+     358,
+     96
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "waiting-item",
+    "text": "A talent to approveEach one shows its cost against your production bud",
+    "box": [
+     16,
+     859,
+     358,
+     95
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "A location to approveEach one shows its cost against your production b",
+    "box": [
+     16,
+     953,
+     358,
+     96
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "waiting-item",
+    "text": "A location to approveEach one shows its cost against your production b",
+    "box": [
+     16,
+     954,
+     358,
+     95
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Regular · every month",
+    "box": [
+     16,
+     1079,
+     201,
+     23
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "Morning routine, 30 secondsWaiting for you5 Nov",
+    "box": [
+     16,
+     1139,
+     358,
+     98
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "piece piece-review",
+    "text": "Morning routine, 30 secondsWaiting for you5 Nov",
+    "box": [
+     16,
+     1139,
+     358,
+     98
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "Before and after in 14 daysWaiting for you5 Nov",
+    "box": [
+     16,
+     1247,
+     358,
+     98
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "piece piece-review",
+    "text": "Before and after in 14 daysWaiting for you5 Nov",
+    "box": [
+     16,
+     1247,
+     358,
+     98
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "8 more reels to writeGecko writes them from the ideas you approve.",
+    "box": [
+     16,
+     1354,
+     358,
+     75
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "The plan",
+    "box": [
+     16,
+     1457,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "10 vertical reels",
+    "box": [
+     51,
+     1633,
+     306,
+     23
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "1 shoot day",
+    "box": [
+     51,
+     1656,
+     306,
+     23
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "FR and AR subtitles",
+    "box": [
+     51,
+     1678,
+     306,
+     23
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "One round of changes per reel",
+    "box": [
+     51,
+     1701,
+     306,
+     23
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Timeline",
+    "box": [
+     16,
+     1866,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "done",
+    "text": "Ideas approvedDone",
+    "box": [
+     16,
+     1901,
+     358,
+     44
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "Scripts approved9 Nov",
+    "box": [
+     16,
+     1945,
+     358,
+     44
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "Shoot day20 Nov",
+    "box": [
+     16,
+     1988,
+     358,
+     44
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "First drafts27 Nov",
+    "box": [
+     16,
+     2032,
+     358,
+     44
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Payment",
+    "box": [
+     16,
+     2103,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "See your invoices",
+    "box": [
+     16,
+     2328,
+     332,
+     36
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "WhatsApp",
+    "box": [
+     261,
+     2436,
+     64,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link active",
+    "text": "Home",
+    "box": [
+     12,
+     800,
+     54,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Plan4",
+    "box": [
+     75,
+     800,
+     45,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Prep2",
+    "box": [
+     129,
+     800,
+     46,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Review1",
+    "box": [
+     184,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Results",
+    "box": [
+     257,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "More",
+    "box": [
+     330,
+     800,
+     49,
+     38
+    ]
+   }
+  ]
+ },
+ "before-concepts": {
+  "height": 1501,
+  "items": [
+   {
+    "tag": "button",
+    "cls": "on",
+    "text": "EN",
+    "box": [
+     228,
+     16,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "",
+    "text": "FR",
+    "box": [
+     266,
+     16,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Sign out",
+    "box": [
+     317,
+     22,
+     57,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link active",
+    "text": "Ideas2",
+    "box": [
+     16,
+     98,
+     65,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Scripts2",
+    "box": [
+     99,
+     98,
+     77,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Inspiration",
+    "box": [
+     194,
+     98,
+     76,
+     45
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-secondary",
+    "text": "Add your own idea",
+    "box": [
+     16,
+     250,
+     171,
+     42
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Waiting for your approval 2",
+    "box": [
+     16,
+     319,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "h3",
+    "cls": "",
+    "text": "The 7 a.m. routine",
+    "box": [
+     35,
+     408,
+     320,
+     29
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "▶ Play the Instagram videoOpen ↗",
+    "box": [
+     35,
+     520,
+     320,
+     34
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "play-toggle",
+    "text": "▶ Play the Instagram video",
+    "box": [
+     35,
+     520,
+     196,
+     34
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "small",
+    "text": "Open ↗",
+    "box": [
+     243,
+     527,
+     49,
+     20
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-primary",
+    "text": "Approve",
+    "box": [
+     35,
+     595,
+     103,
+     42
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-secondary",
+    "text": "Ask for changes",
+    "box": [
+     152,
+     595,
+     155,
+     42
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Comment",
+    "box": [
+     35,
+     647,
+     68,
+     16
+    ]
+   },
+   {
+    "tag": "h3",
+    "cls": "",
+    "text": "Before and after: winter skin",
+    "box": [
+     35,
+     748,
+     320,
+     29
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "note note-comment from-client",
+    "text": "Yasmine Ben Abdallah · 5 NovCould we use a tissue with our logo?",
+    "box": [
+     35,
+     869,
+     320,
+     66
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-primary",
+    "text": "Approve",
+    "box": [
+     35,
+     949,
+     103,
+     42
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-secondary",
+    "text": "Ask for changes",
+    "box": [
+     152,
+     949,
+     155,
+     42
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Comment",
+    "box": [
+     35,
+     1001,
+     68,
+     16
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Approved 1",
+    "box": [
+     16,
+     1064,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "h3",
+    "cls": "",
+    "text": "Founder interview: why Lumière",
+    "box": [
+     38,
+     1153,
+     317,
+     29
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Comment",
+    "box": [
+     38,
+     1254,
+     68,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "WhatsApp",
+    "box": [
+     261,
+     1359,
+     64,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Home",
+    "box": [
+     12,
+     800,
+     54,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link active",
+    "text": "Plan4",
+    "box": [
+     75,
+     800,
+     45,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Prep2",
+    "box": [
+     129,
+     800,
+     46,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Review1",
+    "box": [
+     184,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Results",
+    "box": [
+     257,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "More",
+    "box": [
+     330,
+     800,
+     49,
+     38
+    ]
+   }
+  ]
+ },
+ "before-scripts": {
+  "height": 2770,
+  "items": [
+   {
+    "tag": "button",
+    "cls": "on",
+    "text": "EN",
+    "box": [
+     228,
+     16,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "",
+    "text": "FR",
+    "box": [
+     266,
+     16,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Sign out",
+    "box": [
+     317,
+     22,
+     57,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Ideas2",
+    "box": [
+     16,
+     98,
+     65,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link active",
+    "text": "Scripts2",
+    "box": [
+     99,
+     98,
+     77,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Inspiration",
+    "box": [
+     194,
+     98,
+     76,
+     45
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-secondary",
+    "text": "Write your own script",
+    "box": [
+     16,
+     272,
+     191,
+     42
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Waiting for your approval 2",
+    "box": [
+     16,
+     342,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "h3",
+    "cls": "",
+    "text": "Morning routine, 30 seconds",
+    "box": [
+     35,
+     431,
+     320,
+     29
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     35,
+     546,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     50,
+     723,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     50,
+     877,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     50,
+     1009,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "1SeeClose-up of the bottle by the sink, morning light.HearMy skin felt",
+    "box": [
+     35,
+     1089,
+     320,
+     209
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     73,
+     1255,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "2SeeShe applies the serum, texture in macro.HearSerum first. It sinks ",
+    "box": [
+     35,
+     1298,
+     320,
+     166
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     73,
+     1421,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "3SeeThe result by the window, she smiles.HearDone. Ready.On screenStar",
+    "box": [
+     35,
+     1464,
+     320,
+     187
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     73,
+     1608,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     35,
+     1687,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-primary",
+    "text": "Approve",
+    "box": [
+     35,
+     1748,
+     103,
+     42
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-secondary",
+    "text": "Ask for changes",
+    "box": [
+     152,
+     1748,
+     155,
+     42
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Comment on the whole script",
+    "box": [
+     35,
+     1800,
+     205,
+     16
+    ]
+   },
+   {
+    "tag": "h3",
+    "cls": "",
+    "text": "Before and after in 14 days",
+    "box": [
+     35,
+     1901,
+     320,
+     29
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     35,
+     1993,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     51,
+     2149,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "1SeeSplit screen.HearSame light, same frame.Comment",
+    "box": [
+     35,
+     2230,
+     320,
+     143
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     73,
+     2331,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     35,
+     2410,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-primary",
+    "text": "Approve",
+    "box": [
+     35,
+     2471,
+     103,
+     42
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-secondary",
+    "text": "Ask for changes",
+    "box": [
+     152,
+     2471,
+     155,
+     42
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Comment on the whole script",
+    "box": [
+     35,
+     2523,
+     205,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "WhatsApp",
+    "box": [
+     261,
+     2628,
+     64,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Home",
+    "box": [
+     12,
+     800,
+     54,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link active",
+    "text": "Plan4",
+    "box": [
+     75,
+     800,
+     45,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Prep2",
+    "box": [
+     129,
+     800,
+     46,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Review1",
+    "box": [
+     184,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Results",
+    "box": [
+     257,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "More",
+    "box": [
+     330,
+     800,
+     49,
+     38
+    ]
+   }
+  ]
+ },
+ "before-talent": {
+  "height": 1026,
+  "items": [
+   {
+    "tag": "button",
+    "cls": "on",
+    "text": "EN",
+    "box": [
+     228,
+     16,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "",
+    "text": "FR",
+    "box": [
+     266,
+     16,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Sign out",
+    "box": [
+     317,
+     22,
+     57,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Your brand",
+    "box": [
+     16,
+     98,
+     80,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link active",
+    "text": "Talent1",
+    "box": [
+     114,
+     98,
+     71,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Locations1",
+    "box": [
+     203,
+     98,
+     96,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Budget",
+    "box": [
+     317,
+     98,
+     51,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Notes and links",
+    "box": [
+     386,
+     98,
+     111,
+     45
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-secondary",
+    "text": "Suggest someone",
+    "box": [
+     16,
+     272,
+     168,
+     42
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Production budget",
+    "box": [
+     31,
+     345,
+     146,
+     20
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Needs you 1",
+    "box": [
+     16,
+     536,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "article",
+    "cls": "prod-card prod-talent prod-proposed",
+    "text": "Salma, 29, UGC creatorNeeds youMain450 DTWhen Free on the shoot dayNat",
+    "box": [
+     16,
+     571,
+     358,
+     243
+    ]
+   },
+   {
+    "tag": "h3",
+    "cls": "",
+    "text": "Salma, 29, UGC creator",
+    "box": [
+     33,
+     586,
+     195,
+     27
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-primary",
+    "text": "Approve · 450 DT",
+    "box": [
+     33,
+     729,
+     165,
+     42
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-secondary",
+    "text": "Pass",
+    "box": [
+     212,
+     729,
+     74,
+     42
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Ask a question",
+    "box": [
+     33,
+     781,
+     103,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "WhatsApp",
+    "box": [
+     261,
+     884,
+     64,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Home",
+    "box": [
+     12,
+     800,
+     54,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Plan4",
+    "box": [
+     75,
+     800,
+     45,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link active",
+    "text": "Prep2",
+    "box": [
+     129,
+     800,
+     46,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Review1",
+    "box": [
+     184,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Results",
+    "box": [
+     257,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "More",
+    "box": [
+     330,
+     800,
+     49,
+     38
+    ]
+   }
+  ]
+ },
+ "before-review": {
+  "height": 844,
+  "items": [
+   {
+    "tag": "button",
+    "cls": "on",
+    "text": "EN",
+    "box": [
+     228,
+     58,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "",
+    "text": "FR",
+    "box": [
+     266,
+     58,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Sign out",
+    "box": [
+     317,
+     64,
+     57,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link active",
+    "text": "Reels1",
+    "box": [
+     16,
+     181,
+     66,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Delivery",
+    "box": [
+     100,
+     181,
+     61,
+     45
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Ready for you to watch 1",
+    "box": [
+     16,
+     345,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "Morning routine, cut 1V1 · 0:31 · 5 Nov",
+    "box": [
+     16,
+     380,
+     358,
+     53
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "cut-row status-review",
+    "text": "Morning routine, cut 1V1 · 0:31 · 5 Nov",
+    "box": [
+     16,
+     380,
+     358,
+     53
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Approved 1",
+    "box": [
+     16,
+     461,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "Before and after, cut 2V2 · 0:22 · 5 Nov",
+    "box": [
+     16,
+     496,
+     358,
+     53
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "cut-row status-approved",
+    "text": "Before and after, cut 2V2 · 0:22 · 5 Nov",
+    "box": [
+     16,
+     496,
+     358,
+     53
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "WhatsApp",
+    "box": [
+     261,
+     618,
+     64,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Home",
+    "box": [
+     12,
+     800,
+     54,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Plan4",
+    "box": [
+     75,
+     800,
+     45,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Prep2",
+    "box": [
+     129,
+     800,
+     46,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link active",
+    "text": "Review1",
+    "box": [
+     184,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Results",
+    "box": [
+     257,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "More",
+    "box": [
+     330,
+     800,
+     49,
+     38
+    ]
+   }
+  ]
+ },
+ "before-delivery": {
+  "height": 844,
+  "items": [
+   {
+    "tag": "button",
+    "cls": "on",
+    "text": "EN",
+    "box": [
+     228,
+     81,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "",
+    "text": "FR",
+    "box": [
+     266,
+     81,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Sign out",
+    "box": [
+     317,
+     87,
+     57,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Reels1",
+    "box": [
+     16,
+     226,
+     66,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link active",
+    "text": "Delivery",
+    "box": [
+     100,
+     226,
+     61,
+     45
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "shelf-item open",
+    "text": "Before and after, cut 2V2 · approved 4 Nov · 9:16 and 4:5, with and wi",
+    "box": [
+     16,
+     358,
+     358,
+     145
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "btn btn-primary",
+    "text": "Get the file",
+    "box": [
+     33,
+     446,
+     117,
+     42
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "WhatsApp",
+    "box": [
+     261,
+     573,
+     64,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Home",
+    "box": [
+     12,
+     800,
+     54,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Plan4",
+    "box": [
+     75,
+     800,
+     45,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Prep2",
+    "box": [
+     129,
+     800,
+     46,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link active",
+    "text": "Review1",
+    "box": [
+     184,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Results",
+    "box": [
+     257,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "More",
+    "box": [
+     330,
+     800,
+     49,
+     38
+    ]
+   }
+  ]
+ },
+ "before-money": {
+  "height": 844,
+  "items": [
+   {
+    "tag": "button",
+    "cls": "on",
+    "text": "EN",
+    "box": [
+     228,
+     58,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "",
+    "text": "FR",
+    "box": [
+     266,
+     58,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Sign out",
+    "box": [
+     317,
+     64,
+     57,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Team",
+    "box": [
+     16,
+     182,
+     40,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link active",
+    "text": "Invoices",
+    "box": [
+     74,
+     182,
+     61,
+     45
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "GK-2026-002Balance · Balance, 50% · 4 November 20261,450.000 DTPaid",
+    "box": [
+     16,
+     313,
+     358,
+     113
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "invoice-row is-paid",
+    "text": "GK-2026-002Balance · Balance, 50% · 4 November 20261,450.000 DTPaid",
+    "box": [
+     16,
+     313,
+     358,
+     113
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "GK-2026-001Deposit · Deposit, 50% · 24 October 20261,450.000 DTPaid",
+    "box": [
+     16,
+     434,
+     358,
+     113
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "invoice-row is-paid",
+    "text": "GK-2026-001Deposit · Deposit, 50% · 24 October 20261,450.000 DTPaid",
+    "box": [
+     16,
+     434,
+     358,
+     113
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "WhatsApp",
+    "box": [
+     261,
+     617,
+     64,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Home",
+    "box": [
+     12,
+     800,
+     54,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Plan4",
+    "box": [
+     75,
+     800,
+     45,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Prep2",
+    "box": [
+     129,
+     800,
+     46,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Review1",
+    "box": [
+     184,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Results",
+    "box": [
+     257,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link active",
+    "text": "More",
+    "box": [
+     330,
+     800,
+     49,
+     38
+    ]
+   }
+  ]
+ },
+ "before-team": {
+  "height": 1181,
+  "items": [
+   {
+    "tag": "button",
+    "cls": "on",
+    "text": "EN",
+    "box": [
+     228,
+     16,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "",
+    "text": "FR",
+    "box": [
+     266,
+     16,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Sign out",
+    "box": [
+     317,
+     22,
+     57,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link active",
+    "text": "Team",
+    "box": [
+     16,
+     98,
+     40,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Invoices",
+    "box": [
+     74,
+     98,
+     61,
+     45
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "card teammate",
+    "text": "Yasmine Ben Abdallah (you) · owner@phone.testOwner",
+    "box": [
+     16,
+     229,
+     358,
+     103
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Invite someone from your team",
+    "box": [
+     16,
+     360,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-primary",
+    "text": "Create invite link",
+    "box": [
+     16,
+     551,
+     158,
+     42
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "What each role can do",
+    "box": [
+     16,
+     653,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "WhatsApp",
+    "box": [
+     261,
+     1039,
+     64,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Home",
+    "box": [
+     12,
+     800,
+     54,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Plan4",
+    "box": [
+     75,
+     800,
+     45,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Prep2",
+    "box": [
+     129,
+     800,
+     46,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Review1",
+    "box": [
+     184,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Results",
+    "box": [
+     257,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link active",
+    "text": "More",
+    "box": [
+     330,
+     800,
+     49,
+     38
+    ]
+   }
+  ]
+ },
+ "after-home": {
+  "height": 2578,
+  "items": [
+   {
+    "tag": "button",
+    "cls": "on",
+    "text": "EN",
+    "box": [
+     228,
+     16,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "",
+    "text": "FR",
+    "box": [
+     266,
+     16,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Sign out",
+    "box": [
+     317,
+     22,
+     57,
+     16
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "1 new video to watch",
+    "box": [
+     33,
+     139,
+     152,
+     23
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "1 new video to watch",
+    "box": [
+     33,
+     140,
+     152,
+     19
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "2 new scripts to read",
+    "box": [
+     203,
+     139,
+     152,
+     23
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "2 new scripts to read",
+    "box": [
+     203,
+     140,
+     152,
+     19
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "2 new ideas",
+    "box": [
+     33,
+     168,
+     87,
+     23
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "2 new ideas",
+    "box": [
+     33,
+     169,
+     87,
+     19
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "2 shoot choices to make",
+    "box": [
+     138,
+     168,
+     176,
+     23
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "2 shoot choices to make",
+    "box": [
+     138,
+     169,
+     176,
+     19
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "1 final video delivered",
+    "box": [
+     33,
+     196,
+     158,
+     23
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "1 final video delivered",
+    "box": [
+     33,
+     197,
+     158,
+     19
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "1 new invoice",
+    "box": [
+     209,
+     196,
+     98,
+     23
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "1 new invoice",
+    "box": [
+     209,
+     197,
+     98,
+     19
+    ]
+   },
+   {
+    "tag": "h1",
+    "cls": "head-brand",
+    "text": "Lumière Skincare",
+    "box": [
+     16,
+     280,
+     252,
+     34
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "done",
+    "text": "Plan",
+    "box": [
+     16,
+     442,
+     60,
+     13
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "done",
+    "text": "Prep",
+    "box": [
+     76,
+     442,
+     60,
+     13
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "done",
+    "text": "ShootFriday 20 November · Daylight studio, La Marsa",
+    "box": [
+     135,
+     442,
+     60,
+     13
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "done",
+    "text": "Edit",
+    "box": [
+     195,
+     442,
+     60,
+     13
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "now",
+    "text": "Delivery",
+    "box": [
+     255,
+     442,
+     60,
+     13
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "Results",
+    "box": [
+     314,
+     442,
+     60,
+     13
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "waiting-title",
+    "text": "Yasmine, here's what needs you",
+    "box": [
+     16,
+     537,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "A reel is ready to watchPause anywhere to leave a note on that moment,",
+    "box": [
+     16,
+     572,
+     358,
+     95
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "waiting-item",
+    "text": "A reel is ready to watchPause anywhere to leave a note on that moment,",
+    "box": [
+     16,
+     572,
+     358,
+     95
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "A script is ready for youPick the hook you like, comment on any line, ",
+    "box": [
+     16,
+     667,
+     358,
+     96
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "waiting-item",
+    "text": "A script is ready for youPick the hook you like, comment on any line, ",
+    "box": [
+     16,
+     668,
+     358,
+     95
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "2 ideas are waiting for youApprove the ones you like or tell us what t",
+    "box": [
+     16,
+     762,
+     358,
+     96
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "waiting-item",
+    "text": "2 ideas are waiting for youApprove the ones you like or tell us what t",
+    "box": [
+     16,
+     763,
+     358,
+     95
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "A talent to approveEach one shows its cost against your production bud",
+    "box": [
+     16,
+     858,
+     358,
+     96
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "waiting-item",
+    "text": "A talent to approveEach one shows its cost against your production bud",
+    "box": [
+     16,
+     859,
+     358,
+     95
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "A location to approveEach one shows its cost against your production b",
+    "box": [
+     16,
+     953,
+     358,
+     96
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "waiting-item",
+    "text": "A location to approveEach one shows its cost against your production b",
+    "box": [
+     16,
+     954,
+     358,
+     95
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Regular · every month",
+    "box": [
+     16,
+     1079,
+     201,
+     23
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "Morning routine, 30 secondsApproved5 Nov",
+    "box": [
+     16,
+     1139,
+     358,
+     98
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "piece piece-approved",
+    "text": "Morning routine, 30 secondsApproved5 Nov",
+    "box": [
+     16,
+     1139,
+     358,
+     98
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "Before and after in 14 daysWaiting for you5 Nov",
+    "box": [
+     16,
+     1247,
+     358,
+     98
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "piece piece-review",
+    "text": "Before and after in 14 daysWaiting for you5 Nov",
+    "box": [
+     16,
+     1247,
+     358,
+     98
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "8 more reels to writeGecko writes them from the ideas you approve.",
+    "box": [
+     16,
+     1354,
+     358,
+     75
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "The plan",
+    "box": [
+     16,
+     1457,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "10 vertical reels",
+    "box": [
+     51,
+     1633,
+     306,
+     23
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "1 shoot day",
+    "box": [
+     51,
+     1656,
+     306,
+     23
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "FR and AR subtitles",
+    "box": [
+     51,
+     1678,
+     306,
+     23
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "One round of changes per reel",
+    "box": [
+     51,
+     1701,
+     306,
+     23
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Timeline",
+    "box": [
+     16,
+     1866,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "done",
+    "text": "Ideas approvedDone",
+    "box": [
+     16,
+     1901,
+     358,
+     44
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "Scripts approved9 Nov",
+    "box": [
+     16,
+     1945,
+     358,
+     44
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "Shoot day20 Nov",
+    "box": [
+     16,
+     1988,
+     358,
+     44
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "First drafts27 Nov",
+    "box": [
+     16,
+     2032,
+     358,
+     44
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Payment",
+    "box": [
+     16,
+     2103,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "See your invoices",
+    "box": [
+     16,
+     2328,
+     332,
+     36
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "WhatsApp",
+    "box": [
+     261,
+     2436,
+     64,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link active",
+    "text": "Home",
+    "box": [
+     12,
+     800,
+     54,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Plan3",
+    "box": [
+     75,
+     800,
+     45,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Prep2",
+    "box": [
+     129,
+     800,
+     46,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Review1",
+    "box": [
+     184,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Results",
+    "box": [
+     257,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "More",
+    "box": [
+     330,
+     800,
+     49,
+     38
+    ]
+   }
+  ]
+ },
+ "after-concepts": {
+  "height": 1501,
+  "items": [
+   {
+    "tag": "button",
+    "cls": "on",
+    "text": "EN",
+    "box": [
+     228,
+     16,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "",
+    "text": "FR",
+    "box": [
+     266,
+     16,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Sign out",
+    "box": [
+     317,
+     22,
+     57,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link active",
+    "text": "Ideas2",
+    "box": [
+     16,
+     98,
+     65,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Scripts1",
+    "box": [
+     99,
+     98,
+     77,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Inspiration",
+    "box": [
+     194,
+     98,
+     76,
+     45
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-secondary",
+    "text": "Add your own idea",
+    "box": [
+     16,
+     250,
+     171,
+     42
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Waiting for your approval 2",
+    "box": [
+     16,
+     319,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "h3",
+    "cls": "",
+    "text": "The 7 a.m. routine",
+    "box": [
+     35,
+     408,
+     320,
+     29
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "▶ Play the Instagram videoOpen ↗",
+    "box": [
+     35,
+     520,
+     320,
+     34
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "play-toggle",
+    "text": "▶ Play the Instagram video",
+    "box": [
+     35,
+     520,
+     196,
+     34
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "small",
+    "text": "Open ↗",
+    "box": [
+     243,
+     527,
+     49,
+     20
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-primary",
+    "text": "Approve",
+    "box": [
+     35,
+     595,
+     103,
+     42
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-secondary",
+    "text": "Ask for changes",
+    "box": [
+     152,
+     595,
+     155,
+     42
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Comment",
+    "box": [
+     35,
+     647,
+     68,
+     16
+    ]
+   },
+   {
+    "tag": "h3",
+    "cls": "",
+    "text": "Before and after: winter skin",
+    "box": [
+     35,
+     748,
+     320,
+     29
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "note note-comment from-client",
+    "text": "Yasmine Ben Abdallah · 5 NovCould we use a tissue with our logo?",
+    "box": [
+     35,
+     869,
+     320,
+     66
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-primary",
+    "text": "Approve",
+    "box": [
+     35,
+     949,
+     103,
+     42
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-secondary",
+    "text": "Ask for changes",
+    "box": [
+     152,
+     949,
+     155,
+     42
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Comment",
+    "box": [
+     35,
+     1001,
+     68,
+     16
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Approved 1",
+    "box": [
+     16,
+     1064,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "h3",
+    "cls": "",
+    "text": "Founder interview: why Lumière",
+    "box": [
+     38,
+     1153,
+     317,
+     29
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Comment",
+    "box": [
+     38,
+     1254,
+     68,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "WhatsApp",
+    "box": [
+     261,
+     1359,
+     64,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Home",
+    "box": [
+     12,
+     800,
+     54,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link active",
+    "text": "Plan3",
+    "box": [
+     75,
+     800,
+     45,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Prep2",
+    "box": [
+     129,
+     800,
+     46,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Review1",
+    "box": [
+     184,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Results",
+    "box": [
+     257,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "More",
+    "box": [
+     330,
+     800,
+     49,
+     38
+    ]
+   }
+  ]
+ },
+ "after-scripts": {
+  "height": 2862,
+  "items": [
+   {
+    "tag": "button",
+    "cls": "on",
+    "text": "EN",
+    "box": [
+     228,
+     16,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "",
+    "text": "FR",
+    "box": [
+     266,
+     16,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Sign out",
+    "box": [
+     317,
+     22,
+     57,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Ideas2",
+    "box": [
+     16,
+     98,
+     65,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link active",
+    "text": "Scripts1",
+    "box": [
+     99,
+     98,
+     77,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Inspiration",
+    "box": [
+     194,
+     98,
+     76,
+     45
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-secondary",
+    "text": "Write your own script",
+    "box": [
+     16,
+     272,
+     191,
+     42
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Waiting for your approval 1",
+    "box": [
+     16,
+     342,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "h3",
+    "cls": "",
+    "text": "Before and after in 14 days",
+    "box": [
+     35,
+     431,
+     320,
+     29
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     35,
+     523,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     51,
+     679,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "1SeeSplit screen.HearSame light, same frame.Comment",
+    "box": [
+     35,
+     760,
+     320,
+     143
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     73,
+     861,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     35,
+     940,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-primary",
+    "text": "Approve",
+    "box": [
+     35,
+     1001,
+     103,
+     42
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-secondary",
+    "text": "Ask for changes",
+    "box": [
+     152,
+     1001,
+     155,
+     42
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Comment on the whole script",
+    "box": [
+     35,
+     1053,
+     205,
+     16
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Approved 1",
+    "box": [
+     16,
+     1116,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "h3",
+    "cls": "",
+    "text": "Morning routine, 30 seconds",
+    "box": [
+     38,
+     1205,
+     317,
+     29
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     38,
+     1320,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     54,
+     1498,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     53,
+     1653,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     53,
+     1785,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "1SeeClose-up of the bottle by the sink, morning light.HearMy skin felt",
+    "box": [
+     38,
+     1865,
+     317,
+     209
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     76,
+     2031,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "2SeeShe applies the serum, texture in macro.HearSerum first. It sinks ",
+    "box": [
+     38,
+     2074,
+     317,
+     166
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     76,
+     2197,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "3SeeThe result by the window, she smiles.HearDone. Ready.On screenStar",
+    "box": [
+     38,
+     2240,
+     317,
+     187
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     76,
+     2384,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "line-comment",
+    "text": "Comment",
+    "box": [
+     38,
+     2463,
+     60,
+     20
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "note note-approve from-client",
+    "text": "Yasmine Ben AbdallahApproved with Hook A · 5 Nov · version 1",
+    "box": [
+     38,
+     2541,
+     317,
+     59
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Comment on the whole script",
+    "box": [
+     38,
+     2614,
+     205,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "WhatsApp",
+    "box": [
+     261,
+     2719,
+     64,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Home",
+    "box": [
+     12,
+     800,
+     54,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link active",
+    "text": "Plan3",
+    "box": [
+     75,
+     800,
+     45,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Prep2",
+    "box": [
+     129,
+     800,
+     46,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Review1",
+    "box": [
+     184,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Results",
+    "box": [
+     257,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "More",
+    "box": [
+     330,
+     800,
+     49,
+     38
+    ]
+   }
+  ]
+ },
+ "after-talent": {
+  "height": 1026,
+  "items": [
+   {
+    "tag": "button",
+    "cls": "on",
+    "text": "EN",
+    "box": [
+     228,
+     16,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "",
+    "text": "FR",
+    "box": [
+     266,
+     16,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Sign out",
+    "box": [
+     317,
+     22,
+     57,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Your brand",
+    "box": [
+     16,
+     98,
+     80,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link active",
+    "text": "Talent1",
+    "box": [
+     114,
+     98,
+     71,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Locations1",
+    "box": [
+     203,
+     98,
+     96,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Budget",
+    "box": [
+     317,
+     98,
+     51,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Notes and links",
+    "box": [
+     386,
+     98,
+     111,
+     45
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-secondary",
+    "text": "Suggest someone",
+    "box": [
+     16,
+     272,
+     168,
+     42
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Production budget",
+    "box": [
+     31,
+     345,
+     146,
+     20
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Needs you 1",
+    "box": [
+     16,
+     536,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "article",
+    "cls": "prod-card prod-talent prod-proposed",
+    "text": "Salma, 29, UGC creatorNeeds youMain450 DTWhen Free on the shoot dayNat",
+    "box": [
+     16,
+     571,
+     358,
+     243
+    ]
+   },
+   {
+    "tag": "h3",
+    "cls": "",
+    "text": "Salma, 29, UGC creator",
+    "box": [
+     33,
+     586,
+     195,
+     27
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-primary",
+    "text": "Approve · 450 DT",
+    "box": [
+     33,
+     729,
+     165,
+     42
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-secondary",
+    "text": "Pass",
+    "box": [
+     212,
+     729,
+     74,
+     42
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Ask a question",
+    "box": [
+     33,
+     781,
+     103,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "WhatsApp",
+    "box": [
+     261,
+     884,
+     64,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Home",
+    "box": [
+     12,
+     800,
+     54,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Plan3",
+    "box": [
+     75,
+     800,
+     45,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link active",
+    "text": "Prep2",
+    "box": [
+     129,
+     800,
+     46,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Review1",
+    "box": [
+     184,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Results",
+    "box": [
+     257,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "More",
+    "box": [
+     330,
+     800,
+     49,
+     38
+    ]
+   }
+  ]
+ },
+ "after-review": {
+  "height": 844,
+  "items": [
+   {
+    "tag": "button",
+    "cls": "on",
+    "text": "EN",
+    "box": [
+     228,
+     58,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "",
+    "text": "FR",
+    "box": [
+     266,
+     58,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Sign out",
+    "box": [
+     317,
+     64,
+     57,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link active",
+    "text": "Reels1",
+    "box": [
+     16,
+     181,
+     66,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Delivery",
+    "box": [
+     100,
+     181,
+     61,
+     45
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Ready for you to watch 1",
+    "box": [
+     16,
+     345,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "Morning routine, cut 1V1 · 0:31 · 5 Nov",
+    "box": [
+     16,
+     380,
+     358,
+     53
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "cut-row status-review",
+    "text": "Morning routine, cut 1V1 · 0:31 · 5 Nov",
+    "box": [
+     16,
+     380,
+     358,
+     53
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Approved 1",
+    "box": [
+     16,
+     461,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "Before and after, cut 2V2 · 0:22 · 5 Nov",
+    "box": [
+     16,
+     496,
+     358,
+     53
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "cut-row status-approved",
+    "text": "Before and after, cut 2V2 · 0:22 · 5 Nov",
+    "box": [
+     16,
+     496,
+     358,
+     53
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "WhatsApp",
+    "box": [
+     261,
+     618,
+     64,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Home",
+    "box": [
+     12,
+     800,
+     54,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Plan3",
+    "box": [
+     75,
+     800,
+     45,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Prep2",
+    "box": [
+     129,
+     800,
+     46,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link active",
+    "text": "Review1",
+    "box": [
+     184,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Results",
+    "box": [
+     257,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "More",
+    "box": [
+     330,
+     800,
+     49,
+     38
+    ]
+   }
+  ]
+ },
+ "after-delivery": {
+  "height": 844,
+  "items": [
+   {
+    "tag": "button",
+    "cls": "on",
+    "text": "EN",
+    "box": [
+     228,
+     81,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "",
+    "text": "FR",
+    "box": [
+     266,
+     81,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Sign out",
+    "box": [
+     317,
+     87,
+     57,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Reels1",
+    "box": [
+     16,
+     226,
+     66,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link active",
+    "text": "Delivery",
+    "box": [
+     100,
+     226,
+     61,
+     45
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "shelf-item open",
+    "text": "Before and after, cut 2V2 · approved 4 Nov · 9:16 and 4:5, with and wi",
+    "box": [
+     16,
+     358,
+     358,
+     145
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "btn btn-primary",
+    "text": "Get the file",
+    "box": [
+     33,
+     446,
+     117,
+     42
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "WhatsApp",
+    "box": [
+     261,
+     573,
+     64,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Home",
+    "box": [
+     12,
+     800,
+     54,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Plan3",
+    "box": [
+     75,
+     800,
+     45,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Prep2",
+    "box": [
+     129,
+     800,
+     46,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link active",
+    "text": "Review1",
+    "box": [
+     184,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Results",
+    "box": [
+     257,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "More",
+    "box": [
+     330,
+     800,
+     49,
+     38
+    ]
+   }
+  ]
+ },
+ "after-money": {
+  "height": 844,
+  "items": [
+   {
+    "tag": "button",
+    "cls": "on",
+    "text": "EN",
+    "box": [
+     228,
+     58,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "",
+    "text": "FR",
+    "box": [
+     266,
+     58,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Sign out",
+    "box": [
+     317,
+     64,
+     57,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Team",
+    "box": [
+     16,
+     182,
+     40,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link active",
+    "text": "Invoices",
+    "box": [
+     74,
+     182,
+     61,
+     45
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "GK-2026-002Balance · Balance, 50% · 4 November 20261,450.000 DTPaid",
+    "box": [
+     16,
+     313,
+     358,
+     113
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "invoice-row is-paid",
+    "text": "GK-2026-002Balance · Balance, 50% · 4 November 20261,450.000 DTPaid",
+    "box": [
+     16,
+     313,
+     358,
+     113
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "",
+    "text": "GK-2026-001Deposit · Deposit, 50% · 24 October 20261,450.000 DTPaid",
+    "box": [
+     16,
+     434,
+     358,
+     113
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "invoice-row is-paid",
+    "text": "GK-2026-001Deposit · Deposit, 50% · 24 October 20261,450.000 DTPaid",
+    "box": [
+     16,
+     434,
+     358,
+     113
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "WhatsApp",
+    "box": [
+     261,
+     617,
+     64,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Home",
+    "box": [
+     12,
+     800,
+     54,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Plan3",
+    "box": [
+     75,
+     800,
+     45,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Prep2",
+    "box": [
+     129,
+     800,
+     46,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Review1",
+    "box": [
+     184,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Results",
+    "box": [
+     257,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link active",
+    "text": "More",
+    "box": [
+     330,
+     800,
+     49,
+     38
+    ]
+   }
+  ]
+ },
+ "after-team": {
+  "height": 1181,
+  "items": [
+   {
+    "tag": "button",
+    "cls": "on",
+    "text": "EN",
+    "box": [
+     228,
+     16,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "",
+    "text": "FR",
+    "box": [
+     266,
+     16,
+     38,
+     28
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-link",
+    "text": "Sign out",
+    "box": [
+     317,
+     22,
+     57,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link active",
+    "text": "Team",
+    "box": [
+     16,
+     98,
+     40,
+     45
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "sub-link",
+    "text": "Invoices",
+    "box": [
+     74,
+     98,
+     61,
+     45
+    ]
+   },
+   {
+    "tag": "li",
+    "cls": "card teammate",
+    "text": "Yasmine Ben Abdallah (you) · owner@phone.testOwner",
+    "box": [
+     16,
+     229,
+     358,
+     103
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "Invite someone from your team",
+    "box": [
+     16,
+     360,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "button",
+    "cls": "btn btn-primary",
+    "text": "Create invite link",
+    "box": [
+     16,
+     551,
+     158,
+     42
+    ]
+   },
+   {
+    "tag": "h2",
+    "cls": "",
+    "text": "What each role can do",
+    "box": [
+     16,
+     653,
+     358,
+     23
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "",
+    "text": "WhatsApp",
+    "box": [
+     261,
+     1039,
+     64,
+     16
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Home",
+    "box": [
+     12,
+     800,
+     54,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Plan3",
+    "box": [
+     75,
+     800,
+     45,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Prep2",
+    "box": [
+     129,
+     800,
+     46,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Review1",
+    "box": [
+     184,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link",
+    "text": "Results",
+    "box": [
+     257,
+     800,
+     64,
+     38
+    ]
+   },
+   {
+    "tag": "a",
+    "cls": "bottom-link active",
+    "text": "More",
+    "box": [
+     330,
+     800,
+     49,
+     38
+    ]
+   }
+  ]
+ }
+}
