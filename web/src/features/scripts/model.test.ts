@@ -1,3 +1,4 @@
+import { bodyFor, partTimes, template } from "./templates";
 import { describe, expect, it } from "vitest";
 import {
   changedParts,
@@ -103,9 +104,29 @@ describe("ad structure", () => {
     for (const key of TEMPLATES) {
       const g = templateGuide(key);
       expect(g.hook && g.lead && g.cta).toBeTruthy();
-      expect(g.body.length).toBeGreaterThan(1);
+      expect(g.body.length).toBeGreaterThan(0);
     }
     expect(templateGuide("reasons").body).toHaveLength(3);
     expect(templateGuide("talking-head")).toEqual(templateGuide("other"));
+  });
+
+  it("sizes the body for the video length", () => {
+    const fix = template("problem-fix");
+    expect(bodyFor(fix, 15)).toHaveLength(1);
+    expect(bodyFor(fix, 30)).toHaveLength(2);
+    expect(bodyFor(fix, 60)).toHaveLength(3);
+    expect(bodyFor(template("reasons"), 15)).toHaveLength(3);
+  });
+
+  it("times every part inside the video", () => {
+    const times = partTimes(30, 2);
+    expect(times).toHaveLength(5);
+    expect(times[0]).toBe("0–3 s");
+    expect(times[4]!.endsWith("–30 s")).toBe(true);
+    expect(partTimes(7, 1).at(-1)!.endsWith("–7 s")).toBe(true);
+  });
+
+  it("gives every template but Blank hook ideas", () => {
+    for (const key of TEMPLATES) if (key !== "other") expect(template(key).hooks.length).toBe(3);
   });
 });

@@ -6437,3 +6437,36 @@ a.piece:hover {
 .approve-for p {
   margin: 0;
 }
+
+/* Script templates: when to use one, and hook ideas to start from. */
+.template-when {
+  margin: -4px 0 4px;
+}
+.template-warn {
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--yellow, #f3df9e);
+  color: var(--ink);
+}
+.hook-ideas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 10px;
+}
+.hook-idea {
+  padding: 5px 10px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.8rem;
+  text-align: left;
+  cursor: pointer;
+}
+.hook-idea:hover,
+.hook-idea:focus-visible {
+  background: var(--pink, #f4c1c4);
+}

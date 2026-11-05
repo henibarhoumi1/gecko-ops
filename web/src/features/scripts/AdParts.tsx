@@ -1,16 +1,10 @@
+import { useEffect } from "react";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Select } from "@/components/Select";
 import { t } from "@/lib/i18n";
-import {
-  hookName,
-  STYLE_LABEL,
-  TEMPLATES,
-  templateGuide,
-  tidyLines,
-  type ScriptLine,
-  type ScriptStyle,
-} from "./model";
+import { hookName, STYLE_LABEL, tidyLines, type ScriptLine, type ScriptStyle } from "./model";
+import { anyHooks, bodyFor, GOAL_LABEL, partTimes, template, TEMPLATES } from "./templates";
 
 /** What a script is made of, the way an ad is built: Hook → Lead → Body 1, 2, 3 → CTA. */
 export interface AdDraft {
@@ -24,11 +18,12 @@ export interface AdDraft {
 export const blankLines = (n: number): ScriptLine[] => Array.from({ length: n }, () => ({}));
 export const noWords = (lines: ScriptLine[]) => tidyLines(lines).length === 0;
 
-/** A draft from a saved script, or a fresh one from a template. */
+/** A draft from a saved script, or a fresh one from a template sized for the video's length. */
 export function adDraft(
   script?: { style: ScriptStyle; hooks: ScriptLine[]; beats: ScriptLine[]; cta: string },
   style: ScriptStyle = "problem-fix",
   firstHook?: string,
+  seconds = 30,
 ): AdDraft {
   const s = script?.style ?? style;
   const beats = script?.beats ?? [];
@@ -42,7 +37,7 @@ export function adDraft(
     lead: beats.find((b) => b.part === "lead") ?? {},
     body: beats.some((b) => b.part !== "lead")
       ? beats.filter((b) => b.part !== "lead")
-      : blankLines(templateGuide(s).body.length),
+      : blankLines(bodyFor(template(s), seconds).length),
     cta: script?.cta ?? "",
   };
 }
@@ -51,28 +46,44 @@ export function adDraft(
 export const draftBeats = (d: AdDraft): ScriptLine[] =>
   tidyLines([{ ...d.lead, part: "lead" }, ...d.body.map((b) => ({ ...b, part: "body" as const }))]);
 
-/** The template picker and the four parts of the ad. Used by the team and by the client in the portal. */
+/**
+ * The template picker and the four parts of the ad, sized for the video's length, with hook ideas to
+ * start from. Used by the team and by the client in the portal.
+ */
 export function AdParts({
   draft,
   onChange,
   hookNote,
+  seconds,
 }: {
   draft: AdDraft;
   onChange: (next: AdDraft) => void;
   /** Who picks among the hook options, shown next to the Hook title. */
   hookNote: string;
+  /** The video's length: it sets how many body parts there are and when each part plays. */
+  seconds: number;
 }) {
-  const guide = templateGuide(draft.style);
+  const tpl = template(draft.style);
+  const hints = bodyFor(tpl, seconds);
   const set = (patch: Partial<AdDraft>) => onChange({ ...draft, ...patch });
   const { hooks, body } = draft;
+  const times = partTimes(seconds, body.length);
+  const [lo, hi] = tpl.best;
+  const goals = GOAL_LABEL();
 
-  // A new template sets how many body parts there are, as long as none has words in it yet.
-  function pickTemplate(next: ScriptStyle) {
-    set({
-      style: next,
-      ...(noWords(body) ? { body: blankLines(templateGuide(next).body.length) } : {}),
-    });
+  // While the body parts are still empty, they follow the template and the length.
+  useEffect(() => {
+    if (noWords(body) && body.length !== hints.length) set({ body: blankLines(hints.length) });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hints.length]);
+
+  // A hook idea fills the first empty hook option, or adds one.
+  const emptyHook = hooks.findIndex((h) => noWords([h]));
+  function takeHook(line: string) {
+    if (emptyHook >= 0) set({ hooks: hooks.map((h, j) => (j === emptyHook ? { ...h, hear: line } : h)) });
+    else if (hooks.length < 3) set({ hooks: [...hooks, { hear: line }] });
   }
+  const canAddHook = emptyHook >= 0 || hooks.length < 3;
 
   return (
     <>
@@ -80,23 +91,54 @@ export function AdParts({
         label={t("Template", "Modèle")}
         name="style"
         value={draft.style}
-        onChange={(e) => pickTemplate(e.target.value as ScriptStyle)}
+        onChange={(e) => set({ style: e.target.value as ScriptStyle })}
         options={[
-          ...TEMPLATES.map((k) => [k, STYLE_LABEL[k]] as const),
+          ...TEMPLATES.map(
+            (k) =>
+              [
+                k,
+                k === "other" ? STYLE_LABEL[k] : `${goals[template(k).goal]} · ${STYLE_LABEL[k]}`,
+              ] as const,
+          ),
           ...(TEMPLATES.includes(draft.style)
             ? []
             : [[draft.style, STYLE_LABEL[draft.style]] as const]),
         ]}
       />
+      {draft.style !== "other" && (
+        <p className="small template-when">
+          <strong>{tpl.when}</strong>{" "}
+          {seconds < lo || seconds > hi ? (
+            <span className="template-warn">
+              {t(
+                `Works best at ${lo}–${hi} s, this one is ${seconds} s.`,
+                `Marche mieux entre ${lo} et ${hi} s, celle-ci fait ${seconds} s.`,
+              )}
+            </span>
+          ) : (
+            t(`Best at ${lo}–${hi} s.`, `Idéal entre ${lo} et ${hi} s.`)
+          )}
+        </p>
+      )}
 
       <fieldset className="fieldset script-lines">
         <legend>
           <span className="part-tag">1</span> {t("Hook", "Accroche")}{" "}
           <span className="muted">
-            · {t("first 1–3 seconds", "les 1 à 3 premières secondes")} · {hookNote}
+            · {times[0]} · {hookNote}
           </span>
         </legend>
-        <p className="part-hint">{guide.hook}</p>
+        <p className="part-hint">{tpl.hook}</p>
+        {canAddHook && (
+          <div className="hook-ideas">
+            <span className="small">{t("Start from:", "Partir de :")}</span>
+            {[...tpl.hooks, ...anyHooks()].map((line) => (
+              <button key={line} type="button" className="hook-idea" onClick={() => takeHook(line)}>
+                {line}
+              </button>
+            ))}
+          </div>
+        )}
         {hooks.map((hook, i) => (
           <LineEditor
             key={i}
@@ -119,15 +161,10 @@ export function AdParts({
         <legend>
           <span className="part-tag">2</span> Lead{" "}
           <span className="muted">
-            · {t("the next line, sets it up", "la suite, qui pose le sujet")}
+            · {times[1]} · {t("sets it up", "pose le sujet")}
           </span>
         </legend>
-        <LineEditor
-          name="Lead"
-          hint={guide.lead}
-          line={draft.lead}
-          onChange={(lead) => set({ lead })}
-        />
+        <LineEditor name="Lead" hint={tpl.lead} line={draft.lead} onChange={(lead) => set({ lead })} />
       </fieldset>
 
       <fieldset className="fieldset script-lines">
@@ -140,8 +177,8 @@ export function AdParts({
         {body.map((part, i) => (
           <LineEditor
             key={i}
-            name={`Body ${i + 1}`}
-            hint={guide.body[i]}
+            name={`Body ${i + 1} · ${times[2 + i]}`}
+            hint={hints[i]}
             line={part}
             onChange={(next) => set({ body: body.map((b, j) => (j === i ? next : b)) })}
             onRemove={
@@ -151,9 +188,7 @@ export function AdParts({
               i > 0
                 ? () =>
                     set({
-                      body: body.map((b, j) =>
-                        j === i - 1 ? body[i]! : j === i ? body[i - 1]! : b,
-                      ),
+                      body: body.map((b, j) => (j === i - 1 ? body[i]! : j === i ? body[i - 1]! : b)),
                     })
                 : undefined
             }
@@ -169,7 +204,9 @@ export function AdParts({
       <fieldset className="fieldset script-lines">
         <legend>
           <span className="part-tag">4</span> CTA{" "}
-          <span className="muted">· {t("the last frame", "le dernier plan")}</span>
+          <span className="muted">
+            · {times[times.length - 1]} · {t("the last frame", "le dernier plan")}
+          </span>
         </legend>
         <Field
           label={t("What the viewer does next", "Ce que le spectateur fait ensuite")}
@@ -177,7 +214,7 @@ export function AdParts({
           value={draft.cta}
           onChange={(e) => set({ cta: e.target.value })}
           maxLength={300}
-          placeholder={guide.cta}
+          placeholder={tpl.cta}
         />
       </fieldset>
     </>
