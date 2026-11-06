@@ -86,20 +86,25 @@ export function OnboardingForm({ target, brand, mode, canFinish = false }: Props
           {sheet.sentAt ? (
             <p className="small">
               <strong>Onboarding done</strong> since{" "}
-              {new Date(sheet.sentAt).toLocaleDateString(locale(), { day: "numeric", month: "long" })}
+              {new Date(sheet.sentAt).toLocaleDateString(locale(), {
+                day: "numeric",
+                month: "long",
+              })}
               . The client&apos;s portal opens on their home page, with the news.
             </p>
           ) : (
             <>
               <p className="small">
-                <strong>Covered the rest on a call?</strong> Mark it done and the client&apos;s portal
-                opens on their home page with the news, even if some answers are still missing.
+                <strong>Covered the rest on a call?</strong> Mark it done and the client&apos;s
+                portal opens on their home page with the news, even if some answers are still
+                missing.
               </p>
               <Button
                 disabled={sheet.status === "saving"}
                 onClick={() =>
                   void sheet.send().then(
-                    () => setNotice("Onboarding marked done. The client now lands on their home page."),
+                    () =>
+                      setNotice("Onboarding marked done. The client now lands on their home page."),
                     () => undefined,
                   )
                 }
