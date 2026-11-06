@@ -13,10 +13,11 @@ import {
   type ScriptStatus,
   type ScriptStyle,
   type ScriptVersionRow,
+  type ShootPlan,
 } from "./model";
 
 const COLUMNS =
-  "id,client_id,concept_id,title,style,seconds,goal,hooks,beats,cta,position,status,version,hook,approved_version,approved_at,approved_by,author_name,created_at,updated_at,written_by,treatment";
+  "id,client_id,concept_id,title,style,seconds,goal,hooks,beats,cta,position,status,version,hook,approved_version,approved_at,approved_by,author_name,created_at,updated_at,written_by,treatment,shoot";
 
 /** Every script of one client (or of all clients), with its notes and the version the client saw before. */
 export function useScripts(clientId: string | null) {
@@ -57,6 +58,7 @@ export interface ScriptInput extends ScriptContent {
   conceptId: string | null;
   status?: Extract<ScriptStatus, "draft" | "review">;
   position?: number;
+  shoot?: ShootPlan;
 }
 
 export function useSaveScript(clientId: string) {
@@ -74,6 +76,7 @@ export function useSaveScript(clientId: string) {
         beats: input.beats,
         cta: input.cta,
         ...(input.treatment ? { treatment: input.treatment } : {}),
+        ...(input.shoot ? { shoot: input.shoot } : {}),
         concept_id: input.conceptId,
         ...(input.status ? { status: input.status } : {}),
         ...(input.position != null ? { position: input.position } : {}),

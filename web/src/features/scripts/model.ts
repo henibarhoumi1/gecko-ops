@@ -103,8 +103,19 @@ export interface ScriptNote {
   createdAt: string;
 }
 
+/** Who plays it, where, with what: picked from the client's approved production options. Team only. */
+export interface ShootPlan {
+  talent?: string[];
+  set?: string | null;
+  props?: string[];
+  /** Anything else to bring, in plain words. */
+  extraProps?: string;
+}
+
 export interface Script extends ScriptContent {
   id: string;
+  /** Team side only; missing on the client's side and on a database without it yet. */
+  shoot?: ShootPlan;
   conceptId: string | null;
   position: number;
   status: ScriptStatus;
@@ -376,6 +387,7 @@ export interface ScriptRow {
   updated_at: string;
   written_by?: "gecko" | "client";
   treatment?: Treatment;
+  shoot?: ShootPlan;
 }
 
 export interface ScriptNoteRow {
@@ -413,6 +425,7 @@ export function scriptsFromRows(
     beats: r.beats,
     cta: r.cta,
     treatment: r.treatment ?? {},
+    shoot: r.shoot ?? {},
     writtenBy: r.written_by ?? "gecko",
     position: r.position,
     status: r.status,

@@ -6484,3 +6484,37 @@ a.piece:hover {
 .hook-idea:focus-visible {
   background: var(--pink, #f4c1c4);
 }
+
+/* A script's shoot plan: who plays it, where, with what. */
+.shoot-plan {
+  display: grid;
+  gap: 12px;
+}
+.shoot-plan-row {
+  display: grid;
+  gap: 6px;
+}
+.shoot-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 8px 0 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--yellow-soft);
+}
+
+/* The clean copy of a script: plain text, ready to copy or print. */
+.clean-copy {
+  margin-top: 12px;
+  padding: 16px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+.clean-copy pre {
+  margin: 0 0 12px;
+  white-space: pre-wrap;
+  font: inherit;
+  line-height: 1.6;
+}

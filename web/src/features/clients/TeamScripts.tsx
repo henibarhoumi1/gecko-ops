@@ -14,6 +14,7 @@ import {
   byClient,
   type Treatment,
   type Script,
+  type ShootPlan,
 } from "@/features/scripts/model";
 import { ScriptView } from "@/features/scripts/ScriptView";
 import { AdParts, adDraft, draftBeats, noWords, type AdDraft } from "@/features/scripts/AdParts";
@@ -26,6 +27,7 @@ import {
 } from "@/features/scripts/scriptsApi";
 import { friendlyError } from "@/lib/errors";
 import { useConcepts } from "./clientsApi";
+import { CleanCopy, ShootPlanPicker, useApprovedProduction } from "./ShootPlan";
 import { useTemplates } from "./lookApi";
 import { TextArea } from "@/components/TextArea";
 import { ApproveForClient } from "./ApproveForClient";
@@ -91,7 +93,21 @@ function TeamScript({
   script: Script;
   nextPosition: number;
 }) {
-  const [mode, setMode] = useState<"idle" | "edit" | "delete" | "changes">("idle");
+  const [mode, setMode] = useState<"idle" | "edit" | "delete" | "changes" | "clean">("idle");
+  const production = useApprovedProduction(clientId);
+  const plan = script.shoot ?? {};
+  const optionName = (id: string | null | undefined) =>
+    production.all.find((o) => o.id === id)?.name ?? "";
+  const planParts = [
+    ["Talent", (plan.talent ?? []).map(optionName).filter(Boolean).join(", ")],
+    ["Set", optionName(plan.set)],
+    [
+      "Props",
+      [...(plan.props ?? []).map(optionName), plan.extraProps?.trim() ?? ""]
+        .filter(Boolean)
+        .join(", "),
+    ],
+  ].filter(([, v]) => v);
   const status = useSetScriptStatus();
   const save = useSaveScript(clientId);
   const remove = useDeleteScript();
@@ -114,6 +130,18 @@ function TeamScript({
       picked={script.hook}
       onComment={(line, body) => note.mutateAsync({ scriptId: script.id, line, body })}
     >
+      {planParts.length > 0 && (
+        <p className="small shoot-summary">
+          {planParts.map(([k, v]) => (
+            <span key={k}>
+              <strong>{k}:</strong> {v}
+            </span>
+          ))}
+        </p>
+      )}
+      {mode === "clean" && (
+        <CleanCopy script={script} options={production.all} onClose={() => setMode("idle")} />
+      )}
       {mode === "idle" && (
         <div className="concept-actions">
           {byClient(script) && script.status === "review" && (
@@ -182,6 +210,7 @@ function TeamScript({
                   beats: script.beats,
                   cta: script.cta,
                   ...(script.treatment ? { treatment: script.treatment } : {}),
+                  ...(script.shoot ? { shoot: script.shoot } : {}),
                   status: "draft",
                   position: nextPosition,
                 }),
@@ -189,6 +218,9 @@ function TeamScript({
             }
           >
             Duplicate
+          </Button>
+          <Button variant="link" onClick={() => setMode("clean")}>
+            Clean copy
           </Button>
           <Button variant="link" onClick={() => setMode("delete")}>
             Delete
@@ -274,6 +306,7 @@ function ScriptForm({
   const [title, setTitle] = useState(script?.title ?? startIdea?.title ?? "");
   const [conceptId, setConceptId] = useState(script?.conceptId ?? startIdea?.id ?? "");
   const [seconds, setSeconds] = useState(script?.seconds ?? 30);
+  const [shoot, setShoot] = useState<ShootPlan>(script?.shoot ?? {});
   const templates = useTemplates();
   const cinematic =
     templates.data?.[clientId] === "cinematic" ||
@@ -300,6 +333,7 @@ function ScriptForm({
         hooks: tidyLines(draft.hooks),
         beats,
         cta: draft.cta.trim(),
+        shoot: { ...shoot, extraProps: (shoot.extraProps ?? "").trim() },
         ...(cinematic
           ? {
               treatment: tidyTreatment(
@@ -395,6 +429,7 @@ function ScriptForm({
         seconds={seconds}
         hookNote="write 2 or 3, the client picks"
       />
+      <ShootPlanPicker clientId={clientId} plan={shoot} onChange={setShoot} />
       <p className={`small script-runs${runs > seconds + 3 ? " over" : ""}`}>
         Runs about {runs} s spoken with the first hook · made for {seconds} s
         {runs > seconds + 3 && " · too long, trim it"}
