@@ -89,8 +89,8 @@ export function WriteScript({
       <h3>
         {script
           ? tw(
-              ["Edit your script", "Modifier votre script"],
-              ["Edit your treatment", "Modifier votre note d'intention"],
+              ["Edit the script", "Modifier le script"],
+              ["Edit the treatment", "Modifier la note d'intention"],
             )
           : tw(["Your script", "Votre script"], ["Your treatment", "Votre note d'intention"])}
       </h3>

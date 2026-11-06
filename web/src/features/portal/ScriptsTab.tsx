@@ -114,15 +114,26 @@ function ClientScript({ portal, script }: { portal: ClientPortal; script: Script
       </ScriptView>
     );
   }
-  return <GeckoScript script={script} note={note} />;
+  if (editing)
+    return <WriteScript portal={portal} script={script} onDone={() => setEditing(false)} />;
+  return (
+    <GeckoScript
+      script={script}
+      note={note}
+      onEdit={canApprove(role) ? () => setEditing(true) : undefined}
+    />
+  );
 }
 
 function GeckoScript({
   script,
   note,
+  onEdit,
 }: {
   script: Script;
   note: ReturnType<typeof useClientScriptNote>;
+  /** Owners and approvers can rewrite the script themselves while it's with them. */
+  onEdit?: () => void;
 }) {
   const canDecide = script.status === "review" || script.status === "changes";
   const [picked, setPicked] = useState<number | null>(
@@ -146,6 +157,19 @@ function GeckoScript({
       onPick={canDecide ? setPicked : undefined}
       onComment={(line, body) => send("comment", body, line)}
     >
+      {canDecide && onEdit && (
+        <div className="concept-actions">
+          <Button variant="secondary" onClick={onEdit}>
+            {t("Edit the script", "Modifier le script")}
+          </Button>
+          <p className="small decide-note">
+            {t(
+              "Change the words yourself. It saves as a new version that Gecko sees, and you can approve it.",
+              "Changez les mots vous-même. C'est enregistré comme nouvelle version, Gecko la voit, et vous pouvez la valider.",
+            )}
+          </p>
+        </div>
+      )}
       <ReviewActions
         canDecide={canDecide}
         pending={note.isPending}
