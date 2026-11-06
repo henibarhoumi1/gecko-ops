@@ -18,7 +18,7 @@ import { useClientWriteScript } from "@/features/scripts/scriptsApi";
 import { AdParts, adDraft, draftBeats, type AdDraft } from "@/features/scripts/AdParts";
 import { friendlyError } from "@/lib/errors";
 import { t } from "@/lib/i18n";
-import { isCinematic, tw, words } from "@/lib/wording";
+import { isCinematic, tw } from "@/lib/wording";
 
 const LENGTHS = [9, 15, 20, 30, 45, 60, 90] as const;
 
@@ -68,7 +68,7 @@ export function WriteScript({
         id: script?.id ?? null,
         title: text("title"),
         seconds: Number(text("seconds")) || 30,
-        goal: text("goal"),
+        goal: script?.goal ?? "",
         hooks,
         beats: cine ? tidyLines(beats) : draftBeats(draft),
         cta: cine ? text("cta") : draft.cta.trim(),
@@ -122,16 +122,6 @@ export function WriteScript({
           options={LENGTHS.map((n) => [String(n), `${n} s`] as const)}
         />
       </div>
-      <Field
-        label={words.goal()}
-        name="goal"
-        maxLength={300}
-        defaultValue={script?.goal}
-        placeholder={tw(
-          ["…want to try the product today", "…avoir envie d'essayer le produit aujourd'hui"],
-          ["…calm, and wanting the coat", "…apaisé, avec l'envie du manteau"],
-        )}
-      />
 
       {cine && (
         <fieldset className="write-part">

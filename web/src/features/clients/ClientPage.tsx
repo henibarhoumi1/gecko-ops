@@ -129,7 +129,12 @@ export function ClientPage() {
                     The client fills this in their portal. Fill it in together on a call: both
                     screens update within a few seconds.
                   </p>
-                  <OnboardingForm target={target} brand={client.brand} mode="team" />
+                  <OnboardingForm
+                    target={target}
+                    brand={client.brand}
+                    mode="team"
+                    canFinish={workspace.role === "founder"}
+                  />
                 </section>
               }
             />

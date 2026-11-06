@@ -6518,3 +6518,21 @@ a.piece:hover {
   font: inherit;
   line-height: 1.6;
 }
+
+/* The founder marks the onboarding done after a call. */
+.ob-done {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--yellow-soft);
+}
+.ob-done p {
+  flex: 1 1 320px;
+  margin: 0;
+}
