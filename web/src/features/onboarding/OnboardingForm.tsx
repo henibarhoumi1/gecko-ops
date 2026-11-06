@@ -23,10 +23,12 @@ interface Props {
   brand: string;
   /** The team sees a summary and can copy the answers; the client sends the sheet to Gecko. */
   mode: "client" | "team";
+  /** The founder can mark the onboarding done after a call, even with gaps: the client's portal then opens on home. */
+  canFinish?: boolean;
 }
 
 /** The onboarding sheet, one section at a time, saved as you type. */
-export function OnboardingForm({ target, brand, mode }: Props) {
+export function OnboardingForm({ target, brand, mode, canFinish = false }: Props) {
   const sheet = useOnboardingSheet(target);
   const { state } = useAuth();
   const user = state.status === "ready" || state.status === "error" ? state.session.user : null;
@@ -79,6 +81,36 @@ export function OnboardingForm({ target, brand, mode }: Props) {
         </span>
       </div>
       {sheet.status === "error" && sheet.error && <Notice tone="error">{sheet.error}</Notice>}
+      {mode === "team" && (canFinish || sheet.sentAt) && (
+        <div className="ob-done">
+          {sheet.sentAt ? (
+            <p className="small">
+              <strong>Onboarding done</strong> since{" "}
+              {new Date(sheet.sentAt).toLocaleDateString(locale(), { day: "numeric", month: "long" })}
+              . The client&apos;s portal opens on their home page, with the news.
+            </p>
+          ) : (
+            <>
+              <p className="small">
+                <strong>Covered the rest on a call?</strong> Mark it done and the client&apos;s portal
+                opens on their home page with the news, even if some answers are still missing.
+              </p>
+              <Button
+                disabled={sheet.status === "saving"}
+                onClick={() =>
+                  void sheet.send().then(
+                    () => setNotice("Onboarding marked done. The client now lands on their home page."),
+                    () => undefined,
+                  )
+                }
+              >
+                Mark onboarding done
+              </Button>
+            </>
+          )}
+          {notice && at !== SEND && <Notice>{notice}</Notice>}
+        </div>
+      )}
 
       <nav className="ob-rail" aria-label="Sections">
         {SECTIONS.map((s, i) => {
@@ -201,7 +233,7 @@ function SendPart({
           <p className="muted">
             {mode === "team"
               ? when
-                ? `The client sent it on ${when}.`
+                ? `Done on ${when}. The client's portal opens on their home page.`
                 : "The client hasn't sent it yet."
               : t(
                   "Gaps are fine: we cover them together on a call. Press send and Gecko gets everything.",

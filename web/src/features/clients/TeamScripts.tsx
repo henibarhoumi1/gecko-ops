@@ -329,7 +329,7 @@ function ScriptForm({
         title: title.trim(),
         style: draft.style,
         seconds,
-        goal: String(form.get("goal") ?? "").trim(),
+        goal: script?.goal ?? "",
         hooks: tidyLines(draft.hooks),
         beats,
         cta: draft.cta.trim(),
@@ -397,13 +397,6 @@ function ScriptForm({
           onChange={(e) => setSeconds(Number(e.target.value) || 30)}
         />
       </div>
-      <Field
-        label="After watching, the viewer should…"
-        name="goal"
-        defaultValue={script?.goal}
-        maxLength={300}
-        placeholder="Order the starter kit on the site"
-      />
 
       {cinematic && (
         <fieldset className="fieldset">
