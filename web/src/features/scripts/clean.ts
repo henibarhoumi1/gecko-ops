@@ -2,7 +2,10 @@ import type { ProductionOption } from "@/features/production/model";
 import { hookName, partLabel, STYLE_LABEL, type Script, type ScriptLine } from "./model";
 
 /** The final script as plain text: the chosen hook (or every option), the parts in order, the shoot plan. */
-export function cleanText(script: Script, options: Pick<ProductionOption, "id" | "name">[]): string {
+export function cleanText(
+  script: Script,
+  options: Pick<ProductionOption, "id" | "name">[],
+): string {
   const name = (id: string | null | undefined) => options.find((o) => o.id === id)?.name ?? "";
   const plan = script.shoot ?? {};
   const out: string[] = [];
@@ -13,13 +16,17 @@ export function cleanText(script: Script, options: Pick<ProductionOption, "id" |
     if (l.text) out.push(`On screen: ${l.text}`);
     out.push("");
   };
-  out.push(script.title, `${script.seconds} s · ${STYLE_LABEL[script.style]} · version ${script.version}`);
+  out.push(
+    script.title,
+    `${script.seconds} s · ${STYLE_LABEL[script.style]} · version ${script.version}`,
+  );
   if (script.goal) out.push(`The viewer should: ${script.goal}`);
   out.push("");
   const talent = (plan.talent ?? []).map(name).filter(Boolean);
-  const props = [...(plan.props ?? []).map(name).filter(Boolean), plan.extraProps?.trim() ?? ""].filter(
-    Boolean,
-  );
+  const props = [
+    ...(plan.props ?? []).map(name).filter(Boolean),
+    plan.extraProps?.trim() ?? "",
+  ].filter(Boolean);
   if (talent.length) out.push(`Talent: ${talent.join(", ")}`);
   if (name(plan.set)) out.push(`Set: ${name(plan.set)}`);
   if (props.length) out.push(`Props: ${props.join(", ")}`);
