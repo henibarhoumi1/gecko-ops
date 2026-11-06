@@ -69,6 +69,14 @@ export function OverviewEditor({ clientId }: { clientId: string }) {
   const saved = row.data;
   const setMilestone = (i: number, fields: Partial<Milestone>) =>
     patch({ milestones: draft.milestones.map((m, n) => (n === i ? { ...m, ...fields } : m)) });
+  // Swap a step with the one above (-1) or below (+1). The client sees the steps in this order.
+  const moveMilestone = (i: number, by: -1 | 1) => {
+    const next = [...draft.milestones];
+    const j = i + by;
+    if (j < 0 || j >= next.length) return;
+    [next[i], next[j]] = [next[j]!, next[i]!];
+    patch({ milestones: next });
+  };
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -237,6 +245,26 @@ export function OverviewEditor({ clientId }: { clientId: string }) {
                 />
                 Done
               </label>
+              <span className="milestone-move">
+                <button
+                  type="button"
+                  className="icon-btn"
+                  aria-label="Move step up"
+                  disabled={i === 0}
+                  onClick={() => moveMilestone(i, -1)}
+                >
+                  ↑
+                </button>
+                <button
+                  type="button"
+                  className="icon-btn"
+                  aria-label="Move step down"
+                  disabled={i === draft.milestones.length - 1}
+                  onClick={() => moveMilestone(i, 1)}
+                >
+                  ↓
+                </button>
+              </span>
               <button
                 type="button"
                 className="icon-btn"

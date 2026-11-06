@@ -833,9 +833,23 @@ a.btn {
 
 .milestone {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 160px auto auto;
+  grid-template-columns: minmax(0, 1fr) 160px auto auto auto;
   gap: 8px;
   align-items: center;
+}
+
+.milestone-move {
+  display: inline-flex;
+  gap: 4px;
+}
+.milestone-move .icon-btn {
+  font-size: 16px;
+}
+.milestone-move .icon-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+  background: var(--white);
+  color: var(--ink);
 }
 
 @media (max-width: 560px) {
