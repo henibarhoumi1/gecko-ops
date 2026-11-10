@@ -8,7 +8,15 @@ import { PLANS } from "@/features/plans/model";
 import { useScripts } from "@/features/scripts/scriptsApi";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { friendlyError } from "@/lib/errors";
-import { useAddClient, useClients, useConcepts, useLogos, usePortalRows } from "./clientsApi";
+import {
+  useAddClient,
+  useClients,
+  useConcepts,
+  useLogos,
+  usePortalRows,
+  useRemoveClient,
+  type ClientRow,
+} from "./clientsApi";
 
 /** Every client, with what needs Gecko's attention in their portal. */
 export function ClientsPage() {
@@ -19,6 +27,8 @@ export function ClientsPage() {
   const portals = usePortalRows();
   const logos = useLogos();
   const [adding, setAdding] = useState(false);
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const [deleted, setDeleted] = useState("");
 
   if (clients.isPending) return <p className="loading">Loading clients…</p>;
   if (clients.isError) return <Notice tone="error">{friendlyError(clients.error)}</Notice>;
@@ -38,6 +48,12 @@ export function ClientsPage() {
         )}
       </header>
       {adding && <AddClient onDone={() => setAdding(false)} />}
+      {deleted && (
+        <Notice tone="info">
+          {deleted} was deleted. Changed your mind? Put it back from the{" "}
+          <Link to="/trash#deleted-clients">Trash</Link>.
+        </Notice>
+      )}
       {clients.data.length === 0 && !adding && <p className="muted">No clients yet.</p>}
       <ul className="list">
         {clients.data
@@ -68,7 +84,7 @@ export function ClientsPage() {
           })
           .sort((a, b) => b.forGecko.length - a.forGecko.length)
           .map(({ client, forGecko, withClient, plan }) => (
-            <li key={client.id}>
+            <li key={client.id} className="client-li">
               <Link to={`/clients/${client.id}`} className="card client-row">
                 <span className="client-row-top">
                   {logos.data?.[client.id] && (
@@ -87,6 +103,30 @@ export function ClientsPage() {
                     .join(" · ") || "Nothing waiting on anyone"}
                 </span>
               </Link>
+              {role === "founder" && deleting !== client.id && (
+                <button
+                  type="button"
+                  className="client-delete"
+                  aria-label={`Delete ${client.brand}`}
+                  title="Delete client"
+                  onClick={() => {
+                    setDeleted("");
+                    setDeleting(client.id);
+                  }}
+                >
+                  Delete
+                </button>
+              )}
+              {deleting === client.id && (
+                <DeleteClient
+                  client={client}
+                  onCancel={() => setDeleting(null)}
+                  onDeleted={() => {
+                    setDeleting(null);
+                    setDeleted(client.brand);
+                  }}
+                />
+              )}
             </li>
           ))}
       </ul>
@@ -122,6 +162,60 @@ function AddClient({ onDone }: { onDone: () => void }) {
         </Button>
         <Button type="submit" disabled={add.isPending}>
           Add client
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+/** Asks for the brand name back before deleting, and says plainly what happens and how to undo it. */
+function DeleteClient({
+  client,
+  onCancel,
+  onDeleted,
+}: {
+  client: ClientRow;
+  onCancel: () => void;
+  onDeleted: () => void;
+}) {
+  const remove = useRemoveClient();
+  const [typed, setTyped] = useState("");
+  const matches = typed.trim().toLowerCase() === client.brand.trim().toLowerCase();
+
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!matches) return;
+    try {
+      await remove.mutateAsync({ id: client.id, brand: typed });
+      onDeleted();
+    } catch {
+      // shown below
+    }
+  }
+
+  return (
+    <form className="card stack client-delete-form" onSubmit={onSubmit}>
+      <strong>Delete {client.brand}?</strong>
+      <p className="small">
+        The client leaves every page, the team can&rsquo;t open its ideas, scripts, videos or
+        invoices, and the client&rsquo;s own people lose their portal. Nothing is destroyed: you can
+        put it all back from the Trash at any time.
+      </p>
+      <Field
+        label={`Type ${client.brand} to confirm`}
+        name="confirm"
+        value={typed}
+        onChange={(e) => setTyped(e.target.value)}
+        autoComplete="off"
+        autoFocus
+      />
+      {remove.isError && <Notice tone="error">{friendlyError(remove.error)}</Notice>}
+      <div className="actions">
+        <Button variant="secondary" onClick={onCancel} disabled={remove.isPending}>
+          Keep it
+        </Button>
+        <Button type="submit" disabled={!matches || remove.isPending}>
+          {remove.isPending ? "Deleting…" : "Delete client"}
         </Button>
       </div>
     </form>

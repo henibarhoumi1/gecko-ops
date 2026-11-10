@@ -3,6 +3,16 @@ import { t } from "./i18n";
 /** What people read when something fails, in English and French. Checked top to bottom; the first match wins. */
 const MESSAGES: [RegExp, string, string][] = [
   [
+    /brand_mismatch/,
+    "Type the brand name exactly as it's written to delete this client.",
+    "Tapez le nom de la marque tel qu'il est écrit pour supprimer ce client.",
+  ],
+  [
+    /client_not_found/,
+    "That client was already deleted or put back. Refresh the page.",
+    "Ce client a déjà été supprimé ou restauré. Rechargez la page.",
+  ],
+  [
     /preview_read_only/,
     "This is a preview: nothing is saved here.",
     "C'est un aperçu : rien n'est enregistré ici.",
