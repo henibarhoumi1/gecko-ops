@@ -1,5 +1,7 @@
 import { byClient } from "@/features/scripts/model";
 import { WritingRoom } from "@/features/writing/WritingRoom";
+import { HomeTasks, PortalTasks } from "@/features/tasks/TaskPanels";
+import { Presence } from "@/features/presence/Presence";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link, NavLink, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Button } from "@/components/Button";
@@ -108,6 +110,7 @@ function navGroups(badges: {
       to: "/onboarding",
       items: [
         ...(badges.brandFirst ? [] : [brandItem]),
+        { to: "/tasks", label: t("Tasks", "Tâches") },
         { to: "/talent", label: kindName("talent", true), badge: badges.talent },
         { to: "/locations", label: kindName("location", true), badge: badges.location },
         { to: "/budget", label: t("Budget", "Budget"), badge: badges.prop },
@@ -313,6 +316,7 @@ export function PortalPage({
 
         <main className={`page portal-page${onBoard ? " board-page" : ""}`}>
           <ProjectPicker target={target} />
+          <Presence workspaceId={portal.workspaceId} clientId={portal.clientId} reader="client" />
           <UndoBar workspaceId={portal.workspaceId} />
           {current && !onBoard && <h1 className="page-title">{current.label}</h1>}
           {group && group.items.length > 1 && (
@@ -339,6 +343,7 @@ export function PortalPage({
                   ) : (
                     <>
                       <SinceLastVisit target={target} />
+                      <HomeTasks portal={portal} />
                       <OverviewTab data={page.data} target={target} />
                     </>
                   )
@@ -393,6 +398,7 @@ export function PortalPage({
                   element={<BoardRoute target={target} base="/board" reader="client" />}
                 />
               ))}
+              <Route path="tasks" element={<PortalTasks portal={portal} />} />
               <Route
                 path="room"
                 element={

@@ -51,6 +51,7 @@ const PAGES = {
   client: [
     "/",
     "/room",
+    "/tasks",
     "/concepts",
     "/scripts",
     "/talent",

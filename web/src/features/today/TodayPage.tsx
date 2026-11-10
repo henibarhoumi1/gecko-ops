@@ -1,3 +1,4 @@
+import { TodayTasks } from "@/features/tasks/TaskPanels";
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/Button";
@@ -233,6 +234,8 @@ export function TodayPage() {
           )}
         </section>
       </div>
+
+      <TodayTasks />
 
       <section className="today-section">
         <h2>This week</h2>
