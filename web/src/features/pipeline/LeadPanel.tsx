@@ -6,6 +6,7 @@ import type { Member } from "@/features/workspace/members";
 import { friendlyError } from "@/lib/errors";
 import { usePatchLeads, type LeadPatch } from "./leadsApi";
 import { LeadToClient } from "./LeadToClient";
+import { ProposalPanel } from "./ProposalPanel";
 import { CHANNELS, OUTCOMES, STAGE_LABEL, STEPS, stepOf, type Lead, type Stage } from "./model";
 import {
   afterSend,
@@ -132,6 +133,7 @@ export function LeadPanel({
       </header>
 
       <LeadToClient lead={lead} />
+      <ProposalPanel lead={lead} />
 
       <div className="lead-panel-grid">
         <label>

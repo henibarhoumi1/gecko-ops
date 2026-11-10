@@ -1,0 +1,26 @@
+[
+ {
+  "at": "2026-11-09T15:20:00Z",
+  "who": "Olfa",
+  "client": true,
+  "kind": "script_approved",
+  "title": "Le spray qui enlève tout",
+  "link": "/scripts#script-x"
+ },
+ {
+  "at": "2026-11-09T10:05:00Z",
+  "who": "Heni",
+  "client": false,
+  "kind": "script_added",
+  "title": "Le spray qui enlève tout",
+  "link": "/scripts#script-x"
+ },
+ {
+  "at": "2026-11-08T18:00:00Z",
+  "who": "Olfa",
+  "client": null,
+  "kind": "task_done",
+  "title": "Envoyer les fichiers du logo",
+  "link": "/tasks"
+ }
+]

@@ -6,6 +6,7 @@ import { BoardRoute } from "@/features/board/BoardRoute";
 import { WhiteboardRoute } from "@/features/whiteboard/WhiteboardRoute";
 import { TeamRoom } from "@/features/writing/TeamRoom";
 import { TeamBrandPage } from "@/features/scripts/BrandPage";
+import { HistoryFeed } from "@/features/history/HistoryFeed";
 import { TeamTasks } from "@/features/tasks/TaskPanels";
 import { Presence } from "@/features/presence/Presence";
 import { OnboardingForm } from "@/features/onboarding/OnboardingForm";
@@ -94,11 +95,13 @@ export function ClientPage() {
             ["onboarding", "Onboarding"],
             ["brand", "Brand sheet"],
             ["shared", "Shared"],
+            ["history", "History"],
             ["logins", "Logins"],
           ]
         : [
             ["brand", "Brand sheet"],
             ["shared", "Shared"],
+            ["history", "History"],
           ],
     },
   ];
@@ -206,6 +209,17 @@ export function ClientPage() {
         <Route path="scripts" element={<TeamScripts clientId={clientId} />} />
         <Route path="shared" element={<TeamShared clientId={clientId} />} />
         <Route path="brand" element={<TeamBrandPage clientId={clientId} />} />
+        <Route
+          path="history"
+          element={
+            <HistoryFeed
+              workspaceId={workspace.id}
+              clientId={clientId}
+              reader="team"
+              base={`/clients/${encodeURIComponent(clientId)}`}
+            />
+          }
+        />
         {["review", "review/:cutId"].map((path) => (
           <Route key={path} path={path} element={<TeamReview clientId={clientId} />} />
         ))}

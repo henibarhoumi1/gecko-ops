@@ -1,6 +1,7 @@
 import { byClient } from "@/features/scripts/model";
 import { WritingRoom } from "@/features/writing/WritingRoom";
 import { PortalBrandPage } from "@/features/scripts/BrandPage";
+import { HistoryFeed } from "@/features/history/HistoryFeed";
 import { Tour, startTour } from "@/features/tour/Tour";
 import { clientSteps } from "@/features/tour/steps";
 import { HomeTasks, PortalTasks } from "@/features/tasks/TaskPanels";
@@ -143,7 +144,10 @@ function navGroups(badges: {
     ],
   });
   // Money only for the people who see it.
-  const more: NavItem[] = [{ to: "/team", label: t("Team", "Équipe") }];
+  const more: NavItem[] = [
+    { to: "/team", label: t("Team", "Équipe") },
+    { to: "/history", label: t("History", "Historique") },
+  ];
   if (badges.money !== null)
     more.push({ to: "/money", label: t("Invoices", "Factures"), badge: badges.money });
   groups.push({
@@ -383,6 +387,17 @@ export function PortalPage({
               />
               <Route path="shared" element={<SharedTab portal={portal} />} />
               <Route path="brand" element={<PortalBrandPage portal={portal} />} />
+              <Route
+                path="history"
+                element={
+                  <HistoryFeed
+                    workspaceId={portal.workspaceId}
+                    clientId={portal.clientId}
+                    reader="client"
+                    base=""
+                  />
+                }
+              />
               <Route path="talent" element={<ProductionTab portal={portal} kind="talent" />} />
               <Route path="locations" element={<ProductionTab portal={portal} kind="location" />} />
               <Route path="budget" element={<ProductionTab portal={portal} kind="budget" />} />
