@@ -1,27 +1,41 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
+import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
+import { useClients } from "@/features/clients/clientsApi";
 import { MessageLang } from "@/features/clients/LoginsPanel";
 import { nudgeMessage, whatsappLink, type MsgLang } from "@/features/clients/messages";
+import { blankLead } from "@/features/pipeline/LeadDialog";
+import { newLeadId, useAddLeads, useLeads } from "@/features/pipeline/leadsApi";
+import { parsePaste } from "@/features/pipeline/outreach";
+import { useTeamShoots } from "@/features/shoot/shootApi";
+import { useMembers } from "@/features/workspace/members";
+import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { friendlyError } from "@/lib/errors";
 import { originFor } from "@/lib/hosts";
 import {
   byClient,
   daysSince,
+  daysUntil,
+  dueLeads,
+  groupUs,
   hasCreative,
   headline,
   linkFor,
+  nextShoot,
+  parseCapture,
   partName,
   shortDay,
   splitDates,
+  summarise,
   waited,
+  weekStrip,
   when,
   whyText,
-  type DateItem,
 } from "./model";
-import { useToday } from "./todayApi";
+import { useCaptureIdea, useToday } from "./todayApi";
 
-const KIND: Record<DateItem["kind"], string> = {
+const KIND: Record<string, string> = {
   shoot: "Shoot",
   drafts: "Drafts",
   milestone: "Milestone",
@@ -29,29 +43,15 @@ const KIND: Record<DateItem["kind"], string> = {
   lead: "Lead",
 };
 
-function DateRow({ d, today }: { d: DateItem; today: string }) {
-  const to = d.client_id ? `/clients/${encodeURIComponent(d.client_id)}` : "/pipeline";
-  return (
-    <li className={`today-date kind-${d.kind}`}>
-      <span className="today-when">
-        <strong>{when(d.date, today)}</strong>
-        <span className="small">{shortDay(d.date)}</span>
-      </span>
-      <span className="today-what">
-        <span className="today-kind">{KIND[d.kind]}</span>
-        <Link to={to}>
-          <strong>{d.brand}</strong>
-        </Link>{" "}
-        {d.label}
-      </span>
-    </li>
-  );
-}
-
-/** The founder's and producers' home: what to do now, who to chase, what's coming. */
+/** The founder's and producers' home: the next shoot, whose move it is, the week, and who to write to. */
 export function TodayPage() {
+  const { id: workspaceId } = useWorkspace();
   const today = useToday();
+  const shoots = useTeamShoots(workspaceId);
+  const leads = useLeads();
   const [lang, setLang] = useState<MsgLang>("fr");
+  const [openUs, setOpenUs] = useState<string | null>(null);
+  const [openThem, setOpenThem] = useState<string | null>(null);
 
   if (today.isPending) return <p className="loading">Loading…</p>;
   if (today.isError)
@@ -62,19 +62,29 @@ export function TodayPage() {
     );
 
   const t = today.data;
-  const groups = byClient(t.client);
-  const { late, coming } = splitDates(t.dates, t.today);
+  const usGroups = groupUs(t.us);
+  const themGroups = byClient(t.client);
+  const shootList = shoots.data ?? [];
+  const next = nextShoot(shootList, t.today);
+  const week = weekStrip(t.today, t.dates, shootList);
+  const { late } = splitDates(t.dates, t.today);
+  const touch = dueLeads(leads.data ?? [], t.today);
   const portal = originFor("client");
+  const nextDrafts = t.dates
+    .filter((d) => d.kind === "drafts" && daysUntil(d.date, t.today) >= 0)
+    .sort((a, b) => a.date.localeCompare(b.date))[0];
 
   return (
-    <section className="page wide today">
+    <section className="page wide today today-v1">
       <header className="page-head">
         <div>
+          <p className="eyebrow">{shortDay(t.today)}</p>
           <h1>Today</h1>
           <p className="today-sum">{headline(t)}</p>
         </div>
-        <p className="small today-date-now">{shortDay(t.today)}</p>
       </header>
+
+      <Capture />
 
       {t.problems > 0 && (
         <Notice tone="error">
@@ -83,149 +93,322 @@ export function TodayPage() {
         </Notice>
       )}
 
-      <div className="today-grid">
-        <section className="today-section today-us">
+      {next ? (
+        <Link className="today-next" to={`/shoots/${encodeURIComponent(next.clientId)}/${next.id}`}>
+          <span className="eyebrow">
+            {next.day === t.today ? "Shooting today" : `Next shoot · ${when(next.day, t.today)}`}
+          </span>
+          <strong>
+            {next.brand}
+            {next.title && ` · ${next.title}`}
+          </strong>
+          <span>
+            {[
+              shortDay(next.day),
+              next.callTime && `call ${next.callTime}`,
+              next.reels ? `${next.done} of ${next.reels} reels shot` : "no reels on it yet",
+            ]
+              .filter(Boolean)
+              .join(" · ")}
+          </span>
+          {nextDrafts && (
+            <span className="small">
+              First drafts for {nextDrafts.brand} due {when(nextDrafts.date, t.today).toLowerCase()}
+            </span>
+          )}
+          <span className="today-next-go">Open Shoot Day →</span>
+        </Link>
+      ) : (
+        <p className="today-next today-next-empty">
+          No shoot day planned. Add one from a client&rsquo;s <strong>Shoot days</strong> tab.
+        </p>
+      )}
+
+      <div className="today-cols">
+        <section className="today-section">
           <h2>
-            Waiting on you <span className="today-count">{t.us.length}</span>
+            Your move <span className="today-count">{t.us.length}</span>
           </h2>
-          {t.us.length === 0 ? (
+          {usGroups.length === 0 ? (
             <p className="empty-state">Nothing from clients is waiting on you.</p>
           ) : (
-            <ul className="today-list">
-              {t.us.map((u) => (
-                <li key={`${u.part}-${u.id}-${u.why}`} className={`why-${u.why}`}>
-                  <div className="today-row">
-                    <span>
-                      <strong>{u.brand}</strong> {whyText(u.why)}
-                    </span>
-                    <span className="today-wait">{waited(daysSince(u.at))}</span>
-                  </div>
-                  <Link className="today-title" to={linkFor(u)}>
-                    {partName(u.part)}: {u.title}
-                  </Link>
-                  {u.body && <p className="today-quote">&ldquo;{u.body}&rdquo;</p>}
+            <ul className="today-lines">
+              {usGroups.map((g) => (
+                <li key={g.client_id}>
+                  <button
+                    type="button"
+                    className="today-line"
+                    aria-expanded={openUs === g.client_id}
+                    onClick={() => setOpenUs(openUs === g.client_id ? null : g.client_id)}
+                  >
+                    <strong>{g.brand}</strong>
+                    <span>{summarise(g.items)}</span>
+                    <span className="today-wait">{waited(daysSince(g.oldest))}</span>
+                  </button>
+                  {openUs === g.client_id && (
+                    <ul className="today-items">
+                      {g.items.map((u) => (
+                        <li key={`${u.part}-${u.id}-${u.why}`}>
+                          <Link to={linkFor(u)}>
+                            {partName(u.part)}: {u.title}
+                          </Link>
+                          <span className="small">
+                            {whyText(u.why)} · {waited(daysSince(u.at))}
+                          </span>
+                          {u.body && <q className="small">{u.body}</q>}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </li>
               ))}
             </ul>
           )}
         </section>
 
-        <section className="today-section today-client">
+        <section className="today-section">
           <div className="today-section-head">
             <h2>
-              Waiting on clients <span className="today-count">{t.client.length}</span>
+              Their move <span className="today-count">{t.client.length}</span>
             </h2>
-            {groups.some((g) => hasCreative(g.waiting)) && (
+            {themGroups.some((g) => hasCreative(g.waiting)) && (
               <MessageLang lang={lang} onChange={setLang} />
             )}
           </div>
-          {groups.length === 0 ? (
+          {themGroups.length === 0 ? (
             <p className="empty-state">Nothing is waiting for a client&rsquo;s answer.</p>
           ) : (
-            groups.map((g) => (
-              <div key={g.client_id} className="today-group">
-                <div className="today-row">
-                  <Link to={`/clients/${encodeURIComponent(g.client_id)}`}>
-                    <strong>{g.brand}</strong>
-                  </Link>
-                  {hasCreative(g.waiting) && (
-                    <a
-                      className="btn btn-secondary btn-small"
-                      href={whatsappLink(nudgeMessage(lang, g.waiting, portal))}
-                      target="_blank"
-                      rel="noreferrer noopener"
+            <ul className="today-lines">
+              {themGroups.map((g) => (
+                <li key={g.client_id}>
+                  <div className="today-line-row">
+                    <button
+                      type="button"
+                      className="today-line"
+                      aria-expanded={openThem === g.client_id}
+                      onClick={() => setOpenThem(openThem === g.client_id ? null : g.client_id)}
                     >
-                      Remind on WhatsApp
-                    </a>
-                  )}
-                </div>
-                <ul className="today-list compact">
-                  {g.items.map((i) => {
-                    const days = daysSince(i.at);
-                    return (
-                      <li key={`${i.part}-${i.id}`} className={days >= 3 ? "slow" : ""}>
-                        <div className="today-row">
+                      <strong>{g.brand}</strong>
+                      <span>{summarise(g.items)}</span>
+                      <span
+                        className={`today-wait${daysSince(g.oldest) >= 3 ? " today-slow" : ""}`}
+                      >
+                        {waited(daysSince(g.oldest))}
+                      </span>
+                    </button>
+                    {hasCreative(g.waiting) && (
+                      <a
+                        className="btn btn-secondary btn-small"
+                        href={whatsappLink(nudgeMessage(lang, g.waiting, portal))}
+                        target="_blank"
+                        rel="noreferrer noopener"
+                      >
+                        Remind
+                      </a>
+                    )}
+                  </div>
+                  {openThem === g.client_id && (
+                    <ul className="today-items">
+                      {g.items.map((i) => (
+                        <li key={`${i.part}-${i.id}`}>
                           <Link to={linkFor(i)}>
                             {partName(i.part)}: {i.title}
                           </Link>
-                          <span className="today-wait">
+                          <span className="small">
                             {i.part === "invoice" && i.due
                               ? `due ${when(i.due, t.today).toLowerCase()}`
-                              : waited(days)}
+                              : waited(daysSince(i.at))}
                           </span>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            ))
-          )}
-        </section>
-
-        <section className="today-section today-dates">
-          <h2>Coming up</h2>
-          {late.length > 0 && (
-            <>
-              <h3 className="today-sub">Slipped</h3>
-              <ul className="today-list dates late">
-                {late.map((d) => (
-                  <DateRow
-                    key={`${d.kind}-${d.client_id}-${d.label}-${d.date}`}
-                    d={d}
-                    today={t.today}
-                  />
-                ))}
-              </ul>
-            </>
-          )}
-          {coming.length === 0 ? (
-            <p className="empty-state">
-              No shoots, deadlines or follow-ups in the next 30 days. Set a shoot date in a
-              client&rsquo;s Overview and the first-draft deadline appears here.
-            </p>
-          ) : (
-            <ul className="today-list dates">
-              {coming.map((d) => (
-                <DateRow
-                  key={`${d.kind}-${d.client_id}-${d.label}-${d.date}`}
-                  d={d}
-                  today={t.today}
-                />
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
               ))}
             </ul>
           )}
         </section>
+      </div>
 
-        <section className="today-section today-leads">
+      <section className="today-section">
+        <h2>This week</h2>
+        <ol className="today-week">
+          {week.map((d) => (
+            <li key={d.date} className={d.date === t.today ? "is-today" : ""}>
+              <span className="today-week-day">
+                <strong>{shortDay(d.date).split(" ")[0]}</strong> {shortDay(d.date).split(" ")[1]}
+              </span>
+              {d.entries.map((e, i) => (
+                <Link key={i} to={e.to} className={`today-week-item kind-${e.kind}`}>
+                  <span className="small">{KIND[e.kind] ?? e.kind}</span>
+                  <strong>{e.brand}</strong>
+                  <span className="small">{e.label}</span>
+                </Link>
+              ))}
+            </li>
+          ))}
+        </ol>
+        {late.length > 0 && (
+          <p className="small today-slipped">
+            <strong>Slipped:</strong>{" "}
+            {late
+              .map((d) => `${d.brand}, ${d.label} (${when(d.date, t.today).toLowerCase()})`)
+              .join(" · ")}
+          </p>
+        )}
+      </section>
+
+      <div className="today-cols">
+        <section className="today-section">
+          <h2>
+            Leads to write to <span className="today-count">{touch.length}</span>
+          </h2>
+          {touch.length === 0 ? (
+            <p className="empty-state">No follow-up due today.</p>
+          ) : (
+            <ul className="today-lines">
+              {touch.slice(0, 6).map((l) => (
+                <li key={l.id}>
+                  <Link className="today-line" to={`/pipeline?lead=${encodeURIComponent(l.id)}`}>
+                    <strong>{l.brand}</strong>
+                    <span>{l.next_step || "First message"}</span>
+                    <span
+                      className={`today-wait${l.next_date && l.next_date < t.today ? " today-slow" : ""}`}
+                    >
+                      {l.next_date ? when(l.next_date, t.today) : "no date"}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+          {touch.length > 6 && (
+            <p className="small">
+              <Link to="/pipeline">{touch.length - 6} more in the Pipeline</Link>
+            </p>
+          )}
+        </section>
+
+        <section className="today-section">
           <h2>
             New from the website <span className="today-count">{t.leads.length}</span>
           </h2>
           {t.leads.length === 0 ? (
             <p className="empty-state">No new briefs or messages in the last two weeks.</p>
           ) : (
-            <ul className="today-list compact">
+            <ul className="today-lines">
               {t.leads.map((l) => (
                 <li key={l.id}>
-                  <div className="today-row">
+                  <Link className="today-line" to={`/pipeline?lead=${encodeURIComponent(l.id)}`}>
+                    <strong>{l.brand}</strong>
                     <span>
-                      <strong>{l.brand}</strong>
-                      {l.person ? ` · ${l.person}` : ""} sent{" "}
+                      {l.person ? `${l.person} sent ` : "Sent "}
                       {l.form === "brief" ? "a brief" : "a message"}
                     </span>
                     <span className="today-wait">{waited(daysSince(l.at))}</span>
-                  </div>
+                  </Link>
                 </li>
               ))}
             </ul>
           )}
-          {t.leads.length > 0 && (
-            <p className="small">
-              <Link to="/pipeline">Open the Pipeline</Link>
-            </p>
-          )}
         </section>
       </div>
     </section>
+  );
+}
+
+/** One field for what comes to mind: "idea Dany: …" lands in that client's ideas, "lead @…" in the Pipeline. */
+function Capture() {
+  const clients = useClients();
+  const leads = useLeads();
+  const members = useMembers();
+  const idea = useCaptureIdea();
+  const addLeads = useAddLeads();
+  const [text, setText] = useState("");
+  const [clientId, setClientId] = useState("");
+  const [done, setDone] = useState("");
+  const list = clients.data ?? [];
+  const parsed = parseCapture(text, list);
+  const target = parsed?.kind === "idea" ? (parsed.clientId ?? clientId) : "";
+  const me = members.data?.find((m) => m.userId)?.id ?? null;
+  const error = idea.error ?? addLeads.error;
+
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!parsed) return;
+    const finish = (msg: string) => {
+      setText("");
+      setDone(msg);
+    };
+    if (parsed.kind === "lead") {
+      const today = new Date().toISOString().slice(0, 10);
+      const { fresh, skipped } = parsePaste(parsed.text, leads.data ?? []);
+      if (!fresh.length) {
+        setDone(skipped.length ? `${skipped.join(", ")} is already in the Pipeline.` : "");
+        return;
+      }
+      addLeads.mutate(
+        fresh.map((p) => ({
+          ...blankLead(me, today),
+          id: newLeadId(),
+          brand: p.brand,
+          handle: p.handle,
+          url: p.url,
+          channel: p.channel,
+          next_step: "First message",
+        })),
+        {
+          onSuccess: () =>
+            finish(`Added to the Pipeline: ${fresh.map((f) => f.brand).join(", ")}.`),
+        },
+      );
+      return;
+    }
+    if (!target) return;
+    const brand = list.find((c) => c.id === target)?.brand ?? "";
+    idea.mutate(
+      { clientId: target, title: parsed.title, body: parsed.body },
+      { onSuccess: () => finish(`Saved as a draft idea for ${brand}. Only the team sees it.`) },
+    );
+  };
+
+  return (
+    <form className="today-capture" onSubmit={submit}>
+      <input
+        aria-label="Capture an idea or a lead"
+        placeholder="An idea or a lead. Try: idea Dany: the mother-in-law inspects the house · lead @crush__cookies"
+        value={text}
+        maxLength={2000}
+        onChange={(e) => {
+          setText(e.target.value);
+          setDone("");
+        }}
+        dir="auto"
+      />
+      {parsed?.kind === "idea" && !parsed.clientId && (
+        <select
+          aria-label="For which client"
+          value={clientId}
+          onChange={(e) => setClientId(e.target.value)}
+        >
+          <option value="">For which client?</option>
+          {list.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.brand}
+            </option>
+          ))}
+        </select>
+      )}
+      <Button
+        type="submit"
+        disabled={
+          !parsed || (parsed.kind === "idea" && !target) || idea.isPending || addLeads.isPending
+        }
+      >
+        {parsed?.kind === "lead" ? "Add lead" : "Save idea"}
+      </Button>
+      {done && <p className="small today-capture-done">{done}</p>}
+      {error && <Notice tone="error">{friendlyError(error)}</Notice>}
+    </form>
   );
 }
