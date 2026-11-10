@@ -1,3 +1,4 @@
+import { StageList } from "@/components/StageList";
 import { useHashScroll } from "@/lib/useHashScroll";
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
@@ -37,31 +38,23 @@ export function TeamConcepts({ clientId }: { clientId: string }) {
   const nextPosition = concepts.data.reduce((max, c) => Math.max(max, c.position + 1), 0);
 
   return (
-    <section className="tab-body">
-      <div className="page-head">
-        <p className="lede">
-          Drafts stay with the team. Share an idea and the client can approve it or ask for changes.
-          Editing a shared idea sends the new version back for approval.
-        </p>
-        {!adding && <Button onClick={() => setAdding(true)}>New idea</Button>}
-      </div>
-      {adding && (
-        <ConceptForm clientId={clientId} position={nextPosition} onDone={() => setAdding(false)} />
-      )}
-      {groups.length === 0 && !adding && <p className="muted">No ideas yet.</p>}
-      {groups.map((group) => (
-        <div key={group.status} className="group">
-          <h2>
-            {group.title} <span className="count">{group.items.length}</span>
-          </h2>
-          <div className="concepts">
-            {group.items.map((concept) => (
-              <TeamConcept key={concept.id} clientId={clientId} concept={concept} />
-            ))}
-          </div>
-        </div>
-      ))}
-    </section>
+    <StageList
+      lede="Drafts stay with the team. Share an idea and the client can approve it or ask for changes. Editing a shared idea sends the new version back for approval."
+      action={<Button onClick={() => setAdding(true)}>New idea</Button>}
+      form={
+        adding ? (
+          <ConceptForm
+            clientId={clientId}
+            position={nextPosition}
+            onDone={() => setAdding(false)}
+          />
+        ) : null
+      }
+      empty="No ideas yet."
+      groups={groups.map((g) => ({ key: g.status, title: g.title, items: g.items }))}
+      itemKey={(c) => c.id}
+      renderItem={(concept) => <TeamConcept clientId={clientId} concept={concept} />}
+    />
   );
 }
 

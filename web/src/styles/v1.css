@@ -628,3 +628,41 @@
   flex: none;
   width: 44px;
 }
+
+/* ---------- Phones: every link and switch big enough for a thumb (32 px at least) ---------- */
+
+@media (max-width: 700px) {
+  .btn-link,
+  .line-comment,
+  .task-link,
+  .mode-switch button,
+  .lang-switch button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+  }
+
+  .lang-switch button,
+  .mode-switch button {
+    min-width: 40px;
+    justify-content: center;
+  }
+
+  .task-tick input {
+    width: 22px;
+    height: 22px;
+    margin: 0;
+  }
+}
+
+/* The task form and list stay inside a 360 px phone. */
+.tasks > *,
+.task-add,
+.task-add-row {
+  min-width: 0;
+}
+
+.task-add-row input {
+  flex: 1 1 0;
+  width: 0;
+}

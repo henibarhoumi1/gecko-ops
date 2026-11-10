@@ -1,3 +1,4 @@
+import { StageList } from "@/components/StageList";
 import { useMemo, useState, type FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/Button";
@@ -69,65 +70,58 @@ export function TeamReview({ clientId }: { clientId: string }) {
 
   const groups = groupCuts(cuts.data.cuts, "team");
   return (
-    <section className="tab-body">
-      <p className="lede">
-        One cut per deliverable. Upload a 720p preview with the watermark burned in (under 50 MB),
-        send it, and the client leaves notes on the exact moment. Each new upload is a new version.
-      </p>
-      {adding ? (
-        <form className="inline-form" onSubmit={onAdd}>
-          <label className="visually-hidden" htmlFor="cut-title">
-            Cut title
-          </label>
-          <input
-            id="cut-title"
-            value={title}
-            maxLength={160}
-            autoFocus
-            placeholder="Reel 3, the before and after"
-            onChange={(e) => setTitle(e.target.value)}
+    <StageList
+      lede="One cut per deliverable. Upload a 720p preview with the watermark burned in (under 50 MB), send it, and the client leaves notes on the exact moment. Each new upload is a new version."
+      action={<Button onClick={() => setAdding(true)}>New cut</Button>}
+      form={
+        adding ? (
+          <form className="inline-form" onSubmit={onAdd}>
+            <label className="visually-hidden" htmlFor="cut-title">
+              Cut title
+            </label>
+            <input
+              id="cut-title"
+              value={title}
+              maxLength={160}
+              autoFocus
+              placeholder="Reel 3, the before and after"
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            <Button type="submit" disabled={actions.save.isPending}>
+              Add cut
+            </Button>
+            <Button variant="link" onClick={() => setAdding(false)}>
+              Cancel
+            </Button>
+            {actions.save.error && (
+              <Notice tone="error">{friendlyError(actions.save.error)}</Notice>
+            )}
+          </form>
+        ) : null
+      }
+      empty="No cuts yet."
+      groups={groups.map(([status, items]) => ({ key: status, title: GROUP[status], items }))}
+      layout="rows"
+      itemKey={(cut) => cut.id}
+      renderItem={(cut) => {
+        const open = openNotes(cut);
+        return (
+          <CutRow
+            cut={cut}
+            to={`${base}/${cut.id}`}
+            extra={
+              cut.version === 0
+                ? "no preview yet"
+                : open > 0
+                  ? `${open} note${open === 1 ? "" : "s"} to handle`
+                  : cut.delivered
+                    ? "delivered"
+                    : undefined
+            }
           />
-          <Button type="submit" disabled={actions.save.isPending}>
-            Add cut
-          </Button>
-          <Button variant="link" onClick={() => setAdding(false)}>
-            Cancel
-          </Button>
-        </form>
-      ) : (
-        <Button onClick={() => setAdding(true)}>New cut</Button>
-      )}
-      {actions.save.error && <Notice tone="error">{friendlyError(actions.save.error)}</Notice>}
-      {groups.length === 0 && <p className="muted">No cuts yet.</p>}
-      {groups.map(([status, items]) => (
-        <div key={status} className="group">
-          <h2>
-            {GROUP[status]} <span className="count">{items.length}</span>
-          </h2>
-          <ul className="cut-list">
-            {items.map((cut) => {
-              const open = openNotes(cut);
-              return (
-                <CutRow
-                  key={cut.id}
-                  cut={cut}
-                  to={`${base}/${cut.id}`}
-                  extra={
-                    cut.version === 0
-                      ? "no preview yet"
-                      : open > 0
-                        ? `${open} note${open === 1 ? "" : "s"} to handle`
-                        : cut.delivered
-                          ? "delivered"
-                          : undefined
-                  }
-                />
-              );
-            })}
-          </ul>
-        </div>
-      ))}
-    </section>
+        );
+      }}
+    />
   );
 }
 

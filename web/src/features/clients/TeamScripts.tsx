@@ -1,3 +1,4 @@
+import { StageList } from "@/components/StageList";
 import { useHashScroll } from "@/lib/useHashScroll";
 import { useState, type FormEvent } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -55,37 +56,26 @@ export function TeamScripts({ clientId }: { clientId: string }) {
   const nextPosition = scripts.data.reduce((max, s) => Math.max(max, s.position + 1), 0);
 
   return (
-    <section className="tab-body">
-      <div className="page-head">
-        <p className="lede">
-          One script per reel, built Hook → Lead → Body → CTA. Pick the idea and a template; write
-          two or three hooks so the client can pick. Once approved, a script is locked: editing it
-          sends a new version back to the client.
-        </p>
-        {!adding && <Button onClick={() => setAdding(true)}>New script</Button>}
-      </div>
-      {adding && (
-        <ScriptForm clientId={clientId} position={nextPosition} fromIdea={fromIdea} onDone={done} />
+    <StageList
+      lede="One script per reel, built Hook → Lead → Body → CTA. Pick the idea and a template; write two or three hooks so the client can pick. Once approved, a script is locked: editing it sends a new version back to the client."
+      action={<Button onClick={() => setAdding(true)}>New script</Button>}
+      form={
+        adding ? (
+          <ScriptForm
+            clientId={clientId}
+            position={nextPosition}
+            fromIdea={fromIdea}
+            onDone={done}
+          />
+        ) : null
+      }
+      empty="No scripts yet."
+      groups={groups.map((g) => ({ key: g.status, title: g.title, items: g.items }))}
+      itemKey={(s) => s.id}
+      renderItem={(script) => (
+        <TeamScript clientId={clientId} script={script} nextPosition={nextPosition} />
       )}
-      {groups.length === 0 && !adding && <p className="muted">No scripts yet.</p>}
-      {groups.map((group) => (
-        <div key={group.status} className="group">
-          <h2>
-            {group.title} <span className="count">{group.items.length}</span>
-          </h2>
-          <div className="concepts">
-            {group.items.map((script) => (
-              <TeamScript
-                key={script.id}
-                clientId={clientId}
-                script={script}
-                nextPosition={nextPosition}
-              />
-            ))}
-          </div>
-        </div>
-      ))}
-    </section>
+    />
   );
 }
 
