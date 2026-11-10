@@ -38,6 +38,7 @@ const PREVIEW_READS: Record<string, string> = {
   get_my_production: "production",
   get_my_cuts: "cuts",
   get_my_invoices: "invoices",
+  get_shoot_days: "shoot",
 };
 
 /** A portal read: the client's own function, or the same read as a preview when previewing. */

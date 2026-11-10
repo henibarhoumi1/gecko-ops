@@ -25,6 +25,7 @@ import { TeamMoney } from "./TeamMoney";
 import { TeamReview } from "./TeamReview";
 import { LibraryScreen } from "@/features/results/LibraryScreen";
 import { ResultsScreen } from "@/features/results/ResultsScreen";
+import { ShootScreen } from "@/features/shoot/ShootScreen";
 
 /** One client's portal, from the team's side. */
 export function ClientPage() {
@@ -50,6 +51,7 @@ export function ClientPage() {
         ["concepts", "Ideas"],
         ["scripts", "Scripts"],
         ["production", "Production"],
+        ["shoot", "Shoot days"],
         ["review", "Review"],
         ["results", "Results"],
         ["library", "Library"],
@@ -63,6 +65,7 @@ export function ClientPage() {
     : [
         ["concepts", "Ideas"],
         ["scripts", "Scripts"],
+        ["shoot", "Shoot days"],
         ["review", "Review"],
         ["results", "Results"],
         ["library", "Library"],
@@ -101,7 +104,7 @@ export function ClientPage() {
           <NavLink
             key={path}
             to={`/clients/${clientId}${path ? `/${path}` : ""}`}
-            end={!["whiteboard", "review", "money", "results"].includes(path ?? "")}
+            end={!["whiteboard", "review", "money", "results", "shoot"].includes(path ?? "")}
             className="portal-tab"
           >
             {label}
@@ -170,6 +173,19 @@ export function ClientPage() {
           />
         ))}
         <Route path="library" element={<LibraryScreen target={target} />} />
+        {["shoot", "shoot/:dayId"].map((path) => (
+          <Route
+            key={path}
+            path={path}
+            element={
+              <ShootScreen
+                target={target}
+                base={`/clients/${encodeURIComponent(clientId)}/shoot`}
+                brand={client.brand}
+              />
+            }
+          />
+        ))}
         {["whiteboard", "whiteboard/:boardId"].map((path) => (
           <Route
             key={path}

@@ -28,6 +28,7 @@ import { useMyCuts } from "@/features/review/reviewApi";
 import { LibraryScreen } from "@/features/results/LibraryScreen";
 import { todayIso, waiting } from "@/features/results/model";
 import { ResultsScreen } from "@/features/results/ResultsScreen";
+import { ShootScreen } from "@/features/shoot/ShootScreen";
 import { useResults } from "@/features/results/resultsApi";
 import { t } from "@/lib/i18n";
 import { setTemplate, tw, words } from "@/lib/wording";
@@ -106,6 +107,7 @@ function navGroups(badges: {
         { to: "/talent", label: kindName("talent", true), badge: badges.talent },
         { to: "/locations", label: kindName("location", true), badge: badges.location },
         { to: "/budget", label: t("Budget", "Budget"), badge: badges.prop },
+        { to: "/shoot", label: t("Shoot days", "Tournages") },
         { to: "/shared", label: t("Notes and links", "Notes et liens") },
       ],
     },
@@ -412,6 +414,13 @@ export function PortalPage({
                 />
               ))}
               <Route path="library" element={<LibraryScreen target={target} />} />
+              {["shoot", "shoot/:dayId"].map((p) => (
+                <Route
+                  key={p}
+                  path={p}
+                  element={<ShootScreen target={target} base="/shoot" brand={brand} />}
+                />
+              ))}
               {["money", "money/:invoiceId"].map((p) => (
                 <Route key={p} path={p} element={<MoneyTab portal={portal} />} />
               ))}

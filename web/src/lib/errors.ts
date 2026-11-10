@@ -408,6 +408,48 @@ const MESSAGES: [RegExp, string, string][] = [
     "Le client doit d'abord valider avant la réservation.",
   ],
   [
+    /shoot_tick_not_allowed/,
+    "Only your owner and approvers tick reels on set. You can still write in the log.",
+    "Seuls votre responsable et les valideurs cochent les vidéos sur le plateau. Vous pouvez écrire dans le journal.",
+  ],
+  [
+    /shoot_day_not_found/,
+    "That shoot day is gone. The page has been refreshed.",
+    "Ce tournage n'existe plus. La page a été actualisée.",
+  ],
+  [
+    /invalid_shoot_day/,
+    "Check the date and the times, and that the map link starts with https://.",
+    "Vérifiez la date et les heures, et que le lien du plan commence par https://.",
+  ],
+  [
+    /reel_shot/,
+    "A reel already shot stays on its day. Mark it as needing a pick-up instead.",
+    "Une vidéo déjà tournée reste sur son jour. Marquez-la plutôt à retourner.",
+  ],
+  [
+    /invalid_reels/,
+    "Pick each script once, 60 at most.",
+    "Choisissez chaque script une seule fois, 60 au plus.",
+  ],
+  [
+    /reel_not_found/,
+    "That reel isn't on the day any more. The page has been refreshed.",
+    "Cette vidéo n'est plus sur ce jour. La page a été actualisée.",
+  ],
+  [
+    /script_not_found/,
+    "That script is gone. The page has been refreshed.",
+    "Ce script n'existe plus. La page a été actualisée.",
+  ],
+  [/invalid_reel/, "That change couldn't be saved.", "Ce changement n'a pas pu être enregistré."],
+  [
+    /person_not_found/,
+    "That person isn't on the day any more.",
+    "Cette personne n'est plus sur ce jour.",
+  ],
+  [/invalid_person/, "Give a name and a valid time.", "Indiquez un nom et une heure valide."],
+  [
     /option_committed/,
     "Approved costs stay on record. Change the cost instead, and it goes back to the client.",
     "Les dépenses validées restent au dossier. Modifiez plutôt le coût : il repart chez le client.",
