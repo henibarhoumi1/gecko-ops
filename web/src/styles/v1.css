@@ -18,7 +18,7 @@
 .tour-ring {
   position: fixed;
   border: 2px solid var(--pink);
-  border-radius: 12px;
+  border-radius: var(--r-sm);
   box-shadow: 0 0 0 9999px rgb(0 0 0 / 0.55);
   transition:
     top 0.2s var(--ease),
@@ -32,10 +32,10 @@
   width: min(320px, calc(100vw - 24px));
   padding: 16px 18px;
   border: 2px solid var(--ink);
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   background: var(--white);
   color: var(--ink);
-  box-shadow: 5px 5px 0 var(--pink);
+  box-shadow: var(--lift-l);
   pointer-events: auto;
   outline: none;
 }
@@ -234,8 +234,8 @@
   margin: 0 0 24px;
   padding: 16px 18px;
   border: 2px solid var(--ink);
-  border-radius: 16px;
-  box-shadow: 4px 4px 0 var(--pink);
+  border-radius: var(--r-lg);
+  box-shadow: var(--lift);
 }
 
 .home-tasks h2 {
@@ -286,7 +286,7 @@
   gap: 8px;
   margin: 0 0 14px;
   padding: 12px 14px;
-  border-radius: 12px;
+  border-radius: var(--r-sm);
   background: var(--green-soft);
 }
 
@@ -298,7 +298,7 @@
   margin: 0 0 16px;
   padding: 16px;
   border: 2px solid var(--ink);
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   background: var(--white);
 }
 
@@ -328,7 +328,7 @@
   width: 100%;
   padding: 10px;
   border: 1px dashed var(--ink);
-  border-radius: 12px;
+  border-radius: var(--r-sm);
   font: inherit;
   font-size: 13px;
 }
@@ -345,7 +345,7 @@
   display: grid;
   gap: 4px;
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: var(--r-sm);
   background: var(--yellow-soft);
 }
 
@@ -369,7 +369,7 @@
 
 .group.proven {
   padding: 16px 18px;
-  border-radius: 16px;
+  border-radius: var(--r-lg);
   background: var(--pink-soft);
 }
 
@@ -438,7 +438,7 @@
 .proposal-card {
   padding: 10px 12px;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: var(--r-sm);
 }
 
 .proposal-card p {
@@ -473,7 +473,7 @@
   gap: 10px;
   padding: 12px;
   border: 2px solid var(--ink);
-  border-radius: 14px;
+  border-radius: var(--r);
 }
 
 .proposal-row {
@@ -545,8 +545,8 @@
 .proposal-plan {
   padding: 18px !important;
   border: 2px solid var(--ink) !important;
-  border-radius: 18px;
-  box-shadow: 5px 5px 0 var(--pink);
+  border-radius: var(--r-lg);
+  box-shadow: var(--lift-l);
 }
 
 .proposal-price {
@@ -665,4 +665,28 @@
 .task-add-row input {
   flex: 1 1 0;
   width: 0;
+}
+
+/* ---------- The website's look, everywhere ---------- */
+
+/* Sign-in and the old mat cards sit on plain ink, like the website since the mat was retired. The
+   shared board keeps its grid: it's a canvas to lay things out on. */
+.auth,
+.mat {
+  background-image: none;
+}
+
+/* Headlines like the website's: bold, tight, balanced. */
+.screen-title,
+.today-section h2,
+.group > h2,
+.room-col-head {
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* Cards that are the main thing on a page lift off it a little, as on the website. */
+.room-card:hover,
+.proposal-card:hover {
+  box-shadow: var(--lift);
 }

@@ -190,7 +190,14 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 4px 10px;
+    gap: 4px 14px;
+    font-size: 13px;
+  }
+
+  /* Who you are is on the Team page; on a phone the bar keeps only the links. */
+  .side .me > strong,
+  .side .me > span {
+    display: none;
   }
 }
 

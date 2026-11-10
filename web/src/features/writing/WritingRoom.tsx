@@ -121,7 +121,7 @@ function PieceCard({
           <span className="tag">{STYLE_LABEL[scripts[0].style]}</span>
         )}
         {mine && (
-          <span className="room-up">
+          <span className="tag room-up">
             {reader === "client" ? t("Your turn", "À vous") : "Our turn"}
           </span>
         )}
