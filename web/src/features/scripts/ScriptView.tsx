@@ -17,6 +17,7 @@ import {
   type Script,
   type ScriptLine,
   type ScriptNote,
+  ctaLine,
 } from "./model";
 import { t } from "@/lib/i18n";
 import { isCinematic, tw, words } from "@/lib/wording";
@@ -260,10 +261,10 @@ export function ScriptView({
 
           {script.cta && (
             <Line id="cta" changed={changed.has("cta")} notes={byLine("cta")} onComment={onComment}>
-              <p className="script-cta" dir="auto">
-                <strong>{tw(["Ends on", "Finit sur"], ["Final frame", "Dernier plan"])}</strong>{" "}
-                {script.cta}
-              </p>
+              <div className="script-cta" dir="auto">
+                <strong>{tw(["Ends on", "Finit sur"], ["Final frame", "Dernier plan"])}</strong>
+                <LineText line={ctaLine(script.cta)} />
+              </div>
             </Line>
           )}
 

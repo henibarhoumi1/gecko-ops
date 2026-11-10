@@ -53,7 +53,7 @@ describe("never say", () => {
         hooks: [{ hear: "So cheap!" }, {}],
         lead: { text: "fine" },
         body: [{ see: "a promo sign" }],
-        cta: "Get the promo",
+        cta: { hear: "Get the promo" },
       },
       ["cheap", "promo"],
     );

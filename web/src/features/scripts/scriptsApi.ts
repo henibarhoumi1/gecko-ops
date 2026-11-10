@@ -196,8 +196,10 @@ export function useClientWriteScript(portal: ClientPortal) {
       treatment: Treatment;
       /** The template, sent only when the client picked one. */
       style?: ScriptStyle;
+      /** The approved idea it's written from; undefined leaves the link as it is. */
+      conceptId?: string | null;
     }) => {
-      const { error } = await requireSupabase().rpc("client_write_script", {
+      const { data, error } = await requireSupabase().rpc("client_write_script", {
         p_workspace_id: portal.workspaceId,
         p_client_id: portal.clientId,
         p_id: input.id,
@@ -211,6 +213,16 @@ export function useClientWriteScript(portal: ClientPortal) {
         ...(input.style ? { p_style: input.style } : {}),
       });
       if (error) throw error;
+      const id = (data as { id?: string } | null)?.id;
+      if (id && input.conceptId !== undefined) {
+        const link = await requireSupabase().rpc("client_set_script_idea", {
+          p_workspace_id: portal.workspaceId,
+          p_client_id: portal.clientId,
+          p_script_id: id,
+          p_concept_id: input.conceptId,
+        });
+        if (link.error) throw link.error;
+      }
     },
     onSettled: () =>
       queryClient.invalidateQueries({ queryKey: ["portal", portal.workspaceId, portal.clientId] }),

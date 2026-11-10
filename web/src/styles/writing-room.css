@@ -475,3 +475,49 @@
 .page-onscreen:placeholder-shown {
   background: transparent;
 }
+
+/* ---------- Blank: one free page, no boxes ---------- */
+
+.free-write {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.free-text {
+  display: block;
+  width: 100%;
+  min-height: 360px;
+  padding: var(--s-4) 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+  outline: none;
+  resize: none;
+  overflow: hidden;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--fs-lg);
+  line-height: 1.6;
+}
+
+.free-text::placeholder {
+  color: var(--ink-2);
+  opacity: 0.5;
+}
+
+/* Writing kept on this device, not saved yet. */
+.draft-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2) var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border-radius: var(--r-sm);
+  background: var(--yellow-soft);
+  font-size: var(--fs-md);
+}
+
+.script-cta .line-prose {
+  margin-top: var(--s-1);
+}

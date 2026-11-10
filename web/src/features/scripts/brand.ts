@@ -147,7 +147,7 @@ const lineText = (l: ScriptLine) => [l.see, l.hear, l.text].filter(Boolean).join
 
 /** Every never-say word in the draft, part by part. */
 export function draftNever(
-  draft: { hooks: ScriptLine[]; lead: ScriptLine; body: ScriptLine[]; cta: string },
+  draft: { hooks: ScriptLine[]; lead: ScriptLine; body: ScriptLine[]; cta: ScriptLine },
   terms: readonly string[],
 ): NeverHit[] {
   if (terms.length === 0) return [];
@@ -158,7 +158,7 @@ export function draftNever(
     ]),
     ["Lead", lineText(draft.lead)],
     ...draft.body.map((b, i): [string, string] => [`Body ${i + 1}`, lineText(b)]),
-    ["CTA", draft.cta],
+    ["CTA", lineText(draft.cta)],
   ];
   return parts.flatMap(([where, s]) => findNever(s, terms).map((term) => ({ where, term })));
 }

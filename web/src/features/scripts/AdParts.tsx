@@ -1,9 +1,23 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Button } from "@/components/Button";
-import { Field } from "@/components/Field";
 import { Select } from "@/components/Select";
 import { t } from "@/lib/i18n";
 import { draftNever } from "./brand";
+import {
+  adDraft,
+  blankLines,
+  draftBeats,
+  draftCta,
+  freeBeats,
+  freeText,
+  isFreeWrite,
+  noWords,
+  type AdDraft,
+} from "./draft";
+
+// The draft logic lives in ./draft (no React, testable); the editor's users import it from here too.
+export { adDraft, blankLines, draftBeats, draftCta, freeBeats, freeText, isFreeWrite, noWords };
+export type { AdDraft };
 import { useScriptMode, type ScriptMode } from "./ScriptView";
 import {
   estimateSeconds,
@@ -22,46 +36,6 @@ import {
   template,
   TEMPLATES,
 } from "./templates";
-
-/** What a script is made of, the way an ad is built: Hook → Lead → Body 1, 2, 3 → CTA. */
-export interface AdDraft {
-  style: ScriptStyle;
-  hooks: ScriptLine[];
-  lead: ScriptLine;
-  body: ScriptLine[];
-  cta: string;
-}
-
-export const blankLines = (n: number): ScriptLine[] => Array.from({ length: n }, () => ({}));
-export const noWords = (lines: ScriptLine[]) => tidyLines(lines).length === 0;
-
-/** A draft from a saved script, or a fresh one from a template sized for the video's length. */
-export function adDraft(
-  script?: { style: ScriptStyle; hooks: ScriptLine[]; beats: ScriptLine[]; cta: string },
-  style: ScriptStyle = "problem-fix",
-  firstHook?: string,
-  seconds = 30,
-): AdDraft {
-  const s = script?.style ?? style;
-  const beats = script?.beats ?? [];
-  return {
-    style: s,
-    hooks: script?.hooks.length
-      ? script.hooks
-      : firstHook
-        ? [{ hear: firstHook }, {}]
-        : blankLines(2),
-    lead: beats.find((b) => b.part === "lead") ?? {},
-    body: beats.some((b) => b.part !== "lead")
-      ? beats.filter((b) => b.part !== "lead")
-      : blankLines(bodyFor(template(s), seconds).length),
-    cta: script?.cta ?? "",
-  };
-}
-
-/** The scene lines to save: the lead first, then the body parts, each marked with its part. */
-export const draftBeats = (d: AdDraft): ScriptLine[] =>
-  tidyLines([{ ...d.lead, part: "lead" }, ...d.body.map((b) => ({ ...b, part: "body" as const }))]);
 
 /**
  * The template picker and the four parts of the ad, sized for the video's length, with hook ideas to
@@ -96,7 +70,8 @@ export function AdParts({
 
   // While the body parts are still empty, they follow the template and the length.
   useEffect(() => {
-    if (noWords(body) && body.length !== hints.length) set({ body: blankLines(hints.length) });
+    if (draft.style !== "other" && noWords(body) && body.length !== hints.length)
+      set({ body: blankLines(hints.length) });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hints.length]);
 
@@ -109,6 +84,7 @@ export function AdParts({
   }
   const canAddHook = emptyHook >= 0 || hooks.length < 3;
   const hits = draftNever(draft, never);
+  const free = isFreeWrite(draft);
   const [library, setLibrary] = useState(false);
   // Write on the page (the words big, the picture as a stage direction) or in the see / hear / on-screen table.
   const [mode, setMode] = useScriptMode("client");
@@ -236,58 +212,70 @@ export function AdParts({
         )}
       </fieldset>
 
-      <fieldset className="fieldset script-lines">
-        <legend>
-          <span className="part-tag">2</span> Lead{" "}
-          <span className="muted">
-            · {times[1]} · {t("sets it up", "pose le sujet")}
-          </span>
-        </legend>
-        <LineEditor
-          mode={mode}
-          name="Lead"
-          hint={tpl.lead}
-          line={draft.lead}
-          onChange={(lead) => set({ lead })}
-        />
-      </fieldset>
+      {free ? (
+        <fieldset className="fieldset script-lines free-write">
+          <legend>
+            <span className="part-tag">2</span> {t("The script", "Le script")}{" "}
+            <span className="muted">· {t("write freely", "écrivez librement")}</span>
+          </legend>
+          <FreeText value={freeText(draft)} onChange={(hear) => set({ body: [{ hear }] })} />
+        </fieldset>
+      ) : (
+        <>
+          <fieldset className="fieldset script-lines">
+            <legend>
+              <span className="part-tag">2</span> Lead{" "}
+              <span className="muted">
+                · {times[1]} · {t("sets it up", "pose le sujet")}
+              </span>
+            </legend>
+            <LineEditor
+              mode={mode}
+              name="Lead"
+              hint={tpl.lead}
+              line={draft.lead}
+              onChange={(lead) => set({ lead })}
+            />
+          </fieldset>
 
-      <fieldset className="fieldset script-lines">
-        <legend>
-          <span className="part-tag">3</span> Body{" "}
-          <span className="muted">
-            · {t("each part keeps them watching", "chaque partie garde l'attention")}
-          </span>
-        </legend>
-        {body.map((part, i) => (
-          <LineEditor
-            mode={mode}
-            key={i}
-            name={`Body ${i + 1} · ${times[2 + i]}`}
-            hint={hints[i]}
-            line={part}
-            onChange={(next) => set({ body: body.map((b, j) => (j === i ? next : b)) })}
-            onRemove={
-              body.length > 1 ? () => set({ body: body.filter((_, j) => j !== i) }) : undefined
-            }
-            onUp={
-              i > 0
-                ? () =>
-                    set({
-                      body: body.map((b, j) =>
-                        j === i - 1 ? body[i]! : j === i ? body[i - 1]! : b,
-                      ),
-                    })
-                : undefined
-            }
-          />
-        ))}
-        {body.length < 8 && (
-          <Button variant="link" onClick={() => set({ body: [...body, {}] })}>
-            {t("Add a body part", "Ajouter une partie")}
-          </Button>
-        )}
-      </fieldset>
+          <fieldset className="fieldset script-lines">
+            <legend>
+              <span className="part-tag">3</span> Body{" "}
+              <span className="muted">
+                · {t("each part keeps them watching", "chaque partie garde l'attention")}
+              </span>
+            </legend>
+            {body.map((part, i) => (
+              <LineEditor
+                mode={mode}
+                key={i}
+                name={`Body ${i + 1} · ${times[2 + i]}`}
+                hint={hints[i]}
+                line={part}
+                onChange={(next) => set({ body: body.map((b, j) => (j === i ? next : b)) })}
+                onRemove={
+                  body.length > 1 ? () => set({ body: body.filter((_, j) => j !== i) }) : undefined
+                }
+                onUp={
+                  i > 0
+                    ? () =>
+                        set({
+                          body: body.map((b, j) =>
+                            j === i - 1 ? body[i]! : j === i ? body[i - 1]! : b,
+                          ),
+                        })
+                    : undefined
+                }
+              />
+            ))}
+            {body.length < 8 && (
+              <Button variant="link" onClick={() => set({ body: [...body, {}] })}>
+                {t("Add a body part", "Ajouter une partie")}
+              </Button>
+            )}
+          </fieldset>
+        </>
+      )}
 
       <fieldset className="fieldset script-lines">
         <legend>
@@ -296,13 +284,12 @@ export function AdParts({
             · {times[times.length - 1]} · {t("the last frame", "le dernier plan")}
           </span>
         </legend>
-        <Field
-          label={t("What the viewer does next", "Ce que le spectateur fait ensuite")}
-          name="cta"
-          value={draft.cta}
-          onChange={(e) => set({ cta: e.target.value })}
-          maxLength={300}
-          placeholder={tpl.cta}
+        <LineEditor
+          mode={mode}
+          name={t("What the viewer does next", "Ce que le spectateur fait ensuite")}
+          hint={tpl.cta}
+          line={draft.cta}
+          onChange={(cta) => set({ cta })}
         />
       </fieldset>
 
@@ -333,7 +320,7 @@ export function ReadMeter({ draft, seconds }: { draft: AdDraft; seconds: number 
   const runs = estimateSeconds({
     hooks: tidyLines(draft.hooks),
     beats: draftBeats(draft),
-    cta: draft.cta,
+    cta: draftCta(draft),
   });
   const over = runs > seconds + 3;
   const fill = Math.min(100, Math.round((runs / Math.max(1, seconds)) * 100));
@@ -493,6 +480,32 @@ function AutoText({
       onChange={onChange}
       maxLength={maxLength}
       placeholder={placeholder}
+    />
+  );
+}
+
+/** The free page of a Blank script: no boxes, room to write, grows with the text. */
+function FreeText({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.max(el.scrollHeight, 360)}px`;
+  }, [value]);
+  return (
+    <textarea
+      ref={ref}
+      className="free-text"
+      dir="auto"
+      aria-label={t("The script", "Le script")}
+      value={value}
+      maxLength={20000}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={t(
+        "Write it the way you hear it. What happens, what's said, in your own words…",
+        "Écrivez-le comme vous l'entendez. Ce qui se passe, ce qui se dit, avec vos mots…",
+      )}
     />
   );
 }

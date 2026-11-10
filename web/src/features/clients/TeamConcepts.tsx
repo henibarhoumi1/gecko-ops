@@ -1,6 +1,8 @@
+import { DraftNotice } from "@/components/DraftNotice";
+import { useFormDraft } from "@/lib/drafts";
 import { StageList } from "@/components/StageList";
 import { useHashScroll } from "@/lib/useHashScroll";
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
@@ -189,6 +191,9 @@ function ConceptForm({
   const save = useSaveConcept(clientId);
   const [error, setError] = useState("");
   const shared = concept && concept.status !== "draft" && concept.status !== "idea";
+  // Kept on this device while writing: closing the tab doesn't lose it.
+  const formRef = useRef<HTMLFormElement>(null);
+  const keep = useFormDraft(formRef, `idea.${clientId}.${concept?.id ?? "new"}`);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -205,6 +210,7 @@ function ConceptForm({
         hook: text("hook"),
         ...(concept ? {} : { status: form.get("share") ? "review" : "draft", position }),
       });
+      keep.clear();
       onDone();
     } catch (e) {
       setError(friendlyError(e));
@@ -212,8 +218,9 @@ function ConceptForm({
   }
 
   return (
-    <form className="card stack concept-edit" onSubmit={onSubmit}>
+    <form ref={formRef} className="card stack concept-edit" onSubmit={onSubmit}>
       <h3>{concept ? `Edit "${concept.title}"` : "New idea"}</h3>
+      {keep.restored && <DraftNotice onDiscard={keep.discard} />}
       <div className="row">
         <Field
           label="Title"
@@ -265,7 +272,14 @@ function ConceptForm({
       )}
       {error && <Notice tone="error">{error}</Notice>}
       <div className="actions">
-        <Button variant="secondary" onClick={onDone} disabled={save.isPending}>
+        <Button
+          variant="secondary"
+          onClick={() => {
+            keep.clear();
+            onDone();
+          }}
+          disabled={save.isPending}
+        >
           Cancel
         </Button>
         <Button type="submit" disabled={save.isPending}>
