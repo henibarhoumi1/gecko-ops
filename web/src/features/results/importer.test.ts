@@ -27,7 +27,7 @@ const posts = [
 
 describe("reading exports", () => {
   it("reads CSV with quotes, semicolons and a BOM", () => {
-    expect(parseCsv('﻿a;b\n"x; y";"say ""hi"""\r\n\n3;4')).toEqual([
+    expect(parseCsv('\uFEFFa;b\n"x; y";"say ""hi"""\r\n\n3;4')).toEqual([
       ["a", "b"],
       ["x; y", 'say "hi"'],
       ["3", "4"],
@@ -161,7 +161,7 @@ describe("a whole export", () => {
       `#1001,a@x.tn,120.000,/shop?utm_content=${code},Spray`,
       `#1001,a@x.tn,120.000,/shop?utm_content=${code},Cloth`,
       "#1002,b@x.tn,80.000,/,Spray",
-      `#1003,c@x.tn,\"1,000.000\",/?utm_content=${code.toUpperCase()},Kit`,
+      `#1003,c@x.tn,"1,000.000",/?utm_content=${code.toUpperCase()},Kit`,
     ].join("\n");
     const out = readExport(csv, posts);
     expect(out.kind).toBe("orders");

@@ -10,7 +10,7 @@ import type { MetricKey, Metrics, Platform, Post } from "./model";
 
 /** Reads CSV (commas, semicolons or tabs, quoted cells, a BOM) into rows of cells. */
 export function parseCsv(text: string): string[][] {
-  const src = text.replace(/^﻿/, "");
+  const src = text.replace(/^\uFEFF/, "");
   const firstLine = src.split(/\r?\n/, 1)[0] ?? "";
   const counts = [",", ";", "\t"].map((d) => [d, firstLine.split(d).length] as const);
   const sep = counts.sort((a, b) => b[1] - a[1])[0]![0];
@@ -52,7 +52,7 @@ export const fold = (s: string) =>
  * Null when it isn't one.
  */
 export function readNumber(raw: string): number | null {
-  const s = raw.replace(/[\s  ]/g, "");
+  const s = raw.replace(/[\s\u00a0\u202f]/g, "");
   if (!s || s === "-" || s === "--") return null;
   const clock = /^(\d+):(\d{1,2})(?::(\d{1,2}))?$/.exec(s);
   if (clock) {
