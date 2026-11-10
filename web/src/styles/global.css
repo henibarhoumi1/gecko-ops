@@ -7794,3 +7794,67 @@ a.piece:hover {
     grid-column: 2;
   }
 }
+
+/* ---------- Projects under a client ---------- */
+
+.projects-strip {
+  margin: 4px 0 16px;
+}
+
+.projects-strip > ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  gap: 10px;
+  margin: 0 0 6px;
+  padding: 0;
+  list-style: none;
+}
+
+.project-card {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.project-card.current {
+  border: 2px solid var(--ink);
+}
+
+.project-card.status-done,
+.project-card.status-archived {
+  opacity: 0.75;
+}
+
+.project-top {
+  display: grid;
+  gap: 2px;
+}
+
+.project-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  align-items: center;
+}
+
+.project-new {
+  place-content: center;
+  border-style: dashed;
+}
+
+.project-form {
+  display: grid;
+  gap: 8px;
+}
+
+.project-form input,
+.project-form select {
+  font: inherit;
+  padding: 8px 12px;
+  border: 1px solid var(--edge);
+  border-radius: 10px;
+  background: var(--white);
+}

@@ -407,6 +407,12 @@ const MESSAGES: [RegExp, string, string][] = [
     "The client needs to approve this before it can be booked.",
     "Le client doit d'abord valider avant la réservation.",
   ],
+  [/invalid_project/, "Give the project a name.", "Donnez un nom au projet."],
+  [
+    /project_not_found/,
+    "That project isn't this client's. The page has been refreshed.",
+    "Ce projet n'est pas celui de ce client. La page a été actualisée.",
+  ],
   [
     /shoot_tick_not_allowed/,
     "Only your owner and approvers tick reels on set. You can still write in the log.",

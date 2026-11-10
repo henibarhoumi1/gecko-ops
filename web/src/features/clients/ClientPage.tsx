@@ -25,6 +25,7 @@ import { TeamMoney } from "./TeamMoney";
 import { TeamReview } from "./TeamReview";
 import { LibraryScreen } from "@/features/results/LibraryScreen";
 import { ResultsScreen } from "@/features/results/ResultsScreen";
+import { ProjectsStrip } from "@/features/projects/ProjectsStrip";
 import { ShootScreen } from "@/features/shoot/ShootScreen";
 
 /** One client's portal, from the team's side. */
@@ -99,6 +100,7 @@ export function ClientPage() {
           </a>
         )}
       </div>
+      {lead && <ProjectsStrip target={target} />}
       <nav className="portal-tabs" aria-label={client.brand}>
         {tabs.map(([path, label]) => (
           <NavLink
