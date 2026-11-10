@@ -438,7 +438,13 @@ export function PortalPage({
               />
               <Route
                 path="scripts"
-                element={<ScriptsTab portal={portal} scripts={page.data.scripts} />}
+                element={
+                  <ScriptsTab
+                    portal={portal}
+                    scripts={page.data.scripts}
+                    ideas={page.data.concepts}
+                  />
+                }
               />
               <Route
                 path="concepts"

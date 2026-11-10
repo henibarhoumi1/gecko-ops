@@ -335,6 +335,39 @@ function spokenSeconds(text: string): number {
 }
 
 /**
+ * The call to action as a line: what we see, what we hear, what's on screen. Stored in the script's `cta`
+ * text: plain words (all older scripts), or a small JSON object when there's more than words.
+ */
+export function ctaLine(cta: string | null | undefined): ScriptLine {
+  const raw = (cta ?? "").trim();
+  if (raw.startsWith("{")) {
+    try {
+      const o = JSON.parse(raw) as Record<string, unknown>;
+      if (o && typeof o === "object" && !Array.isArray(o)) {
+        const s = (v: unknown) => (typeof v === "string" ? v : undefined);
+        return { see: s(o.see), hear: s(o.hear), text: s(o.text) };
+      }
+    } catch {
+      // Not ours: plain words that happen to start with a brace.
+    }
+  }
+  return raw ? { hear: raw } : {};
+}
+
+/** Back to the stored text: plain words when that's all there is, so older readers keep working. */
+export function ctaString(line: ScriptLine): string {
+  const see = line.see?.trim() ?? "";
+  const hear = line.hear?.trim() ?? "";
+  const text = line.text?.trim() ?? "";
+  if (!see && !text) return hear.startsWith("{") ? JSON.stringify({ hear }) : hear;
+  return JSON.stringify({
+    ...(see ? { see } : {}),
+    ...(hear ? { hear } : {}),
+    ...(text ? { text } : {}),
+  });
+}
+
+/**
  * Roughly how long the script runs when spoken: one hook (the picked one, else the first), every beat and
  * the call to action. Silent beats still take a second each.
  */
@@ -343,7 +376,7 @@ export function estimateSeconds(content: Pick<ScriptContent, "hooks" | "beats" |
   const lines = [...(chosen ? [chosen] : []), ...content.beats];
   const total =
     lines.reduce((sum, line) => sum + Math.max(spokenSeconds(line.hear ?? ""), 1), 0) +
-    spokenSeconds(content.cta);
+    spokenSeconds(ctaLine(content.cta).hear ?? "");
   return Math.round(total);
 }
 

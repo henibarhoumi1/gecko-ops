@@ -1,3 +1,5 @@
+import { DraftNotice } from "@/components/DraftNotice";
+import { useDraft } from "@/lib/drafts";
 import { StageList } from "@/components/StageList";
 import { useHashScroll } from "@/lib/useHashScroll";
 import { useState, type FormEvent } from "react";
@@ -22,7 +24,14 @@ import { BrandDrawer, useBrand } from "@/features/scripts/BrandDrawer";
 import { useProvenHooks } from "@/features/results/ResultsExtras";
 import { useTeamShared } from "@/features/shared/sharedApi";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
-import { AdParts, adDraft, draftBeats, noWords, type AdDraft } from "@/features/scripts/AdParts";
+import {
+  AdParts,
+  adDraft,
+  draftBeats,
+  noWords,
+  type AdDraft,
+  draftCta,
+} from "@/features/scripts/AdParts";
 import {
   useDeleteScript,
   useSaveScript,
@@ -299,13 +308,23 @@ function ScriptForm({
   const proven = useProvenHooks({ workspaceId, clientId });
   const approved = (concepts.data ?? []).filter((c) => c.status === "approved");
   const startIdea = approved.find((c) => c.id === fromIdea);
-  const [draft, setDraft] = useState<AdDraft>(() =>
-    adDraft(script, "problem-fix", startIdea?.hook, script?.seconds ?? 30),
+  // Kept on this device while writing: closing the tab doesn't lose it.
+  const keep = useDraft(
+    `script.${clientId}.${script?.id ?? (fromIdea ? `idea-${fromIdea}` : "new")}`,
+    () => ({
+      draft: adDraft(script, "problem-fix", startIdea?.hook, script?.seconds ?? 30),
+      title: script?.title ?? startIdea?.title ?? "",
+      conceptId: script?.conceptId ?? startIdea?.id ?? fromIdea ?? "",
+      seconds: script?.seconds ?? 30,
+      shoot: script?.shoot ?? ({} as ShootPlan),
+    }),
   );
-  const [title, setTitle] = useState(script?.title ?? startIdea?.title ?? "");
-  const [conceptId, setConceptId] = useState(script?.conceptId ?? startIdea?.id ?? "");
-  const [seconds, setSeconds] = useState(script?.seconds ?? 30);
-  const [shoot, setShoot] = useState<ShootPlan>(script?.shoot ?? {});
+  const { draft, title, conceptId, seconds, shoot } = keep.value;
+  const setDraft = (next: AdDraft) => keep.setValue((v) => ({ ...v, draft: next }));
+  const setTitle = (next: string) => keep.setValue((v) => ({ ...v, title: next }));
+  const setConceptId = (next: string) => keep.setValue((v) => ({ ...v, conceptId: next }));
+  const setSeconds = (next: number) => keep.setValue((v) => ({ ...v, seconds: next }));
+  const setShoot = (next: ShootPlan) => keep.setValue((v) => ({ ...v, shoot: next }));
   const templates = useTemplates();
   const cinematic =
     templates.data?.[clientId] === "cinematic" ||
@@ -330,7 +349,7 @@ function ScriptForm({
         goal: script?.goal ?? "",
         hooks: tidyLines(draft.hooks),
         beats,
-        cta: draft.cta.trim(),
+        cta: draftCta(draft),
         shoot: { ...shoot, extraProps: (shoot.extraProps ?? "").trim() },
         ...(cinematic
           ? {
@@ -343,6 +362,7 @@ function ScriptForm({
           : {}),
         ...(script ? {} : { status: submitter?.value === "share" ? "review" : "draft", position }),
       });
+      keep.clear();
       onDone();
     } catch (e) {
       setError(friendlyError(e));
@@ -352,6 +372,7 @@ function ScriptForm({
   return (
     <form className="card stack concept-edit script-edit" onSubmit={onSubmit}>
       <h3>{script ? `Edit "${script.title}"` : "New script"}</h3>
+      {keep.restored && <DraftNotice onDiscard={keep.discard} />}
       <Select
         label="For the idea"
         name="concept"
@@ -432,7 +453,14 @@ function ScriptForm({
       )}
       {error && <Notice tone="error">{error}</Notice>}
       <div className="actions">
-        <Button variant="secondary" onClick={onDone} disabled={save.isPending}>
+        <Button
+          variant="secondary"
+          onClick={() => {
+            keep.clear();
+            onDone();
+          }}
+          disabled={save.isPending}
+        >
           Cancel
         </Button>
         {script ? (

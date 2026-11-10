@@ -1,3 +1,5 @@
+import { useSearchParams } from "react-router-dom";
+import type { Concept } from "@/features/concepts/model";
 import { StageList } from "@/components/StageList";
 import { useHashScroll } from "@/lib/useHashScroll";
 import { useState } from "react";
@@ -12,12 +14,27 @@ import { useClientScriptNote } from "@/features/scripts/scriptsApi";
 import { t } from "@/lib/i18n";
 import { tw } from "@/lib/wording";
 
-export function ScriptsTab({ portal, scripts }: { portal: ClientPortal; scripts: Script[] }) {
+export function ScriptsTab({
+  portal,
+  scripts,
+  ideas = [],
+}: {
+  portal: ClientPortal;
+  scripts: Script[];
+  ideas?: readonly Concept[];
+}) {
   const groups = groupScripts(scripts, "client");
   useHashScroll(true);
   const role = useClientRole();
-  const [writing, setWriting] = useState(false);
   const canWrite = canApprove(role);
+  // "Write the script" on an approved idea opens here with ?idea=<id>.
+  const [params, setParams] = useSearchParams();
+  const fromIdea = params.get("idea") ?? undefined;
+  const [writing, setWriting] = useState(Boolean(fromIdea));
+  const done = () => {
+    setWriting(false);
+    if (fromIdea) setParams({}, { replace: true });
+  };
   return (
     <StageList
       lede={tw(
@@ -40,7 +57,11 @@ export function ScriptsTab({ portal, scripts }: { portal: ClientPortal; scripts:
           </Button>
         ) : undefined
       }
-      form={writing ? <WriteScript portal={portal} onDone={() => setWriting(false)} /> : null}
+      form={
+        writing && canWrite ? (
+          <WriteScript portal={portal} ideas={ideas} fromIdea={fromIdea} onDone={done} />
+        ) : null
+      }
       empty={tw(
         [
           "Scripts come after you approve the ideas. They'll appear here for you to read and approve.",

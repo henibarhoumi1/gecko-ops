@@ -6,6 +6,7 @@ import { Select } from "@/components/Select";
 import { TextArea } from "@/components/TextArea";
 import type { ClientPortal } from "@/features/auth/account";
 import {
+  ctaLine,
   tidyLines,
   tidyTreatment,
   TREATMENT_KEYS,
@@ -15,7 +16,17 @@ import {
   type Treatment,
 } from "@/features/scripts/model";
 import { useClientWriteScript } from "@/features/scripts/scriptsApi";
-import { AdParts, adDraft, draftBeats, type AdDraft } from "@/features/scripts/AdParts";
+import {
+  AdParts,
+  adDraft,
+  draftBeats,
+  draftCta,
+  noWords,
+  type AdDraft,
+} from "@/features/scripts/AdParts";
+import { DraftNotice } from "@/components/DraftNotice";
+import type { Concept } from "@/features/concepts/model";
+import { useDraft } from "@/lib/drafts";
 import { BrandDrawer, useBrand } from "@/features/scripts/BrandDrawer";
 import { useProvenHooks } from "@/features/results/ResultsExtras";
 import { useMyShared } from "@/features/shared/sharedApi";
@@ -42,10 +53,16 @@ function treatmentHint(key: (typeof TREATMENT_KEYS)[number]): string {
 export function WriteScript({
   portal,
   script,
+  ideas = [],
+  fromIdea,
   onDone,
 }: {
   portal: ClientPortal;
   script?: Script;
+  /** The client's ideas: the approved ones can be written from. */
+  ideas?: readonly Concept[];
+  /** Writing the script of this approved idea. */
+  fromIdea?: string;
   onDone: () => void;
 }) {
   const write = useClientWriteScript(portal);
@@ -53,17 +70,37 @@ export function WriteScript({
   const brand = useBrand(portal.workspaceId, portal.clientId, space.data?.brandNotes.body);
   const proven = useProvenHooks(portal);
   const cine = isCinematic();
-  const [beats, setBeats] = useState<ScriptLine[]>(script?.beats.length ? script.beats : [{}, {}]);
-  // Everyone but film clients writes the ad in parts, the same way the team does.
-  const [seconds, setSeconds] = useState(script?.seconds ?? (cine ? 45 : 30));
-  const [draft, setDraft] = useState<AdDraft>(() => adDraft(script, undefined, undefined, seconds));
+  const approved = ideas.filter((c) => c.status === "approved");
+  const startIdea = approved.find((c) => c.id === fromIdea);
+  // Kept on this device while writing: closing the tab doesn't lose it.
+  const keep = useDraft(
+    `script.${portal.clientId}.${script?.id ?? (startIdea ? `idea-${startIdea.id}` : "new")}`,
+    () => {
+      const seconds = script?.seconds ?? (cine ? 45 : 30);
+      return {
+        title: script?.title ?? startIdea?.title ?? "",
+        conceptId: script?.conceptId ?? startIdea?.id ?? "",
+        seconds,
+        beats: script?.beats.length ? script.beats : ([{}, {}] as ScriptLine[]),
+        // Everyone but film clients writes the ad in parts, the same way the team does.
+        draft: adDraft(script, undefined, startIdea?.hook || undefined, seconds),
+      };
+    },
+  );
+  const { title, conceptId, seconds, beats, draft } = keep.value;
+  const set = (patch: Partial<typeof keep.value>) => keep.setValue((v) => ({ ...v, ...patch }));
+  const setDraft = (next: AdDraft) => set({ draft: next });
+  const setSeconds = (n: number) => set({ seconds: n });
+  const setBeats = (f: (list: ScriptLine[]) => ScriptLine[]) =>
+    keep.setValue((v) => ({ ...v, beats: f(v.beats) }));
+  const idea = approved.find((c) => c.id === conceptId);
   const [error, setError] = useState("");
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const text = (name: string) => String(form.get(name) ?? "").trim();
-    if (!text("title")) return setError(t("Give it a short title.", "Donnez-lui un titre court."));
+    if (!title.trim()) return setError(t("Give it a short title.", "Donnez-lui un titre court."));
     const hooks = cine
       ? tidyLines([{ see: text("hook-see"), hear: text("hook-hear") }])
       : tidyLines(draft.hooks);
@@ -72,15 +109,17 @@ export function WriteScript({
     try {
       await write.mutateAsync({
         id: script?.id ?? null,
-        title: text("title"),
-        seconds: Number(text("seconds")) || 30,
+        title: title.trim(),
+        seconds: seconds || 30,
         goal: script?.goal ?? "",
         hooks,
         beats: cine ? tidyLines(beats) : draftBeats(draft),
-        cta: cine ? text("cta") : draft.cta.trim(),
+        cta: cine ? text("cta") : draftCta(draft),
         treatment: tidyTreatment(treatment),
         ...(cine ? {} : { style: draft.style }),
+        ...(approved.length || script?.conceptId ? { conceptId: conceptId || null } : {}),
       });
+      keep.clear();
       onDone();
     } catch (e) {
       setError(friendlyError(e));
@@ -112,13 +151,45 @@ export function WriteScript({
           ],
         )}
       </p>
+      {keep.restored && <DraftNotice onDiscard={keep.discard} />}
+      {(approved.length > 0 || idea) && (
+        <Select
+          label={t("Written from the idea", "Écrit à partir de l'idée")}
+          name="concept"
+          value={conceptId}
+          onChange={(e) => {
+            const c = approved.find((x) => x.id === e.target.value);
+            set({
+              conceptId: e.target.value,
+              ...(c && !title.trim() ? { title: c.title } : {}),
+              ...(c?.hook && noWords(draft.hooks)
+                ? { draft: { ...draft, hooks: [{ hear: c.hook }, ...draft.hooks.slice(1)] } }
+                : {}),
+            });
+          }}
+          options={[
+            ["", t("No idea, a script of its own", "Aucune, un script à part")],
+            ...approved.map((c) => [c.id, c.title] as const),
+          ]}
+        />
+      )}
+      {idea && (
+        <div className="script-idea">
+          <p className="small">
+            <strong>{t("The idea", "L'idée")}</strong>
+          </p>
+          {idea.hook && <p className="script-idea-hook">&ldquo;{idea.hook}&rdquo;</p>}
+          {idea.body && <p className="small">{idea.body}</p>}
+        </div>
+      )}
       <div className="row">
         <Field
           label={t("Title", "Titre")}
           name="title"
           maxLength={160}
-          defaultValue={script?.title}
-          autoFocus
+          value={title}
+          onChange={(e) => set({ title: e.target.value })}
+          autoFocus={!startIdea}
         />
         <Select
           label={t("Length", "Durée")}
@@ -197,11 +268,12 @@ export function WriteScript({
             )}
           </fieldset>
 
-          <Field
+          <TextArea
             label={t("The final frame", "Le dernier plan")}
             name="cta"
-            maxLength={300}
-            defaultValue={script?.cta}
+            rows={2}
+            maxLength={1000}
+            defaultValue={ctaLine(script?.cta).hear}
             placeholder={t("The logo on white", "Le logo sur fond blanc")}
           />
         </>

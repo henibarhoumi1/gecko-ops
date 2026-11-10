@@ -1,6 +1,10 @@
+import { canApprove, useClientRole } from "./role";
+import { Link } from "react-router-dom";
+import { DraftNotice } from "@/components/DraftNotice";
+import { useFormDraft } from "@/lib/drafts";
 import { StageList } from "@/components/StageList";
 import { useHashScroll } from "@/lib/useHashScroll";
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, useRef } from "react";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import { TextArea } from "@/components/TextArea";
@@ -67,6 +71,24 @@ export function ConceptsTab({ portal, concepts }: { portal: ClientPortal; concep
 
 function ClientActions({ portal, concept }: { portal: ClientPortal; concept: Concept }) {
   const note = useConceptNote(portal);
+  const role = useClientRole();
+  // An approved idea: the client can write its script too.
+  if (concept.status === "approved" && canApprove(role))
+    return (
+      <div className="concept-actions">
+        <Link className="btn" to={`/scripts?idea=${concept.id}`}>
+          {t("Write the script", "Écrire le script")}
+        </Link>
+        <ReviewActions
+          canDecide={false}
+          pending={note.isPending}
+          approveNote=""
+          onSend={(kind, body) =>
+            note.mutateAsync({ conceptId: concept.id, kind, body, version: concept.version })
+          }
+        />
+      </div>
+    );
   return (
     <ReviewActions
       canDecide={concept.status === "review" || concept.status === "changes"}
@@ -117,6 +139,9 @@ function IdeaForm({
 }) {
   const save = useSaveIdea(portal);
   const [error, setError] = useState("");
+  // Kept on this device while writing: closing the tab doesn't lose it.
+  const formRef = useRef<HTMLFormElement>(null);
+  const keep = useFormDraft(formRef, `idea.${portal.clientId}.${idea?.id ?? "new"}`);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -136,6 +161,7 @@ function IdeaForm({
         body: text("body"),
         refs: text("refs"),
       });
+      keep.clear();
       onDone();
     } catch (e) {
       setError(friendlyError(e));
@@ -143,7 +169,8 @@ function IdeaForm({
   }
 
   return (
-    <form className="concept-form card" onSubmit={onSubmit}>
+    <form ref={formRef} className="concept-form card" onSubmit={onSubmit}>
+      {keep.restored && <DraftNotice onDiscard={keep.discard} />}
       <h3>
         {idea
           ? tw(
@@ -192,7 +219,14 @@ function IdeaForm({
       />
       {error && <Notice tone="error">{error}</Notice>}
       <div className="actions">
-        <Button variant="secondary" onClick={onDone} disabled={save.isPending}>
+        <Button
+          variant="secondary"
+          onClick={() => {
+            keep.clear();
+            onDone();
+          }}
+          disabled={save.isPending}
+        >
           {t("Cancel", "Annuler")}
         </Button>
         <Button type="submit" disabled={save.isPending}>

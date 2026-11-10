@@ -1,3 +1,4 @@
+import { ctaLine } from "@/features/scripts/model";
 import { locale, t } from "@/lib/i18n";
 
 /**
@@ -286,7 +287,9 @@ export function readerLines(reel: ShootReel): ReaderLine[] {
   };
   reel.hooks.slice(0, 3).forEach((h, i) => add(`hook-${i}`, "hook", i, h, reel.hook === i));
   reel.beats.slice(0, 100).forEach((b, i) => add(`beat-${i}`, "beat", i, b));
-  if (reel.cta.trim() || reel.lineChanges.cta) add("cta", "cta", 0, { hear: reel.cta });
+  const cta = ctaLine(reel.cta);
+  if (cta.hear?.trim() || cta.see?.trim() || cta.text?.trim() || reel.lineChanges.cta)
+    add("cta", "cta", 0, cta);
   return lines;
 }
 
