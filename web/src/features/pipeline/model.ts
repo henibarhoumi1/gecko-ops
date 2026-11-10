@@ -101,6 +101,10 @@ export interface Lead {
   next_date: string | null;
   lost_reason: string | null;
   history: { at: string; stage: string }[];
+  /** Messages and calls logged on the lead (see outreach.ts). Read-only here; only the Pipeline panel adds to it. */
+  log?: unknown[];
+  /** Free fields: what you noticed about the brand, and what the website brief form sent. */
+  extra?: Record<string, unknown>;
   created_at: string;
   updated_at: string;
 }

@@ -4,9 +4,9 @@ import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import type { Lead } from "./model";
 
 const COLUMNS =
-  "workspace_id,id,brand,stage,channel,contact,handle,phone,whatsapp,url,sector,pack,value,client_id,owner_member_id,next_step,next_date,lost_reason,history,created_at,updated_at";
+  "workspace_id,id,brand,stage,channel,contact,handle,phone,whatsapp,url,sector,pack,value,client_id,owner_member_id,next_step,next_date,lost_reason,history,log,extra,created_at,updated_at";
 
-export type LeadInput = Omit<Lead, "workspace_id" | "created_at" | "updated_at">;
+export type LeadInput = Omit<Lead, "workspace_id" | "created_at" | "updated_at" | "log" | "extra">;
 
 export function useLeads() {
   const { id: workspaceId } = useWorkspace();
@@ -40,4 +40,56 @@ export function useSaveLead() {
 
 export function newLeadId(): string {
   return "l" + crypto.randomUUID().replace(/-/g, "").slice(0, 12);
+}
+
+/** The fields a quick change can touch. Only these are written; everything else on the lead stays as it is. */
+export type LeadPatch = Partial<
+  Pick<
+    Lead,
+    | "stage"
+    | "owner_member_id"
+    | "next_step"
+    | "next_date"
+    | "history"
+    | "log"
+    | "extra"
+    | "contact"
+    | "whatsapp"
+    | "lost_reason"
+  >
+>;
+
+/** Changes some fields of one or more leads, each with its own patch. */
+export function usePatchLeads() {
+  const { id: workspaceId } = useWorkspace();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (patches: { id: string; patch: LeadPatch }[]) => {
+      const db = requireSupabase();
+      const results = await Promise.all(
+        patches.map(({ id, patch }) =>
+          db.from("leads").update(patch).eq("workspace_id", workspaceId).eq("id", id),
+        ),
+      );
+      const failed = results.find((r) => r.error);
+      if (failed?.error) throw failed.error;
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["leads", workspaceId] }),
+  });
+}
+
+/** Adds several new leads at once. */
+export function useAddLeads() {
+  const { id: workspaceId } = useWorkspace();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (leads: LeadInput[]) => {
+      if (!leads.length) return;
+      const { error } = await requireSupabase()
+        .from("leads")
+        .insert(leads.map((l) => ({ ...l, workspace_id: workspaceId })));
+      if (error) throw error;
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["leads", workspaceId] }),
+  });
 }
