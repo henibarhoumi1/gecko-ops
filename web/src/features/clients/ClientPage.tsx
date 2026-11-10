@@ -35,7 +35,10 @@ export function ClientPage() {
   const clients = useClients();
   useActiveTabInView(clients.isSuccess);
   const target = useMemo(() => ({ workspaceId: workspace.id, clientId }), [workspace.id, clientId]);
-  const onBoard = /\/(white)?board/.test(useLocation().pathname);
+  const { pathname } = useLocation();
+  const onBoard = /\/(white)?board/.test(pathname);
+  // /clients/<id>/<section>/…: the section decides which stage is open.
+  const section = pathname.split("/")[3];
   const lead = workspace.role === "founder" || workspace.role === "sales";
   const logos = useLogos();
   const templates = useTemplates();
@@ -45,35 +48,50 @@ export function ClientPage() {
   const client = clients.data.find((c) => c.id === clientId);
   if (!client) return <Navigate to="/clients" replace />;
 
-  const videos = videosOn ? [["videos", "Videos"]] : [];
-  const tabs = lead
-    ? [
-        ["", "Overview"],
+  const videos: [string, string][] = videosOn ? [["videos", "Videos"]] : [];
+  // The client page by stage, the same stages as the portal: what we write, prepare, shoot, review, measure.
+  const groups: { name: string; tabs: [string, string][] }[] = [
+    {
+      name: "Write",
+      tabs: [
         ["concepts", "Ideas"],
         ["scripts", "Scripts"],
-        ["production", "Production"],
-        ["shoot", "Shoot days"],
-        ["review", "Review"],
+        ["whiteboard", "Whiteboard"],
+      ],
+    },
+    {
+      name: "Prep",
+      tabs: lead
+        ? [
+            ["production", "Production"],
+            ["shoot", "Shoot days"],
+          ]
+        : [["shoot", "Shoot days"]],
+    },
+    { name: "Review", tabs: [["review", "Review"], ...videos] },
+    {
+      name: "Results",
+      tabs: [
         ["results", "Results"],
         ["library", "Library"],
-        ["money", "Money"],
-        ...videos,
-        ["whiteboard", "Whiteboard"],
-        ["shared", "Shared"],
-        ["onboarding", "Onboarding"],
-        ["logins", "Logins"],
-      ]
-    : [
-        ["concepts", "Ideas"],
-        ["scripts", "Scripts"],
-        ["shoot", "Shoot days"],
-        ["review", "Review"],
-        ["results", "Results"],
-        ["library", "Library"],
-        ...videos,
-        ["whiteboard", "Whiteboard"],
-        ["shared", "Shared"],
-      ];
+      ],
+    },
+    {
+      name: "Client",
+      tabs: lead
+        ? [
+            ["", "Overview"],
+            ["money", "Money"],
+            ["onboarding", "Onboarding"],
+            ["shared", "Shared"],
+            ["logins", "Logins"],
+          ]
+        : [["shared", "Shared"]],
+    },
+  ];
+  const here = section ?? "";
+  const currentGroup =
+    groups.find((g) => g.tabs.some(([p]) => p === here)) ?? groups.at(lead ? -1 : 0)!;
 
   return (
     <section className={`page${onBoard ? " board-page" : ""}`}>
@@ -101,18 +119,31 @@ export function ClientPage() {
         )}
       </div>
       {lead && <ProjectsStrip target={target} />}
-      <nav className="portal-tabs" aria-label={client.brand}>
-        {tabs.map(([path, label]) => (
+      <nav className="stage-tabs" aria-label={client.brand}>
+        {groups.map((g) => (
           <NavLink
-            key={path}
-            to={`/clients/${clientId}${path ? `/${path}` : ""}`}
-            end={!["whiteboard", "review", "money", "results", "shoot"].includes(path ?? "")}
-            className="portal-tab"
+            key={g.name}
+            to={`/clients/${clientId}${g.tabs[0]![0] ? `/${g.tabs[0]![0]}` : ""}`}
+            className={() => `stage-tab${g === currentGroup ? " active" : ""}`}
           >
-            {label}
+            {g.name}
           </NavLink>
         ))}
       </nav>
+      {currentGroup.tabs.length > 1 && (
+        <nav className="portal-tabs" aria-label={currentGroup.name}>
+          {currentGroup.tabs.map(([path, label]) => (
+            <NavLink
+              key={path}
+              to={`/clients/${clientId}${path ? `/${path}` : ""}`}
+              end={!["whiteboard", "review", "money", "results", "shoot"].includes(path)}
+              className="portal-tab"
+            >
+              {label}
+            </NavLink>
+          ))}
+        </nav>
+      )}
       <Routes>
         {lead ? (
           <>
