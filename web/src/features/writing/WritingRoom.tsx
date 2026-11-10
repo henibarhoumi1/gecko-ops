@@ -87,7 +87,10 @@ export function WritingRoom({
 
       <div className="room-columns">
         {ROOM_STAGES.filter(shown).map((stage) => (
-          <section key={stage} className={`room-col room-${stage}`}>
+          <section
+            key={stage}
+            className={`room-col room-${stage}${filter(columns[stage]).length ? "" : " empty"}`}
+          >
             <h2 className="room-col-head">
               [ {stageLabel(stage, reader)} ]{" "}
               <span className="muted">{filter(columns[stage]).length}</span>

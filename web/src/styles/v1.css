@@ -690,3 +690,50 @@
 .proposal-card:hover {
   box-shadow: var(--lift);
 }
+
+/* ---------- Laptop pass (from the 1280 px screenshots) ---------- */
+
+/* The Writing room fits a laptop: columns share the width, empty ones stay slim. */
+@media (min-width: 900px) {
+  .room-columns {
+    display: flex;
+    align-items: flex-start;
+    overflow-x: auto;
+  }
+
+  .room-col {
+    flex: 1 1 220px;
+    min-width: 180px;
+  }
+
+  .room-col.empty {
+    flex: 0 0 120px;
+    min-width: 120px;
+  }
+}
+
+/* The comment margin only draws its line when there are comments in it. */
+@media (min-width: 1180px) {
+  .script .script-line:not(.hook) > .line-side:not(:empty) {
+    border-left-color: transparent;
+  }
+
+  .script .script-line:not(.hook) > .line-side:has(.notes) {
+    border-left-color: var(--line);
+  }
+}
+
+/* The portal rail holds the whole menu on a laptop screen without scrolling. */
+@media (min-width: 900px) {
+  .portal-rail {
+    gap: 10px;
+  }
+
+  .portal-rail .rail-group {
+    margin-top: 6px;
+  }
+
+  .portal-rail .rail-link {
+    padding-block: 5px;
+  }
+}
