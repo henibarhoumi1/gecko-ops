@@ -1,0 +1,31 @@
+{
+ "canManage": true,
+ "projects": [
+  {
+   "id": "p_maison",
+   "name": "Lancement gamme hydratante",
+   "kind": "performance",
+   "status": "active",
+   "createdAt": "2026-10-20",
+   "ideas": 4,
+   "scripts": 3,
+   "approved": 1,
+   "shootDays": 1,
+   "nextShoot": "2026-11-19",
+   "reels": 10
+  },
+  {
+   "id": "p_maison2",
+   "name": "Film de marque",
+   "kind": "cinematic",
+   "status": "active",
+   "createdAt": "2026-11-02",
+   "ideas": 1,
+   "scripts": 0,
+   "approved": 0,
+   "shootDays": 0,
+   "nextShoot": null,
+   "reels": 1
+  }
+ ]
+}

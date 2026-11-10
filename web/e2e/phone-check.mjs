@@ -68,7 +68,16 @@ const PAGES = {
     "/team",
     "/onboarding",
   ],
-  team: ["/today"],
+  team: [
+    "/today",
+    "/clients",
+    "/clients/maison",
+    "/clients/maison/room",
+    "/clients/maison/concepts",
+    "/clients/maison/money",
+    "/pipeline",
+    "/shoots",
+  ],
 };
 
 const SIZES = [
@@ -119,6 +128,12 @@ try {
         }
         if (url.pathname.startsWith("/storage/v1/object/sign"))
           return json(JSON.stringify({ signedURL: "/e2e-missing.jpg" }));
+        // Tables the team reads directly: rest_<table>.json when there is one.
+        const table = /^\/rest\/v1\/([a-z0-9_]+)$/.exec(url.pathname);
+        if (table) {
+          const f = fixture(`rest_${table[1]}`);
+          return json(f === "null" ? "[]" : f);
+        }
         if (url.pathname.startsWith("/rest/v1/")) return json("[]");
         return json("{}");
       });
