@@ -15,6 +15,7 @@ import { ClientPage } from "@/features/clients/ClientPage";
 import { ClientsPage } from "@/features/clients/ClientsPage";
 import { PipelinePage } from "@/features/pipeline/PipelinePage";
 import { PortalPage } from "@/features/portal/PortalPage";
+import { CrewDayPage } from "@/features/shoot/CrewDayPage";
 import { ShootsPage } from "@/features/shoot/ShootsPage";
 import { TrashPage } from "@/features/trash/TrashPage";
 import { MUTATED } from "@/features/trash/trashApi";
@@ -92,6 +93,7 @@ export function App() {
               <BrowserRouter key={lang}>
                 <Routes>
                   <Route path="/invite/:code" element={<InvitePage />} />
+                  <Route path="/day/:token" element={<CrewDayPage />} />
                   <Route path="/sign-in" element={<SignedOutOnly page={<SignInPage />} />} />
                   <Route path="/sign-up" element={<SignedOutOnly page={<SignUpPage />} />} />
                   <Route path="/forgot" element={<SignedOutOnly page={<ForgotPage />} />} />

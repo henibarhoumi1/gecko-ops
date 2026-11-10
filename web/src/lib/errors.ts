@@ -417,6 +417,18 @@ const MESSAGES: [RegExp, string, string][] = [
     "It couldn't be put back: something with the same place already exists.",
     "Impossible de le restaurer : un élément occupe déjà sa place.",
   ],
+  [
+    /link_expired/,
+    "This link has ended. Ask Gecko for a new one.",
+    "Ce lien a expiré. Demandez-en un nouveau à Gecko.",
+  ],
+  [/link_not_found/, "That link is already closed.", "Ce lien est déjà fermé."],
+  [/invalid_link/, "Say who the link is for.", "Indiquez pour qui est le lien."],
+  [
+    /member_not_found/,
+    "That person isn't on the team any more.",
+    "Cette personne n'est plus dans l'équipe.",
+  ],
   [/invalid_project/, "Give the project a name.", "Donnez un nom au projet."],
   [
     /project_not_found/,

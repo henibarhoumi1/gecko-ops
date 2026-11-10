@@ -4,21 +4,72 @@ import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { inviteLink } from "@/lib/hosts";
 import { requireSupabase } from "@/lib/supabase";
 
-/** Roles the founder can invite. The founder role is never handed out. */
-export const INVITE_ROLES: readonly (readonly [Exclude<Role, "founder">, string])[] = [
-  ["editor", "Editor, picked clients only"],
-  ["sales", "Producer / project manager, all clients"],
+type Level = Exclude<Role, "founder">;
+
+/** What each level opens. The founder level is never handed out. */
+export const LEVELS: readonly (readonly [Level, string])[] = [
+  ["sales", "Producer level: every client, plans, approvals, the pipeline"],
+  ["editor", "Editor level: the clients you tick, writing, videos"],
+  ["assistant", "Production level: the clients you tick, shoot days"],
 ];
+
+/** The titles people have at Gecko, each with the level it usually comes with. */
+export const TITLES: readonly (readonly [string, Level])[] = [
+  ["Producer", "sales"],
+  ["Project manager", "sales"],
+  ["Creative strategist", "sales"],
+  ["Copywriter", "editor"],
+  ["Main editor", "editor"],
+  ["Second editor", "editor"],
+  ["Freelance editor", "editor"],
+  ["Graphic designer", "editor"],
+  ["Web developer", "editor"],
+  ["Director / DOP", "assistant"],
+  ["Production manager", "assistant"],
+  ["Coordinator", "assistant"],
+  ["On-set assistant", "assistant"],
+];
+
+/** The usual level for a title; editor for a title of your own. */
+export const levelFor = (title: string): Level =>
+  TITLES.find(([t]) => t === title)?.[1] ?? "editor";
+
+/** The founder changes someone's title or level. */
+export function useSetMemberRole() {
+  const { id: workspaceId } = useWorkspace();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { memberId: string; role: Level; title: string }) => {
+      const { error } = await requireSupabase().rpc("set_member_role", {
+        p_workspace_id: workspaceId,
+        p_member_id: input.memberId,
+        p_role: input.role,
+        p_title: input.title,
+      });
+      if (error) throw error;
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["members", workspaceId] }),
+  });
+}
 
 /** Creates a one-time team invite for that email and returns the link to send. */
 export function useInviteMember() {
   const { id: workspaceId } = useWorkspace();
   return useMutation({
-    mutationFn: async ({ email, role }: { email: string; role: string }): Promise<string> => {
+    mutationFn: async ({
+      email,
+      role,
+      title,
+    }: {
+      email: string;
+      role: string;
+      title: string;
+    }): Promise<string> => {
       const { data, error } = await requireSupabase().rpc("invite_workspace_member", {
         p_workspace_id: workspaceId,
         p_email: email,
         p_role: role,
+        p_title: title,
       });
       if (error) throw error;
       return inviteLink("team", String(data));
