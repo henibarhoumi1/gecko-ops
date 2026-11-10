@@ -24,6 +24,7 @@ import {
   type ShootPerson,
   type ShootReel,
 } from "./model";
+import { inProject, useProjectChoice } from "@/features/projects/projectChoice";
 import { Reader } from "./Reader";
 import { blankDay, DayForm, dayInput, NoteField, PersonForm, ReelPicker } from "./ShootParts";
 import { pendingCount, useShootActions, useShootPage, type ShootTarget } from "./shootApi";
@@ -45,6 +46,7 @@ export function ShootScreen({
 }) {
   const { dayId } = useParams();
   const page = useShootPage(target);
+  const [projectId] = useProjectChoice(target.workspaceId, target.clientId);
   const actions = useShootActions(target);
 
   if (!page.data) {
@@ -77,7 +79,15 @@ export function ShootScreen({
       />
     );
   }
-  return <DayList page={page.data} actions={actions} base={base} offline={offline} />;
+  return (
+    <DayList
+      page={{ ...page.data, days: inProject(page.data.days, projectId) }}
+      projectId={projectId}
+      actions={actions}
+      base={base}
+      offline={offline}
+    />
+  );
 }
 
 function OfflineNote({ target }: { target?: ShootTarget }) {
@@ -98,11 +108,13 @@ function OfflineNote({ target }: { target?: ShootTarget }) {
 
 function DayList({
   page,
+  projectId,
   actions,
   base,
   offline,
 }: {
   page: ShootPage;
+  projectId: string | null;
   actions: Actions;
   base: string;
   offline: boolean;
@@ -146,7 +158,7 @@ function DayList({
       )}
       {adding && (
         <DayForm
-          initial={blankDay(today)}
+          initial={blankDay(today, projectId)}
           actions={actions}
           onCancel={() => setAdding(false)}
           onSaved={(id) => navigate(`${base}/${id}`)}

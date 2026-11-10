@@ -28,6 +28,7 @@ import { useMyCuts } from "@/features/review/reviewApi";
 import { LibraryScreen } from "@/features/results/LibraryScreen";
 import { todayIso, waiting } from "@/features/results/model";
 import { ResultsScreen } from "@/features/results/ResultsScreen";
+import { ProjectPicker } from "@/features/projects/ProjectPicker";
 import { ShootScreen } from "@/features/shoot/ShootScreen";
 import { useResults } from "@/features/results/resultsApi";
 import { t } from "@/lib/i18n";
@@ -308,6 +309,7 @@ export function PortalPage({
         </header>
 
         <main className={`page portal-page${onBoard ? " board-page" : ""}`}>
+          <ProjectPicker target={target} />
           {current && !onBoard && <h1 className="page-title">{current.label}</h1>}
           {group && group.items.length > 1 && (
             <nav className="sub-nav" aria-label={group.label}>

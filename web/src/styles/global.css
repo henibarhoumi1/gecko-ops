@@ -7858,3 +7858,43 @@ a.piece:hover {
   border-radius: 10px;
   background: var(--white);
 }
+
+.project-card.picked {
+  background: var(--pink-soft);
+}
+
+.project-pick {
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  justify-self: start;
+  min-height: 32px;
+  padding: 4px 10px;
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.project-pick[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--white);
+}
+
+.project-picker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+}
+
+.project-picker select {
+  font: inherit;
+  min-width: 0;
+  max-width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  background: var(--white);
+}

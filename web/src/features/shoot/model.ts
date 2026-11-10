@@ -68,6 +68,8 @@ export interface ShootLogEntry {
 
 export interface ShootDay {
   id: string;
+  /** The project the day belongs to; missing on a database without projects yet. */
+  projectId?: string | null;
   /** YYYY-MM-DD */
   day: string;
   title: string;
@@ -167,6 +169,7 @@ function normaliseDay(v: unknown): ShootDay {
   const o = obj(v);
   return {
     id: str(o.id),
+    projectId: strOrNull(o.projectId),
     day: str(o.day),
     title: str(o.title),
     callTime: strOrNull(o.callTime),

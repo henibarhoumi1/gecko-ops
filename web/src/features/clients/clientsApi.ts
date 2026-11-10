@@ -10,6 +10,7 @@ import {
 } from "@/features/concepts/model";
 import type { Milestone } from "@/features/portal/portalApi";
 import type { ClientRole } from "@/features/portal/role";
+import { inProject, useProjectChoice } from "@/features/projects/projectChoice";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { inviteLink } from "@/lib/hosts";
 import { requireSupabase } from "@/lib/supabase";
@@ -208,13 +209,15 @@ export function useSaveLogo(clientId: string) {
 // ---------- concepts ----------
 
 const CONCEPT_COLUMNS =
-  "id,title,format,hook,body,refs,position,from_client,status,version,approved_version,approved_at,approved_by,author_name,created_at,updated_at";
+  "id,title,format,hook,body,refs,position,from_client,status,version,approved_version,approved_at,approved_by,author_name,created_at,updated_at,project_id";
 
 /** Every concept of one client (or of all clients, for the list), with its conversation. */
 export function useConcepts(clientId: string | null) {
   const { id: workspaceId } = useWorkspace();
+  const [projectId] = useProjectChoice(workspaceId, clientId);
   return useQuery({
     queryKey: ["concepts", workspaceId, clientId],
+    select: (rows) => inProject(rows, projectId),
     queryFn: async (): Promise<(Concept & { clientId: string })[]> => {
       const db = requireSupabase();
       let concepts = db
@@ -255,6 +258,7 @@ export interface ConceptInput {
 
 export function useSaveConcept(clientId: string) {
   const { id: workspaceId } = useWorkspace();
+  const [projectId] = useProjectChoice(workspaceId, clientId);
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (input: ConceptInput) => {
@@ -270,9 +274,12 @@ export function useSaveConcept(clientId: string) {
       };
       const { error } = input.id
         ? await db.from("concepts").update(fields).eq("id", input.id)
-        : await db
-            .from("concepts")
-            .insert({ ...fields, workspace_id: workspaceId, client_id: clientId });
+        : await db.from("concepts").insert({
+            ...fields,
+            workspace_id: workspaceId,
+            client_id: clientId,
+            ...(projectId ? { project_id: projectId } : {}),
+          });
       if (error) throw error;
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: ["concepts", workspaceId] }),

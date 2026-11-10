@@ -17,9 +17,10 @@ import type { DayInput, PersonInput, useShootActions } from "./shootApi";
 
 type Actions = ReturnType<typeof useShootActions>;
 
-export function blankDay(day: string): DayInput {
+export function blankDay(day: string, projectId: string | null = null): DayInput {
   return {
     id: null,
+    projectId,
     day,
     title: "",
     callTime: "",

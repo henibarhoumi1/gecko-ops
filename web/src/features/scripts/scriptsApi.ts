@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ClientPortal } from "@/features/auth/account";
+import { inProject, useProjectChoice } from "@/features/projects/projectChoice";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { requireSupabase } from "@/lib/supabase";
 import {
@@ -17,13 +18,15 @@ import {
 } from "./model";
 
 const COLUMNS =
-  "id,client_id,concept_id,title,style,seconds,goal,hooks,beats,cta,position,status,version,hook,approved_version,approved_at,approved_by,author_name,created_at,updated_at,written_by,treatment,shoot";
+  "id,client_id,concept_id,title,style,seconds,goal,hooks,beats,cta,position,status,version,hook,approved_version,approved_at,approved_by,author_name,created_at,updated_at,written_by,treatment,shoot,project_id";
 
 /** Every script of one client (or of all clients), with its notes and the version the client saw before. */
 export function useScripts(clientId: string | null) {
   const { id: workspaceId } = useWorkspace();
+  const [projectId] = useProjectChoice(workspaceId, clientId);
   return useQuery({
     queryKey: ["scripts", workspaceId, clientId],
+    select: (rows) => inProject(rows, projectId),
     queryFn: async (): Promise<(Script & { clientId: string })[]> => {
       const db = requireSupabase();
       let scripts = db.from("scripts").select(COLUMNS).eq("workspace_id", workspaceId);
@@ -63,6 +66,7 @@ export interface ScriptInput extends ScriptContent {
 
 export function useSaveScript(clientId: string) {
   const { id: workspaceId } = useWorkspace();
+  const [projectId] = useProjectChoice(workspaceId, clientId);
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (input: ScriptInput): Promise<string> => {
@@ -88,7 +92,13 @@ export function useSaveScript(clientId: string) {
       }
       const { data, error } = await db
         .from("scripts")
-        .insert({ ...fields, workspace_id: workspaceId, client_id: clientId })
+        .insert({
+          ...fields,
+          workspace_id: workspaceId,
+          client_id: clientId,
+          // A script from an idea follows the idea's project; otherwise it goes to the project chosen.
+          ...(projectId && !input.conceptId ? { project_id: projectId } : {}),
+        })
         .select("id")
         .single();
       if (error) throw error;

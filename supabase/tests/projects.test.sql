@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(12);
+select extensions.plan(15);
 
 insert into auth.users (id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at) values
   ('00000000-0000-4000-8000-000000000b01', 'authenticated', 'authenticated', 'founder@proj.test', '', now(), '{}', '{}', now(), now()),
@@ -93,6 +93,26 @@ select pg_temp.act_as('00000000-0000-4000-8000-000000000b03', 'editor@proj.test'
 select extensions.is(
   (public.get_projects('10000000-0000-4000-8000-000000000b01', 'c-p')->>'canManage')::boolean, false,
   'an editor reads projects without managing them'
+);
+
+-- A script written from an idea lands in the idea's project, even when a newer project is current.
+reset role;
+insert into public.scripts (workspace_id, client_id, title, concept_id)
+  select '10000000-0000-4000-8000-000000000b01', 'c-p', 'From the first idea', id from public.concepts where title = 'First idea';
+select extensions.is(
+  (select project_id from public.scripts where title = 'From the first idea'), 'p_c-p',
+  'a script follows its idea''s project'
+);
+select extensions.is(
+  public.concept_to_json((select c from public.concepts c where title = 'First idea'))->>'projectId', 'p_c-p',
+  'the client''s ideas say which project they belong to'
+);
+set local role authenticated;
+select pg_temp.act_as('00000000-0000-4000-8000-000000000b01', 'founder@proj.test');
+insert into pg_temp.vals values ('day', public.save_shoot_day('10000000-0000-4000-8000-000000000b01', 'c-p', '{"day":"2026-12-01","projectId":"p_c-p"}'));
+select extensions.is(
+  public.get_shoot_days('10000000-0000-4000-8000-000000000b01', 'c-p')->'days'->0->>'projectId',
+  'p_c-p', 'a shoot day is planned in the project chosen'
 );
 
 select * from extensions.finish();
