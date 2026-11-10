@@ -848,3 +848,231 @@
 .page.crew-day {
   max-width: 860px;
 }
+
+/* ---------- The menu folds to a slim strip for more room ---------- */
+
+.side-toggle {
+  display: none;
+}
+
+@media (min-width: 721px) {
+  /* The menu stays in view on long pages. */
+  .side {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .side-toggle {
+    position: absolute;
+    top: var(--s-5);
+    right: var(--s-3);
+    display: inline-grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--mat-major);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--white);
+    font: inherit;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .side-toggle:hover {
+    border-color: var(--white);
+  }
+
+  .shell {
+    transition: grid-template-columns 0.2s var(--ease);
+  }
+
+  .shell.side-folded {
+    grid-template-columns: 56px minmax(0, 1fr);
+  }
+
+  .shell.side-folded .side {
+    padding-inline: 0;
+    overflow: hidden;
+  }
+
+  .shell.side-folded .side > :not(.side-toggle) {
+    display: none;
+  }
+
+  .shell.side-folded .side-toggle {
+    right: 12px;
+  }
+}
+
+@media (min-width: 900px) {
+  .portal-rail {
+    position: sticky;
+  }
+
+  .portal-rail .side-toggle {
+    top: 26px;
+    right: var(--s-3);
+  }
+
+  .portal-v2 {
+    transition: grid-template-columns 0.2s var(--ease);
+  }
+
+  .portal-v2.side-folded {
+    grid-template-columns: 56px minmax(0, 1fr);
+  }
+
+  .portal-v2.side-folded .portal-rail {
+    padding-inline: 0;
+    overflow: hidden;
+  }
+
+  .portal-v2.side-folded .portal-rail > :not(.side-toggle) {
+    display: none;
+  }
+
+  .portal-v2.side-folded .portal-rail .side-toggle {
+    right: 12px;
+  }
+}
+
+/* ---------- Client Home: what needs you on the left, where to go on the right ---------- */
+
+.home-grid {
+  display: grid;
+  gap: var(--s-8);
+  margin-top: var(--s-6);
+}
+
+.home-main,
+.home-side {
+  display: grid;
+  align-content: start;
+  gap: var(--s-6);
+  min-width: 0;
+}
+
+.home-main {
+  gap: 0;
+}
+
+.home-main > * + * {
+  margin-top: var(--s-6);
+}
+
+.home-main > .waiting-title {
+  margin-top: 0;
+}
+
+.home-main > .waiting-title + * {
+  margin-top: var(--s-3);
+}
+
+@media (min-width: 1000px) {
+  .home-grid {
+    grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  }
+
+  .home-side {
+    position: sticky;
+    top: var(--s-6);
+  }
+}
+
+.home-links {
+  display: grid;
+  gap: var(--s-2);
+}
+
+.home-link {
+  display: grid;
+  gap: 2px;
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--white);
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.home-link:hover {
+  border-color: var(--ink);
+  box-shadow: var(--lift);
+}
+
+.home-link strong::after {
+  content: " →";
+}
+
+.home-doing h2 {
+  margin: 0 0 var(--s-2);
+  font-size: var(--fs-lg);
+}
+
+.home-main .home-tasks {
+  margin: 0;
+}
+
+/* ---------- Tasks: filters, notes, editing ---------- */
+
+.task-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.room-chip.late:not(.on) {
+  border-color: #a3261b;
+  color: #a3261b;
+}
+
+.task-notes {
+  margin: 0;
+  padding-left: 32px;
+  color: var(--ink-2);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.task-notes-input {
+  width: 100%;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  font: inherit;
+  font-size: var(--fs-md);
+}
+
+.task-editing {
+  padding: var(--s-3);
+  border-radius: var(--r-sm);
+  background: var(--yellow-soft);
+}
+
+/* ---------- Ideas: ways in ---------- */
+
+.idea-starters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+/* The week on Today: names wrap between words (hyphenated if they must), never mid-word. */
+.today-week-item {
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.today-week-item strong {
+  font-size: var(--fs-md);
+  line-height: 1.25;
+}

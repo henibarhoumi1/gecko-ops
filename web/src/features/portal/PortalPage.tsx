@@ -1,10 +1,12 @@
+import { SideToggle } from "@/components/SideToggle";
+import { useSideFolded } from "@/lib/sideMode";
 import { byClient } from "@/features/scripts/model";
 import { WritingRoom } from "@/features/writing/WritingRoom";
 import { PortalBrandPage } from "@/features/scripts/BrandPage";
 import { HistoryFeed } from "@/features/history/HistoryFeed";
 import { Tour, startTour } from "@/features/tour/Tour";
 import { clientSteps } from "@/features/tour/steps";
-import { HomeTasks, PortalTasks } from "@/features/tasks/TaskPanels";
+import { PortalTasks } from "@/features/tasks/TaskPanels";
 import { Presence } from "@/features/presence/Presence";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link, NavLink, Navigate, Route, Routes, useLocation } from "react-router-dom";
@@ -22,7 +24,6 @@ import { friendlyError } from "@/lib/errors";
 import { videosOn } from "@/lib/features";
 import { ConceptsTab } from "./ConceptsTab";
 import { OverviewTab } from "./OverviewTab";
-import { SinceLastVisit } from "./SinceLastVisit";
 import { ScriptsTab } from "./ScriptsTab";
 import { SharedTab } from "./SharedTab";
 import { useMyPortal, useMyVideos, useOnboardingStatus } from "./portalApi";
@@ -238,6 +239,7 @@ export function PortalPage({
   // Until the brand questions are sent, they're the first thing a client sees and does. Viewers can't answer them.
   const brandFirst = onboarding.isSuccess && !onboarding.data.sentAt && role !== "viewer";
   const [welcomed, setWelcomed] = useState(readWelcomed);
+  const [folded, setFolded] = useSideFolded();
 
   const brand = page.data?.brand ?? portal.brand;
   // Only people who can say yes to a cost get a badge for it.
@@ -271,9 +273,10 @@ export function PortalPage({
   return (
     <RoleContext.Provider value={role}>
       <div
-        className={`portal portal-v2 tpl-${page.data?.template === "cinematic" ? "cinematic" : "performance"}`}
+        className={`portal portal-v2 tpl-${page.data?.template === "cinematic" ? "cinematic" : "performance"}${folded ? " side-folded" : ""}`}
       >
         <aside className="portal-rail">
+          <SideToggle folded={folded} onToggle={() => setFolded(!folded)} />
           <Logo />
           <div className="rail-brand">{brandMark}</div>
           <nav aria-label={t("Your space", "Votre espace")}>
@@ -354,8 +357,6 @@ export function PortalPage({
                     <SendToBrand onSent={() => setWelcomed(markWelcomed())} />
                   ) : (
                     <>
-                      <SinceLastVisit target={target} />
-                      <HomeTasks portal={portal} />
                       <OverviewTab data={page.data} target={target} />
                     </>
                   )

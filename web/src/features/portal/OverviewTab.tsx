@@ -1,3 +1,5 @@
+import { HomeTasks } from "@/features/tasks/TaskPanels";
+import { SinceLastVisit } from "./SinceLastVisit";
 import { byClient } from "@/features/scripts/model";
 import { Link } from "react-router-dom";
 import { countByStatus, shortDate } from "@/features/concepts/model";
@@ -231,6 +233,30 @@ function waitingOnYou(
   return todo;
 }
 
+/** The four places a client goes most, one tap from Home. */
+const HOME_LINKS = () => [
+  {
+    to: "/room",
+    title: t("Writing room", "Atelier d'écriture"),
+    detail: t("Every idea and script, where it's at", "Chaque idée et script, où ça en est"),
+  },
+  {
+    to: "/tasks",
+    title: t("Tasks", "Tâches"),
+    detail: t("One list with Gecko", "Une seule liste avec Gecko"),
+  },
+  {
+    to: "/brand",
+    title: t("Brand sheet", "Fiche marque"),
+    detail: t("Your brand on one page", "Votre marque sur une page"),
+  },
+  {
+    to: "/results",
+    title: t("Numbers", "Chiffres"),
+    detail: t("How the videos are doing", "Comment marchent les vidéos"),
+  },
+];
+
 export function OverviewTab({ data, target }: { data: PortalData; target: SheetTarget }) {
   const onboarding = useOnboardingStatus(target);
   const counts = countByStatus(data.concepts);
@@ -288,41 +314,57 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
         shootPlace={o?.shootPlace ?? ""}
       />
 
-      <h2 className="waiting-title">
-        {t(`${first}, here's what needs you`, `${first}, voici ce qui vous attend`)}
-      </h2>
-      {todo.length === 0 ? (
-        <p className="waiting-none">
-          {t(
-            "Nothing right now. When Gecko sends something to read or approve, it shows up here first.",
-            "Rien pour l'instant. Quand Gecko vous envoie quelque chose à lire ou à valider, ça s'affiche ici en premier.",
+      <div className="home-grid">
+        <div className="home-main">
+          <h2 className="waiting-title">
+            {t(`${first}, here's what needs you`, `${first}, voici ce qui vous attend`)}
+          </h2>
+          {todo.length === 0 ? (
+            <p className="waiting-none">
+              {t(
+                "Nothing right now. When Gecko sends something to read or approve, it shows up here first.",
+                "Rien pour l'instant. Quand Gecko vous envoie quelque chose à lire ou à valider, ça s'affiche ici en premier.",
+              )}
+            </p>
+          ) : (
+            <ul className="waiting">
+              {todo.map((item) => (
+                <li key={item.to}>
+                  <Link to={item.to} className="waiting-item">
+                    <strong>{item.title}</strong>
+                    <span className="small">{item.detail}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
           )}
-        </p>
-      ) : (
-        <ul className="waiting">
-          {todo.map((item) => (
-            <li key={item.to}>
-              <Link to={item.to} className="waiting-item">
-                <strong>{item.title}</strong>
-                <span className="small">{item.detail}</span>
+
+          <HomeTasks portal={target} />
+          <SinceLastVisit target={target} />
+        </div>
+
+        <aside className="home-side">
+          <nav className="home-links" aria-label={t("Go to", "Aller à")}>
+            {HOME_LINKS().map((l) => (
+              <Link key={l.to} to={l.to} className="home-link">
+                <strong>{l.title}</strong>
+                <span className="small">{l.detail}</span>
               </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <Progress plan={o?.plan ?? "custom"} reels={o?.reels ?? null} scripts={data.scripts} />
-
-      {doing.length > 0 && (
-        <>
-          <h2>{t("What Gecko is doing", "Ce que fait Gecko")}</h2>
-          <ul className="doing">
-            {doing.map((line) => (
-              <li key={line}>{line}</li>
             ))}
-          </ul>
-        </>
-      )}
+          </nav>
+          <Progress plan={o?.plan ?? "custom"} reels={o?.reels ?? null} scripts={data.scripts} />
+          {doing.length > 0 && (
+            <div className="home-doing">
+              <h2>{t("What Gecko is doing", "Ce que fait Gecko")}</h2>
+              <ul className="doing">
+                {doing.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </aside>
+      </div>
 
       {!o ? (
         <p className="muted">

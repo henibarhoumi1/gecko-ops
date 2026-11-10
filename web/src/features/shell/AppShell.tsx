@@ -1,3 +1,5 @@
+import { SideToggle } from "@/components/SideToggle";
+import { useSideFolded } from "@/lib/sideMode";
 import { NavLink, Outlet } from "react-router-dom";
 import { Button } from "@/components/Button";
 import { Logo } from "@/components/Logo";
@@ -18,9 +20,11 @@ export function AppShell({ workspace, email }: { workspace: Workspace; email: st
   const members = useMembers();
   const me = members.data?.find((m) => m.userId);
   const items = navFor(workspace.role);
+  const [folded, setFolded] = useSideFolded();
   return (
-    <div className="shell">
+    <div className={`shell${folded ? " side-folded" : ""}`}>
       <aside className="side">
+        <SideToggle folded={folded} onToggle={() => setFolded(!folded)} />
         <Logo />
         <button type="button" className="side-search" onClick={openPalette}>
           <span>Search or jump</span>

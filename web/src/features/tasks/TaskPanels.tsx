@@ -28,6 +28,9 @@ export function TeamTasks({ clientId }: { clientId: string }) {
         reader="team"
         canWrite
         onAdd={(task) => act.save.mutateAsync({ clientId, task })}
+        onEdit={(task, input) =>
+          act.save.mutateAsync({ clientId, task: { ...input, id: task.id } })
+        }
         onTick={(task, done) => act.tick.mutateAsync({ clientId, id: task.id, done })}
         onRemove={(task) => act.remove.mutateAsync({ clientId, id: task.id })}
         linkFor={(task) => (task.link ? `/clients/${clientId}${task.link}` : "")}
@@ -58,6 +61,9 @@ export function TodayTasks() {
         limit={8}
         empty="Nothing on Gecko's list."
         onAdd={(task) => act.save.mutateAsync({ clientId: null, task: { ...task, side: "gecko" } })}
+        onEdit={(task, input) =>
+          act.save.mutateAsync({ clientId: task.clientId, task: { ...input, id: task.id } })
+        }
         onTick={(task, done) =>
           act.tick.mutateAsync({ clientId: task.clientId, id: task.id, done })
         }
@@ -101,6 +107,9 @@ export function PortalTasks({ portal }: { portal: ClientPortal }) {
         reader="client"
         canWrite={canWriteAs(role)}
         onAdd={(task) => act.save.mutateAsync({ clientId, task })}
+        onEdit={(task, input) =>
+          act.save.mutateAsync({ clientId, task: { ...input, id: task.id } })
+        }
         onTick={(task, done) => act.tick.mutateAsync({ clientId, id: task.id, done })}
         onRemove={(task) => act.remove.mutateAsync({ clientId, id: task.id })}
       />
@@ -109,7 +118,7 @@ export function PortalTasks({ portal }: { portal: ClientPortal }) {
 }
 
 /** On the client's home: what's waiting on them, when anything is. */
-export function HomeTasks({ portal }: { portal: ClientPortal }) {
+export function HomeTasks({ portal }: { portal: { workspaceId: string; clientId: string } }) {
   const role = useClientRole();
   const tasks = useTasks(portal, "client");
   const act = useTaskActions(portal.workspaceId);
@@ -125,6 +134,7 @@ export function HomeTasks({ portal }: { portal: ClientPortal }) {
         reader="client"
         canWrite={canWriteAs(role)}
         limit={4}
+        filters={false}
         onTick={(task, done) =>
           act.tick.mutateAsync({ clientId: portal.clientId, id: task.id, done })
         }

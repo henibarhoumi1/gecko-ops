@@ -91,3 +91,40 @@ export const openFor = (tasks: readonly Task[], reader: "client" | "team") =>
 /** The client can change or remove only what they added; the team, everything. */
 export const canEdit = (task: Pick<Task, "mine">, reader: "client" | "team") =>
   reader === "team" || task.mine;
+
+export type TaskFilter = "open" | "mine" | "late" | "done";
+
+/** The tasks a filter shows: open ones, the reader's side's, the late ones, or the done ones. */
+export function filterTasks<T extends Pick<Task, "doneAt" | "side" | "due">>(
+  tasks: readonly T[],
+  filter: TaskFilter,
+  reader: "client" | "team",
+  today: string,
+): T[] {
+  const mySide = reader === "client" ? "client" : "gecko";
+  switch (filter) {
+    case "open":
+      return tasks.filter((x) => !x.doneAt);
+    case "mine":
+      return tasks.filter((x) => !x.doneAt && x.side === mySide);
+    case "late":
+      return tasks.filter((x) => !x.doneAt && x.due !== null && x.due < today);
+    case "done":
+      return tasks.filter((x) => Boolean(x.doneAt));
+  }
+}
+
+/** The pages a task can be about, as paths both sides understand (the team adds its client prefix). */
+export function taskPages(): [string, string][] {
+  return [
+    ["", t("Nothing in particular", "Rien de précis")],
+    ["/room", t("Writing room", "Atelier d'écriture")],
+    ["/concepts", t("Ideas", "Idées")],
+    ["/scripts", t("Scripts", "Scripts")],
+    ["/shoot", t("Shoot days", "Jours de tournage")],
+    ["/brand", t("Brand sheet", "Fiche marque")],
+    ["/shared", t("Notes and links", "Notes et liens")],
+    ["/review", t("Reels to review", "Vidéos à valider")],
+    ["/results", t("Numbers", "Chiffres")],
+  ];
+}
