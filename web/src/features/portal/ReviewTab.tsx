@@ -1,3 +1,4 @@
+import { StageList } from "@/components/StageList";
 import { useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/Button";
@@ -48,46 +49,32 @@ export function ReviewTab({ portal }: { portal: ClientPortal }) {
   }
   const groups = groupCuts(cuts.data.cuts, "client");
   return (
-    <section className="tab-body">
-      <p className="lede">
-        {tw(
-          [
-            "Watch each reel, pause where something should change and leave a note on that moment. Approve it when it's right.",
-            "Regardez chaque vidéo, mettez sur pause là où quelque chose doit changer et laissez une note sur ce moment. Validez quand c'est bon.",
-          ],
-          [
-            "Watch each film, pause where something should change and leave a note on that moment. Approve it when it's right.",
-            "Regardez chaque film, mettez sur pause là où quelque chose doit changer et laissez une note sur ce moment. Validez quand c'est juste.",
-          ],
-        )}
-      </p>
-      {groups.length === 0 && (
-        <p className="muted empty-state">
-          {tw(
-            [
-              "Your reels show up here as soon as the first cut is ready.",
-              "Vos vidéos s'affichent ici dès que le premier montage est prêt.",
-            ],
-            [
-              "Your films show up here as soon as the first cut is ready.",
-              "Vos films s'affichent ici dès que le premier montage est prêt.",
-            ],
-          )}
-        </p>
+    <StageList
+      lede={tw(
+        [
+          "Watch each reel, pause where something should change and leave a note on that moment. Approve it when it's right.",
+          "Regardez chaque vidéo, mettez sur pause là où quelque chose doit changer et laissez une note sur ce moment. Validez quand c'est bon.",
+        ],
+        [
+          "Watch each film, pause where something should change and leave a note on that moment. Approve it when it's right.",
+          "Regardez chaque film, mettez sur pause là où quelque chose doit changer et laissez une note sur ce moment. Validez quand c'est juste.",
+        ],
       )}
-      {groups.map(([status, items]) => (
-        <div key={status} className="group">
-          <h2>
-            {groupName(status)} <span className="count">{items.length}</span>
-          </h2>
-          <ul className="cut-list">
-            {items.map((cut) => (
-              <CutRow key={cut.id} cut={cut} to={`/review/${cut.id}`} />
-            ))}
-          </ul>
-        </div>
-      ))}
-    </section>
+      empty={tw(
+        [
+          "Your reels show up here as soon as the first cut is ready.",
+          "Vos vidéos s'affichent ici dès que le premier montage est prêt.",
+        ],
+        [
+          "Your films show up here as soon as the first cut is ready.",
+          "Vos films s'affichent ici dès que le premier montage est prêt.",
+        ],
+      )}
+      groups={groups.map(([status, items]) => ({ key: status, title: groupName(status), items }))}
+      layout="rows"
+      itemKey={(cut) => cut.id}
+      renderItem={(cut) => <CutRow cut={cut} to={`/review/${cut.id}`} />}
+    />
   );
 }
 

@@ -1,3 +1,4 @@
+import { StageList } from "@/components/StageList";
 import { useHashScroll } from "@/lib/useHashScroll";
 import { useState } from "react";
 import type { ClientPortal } from "@/features/auth/account";
@@ -18,57 +19,42 @@ export function ScriptsTab({ portal, scripts }: { portal: ClientPortal; scripts:
   const [writing, setWriting] = useState(false);
   const canWrite = canApprove(role);
   return (
-    <section className="tab-body">
-      <div className="page-head">
-        <p className="lede">
-          {tw(
-            [
-              "Each script is one reel, written the way we'll film it. Pick the hook you like, comment on any line, then approve. Once you approve, that's what we shoot.",
-              "Chaque script, c'est une vidéo, écrite comme on va la filmer. Choisissez l'accroche qui vous plaît, commentez n'importe quelle ligne, puis validez. Une fois validé, c'est ce qu'on tourne.",
-            ],
-            [
-              "Each treatment describes one film: the feeling, the story, the scenes. Comment on any line, then approve. Once you approve, that's the film we make.",
-              "Chaque note d'intention décrit un film : l'émotion, l'histoire, les scènes. Commentez n'importe quelle ligne, puis validez. Une fois validée, c'est le film qu'on tourne.",
-            ],
-          )}
-        </p>
-        {canWrite && !writing && (
+    <StageList
+      lede={tw(
+        [
+          "Each script is one reel, written the way we'll film it. Pick the hook you like, comment on any line, then approve. Once you approve, that's what we shoot.",
+          "Chaque script, c'est une vidéo, écrite comme on va la filmer. Choisissez l'accroche qui vous plaît, commentez n'importe quelle ligne, puis validez. Une fois validé, c'est ce qu'on tourne.",
+        ],
+        [
+          "Each treatment describes one film: the feeling, the story, the scenes. Comment on any line, then approve. Once you approve, that's the film we make.",
+          "Chaque note d'intention décrit un film : l'émotion, l'histoire, les scènes. Commentez n'importe quelle ligne, puis validez. Une fois validée, c'est le film qu'on tourne.",
+        ],
+      )}
+      action={
+        canWrite ? (
           <Button variant="secondary" onClick={() => setWriting(true)}>
             {tw(
               ["Write your own script", "Écrire votre script"],
               ["Write your own treatment", "Écrire votre note d'intention"],
             )}
           </Button>
-        )}
-      </div>
-      {writing && <WriteScript portal={portal} onDone={() => setWriting(false)} />}
-      {groups.length === 0 && !writing && (
-        <p className="muted empty-state">
-          {tw(
-            [
-              "Scripts come after you approve the ideas. They'll appear here for you to read and approve.",
-              "Les scripts arrivent après la validation des idées. Ils apparaîtront ici pour que vous les lisiez et les validiez.",
-            ],
-            [
-              "Treatments come after you approve the concepts. They'll appear here for you to read and approve.",
-              "Les notes d'intention arrivent après la validation des concepts. Elles apparaîtront ici pour que vous les lisiez et les validiez.",
-            ],
-          )}
-        </p>
+        ) : undefined
+      }
+      form={writing ? <WriteScript portal={portal} onDone={() => setWriting(false)} /> : null}
+      empty={tw(
+        [
+          "Scripts come after you approve the ideas. They'll appear here for you to read and approve.",
+          "Les scripts arrivent après la validation des idées. Ils apparaîtront ici pour que vous les lisiez et les validiez.",
+        ],
+        [
+          "Treatments come after you approve the concepts. They'll appear here for you to read and approve.",
+          "Les notes d'intention arrivent après la validation des concepts. Elles apparaîtront ici pour que vous les lisiez et les validiez.",
+        ],
       )}
-      {groups.map((group) => (
-        <div key={group.status} className="group">
-          <h2>
-            {group.title} <span className="count">{group.items.length}</span>
-          </h2>
-          <div className="concepts">
-            {group.items.map((script) => (
-              <ClientScript key={script.id} portal={portal} script={script} />
-            ))}
-          </div>
-        </div>
-      ))}
-    </section>
+      groups={groups.map((g) => ({ key: g.status, title: g.title, items: g.items }))}
+      itemKey={(s) => s.id}
+      renderItem={(script) => <ClientScript portal={portal} script={script} />}
+    />
   );
 }
 

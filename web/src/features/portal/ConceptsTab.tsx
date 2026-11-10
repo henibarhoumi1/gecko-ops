@@ -1,3 +1,4 @@
+import { StageList } from "@/components/StageList";
 import { useHashScroll } from "@/lib/useHashScroll";
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/Button";
@@ -19,63 +20,48 @@ export function ConceptsTab({ portal, concepts }: { portal: ClientPortal; concep
   useHashScroll(true);
 
   return (
-    <section className="tab-body">
-      <div className="page-head">
-        <p className="lede">
-          {tw(
-            [
-              "Each idea is one reel or post. Approve the ones you like or tell us what to change, and the approved ones become scripts.",
-              "Chaque idée, c'est une vidéo ou un post. Validez celles qui vous plaisent ou dites-nous quoi changer : les idées validées deviennent des scripts.",
-            ],
-            [
-              "Each concept is one film or set of stills. Approve the ones that feel right or tell us what to change. Approved concepts become treatments.",
-              "Chaque concept, c'est un film ou une série de photos. Validez ceux qui vous parlent ou dites-nous quoi changer : les concepts validés deviennent des notes d'intention.",
-            ],
-          )}
-        </p>
-        {!adding && (
-          <Button variant="secondary" onClick={() => setAdding(true)}>
-            {tw(
-              ["Add your own idea", "Proposer une idée"],
-              ["Suggest a concept", "Proposer un concept"],
-            )}
-          </Button>
-        )}
-      </div>
-      {adding && <IdeaForm portal={portal} onDone={() => setAdding(false)} />}
-      {groups.length === 0 && !adding && (
-        <p className="muted empty-state">
-          {tw(
-            [
-              "Gecko is working on your ideas. They'll appear here for you to read and approve.",
-              "Gecko travaille sur vos idées. Elles apparaîtront ici pour que vous les lisiez et les validiez.",
-            ],
-            [
-              "Gecko is shaping your concepts. They'll appear here for you to read and approve.",
-              "Gecko prépare vos concepts. Ils apparaîtront ici pour que vous les lisiez et les validiez.",
-            ],
-          )}
-        </p>
+    <StageList
+      lede={tw(
+        [
+          "Each idea is one reel or post. Approve the ones you like or tell us what to change, and the approved ones become scripts.",
+          "Chaque idée, c'est une vidéo ou un post. Validez celles qui vous plaisent ou dites-nous quoi changer : les idées validées deviennent des scripts.",
+        ],
+        [
+          "Each concept is one film or set of stills. Approve the ones that feel right or tell us what to change. Approved concepts become treatments.",
+          "Chaque concept, c'est un film ou une série de photos. Validez ceux qui vous parlent ou dites-nous quoi changer : les concepts validés deviennent des notes d'intention.",
+        ],
       )}
-      {groups.map((group) => (
-        <div key={group.status} className="group">
-          <h2>
-            {group.title} <span className="count">{group.items.length}</span>
-          </h2>
-          <div className="concepts">
-            {group.items.map((concept) => (
-              <ConceptCard key={concept.id} concept={concept} reader="client">
-                {concept.status === "idea" ? (
-                  <IdeaActions portal={portal} concept={concept} />
-                ) : (
-                  <ClientActions portal={portal} concept={concept} />
-                )}
-              </ConceptCard>
-            ))}
-          </div>
-        </div>
-      ))}
-    </section>
+      action={
+        <Button variant="secondary" onClick={() => setAdding(true)}>
+          {tw(
+            ["Add your own idea", "Proposer une idée"],
+            ["Suggest a concept", "Proposer un concept"],
+          )}
+        </Button>
+      }
+      form={adding ? <IdeaForm portal={portal} onDone={() => setAdding(false)} /> : null}
+      empty={tw(
+        [
+          "Gecko is working on your ideas. They'll appear here for you to read and approve.",
+          "Gecko travaille sur vos idées. Elles apparaîtront ici pour que vous les lisiez et les validiez.",
+        ],
+        [
+          "Gecko is shaping your concepts. They'll appear here for you to read and approve.",
+          "Gecko prépare vos concepts. Ils apparaîtront ici pour que vous les lisiez et les validiez.",
+        ],
+      )}
+      groups={groups.map((g) => ({ key: g.status, title: g.title, items: g.items }))}
+      itemKey={(c) => c.id}
+      renderItem={(concept) => (
+        <ConceptCard concept={concept} reader="client">
+          {concept.status === "idea" ? (
+            <IdeaActions portal={portal} concept={concept} />
+          ) : (
+            <ClientActions portal={portal} concept={concept} />
+          )}
+        </ConceptCard>
+      )}
+    />
   );
 }
 
