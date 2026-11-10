@@ -7693,6 +7693,20 @@ a.piece:hover {
   white-space: nowrap;
 }
 
+/* On a phone, the brand and the wait share the first line; what's waiting goes underneath. */
+@media (max-width: 560px) {
+  .today-line {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2px 10px;
+  }
+
+  .today-line > span:nth-child(2) {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    white-space: normal;
+  }
+}
+
 .today-slow {
   background: var(--pink);
 }

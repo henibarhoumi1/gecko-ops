@@ -35,6 +35,10 @@ import {
 } from "./model";
 import { useCaptureIdea, useToday } from "./todayApi";
 
+/** "Wed" for 2026-11-04. */
+const weekday = (iso: string) =>
+  new Date(`${iso}T12:00:00Z`).toLocaleDateString("en-GB", { weekday: "short", timeZone: "UTC" });
+
 const KIND: Record<string, string> = {
   shoot: "Shoot",
   drafts: "Drafts",
@@ -120,7 +124,7 @@ export function TodayPage() {
         </Link>
       ) : (
         <p className="today-next today-next-empty">
-          No shoot day planned. Add one from a client&rsquo;s <strong>Shoot days</strong> tab.
+          No shoot day planned. Add one from a client&rsquo;s Shoot days tab.
         </p>
       )}
 
@@ -236,7 +240,7 @@ export function TodayPage() {
           {week.map((d) => (
             <li key={d.date} className={d.date === t.today ? "is-today" : ""}>
               <span className="today-week-day">
-                <strong>{shortDay(d.date).split(" ")[0]}</strong> {shortDay(d.date).split(" ")[1]}
+                <strong>{weekday(d.date)}</strong> {Number(d.date.slice(8))}
               </span>
               {d.entries.map((e, i) => (
                 <Link key={i} to={e.to} className={`today-week-item kind-${e.kind}`}>
