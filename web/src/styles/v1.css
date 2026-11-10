@@ -1076,3 +1076,55 @@
   font-size: var(--fs-md);
   line-height: 1.25;
 }
+
+/* ---------- Clients: delete a client (founder) ---------- */
+.client-li {
+  position: relative;
+}
+
+.client-li:has(.client-delete) .client-row {
+  padding-right: 88px;
+}
+
+.client-delete {
+  position: absolute;
+  top: var(--s-3);
+  right: var(--s-3);
+  min-height: 32px;
+  padding: 0 var(--s-3);
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.client-li:hover .client-delete,
+.client-delete:focus-visible {
+  opacity: 1;
+}
+
+.client-delete:hover,
+.client-delete:focus-visible {
+  border-color: var(--ink);
+  background: var(--pink-soft);
+  color: var(--ink);
+}
+
+.client-delete-form {
+  margin-top: var(--s-2);
+  border-color: var(--ink);
+  background: var(--pink-soft);
+}
+
+.client-delete-form p {
+  margin: 0;
+  max-width: 68ch;
+}
+
+.removed-clients {
+  margin-bottom: var(--s-8);
+}

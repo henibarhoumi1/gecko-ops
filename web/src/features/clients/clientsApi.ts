@@ -61,6 +61,76 @@ export function useAddClient() {
   });
 }
 
+export interface RemovedClient {
+  id: string;
+  brand: string;
+  removedAt: string;
+  removedBy: string;
+}
+
+export function normaliseRemoved(data: unknown): RemovedClient[] {
+  return (Array.isArray(data) ? data : []).map((v) => {
+    const o = (v && typeof v === "object" ? v : {}) as Record<string, unknown>;
+    const s = (x: unknown) => (typeof x === "string" ? x : "");
+    return {
+      id: s(o.id),
+      brand: s(o.brand),
+      removedAt: s(o.removedAt),
+      removedBy: s(o.removedBy),
+    };
+  });
+}
+
+/**
+ * Deletes a client (founder only). The brand name is typed back as the confirmation. Nothing is
+ * destroyed: the client leaves every page and its portal closes until it's restored from the Trash.
+ */
+export function useRemoveClient() {
+  const { id: workspaceId } = useWorkspace();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, brand }: { id: string; brand: string }) => {
+      const { error } = await requireSupabase().rpc("remove_client", {
+        p_workspace_id: workspaceId,
+        p_client_id: id,
+        p_confirm_brand: brand,
+      });
+      if (error) throw error;
+    },
+    onSettled: () => queryClient.invalidateQueries(),
+  });
+}
+
+/** Deleted clients, newest first. Only the founder gets any. */
+export function useRemovedClients(workspaceId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: ["removed-clients", workspaceId],
+    enabled,
+    queryFn: async () => {
+      const { data, error } = await requireSupabase().rpc("get_removed_clients", {
+        p_workspace_id: workspaceId,
+      });
+      if (error) throw error;
+      return normaliseRemoved(data);
+    },
+  });
+}
+
+/** Puts a deleted client back with everything it had; every screen reads again. */
+export function useRestoreClient(workspaceId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await requireSupabase().rpc("restore_client", {
+        p_workspace_id: workspaceId,
+        p_client_id: id,
+      });
+      if (error) throw error;
+    },
+    onSettled: () => queryClient.invalidateQueries(),
+  });
+}
+
 // ---------- the overview the client sees ----------
 
 export interface PortalRow {

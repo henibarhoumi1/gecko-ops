@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
+import { useRemovedClients, useRestoreClient } from "@/features/clients/clientsApi";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
+import { useHashScroll } from "@/lib/useHashScroll";
 import { friendlyError } from "@/lib/errors";
 import { kindName, useEmptyTrash, useRestore, useTrash } from "./trashApi";
 
@@ -63,6 +65,7 @@ export function TrashPage() {
         </div>
       )}
       {empty.isError && <Notice tone="error">{friendlyError(empty.error)}</Notice>}
+      {role === "founder" && <RemovedClients workspaceId={workspaceId} />}
       {waiting.length === 0 ? (
         <p className="empty-state">The trash is empty.</p>
       ) : (
@@ -113,5 +116,43 @@ export function TrashPage() {
         </>
       )}
     </section>
+  );
+}
+
+/** Clients the founder deleted. They never expire: Restore brings each back with everything it had. */
+function RemovedClients({ workspaceId }: { workspaceId: string }) {
+  const removed = useRemovedClients(workspaceId, true);
+  const restore = useRestoreClient(workspaceId);
+  useHashScroll(!removed.isPending);
+  if (!removed.data || removed.data.length === 0) return null;
+  return (
+    <div id="deleted-clients" className="removed-clients">
+      <h2 className="trash-h">Deleted clients</h2>
+      <p className="small">
+        Hidden from every page and their portal is closed, but nothing was destroyed. These stay
+        here until you restore them.
+      </p>
+      {restore.isError && <Notice tone="error">{friendlyError(restore.error)}</Notice>}
+      <ul className="trash-list">
+        {removed.data.map((c) => (
+          <li key={c.id}>
+            <span className="trash-what">
+              <strong dir="auto">{c.brand}</strong>
+              <span className="small">
+                Client · deleted by {c.removedBy || "someone"}, {when(c.removedAt)}
+              </span>
+            </span>
+            <Button
+              variant="secondary"
+              className="btn-small"
+              disabled={restore.isPending}
+              onClick={() => restore.mutate(c.id)}
+            >
+              Restore
+            </Button>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
