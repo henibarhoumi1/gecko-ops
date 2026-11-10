@@ -109,7 +109,7 @@ export function PortalTasks({ portal }: { portal: ClientPortal }) {
 }
 
 /** On the client's home: what's waiting on them, when anything is. */
-export function HomeTasks({ portal }: { portal: ClientPortal }) {
+export function HomeTasks({ portal }: { portal: { workspaceId: string; clientId: string } }) {
   const role = useClientRole();
   const tasks = useTasks(portal, "client");
   const act = useTaskActions(portal.workspaceId);

@@ -67,12 +67,6 @@
   color: var(--ink);
 }
 
-/* The bracket from the logo marks where you are. */
-.side .nav-item.active::after {
-  content: " ]";
-  font-weight: 700;
-}
-
 .side .me,
 .side .me .btn-link {
   color: var(--white);
@@ -241,13 +235,6 @@
   .portal-rail .rail-link.active {
     background: var(--pink);
     color: var(--ink);
-  }
-
-  /* The bracket from the logo closes the page you are on. */
-  .portal-rail .rail-link.active::after {
-    content: "]";
-    margin-left: auto;
-    font-weight: 700;
   }
 
   .portal-rail .rail-me {
