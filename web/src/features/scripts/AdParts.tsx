@@ -72,6 +72,7 @@ export function AdParts({
   hookNote,
   seconds,
   never = [],
+  proven = [],
 }: {
   draft: AdDraft;
   onChange: (next: AdDraft) => void;
@@ -81,6 +82,8 @@ export function AdParts({
   seconds: number;
   /** Words the brand never uses: any line that has one gets flagged. */
   never?: readonly string[];
+  /** Hooks that worked for this client, from Results: first in the library. */
+  proven?: readonly string[];
 }) {
   const tpl = template(draft.style);
   const hints = bodyFor(tpl, seconds);
@@ -173,7 +176,17 @@ export function AdParts({
         )}
         {canAddHook && library && (
           <div className="hook-library">
-            {hookLibrary().map((group) => (
+            {[
+              ...(proven.length
+                ? [
+                    {
+                      name: t("Worked for this brand", "Ont marché pour la marque"),
+                      hooks: [...proven],
+                    },
+                  ]
+                : []),
+              ...hookLibrary(),
+            ].map((group) => (
               <div key={group.name} className="hook-group">
                 <span className="small">{group.name}</span>
                 {group.hooks.map((line) => (

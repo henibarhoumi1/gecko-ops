@@ -18,6 +18,7 @@ import {
 } from "@/features/scripts/model";
 import { ScriptView } from "@/features/scripts/ScriptView";
 import { BrandDrawer, useBrand } from "@/features/scripts/BrandDrawer";
+import { useProvenHooks } from "@/features/results/ResultsExtras";
 import { useTeamShared } from "@/features/shared/sharedApi";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { AdParts, adDraft, draftBeats, noWords, type AdDraft } from "@/features/scripts/AdParts";
@@ -305,6 +306,7 @@ function ScriptForm({
   const { id: workspaceId } = useWorkspace();
   const space = useTeamShared(clientId);
   const brand = useBrand(workspaceId, clientId, space.data?.brandNotes.body);
+  const proven = useProvenHooks({ workspaceId, clientId });
   const approved = (concepts.data ?? []).filter((c) => c.status === "approved");
   const startIdea = approved.find((c) => c.id === fromIdea);
   const [draft, setDraft] = useState<AdDraft>(() =>
@@ -428,6 +430,7 @@ function ScriptForm({
         onChange={setDraft}
         seconds={seconds}
         never={brand.never}
+        proven={proven}
         hookNote="write 2 or 3, the client picks"
       />
       <ShootPlanPicker clientId={clientId} plan={shoot} onChange={setShoot} />

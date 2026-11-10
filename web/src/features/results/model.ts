@@ -45,7 +45,19 @@ export interface Post {
   press: string;
   fromClient: boolean;
   authorName: string;
+  /** The script it came from and the hook it opened with, when someone said so. */
+  scriptId?: string | null;
+  hookIndex?: number | null;
   numbers: PostNumbers[];
+}
+
+/** A script a post can come from, with its hooks as plain words. */
+export interface ResultScript {
+  id: string;
+  title: string;
+  style: string;
+  hook: number | null;
+  hooks: string[];
 }
 
 export interface MonthlyRead {
@@ -70,6 +82,7 @@ export interface ResultsPage {
   posts: Post[];
   reads: MonthlyRead[];
   cuts: { id: string; title: string }[];
+  scripts: ResultScript[];
 }
 
 export function normaliseResults(data: unknown): ResultsPage {
@@ -84,6 +97,7 @@ export function normaliseResults(data: unknown): ResultsPage {
     })),
     reads: d.reads ?? [],
     cuts: d.cuts ?? [],
+    scripts: d.scripts ?? [],
   };
 }
 
