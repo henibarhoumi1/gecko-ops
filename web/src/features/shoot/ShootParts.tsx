@@ -5,7 +5,6 @@ import { Notice } from "@/components/Notice";
 import { Select } from "@/components/Select";
 import { TextArea } from "@/components/TextArea";
 import { friendlyError } from "@/lib/errors";
-import { t } from "@/lib/i18n";
 import {
   PERSON_SIDES,
   sideName,
