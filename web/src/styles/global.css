@@ -8643,3 +8643,94 @@ a.piece:hover {
     font-size: 13.5px;
   }
 }
+
+/* ---------- Guided tour ---------- */
+
+.tour {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+}
+
+.tour-dim {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 0.55);
+  pointer-events: auto;
+}
+
+/* The ring around the target also dims everything else, with a huge shadow. */
+.tour-ring {
+  position: fixed;
+  border: 2px solid var(--pink);
+  border-radius: 12px;
+  box-shadow: 0 0 0 9999px rgb(0 0 0 / 0.55);
+  transition:
+    top 0.2s var(--ease),
+    left 0.2s var(--ease),
+    width 0.2s var(--ease),
+    height 0.2s var(--ease);
+}
+
+.tour-card {
+  position: fixed;
+  width: min(320px, calc(100vw - 24px));
+  padding: 16px 18px;
+  border: 2px solid var(--ink);
+  border-radius: 16px;
+  background: var(--white);
+  color: var(--ink);
+  box-shadow: 5px 5px 0 var(--pink);
+  pointer-events: auto;
+  outline: none;
+}
+
+.tour-card h2 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+
+.tour-card p {
+  margin: 0 0 12px;
+}
+
+.tour-count {
+  margin: 0 0 4px !important;
+  color: var(--ink-2);
+}
+
+.tour-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.tour-actions > :first-child {
+  margin-right: auto;
+}
+
+.side .me .btn-link {
+  color: var(--white);
+}
+
+/* ---------- Brand sheet page ---------- */
+
+.brand-page .brand-line {
+  margin: 4px 0 16px;
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.brand-page .brand-sheet {
+  padding: 16px 0 8px;
+  border-top: 1px solid var(--line);
+}
+
+/* ---------- Onboarding: quick or full ---------- */
+
+.ob-top .mode-switch {
+  margin-left: auto;
+}

@@ -1,5 +1,8 @@
 import { byClient } from "@/features/scripts/model";
 import { WritingRoom } from "@/features/writing/WritingRoom";
+import { PortalBrandPage } from "@/features/scripts/BrandPage";
+import { Tour, startTour } from "@/features/tour/Tour";
+import { clientSteps } from "@/features/tour/steps";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link, NavLink, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Button } from "@/components/Button";
@@ -112,6 +115,7 @@ function navGroups(badges: {
         { to: "/locations", label: kindName("location", true), badge: badges.location },
         { to: "/budget", label: t("Budget", "Budget"), badge: badges.prop },
         { to: "/shoot", label: t("Shoot days", "Tournages") },
+        { to: "/brand", label: t("Brand sheet", "Fiche marque") },
         { to: "/shared", label: t("Notes and links", "Notes et liens") },
       ],
     },
@@ -290,6 +294,9 @@ export function PortalPage({
             <span className="muted">{roleName(role)}</span>
             <BrandSwitch portals={portals} current={portal} onSwitch={onSwitch} />
             <LangSwitch />
+            <Button variant="link" onClick={startTour}>
+              {t("Take the tour", "Visite guidée")}
+            </Button>
             {!previewing && (
               <Button variant="link" onClick={() => void signOut()}>
                 {t("Sign out", "Se déconnecter")}
@@ -314,6 +321,7 @@ export function PortalPage({
         <main className={`page portal-page${onBoard ? " board-page" : ""}`}>
           <ProjectPicker target={target} />
           <UndoBar workspaceId={portal.workspaceId} />
+          <Tour steps={clientSteps()} storageKey="gecko.tour.client" />
           {current && !onBoard && <h1 className="page-title">{current.label}</h1>}
           {group && group.items.length > 1 && (
             <nav className="sub-nav" aria-label={group.label}>
@@ -369,6 +377,7 @@ export function PortalPage({
                 }
               />
               <Route path="shared" element={<SharedTab portal={portal} />} />
+              <Route path="brand" element={<PortalBrandPage portal={portal} />} />
               <Route path="talent" element={<ProductionTab portal={portal} kind="talent" />} />
               <Route path="locations" element={<ProductionTab portal={portal} kind="location" />} />
               <Route path="budget" element={<ProductionTab portal={portal} kind="budget" />} />

@@ -52,27 +52,28 @@ export function BrandDrawer({ sheet, never }: { sheet: BrandSheet; never: string
         )}
         <span aria-hidden="true">{open ? "−" : "+"}</span>
       </button>
-      {open && (
-        <dl className="brand-sheet">
-          <Row label={t("In one line", "En une phrase")} value={sheet.oneline} />
-          <Row label={t("The promise", "La promesse")} value={sheet.promise} />
-          <Row label={t("People should feel", "On doit ressentir")} value={sheet.feel} />
-          <Row label={t("Tone", "Ton")} value={sheet.tone} />
-          <Row label={t("Languages", "Langues")} value={sheet.languages} />
-          <Row label={t("Reasons to buy", "Raisons d'acheter")} value={sheet.reasons} />
-          <Row label={t("Proof we can show", "Preuves à montrer")} value={sheet.proof} />
-          <Row label={t("The customer", "Le client type")} value={sheet.customer} />
-          <Row label={t("Must show", "À montrer")} value={sheet.must} />
-          <Row
-            label={t("Never say or show", "À ne jamais dire ni montrer")}
-            value={sheet.never}
-            warn
-          />
-          <Row label={t("Don't look like", "Ne pas ressembler à")} value={sheet.avoid} />
-          <Row label={t("Brand notes", "Notes de marque")} value={sheet.notes} />
-        </dl>
-      )}
+      {open && <BrandSheetList sheet={sheet} />}
     </div>
+  );
+}
+
+/** The brand sheet as a list: the drawer next to a script and the Brand page both show it. */
+export function BrandSheetList({ sheet }: { sheet: BrandSheet }) {
+  return (
+    <dl className="brand-sheet">
+      <Row label={t("In one line", "En une phrase")} value={sheet.oneline} />
+      <Row label={t("The promise", "La promesse")} value={sheet.promise} />
+      <Row label={t("People should feel", "On doit ressentir")} value={sheet.feel} />
+      <Row label={t("Tone", "Ton")} value={sheet.tone} />
+      <Row label={t("Languages", "Langues")} value={sheet.languages} />
+      <Row label={t("Reasons to buy", "Raisons d'acheter")} value={sheet.reasons} />
+      <Row label={t("Proof we can show", "Preuves à montrer")} value={sheet.proof} />
+      <Row label={t("The customer", "Le client type")} value={sheet.customer} />
+      <Row label={t("Must show", "À montrer")} value={sheet.must} />
+      <Row label={t("Never say or show", "À ne jamais dire ni montrer")} value={sheet.never} warn />
+      <Row label={t("Don't look like", "Ne pas ressembler à")} value={sheet.avoid} />
+      <Row label={t("Brand notes", "Notes de marque")} value={sheet.notes} />
+    </dl>
   );
 }
 

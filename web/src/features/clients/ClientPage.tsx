@@ -5,6 +5,7 @@ import { useActiveTabInView } from "@/components/useActiveTabInView";
 import { BoardRoute } from "@/features/board/BoardRoute";
 import { WhiteboardRoute } from "@/features/whiteboard/WhiteboardRoute";
 import { TeamRoom } from "@/features/writing/TeamRoom";
+import { TeamBrandPage } from "@/features/scripts/BrandPage";
 import { OnboardingForm } from "@/features/onboarding/OnboardingForm";
 import { TeamVideos } from "@/features/videos/TeamVideos";
 import { videosOn } from "@/lib/features";
@@ -85,10 +86,14 @@ export function ClientPage() {
             ["", "Overview"],
             ["money", "Money"],
             ["onboarding", "Onboarding"],
+            ["brand", "Brand sheet"],
             ["shared", "Shared"],
             ["logins", "Logins"],
           ]
-        : [["shared", "Shared"]],
+        : [
+            ["brand", "Brand sheet"],
+            ["shared", "Shared"],
+          ],
     },
   ];
   const here = section ?? "";
@@ -192,6 +197,7 @@ export function ClientPage() {
         <Route path="concepts" element={<TeamConcepts clientId={clientId} />} />
         <Route path="scripts" element={<TeamScripts clientId={clientId} />} />
         <Route path="shared" element={<TeamShared clientId={clientId} />} />
+        <Route path="brand" element={<TeamBrandPage clientId={clientId} />} />
         {["review", "review/:cutId"].map((path) => (
           <Route key={path} path={path} element={<TeamReview clientId={clientId} />} />
         ))}

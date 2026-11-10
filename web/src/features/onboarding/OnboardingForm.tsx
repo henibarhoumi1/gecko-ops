@@ -12,7 +12,7 @@ import {
   sheetText,
   type Answers,
 } from "./progress";
-import { SECTIONS, type Question } from "./questions";
+import { sheetSections, type Question, type Section } from "./questions";
 import { useOnboardingSheet, type SheetTarget } from "./useOnboardingSheet";
 import { locale, t } from "@/lib/i18n";
 
@@ -49,10 +49,14 @@ export function OnboardingForm({ target, brand, mode, canFinish = false }: Props
     for (const [key, value] of Object.entries(known))
       if (typeof value === "string" && value.trim()) set(key, value.trim());
   }, [mode, ready, status, answers, brand, user, set]);
-  const [at, setAt] = useState<string>(SECTIONS[0]!.id);
+  const [full, setFull] = useFullSheet();
+  const sections = sheetSections(full);
+  const [picked, setAt] = useState<string>(sections[0]!.id);
+  // Switching to the quick sheet can hide the section you were on: start from the first one.
+  const at = picked === SEND || sections.some((s) => s.id === picked) ? picked : sections[0]!.id;
   const [notice, setNotice] = useState("");
-  const pct = percentFilled(sheet.answers);
-  const index = SECTIONS.findIndex((s) => s.id === at);
+  const pct = percentFilled(sheet.answers, full);
+  const index = sections.findIndex((s) => s.id === at);
 
   function go(id: string) {
     setAt(id);
@@ -72,6 +76,18 @@ export function OnboardingForm({ target, brand, mode, canFinish = false }: Props
           <i style={{ width: `${pct}%` }} />
         </div>
         <span className="small">{t(`${pct}% filled`, `${pct} % rempli`)}</span>
+        <div
+          className="mode-switch"
+          role="group"
+          aria-label={t("How much to fill", "Combien remplir")}
+        >
+          <button type="button" aria-pressed={!full} onClick={() => setFull(false)}>
+            {t("Quick · 24", "Rapide · 24")}
+          </button>
+          <button type="button" aria-pressed={full} onClick={() => setFull(true)}>
+            {t("Full sheet · 64", "Complet · 64")}
+          </button>
+        </div>
         <span className={`small save save-${sheet.status}`} aria-live="polite">
           {sheet.status === "saving"
             ? t("Saving…", "Enregistrement…")
@@ -118,7 +134,7 @@ export function OnboardingForm({ target, brand, mode, canFinish = false }: Props
       )}
 
       <nav className="ob-rail" aria-label="Sections">
-        {SECTIONS.map((s, i) => {
+        {sections.map((s, i) => {
           const n = sectionCount(sheet.answers, s);
           return (
             <button
@@ -146,6 +162,8 @@ export function OnboardingForm({ target, brand, mode, canFinish = false }: Props
 
       {at === SEND ? (
         <SendPart
+          sections={sections}
+          full={full}
           answers={sheet.answers}
           brand={brand}
           mode={mode}
@@ -170,28 +188,28 @@ export function OnboardingForm({ target, brand, mode, canFinish = false }: Props
           <header className="ob-head">
             <span className="num">{String(index + 1).padStart(2, "0")}</span>
             <div>
-              <h2 id={`ob-${at}`}>{say(SECTIONS[index]!.title)}</h2>
-              <p className="muted">{say(SECTIONS[index]!.why)}</p>
+              <h2 id={`ob-${at}`}>{say(sections[index]!.title)}</h2>
+              <p className="muted">{say(sections[index]!.why)}</p>
             </div>
           </header>
           <div className="ob-grid">
-            {SECTIONS[index]!.fields.map((q) => (
+            {sections[index]!.fields.map((q) => (
               <QuestionField key={q.id} q={q} answers={sheet.answers} set={sheet.set} />
             ))}
           </div>
           <div className="ob-foot">
             {index > 0 ? (
-              <Button variant="secondary" onClick={() => go(SECTIONS[index - 1]!.id)}>
-                ← {say(SECTIONS[index - 1]!.name)}
+              <Button variant="secondary" onClick={() => go(sections[index - 1]!.id)}>
+                ← {say(sections[index - 1]!.name)}
               </Button>
             ) : (
               <span />
             )}
-            <Button onClick={() => go(SECTIONS[index + 1]?.id ?? SEND)}>
-              {SECTIONS[index + 1]
+            <Button onClick={() => go(sections[index + 1]?.id ?? SEND)}>
+              {sections[index + 1]
                 ? t(
-                    `Next: ${say(SECTIONS[index + 1]!.name)}`,
-                    `Suivant : ${say(SECTIONS[index + 1]!.name)}`,
+                    `Next: ${say(sections[index + 1]!.name)}`,
+                    `Suivant : ${say(sections[index + 1]!.name)}`,
                   )
                 : mode === "team"
                   ? "Summary"
@@ -206,6 +224,8 @@ export function OnboardingForm({ target, brand, mode, canFinish = false }: Props
 }
 
 function SendPart({
+  sections,
+  full,
   answers,
   brand,
   mode,
@@ -215,6 +235,8 @@ function SendPart({
   onSend,
   onCopy,
 }: {
+  sections: Section[];
+  full: boolean;
   answers: Answers;
   brand: string;
   mode: "client" | "team";
@@ -224,7 +246,7 @@ function SendPart({
   onSend: () => Promise<void>;
   onCopy: () => Promise<void>;
 }) {
-  const open = useMemo(() => openQuestions(answers), [answers]);
+  const open = useMemo(() => openQuestions(answers, full), [answers, full]);
   const left = open.reduce((n, row) => n + row.missing.length, 0);
   const when = sentAt
     ? new Date(sentAt).toLocaleDateString(locale(), { day: "numeric", month: "long" })
@@ -278,7 +300,8 @@ function SendPart({
       )}
       {mode === "team" && (
         <dl className="ob-summary">
-          {SECTIONS.flatMap((s) => s.fields)
+          {sheetSections(true)
+            .flatMap((s) => s.fields)
             .map((q) => [q, answerText(answers, q)] as const)
             .filter(([, a]) => a)
             .map(([q, a]) => (
@@ -290,8 +313,8 @@ function SendPart({
         </dl>
       )}
       <div className="ob-foot">
-        <Button variant="secondary" onClick={() => onGo(SECTIONS[SECTIONS.length - 1]!.id)}>
-          ← {say(SECTIONS[SECTIONS.length - 1]!.name)}
+        <Button variant="secondary" onClick={() => onGo(sections[sections.length - 1]!.id)}>
+          ← {say(sections[sections.length - 1]!.name)}
         </Button>
         {mode === "team" ? (
           <Button onClick={() => void onCopy()}>Copy answers</Button>
@@ -499,4 +522,26 @@ function QuestionField({
         </fieldset>
       );
   }
+}
+
+const FULL_KEY = "gecko.onboardingFull";
+
+/** Quick sheet (24) or the full one (64), remembered on this device. */
+function useFullSheet() {
+  const [full, setFull] = useState(() => {
+    try {
+      return localStorage.getItem(FULL_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
+  const choose = (next: boolean) => {
+    setFull(next);
+    try {
+      localStorage.setItem(FULL_KEY, next ? "1" : "0");
+    } catch {
+      // Not kept: fine.
+    }
+  };
+  return [full, choose] as const;
 }
