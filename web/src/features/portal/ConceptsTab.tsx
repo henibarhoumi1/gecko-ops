@@ -1,3 +1,5 @@
+import { Select } from "@/components/Select";
+import { IdeaStarters } from "@/features/concepts/IdeaStarters";
 import { canApprove, useClientRole } from "./role";
 import { Link } from "react-router-dom";
 import { DraftNotice } from "@/components/DraftNotice";
@@ -160,6 +162,8 @@ function IdeaForm({
         title: text("title"),
         body: text("body"),
         refs: text("refs"),
+        hook: text("hook"),
+        format: text("format") || "reel",
       });
       keep.clear();
       onDone();
@@ -179,12 +183,36 @@ function IdeaForm({
             )
           : tw(["Your idea", "Votre idée"], ["Your concept", "Votre concept"])}
       </h3>
+      {!idea && <IdeaStarters form={formRef} />}
+      <div className="row">
+        <Field
+          label={t("Title", "Titre")}
+          name="title"
+          defaultValue={idea?.title}
+          maxLength={160}
+          autoFocus
+        />
+        <Select
+          label={t("Format", "Format")}
+          name="format"
+          defaultValue={idea?.format ?? "reel"}
+          options={[
+            ["reel", t("Reel / video", "Reel / vidéo")],
+            ["carousel", t("Carousel", "Carrousel")],
+            ["static", t("Single image", "Image seule")],
+            ["other", t("Other", "Autre")],
+          ]}
+        />
+      </div>
       <Field
-        label={t("Title", "Titre")}
-        name="title"
-        defaultValue={idea?.title}
-        maxLength={160}
-        autoFocus
+        label={t(
+          "The hook: the first words people hear",
+          "L'accroche : les premiers mots entendus",
+        )}
+        name="hook"
+        defaultValue={idea?.hook}
+        maxLength={200}
+        placeholder={t("Optional", "Facultatif")}
       />
       <TextArea
         label={tw(["The idea", "L'idée"], ["The concept", "Le concept"])}

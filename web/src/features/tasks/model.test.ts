@@ -1,5 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { canEdit, dueLabel, dueTone, openFor, sortTasks, whoFor, type Task } from "./model";
+import {
+  canEdit,
+  dueLabel,
+  dueTone,
+  filterTasks,
+  openFor,
+  sortTasks,
+  taskPages,
+  whoFor,
+  type Task,
+} from "./model";
 
 const task = (patch: Partial<Task>): Task => ({
   id: "x",
@@ -52,5 +62,21 @@ describe("tasks", () => {
     expect(openFor([task({ side: "client" }), task({ side: "gecko" })], "client")).toHaveLength(1);
     expect(canEdit(task({ mine: false }), "client")).toBe(false);
     expect(canEdit(task({ mine: false }), "team")).toBe(true);
+  });
+
+  it("filters: to do, ours, late, done", () => {
+    const list = [
+      task({ id: "a", side: "client", due: "2026-11-01" }),
+      task({ id: "b", side: "gecko" }),
+      task({ id: "c", side: "client", doneAt: "x" }),
+    ];
+    const ids = (f: Parameters<typeof filterTasks>[1], r: "client" | "team") =>
+      filterTasks(list, f, r, "2026-11-10").map((x) => x.id);
+    expect(ids("open", "team")).toEqual(["a", "b"]);
+    expect(ids("mine", "client")).toEqual(["a"]);
+    expect(ids("mine", "team")).toEqual(["b"]);
+    expect(ids("late", "team")).toEqual(["a"]);
+    expect(ids("done", "client")).toEqual(["c"]);
+    expect(taskPages().every(([p]) => p === "" || p.startsWith("/"))).toBe(true);
   });
 });

@@ -1020,3 +1020,48 @@
 .home-main .home-tasks {
   margin: 0;
 }
+
+/* ---------- Tasks: filters, notes, editing ---------- */
+
+.task-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
+
+.room-chip.late:not(.on) {
+  border-color: #a3261b;
+  color: #a3261b;
+}
+
+.task-notes {
+  margin: 0;
+  padding-left: 32px;
+  color: var(--ink-2);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.task-notes-input {
+  width: 100%;
+  padding: var(--s-2) var(--s-3);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  font: inherit;
+  font-size: var(--fs-md);
+}
+
+.task-editing {
+  padding: var(--s-3);
+  border-radius: var(--r-sm);
+  background: var(--yellow-soft);
+}
+
+/* ---------- Ideas: ways in ---------- */
+
+.idea-starters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+}

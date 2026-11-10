@@ -1,3 +1,4 @@
+import { IdeaStarters } from "@/features/concepts/IdeaStarters";
 import { DraftNotice } from "@/components/DraftNotice";
 import { useFormDraft } from "@/lib/drafts";
 import { StageList } from "@/components/StageList";
@@ -221,6 +222,7 @@ function ConceptForm({
     <form ref={formRef} className="card stack concept-edit" onSubmit={onSubmit}>
       <h3>{concept ? `Edit "${concept.title}"` : "New idea"}</h3>
       {keep.restored && <DraftNotice onDiscard={keep.discard} />}
+      {!concept && <IdeaStarters form={formRef} />}
       <div className="row">
         <Field
           label="Title"

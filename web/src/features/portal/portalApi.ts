@@ -105,8 +105,16 @@ export function useConceptNote(portal: ClientPortal) {
 export function useSaveIdea(portal: ClientPortal) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (input: { id: string | null; title: string; body: string; refs: string }) => {
-      const { error } = await requireSupabase().rpc("client_save_idea", {
+    mutationFn: async (input: {
+      id: string | null;
+      title: string;
+      body: string;
+      refs: string;
+      /** The hook line and format, like the team's ideas. */
+      hook?: string;
+      format?: string;
+    }) => {
+      const { data, error } = await requireSupabase().rpc("client_save_idea", {
         p_workspace_id: portal.workspaceId,
         p_client_id: portal.clientId,
         p_id: input.id,
@@ -115,6 +123,17 @@ export function useSaveIdea(portal: ClientPortal) {
         p_refs: input.refs,
       });
       if (error) throw error;
+      const id = (data as { id?: string } | null)?.id;
+      if (id && (input.hook !== undefined || input.format !== undefined)) {
+        const more = await requireSupabase().rpc("client_set_idea_details", {
+          p_workspace_id: portal.workspaceId,
+          p_client_id: portal.clientId,
+          p_id: id,
+          p_hook: input.hook ?? "",
+          p_format: input.format ?? "reel",
+        });
+        if (more.error) throw more.error;
+      }
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: key(portal) }),
   });
