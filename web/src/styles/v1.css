@@ -1065,3 +1065,14 @@
   align-items: center;
   gap: var(--s-2);
 }
+
+/* The week on Today: names wrap between words (hyphenated if they must), never mid-word. */
+.today-week-item {
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.today-week-item strong {
+  font-size: var(--fs-md);
+  line-height: 1.25;
+}
