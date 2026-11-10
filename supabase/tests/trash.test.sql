@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(12);
+select extensions.plan(15);
 
 insert into auth.users (id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at) values
   ('00000000-0000-4000-8000-000000000c01', 'authenticated', 'authenticated', 'founder@trash.test', '', now(), '{}', '{}', now(), now()),
@@ -96,6 +96,28 @@ select extensions.is(
   (select count(*)::int from jsonb_array_elements(
     public.get_my_portal('10000000-0000-4000-8000-000000000c01', 'c-t')->'concepts') c where c->>'title' = 'My idea'),
   1, 'and their idea is back in the portal'
+);
+
+-- Emptying: items older than 7 days go when the trash is opened; the founder empties the rest.
+select pg_temp.act_as('00000000-0000-4000-8000-000000000c01', 'founder@trash.test');
+reset role;
+update public.trash set deleted_at = now() - interval '8 days' where label = 'My idea';
+set local role authenticated;
+select extensions.is(
+  (select count(*)::int from jsonb_array_elements(public.get_trash('10000000-0000-4000-8000-000000000c01')) t
+   where t->>'label' = 'My idea'), 0,
+  'opening the trash empties what was deleted more than 7 days ago'
+);
+select pg_temp.act_as('00000000-0000-4000-8000-000000000c02', 'owner@trash.test');
+select extensions.throws_ok(
+  $$select public.empty_trash('10000000-0000-4000-8000-000000000c01')$$,
+  'forbidden', 'only the founder empties the trash'
+);
+select pg_temp.act_as('00000000-0000-4000-8000-000000000c01', 'founder@trash.test');
+select extensions.is(
+  jsonb_array_length((select public.get_trash('10000000-0000-4000-8000-000000000c01')
+                      from (select public.empty_trash('10000000-0000-4000-8000-000000000c01')) e)), 0,
+  'the founder empties the trash'
 );
 
 select * from extensions.finish();

@@ -1,8 +1,9 @@
+import { useState } from "react";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { friendlyError } from "@/lib/errors";
-import { kindName, useRestore, useTrash } from "./trashApi";
+import { kindName, useEmptyTrash, useRestore, useTrash } from "./trashApi";
 
 function when(iso: string): string {
   const d = new Date(iso);
@@ -18,9 +19,11 @@ function when(iso: string): string {
 
 /** Everything deleted in the last 30 days, by anyone, on either side. One click puts it back. */
 export function TrashPage() {
-  const { id: workspaceId } = useWorkspace();
+  const { id: workspaceId, role } = useWorkspace();
   const trash = useTrash(workspaceId);
   const restore = useRestore(workspaceId);
+  const empty = useEmptyTrash(workspaceId);
+  const [sure, setSure] = useState(false);
   if (trash.isPending) return <p className="loading">Loading the trash…</p>;
   if (trash.isError) return <Notice tone="error">{friendlyError(trash.error)}</Notice>;
   const waiting = trash.data.filter((e) => !e.restoredAt);
@@ -31,12 +34,35 @@ export function TrashPage() {
         <div>
           <h1>Trash</h1>
           <p>
-            Everything deleted in the last 30 days, by the team or a client, with what went with it.
-            Restore puts it back where it was.
+            Everything deleted in the last 7 days, by the team or a client, with what went with it.
+            Restore puts it back where it was. After 7 days, items are gone for good.
           </p>
         </div>
       </header>
       {restore.isError && <Notice tone="error">{friendlyError(restore.error)}</Notice>}
+      {role === "founder" && waiting.length > 0 && (
+        <div className="actions">
+          {sure ? (
+            <>
+              <span>Destroy everything in the trash for good? This can&rsquo;t be undone.</span>
+              <Button
+                disabled={empty.isPending}
+                onClick={() => empty.mutate(undefined, { onSuccess: () => setSure(false) })}
+              >
+                Yes, empty it
+              </Button>
+              <Button variant="link" onClick={() => setSure(false)}>
+                Keep it
+              </Button>
+            </>
+          ) : (
+            <Button variant="secondary" onClick={() => setSure(true)}>
+              Empty the trash
+            </Button>
+          )}
+        </div>
+      )}
+      {empty.isError && <Notice tone="error">{friendlyError(empty.error)}</Notice>}
       {waiting.length === 0 ? (
         <p className="empty-state">The trash is empty.</p>
       ) : (

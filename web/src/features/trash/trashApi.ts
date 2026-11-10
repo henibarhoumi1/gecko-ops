@@ -99,3 +99,12 @@ export async function lastDelete(
     label: typeof data.label === "string" ? data.label : "",
   };
 }
+
+/** The founder empties the trash now: everything in it is destroyed for good. */
+export function useEmptyTrash(workspaceId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => rpc("empty_trash", { p_workspace_id: workspaceId }),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["trash", workspaceId] }),
+  });
+}
