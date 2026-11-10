@@ -272,3 +272,53 @@ export function useTeamShoots(workspaceId: string) {
     refetchInterval: 60_000,
   });
 }
+
+// ---------- day links: the day for crew without an account ----------
+
+export interface ShootLink {
+  id: string;
+  label: string;
+  expiresAt: string;
+}
+
+/** The open links of a day. Founder and producers. */
+export function useShootLinks(target: ShootTarget, dayId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: ["shoot-links", target.workspaceId, target.clientId, dayId],
+    enabled,
+    queryFn: async (): Promise<ShootLink[]> => {
+      const data = await rpc("get_shoot_links", { ...ids(target), p_day_id: dayId });
+      return (Array.isArray(data) ? data : []).map((v) => {
+        const o = v as Record<string, unknown>;
+        return {
+          id: String(o.id ?? ""),
+          label: typeof o.label === "string" ? o.label : "",
+          expiresAt: typeof o.expiresAt === "string" ? o.expiresAt : "",
+        };
+      });
+    },
+  });
+}
+
+export function useShootLinkActions(target: ShootTarget, dayId: string) {
+  const queryClient = useQueryClient();
+  const done = () =>
+    queryClient.invalidateQueries({
+      queryKey: ["shoot-links", target.workspaceId, target.clientId, dayId],
+    });
+  return {
+    create: useMutation({
+      mutationFn: async (label: string) =>
+        (await rpc("create_shoot_link", {
+          ...ids(target),
+          p_day_id: dayId,
+          p_label: label,
+        })) as string,
+      onSettled: done,
+    }),
+    revoke: useMutation({
+      mutationFn: (id: string) => rpc("revoke_shoot_link", { ...ids(target), p_id: id }),
+      onSettled: done,
+    }),
+  };
+}

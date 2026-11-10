@@ -25,6 +25,7 @@ import {
   type ShootReel,
 } from "./model";
 import { inProject, useProjectChoice } from "@/features/projects/projectChoice";
+import { CrewLinks } from "./CrewLinks";
 import { Reader } from "./Reader";
 import { blankDay, DayForm, dayInput, NoteField, PersonForm, ReelPicker } from "./ShootParts";
 import { pendingCount, useShootActions, useShootPage, type ShootTarget } from "./shootApi";
@@ -486,6 +487,13 @@ function DayView({
                 </p>
               )}
             </section>
+          )}
+          {page.canPlan && (
+            <CrewLinks
+              target={target}
+              dayId={day.id}
+              dayTitle={`${brand}, ${dayLabel(day.day)}${day.title ? ` (${day.title})` : ""}`}
+            />
           )}
           <Log day={day} actions={actions} />
         </aside>

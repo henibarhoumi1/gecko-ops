@@ -4,15 +4,18 @@ import { Field } from "@/components/Field";
 import { Notice } from "@/components/Notice";
 import { Select } from "@/components/Select";
 import { useClients, type ClientRow } from "@/features/clients/clientsApi";
-import { ROLE_LABEL, useMembers, type Member } from "@/features/workspace/members";
+import { memberLabel, ROLE_LABEL, useMembers, type Member } from "@/features/workspace/members";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { friendlyError } from "@/lib/errors";
 import {
-  INVITE_ROLES,
+  levelFor,
+  LEVELS,
+  TITLES,
   useAssignClient,
   useClientAssignments,
   useInviteMember,
   useRemoveMember,
+  useSetMemberRole,
 } from "./teamApi";
 
 /** Who is on the team. The founder invites people, removes them and picks the clients editors see. */
@@ -62,6 +65,9 @@ function InviteForm() {
   const [link, setLink] = useState<{ email: string; url: string } | null>(null);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
+  const [title, setTitle] = useState("Main editor");
+  const [custom, setCustom] = useState("");
+  const [level, setLevel] = useState<string>(levelFor("Main editor"));
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -71,7 +77,11 @@ function InviteForm() {
     setError("");
     setCopied(false);
     try {
-      const url = await invite.mutateAsync({ email, role: String(data.get("role")) });
+      const url = await invite.mutateAsync({
+        email,
+        role: level,
+        title: title === "custom" ? custom.trim() : title,
+      });
       setLink({ email, url });
       form.reset();
     } catch (e) {
@@ -89,7 +99,30 @@ function InviteForm() {
     <div className="team-invite">
       <form className="invite invite-role" onSubmit={onSubmit}>
         <Field label="Email" name="email" type="email" required maxLength={200} />
-        <Select label="Role" name="role" options={INVITE_ROLES} defaultValue="editor" />
+        <Select
+          label="Title"
+          value={title}
+          options={[...TITLES.map(([t]) => [t, t] as const), ["custom", "Another title…"] as const]}
+          onChange={(e) => {
+            setTitle(e.target.value);
+            if (e.target.value !== "custom") setLevel(levelFor(e.target.value));
+          }}
+        />
+        {title === "custom" && (
+          <Field
+            label="Their title"
+            value={custom}
+            maxLength={60}
+            required
+            onChange={(e) => setCustom(e.target.value)}
+          />
+        )}
+        <Select
+          label="What they can open"
+          value={level}
+          options={LEVELS}
+          onChange={(e) => setLevel(e.target.value)}
+        />
         <Button type="submit" disabled={invite.isPending}>
           Create invite link
         </Button>
@@ -138,6 +171,8 @@ function MemberRow({
 }) {
   const remove = useRemoveMember();
   const assign = useAssignClient();
+  const setRole = useSetMemberRole();
+  const [editing, setEditing] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState("");
   const scoped = member.role === "editor" || member.role === "assistant";
@@ -155,7 +190,8 @@ function MemberRow({
         <div>
           <strong>{member.name}</strong>
           <p className="small muted">
-            {ROLE_LABEL[member.role]}
+            {memberLabel(member)}
+            {member.title && member.role !== "founder" ? ` · ${ROLE_LABEL[member.role]} level` : ""}
             {member.userId ? " · you" : ""}
           </p>
         </div>
@@ -181,6 +217,27 @@ function MemberRow({
             </Button>
           ))}
       </div>
+      {founder && member.role !== "founder" && (
+        <div className="member-role">
+          {editing ? (
+            <RoleEditor
+              member={member}
+              pending={setRole.isPending}
+              onCancel={() => setEditing(false)}
+              onSave={(role, title) =>
+                setRole
+                  .mutateAsync({ memberId: member.id, role, title })
+                  .then(() => setEditing(false))
+                  .catch((e: unknown) => setError(friendlyError(e)))
+              }
+            />
+          ) : (
+            <Button variant="link" onClick={() => setEditing(true)}>
+              Change title or level
+            </Button>
+          )}
+        </div>
+      )}
       {founder && scoped && (
         <fieldset className="client-access">
           <legend className="small muted">Clients they can open</legend>
@@ -200,5 +257,65 @@ function MemberRow({
       )}
       {error && <Notice tone="error">{error}</Notice>}
     </li>
+  );
+}
+
+function RoleEditor({
+  member,
+  pending,
+  onSave,
+  onCancel,
+}: {
+  member: Member;
+  pending: boolean;
+  onSave: (role: "sales" | "editor" | "assistant", title: string) => void;
+  onCancel: () => void;
+}) {
+  const known = TITLES.some(([t]) => t === member.title);
+  const [title, setTitle] = useState(known ? (member.title ?? "") : "custom");
+  const [custom, setCustom] = useState(known ? "" : (member.title ?? ""));
+  const [level, setLevel] = useState<"sales" | "editor" | "assistant">(
+    member.role === "founder" ? "sales" : member.role,
+  );
+  return (
+    <form
+      className="invite invite-role"
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSave(level, title === "custom" ? custom.trim() : title);
+      }}
+    >
+      <Select
+        label="Title"
+        value={title}
+        options={[...TITLES.map(([t]) => [t, t] as const), ["custom", "Another title…"] as const]}
+        onChange={(e) => {
+          setTitle(e.target.value);
+          if (e.target.value !== "custom") setLevel(levelFor(e.target.value));
+        }}
+      />
+      {title === "custom" && (
+        <Field
+          label="Their title"
+          value={custom}
+          maxLength={60}
+          onChange={(e) => setCustom(e.target.value)}
+        />
+      )}
+      <Select
+        label="What they can open"
+        value={level}
+        options={LEVELS}
+        onChange={(e) => setLevel(e.target.value as "sales" | "editor" | "assistant")}
+      />
+      <div className="actions">
+        <Button type="submit" disabled={pending}>
+          Save
+        </Button>
+        <Button variant="link" onClick={onCancel}>
+          Cancel
+        </Button>
+      </div>
+    </form>
   );
 }

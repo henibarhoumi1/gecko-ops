@@ -165,7 +165,7 @@ function normaliseReel(v: unknown): ShootReel {
   };
 }
 
-function normaliseDay(v: unknown): ShootDay {
+export function normaliseDay(v: unknown): ShootDay {
   const o = obj(v);
   return {
     id: str(o.id),

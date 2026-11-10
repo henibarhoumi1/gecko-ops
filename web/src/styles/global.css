@@ -7952,3 +7952,24 @@ a.piece:hover {
 .trash-h {
   margin: 28px 0 0;
 }
+
+.crew-link-made {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--yellow-soft);
+}
+
+.crew-link-made code {
+  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+
+.crew-day {
+  max-width: 860px;
+}
+
+.member-role {
+  margin-top: 8px;
+}
