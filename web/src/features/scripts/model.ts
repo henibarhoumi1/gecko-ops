@@ -114,6 +114,8 @@ export interface ShootPlan {
 
 export interface Script extends ScriptContent {
   id: string;
+  /** The project the script belongs to; missing on a database without projects yet. */
+  projectId?: string | null;
   /** Team side only; missing on the client's side and on a database without it yet. */
   shoot?: ShootPlan;
   conceptId: string | null;
@@ -366,6 +368,7 @@ export function tidyLines(lines: ScriptLine[]): ScriptLine[] {
 /** Rows from the team's direct table reads. */
 export interface ScriptRow {
   id: string;
+  project_id?: string | null;
   client_id: string;
   concept_id: string | null;
   title: string;
@@ -416,6 +419,7 @@ export function scriptsFromRows(
 ): Script[] {
   return rows.map((r) => ({
     id: r.id,
+    projectId: r.project_id ?? null,
     conceptId: r.concept_id,
     title: r.title,
     style: r.style,

@@ -1,3 +1,4 @@
+import { inProject, useProjectChoice } from "@/features/projects/projectChoice";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { clientRead } from "@/lib/preview";
 import type { ClientPortal } from "@/features/auth/account";
@@ -55,8 +56,14 @@ const key = (portal: ClientPortal) => ["portal", portal.workspaceId, portal.clie
 
 /** Everything the client sees, refreshed every half minute so the team's changes show up. */
 export function useMyPortal(portal: ClientPortal) {
+  const [projectId] = useProjectChoice(portal.workspaceId, portal.clientId);
   return useQuery({
     queryKey: key(portal),
+    select: (page) => ({
+      ...page,
+      concepts: inProject(page.concepts, projectId),
+      scripts: inProject(page.scripts, projectId),
+    }),
     queryFn: async (): Promise<PortalData> => {
       const { data, error } = await clientRead("get_my_portal", {
         p_workspace_id: portal.workspaceId,

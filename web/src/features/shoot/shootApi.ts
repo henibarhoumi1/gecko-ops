@@ -155,6 +155,8 @@ export function pendingCount(target: ShootTarget): number {
 
 export interface DayInput {
   id: string | null;
+  /** For a new day: the project it belongs to (the client's current one when left out). */
+  projectId?: string | null;
   day: string;
   title: string;
   callTime: string;

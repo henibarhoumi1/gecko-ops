@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import { friendlyError } from "@/lib/errors";
+import { useProjectChoice } from "./projectChoice";
 import { useProjects, useSaveProject, type Project, type ProjectTarget } from "./projectsApi";
 
 const STATUS: Record<Project["status"], string> = {
@@ -24,6 +25,7 @@ function day(iso: string): string {
  */
 export function ProjectsStrip({ target }: { target: ProjectTarget }) {
   const list = useProjects(target);
+  const [chosen, choose] = useProjectChoice(target.workspaceId, target.clientId);
   const save = useSaveProject(target);
   const [adding, setAdding] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
@@ -34,6 +36,8 @@ export function ProjectsStrip({ target }: { target: ProjectTarget }) {
   const current = projects.find((p) => p.status === "active");
   const archived = projects.filter((p) => p.status === "archived");
   const shown = projects.filter((p) => showArchived || p.status !== "archived");
+  // A choice that no longer exists (archived elsewhere, another device) falls back to all projects.
+  const picked = projects.some((p) => p.id === chosen) ? chosen : null;
 
   return (
     <section className="projects-strip" aria-label="Projects">
@@ -53,8 +57,16 @@ export function ProjectsStrip({ target }: { target: ProjectTarget }) {
           ) : (
             <li
               key={p.id}
-              className={`project-card status-${p.status}${p.id === current?.id ? " current" : ""}`}
+              className={`project-card status-${p.status}${p.id === current?.id ? " current" : ""}${p.id === picked ? " picked" : ""}`}
             >
+              <button
+                type="button"
+                className="project-pick"
+                aria-pressed={p.id === picked}
+                onClick={() => choose(p.id === picked ? null : p.id)}
+              >
+                {p.id === picked ? "Showing only this project" : "Show only this project"}
+              </button>
               <span className="project-top">
                 <strong dir="auto">{p.name}</strong>
                 <span className="small">
@@ -121,6 +133,14 @@ export function ProjectsStrip({ target }: { target: ProjectTarget }) {
           </li>
         )}
       </ul>
+      {picked && (
+        <p className="small">
+          Ideas, scripts and shoot days show this project only, and new ones go into it.{" "}
+          <Button variant="link" onClick={() => choose(null)}>
+            Show all projects
+          </Button>
+        </p>
+      )}
       {archived.length > 0 && (
         <Button variant="link" onClick={() => setShowArchived(!showArchived)}>
           {showArchived ? "Hide archived" : `Show ${archived.length} archived`}

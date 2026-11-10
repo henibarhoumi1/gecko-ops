@@ -16,6 +16,8 @@ export interface ConceptNote {
 
 export interface Concept {
   id: string;
+  /** The project the idea belongs to; missing on a database without projects yet. */
+  projectId?: string | null;
   title: string;
   format: ConceptFormat;
   /** The first words of the ad. Missing on a database without the writing room yet. */
@@ -161,6 +163,7 @@ export function shortDate(iso: string | null): string {
 /** Rows from the team's direct table reads, in the same shape the client functions return. */
 export interface ConceptRow {
   id: string;
+  project_id?: string | null;
   title: string;
   format: ConceptFormat;
   body: string;
@@ -192,6 +195,7 @@ export interface NoteRow {
 export function fromRows(rows: ConceptRow[], notes: NoteRow[]): Concept[] {
   return rows.map((r) => ({
     id: r.id,
+    projectId: r.project_id ?? null,
     title: r.title,
     format: r.format,
     body: r.body,
