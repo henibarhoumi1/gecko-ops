@@ -15,6 +15,7 @@ import { ClientPage } from "@/features/clients/ClientPage";
 import { ClientsPage } from "@/features/clients/ClientsPage";
 import { PipelinePage } from "@/features/pipeline/PipelinePage";
 import { PortalPage } from "@/features/portal/PortalPage";
+import { ShootsPage } from "@/features/shoot/ShootsPage";
 import {
   pickPortal,
   portalKey,
@@ -52,6 +53,7 @@ const SCREENS: Record<string, () => ReactElement> = {
       <Route path=":clientId/*" element={<ClientPage />} />
     </Routes>
   ),
+  shoots: () => <ShootsPage />,
   team: () => <TeamPage />,
   alerts: () => <AlertsPage />,
 };
