@@ -123,6 +123,16 @@ export function useResultActions(target: ResultsTarget) {
         void queryClient.invalidateQueries({ queryKey: ["concepts"] });
       },
     }),
+    setPostScript: useMutation({
+      mutationFn: (input: { postId: string; scriptId: string | null; hook: number | null }) =>
+        rpc("set_post_script", {
+          ...ids(target),
+          p_post_id: input.postId,
+          p_script_id: input.scriptId,
+          p_hook: input.hook,
+        }),
+      onSettled: done,
+    }),
     removeRead: useMutation({
       mutationFn: (id: string) => rpc("delete_monthly_read", { ...ids(target), p_id: id }),
       onSettled: done,

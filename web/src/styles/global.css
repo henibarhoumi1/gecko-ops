@@ -8935,3 +8935,136 @@ a.piece:hover {
   border-radius: 12px;
   background: var(--green-soft);
 }
+
+/* ---------- Numbers: import from exports, hooks that worked, where a post came from ---------- */
+
+.import-panel {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 16px;
+  border: 2px solid var(--ink);
+  border-radius: 16px;
+  background: var(--white);
+}
+
+.import-panel h3 {
+  margin: 0;
+}
+
+.import-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.import-inputs select,
+.import-rows select,
+.post-source select {
+  max-width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+}
+
+.import-paste {
+  width: 100%;
+  padding: 10px;
+  border: 1px dashed var(--ink);
+  border-radius: 12px;
+  font: inherit;
+  font-size: 13px;
+}
+
+.import-rows {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.import-rows li {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--yellow-soft);
+}
+
+.import-rows li.skip {
+  background: transparent;
+  border: 1px dashed var(--line);
+  opacity: 0.7;
+}
+
+.import-rows p {
+  margin: 0;
+}
+
+.import-row-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  overflow-wrap: anywhere;
+}
+
+.group.proven {
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: var(--pink-soft);
+}
+
+.group.proven h2 {
+  margin: 0 0 4px;
+}
+
+.proven-list {
+  display: grid;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.proven-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+}
+
+.proven-score {
+  min-width: 64px;
+  font-weight: 700;
+}
+
+.post-source {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+
+.post-source-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.post-source-row label {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tagged-link code {
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--yellow-soft);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}

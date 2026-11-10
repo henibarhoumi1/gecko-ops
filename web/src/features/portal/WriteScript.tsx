@@ -17,6 +17,7 @@ import {
 import { useClientWriteScript } from "@/features/scripts/scriptsApi";
 import { AdParts, adDraft, draftBeats, type AdDraft } from "@/features/scripts/AdParts";
 import { BrandDrawer, useBrand } from "@/features/scripts/BrandDrawer";
+import { useProvenHooks } from "@/features/results/ResultsExtras";
 import { useMyShared } from "@/features/shared/sharedApi";
 import { friendlyError } from "@/lib/errors";
 import { t } from "@/lib/i18n";
@@ -50,6 +51,7 @@ export function WriteScript({
   const write = useClientWriteScript(portal);
   const space = useMyShared(portal);
   const brand = useBrand(portal.workspaceId, portal.clientId, space.data?.brandNotes.body);
+  const proven = useProvenHooks(portal);
   const cine = isCinematic();
   const [beats, setBeats] = useState<ScriptLine[]>(script?.beats.length ? script.beats : [{}, {}]);
   // Everyone but film clients writes the ad in parts, the same way the team does.
@@ -211,6 +213,7 @@ export function WriteScript({
             onChange={setDraft}
             seconds={seconds}
             never={brand.never}
+            proven={proven}
             hookNote={t("write 1 to 3, Gecko helps pick", "écrivez-en 1 à 3, Gecko aide à choisir")}
           />
         </>

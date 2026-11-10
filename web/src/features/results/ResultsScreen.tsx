@@ -31,6 +31,7 @@ import {
   type ResultsPage,
 } from "./model";
 import { RESULTS_BUCKET, useResultActions, useResults, type ResultsTarget } from "./resultsApi";
+import { HooksThatWorked, ImportNumbers, PostSource } from "./ResultsExtras";
 
 const day = (iso: string | null) => shortDate(iso).replace(/\.$/, "");
 
@@ -83,6 +84,7 @@ function ResultsList({
   page: ResultsPage;
 }) {
   const [adding, setAdding] = useState(false);
+  const [importing, setImporting] = useState(false);
   const today = todayIso();
   const open = waiting(page.posts, today);
   return (
@@ -126,6 +128,7 @@ function ResultsList({
       )}
 
       <MonthlyReads target={target} template={template} page={page} />
+      <HooksThatWorked page={page} template={template} base={base} />
 
       <div className="group">
         <div className="group-head">
@@ -133,12 +136,22 @@ function ResultsList({
             {tw(["Reels online", "Vidéos en ligne"], ["Films online", "Films en ligne"])}{" "}
             <span className="count">{page.posts.length}</span>
           </h2>
-          {page.canAdd && !adding && (
-            <Button variant="secondary" onClick={() => setAdding(true)}>
-              {t("+ Add one that went live", "+ Ajouter une mise en ligne")}
-            </Button>
-          )}
+          <div className="actions">
+            {page.canAdd && page.posts.length > 0 && !importing && (
+              <Button variant="secondary" onClick={() => setImporting(true)}>
+                {t("Import numbers", "Importer des chiffres")}
+              </Button>
+            )}
+            {page.canAdd && !adding && (
+              <Button variant="secondary" onClick={() => setAdding(true)}>
+                {t("+ Add one that went live", "+ Ajouter une mise en ligne")}
+              </Button>
+            )}
+          </div>
         </div>
+        {importing && (
+          <ImportNumbers target={target} page={page} onClose={() => setImporting(false)} />
+        )}
         {adding && (
           <PostForm
             target={target}
@@ -464,6 +477,7 @@ function PostScreen({
           </>
         )}
       </p>
+      <PostSource target={target} page={page} post={post} canEdit={mine && page.canAdd} />
       {editing && (
         <PostForm
           target={target}

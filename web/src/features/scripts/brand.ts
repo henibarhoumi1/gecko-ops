@@ -8,6 +8,8 @@ import type { ScriptLine } from "./model";
  * against.
  */
 export interface BrandSheet {
+  /** The client's site, for tagged links. */
+  site: string;
   oneline: string;
   promise: string;
   feel: string[];
@@ -66,6 +68,7 @@ export function brandSheet(answers: Answers, notes = ""): BrandSheet {
     ? (answers.reasons as Record<string, unknown>[]).map((r) => text(r?.reason)).filter(Boolean)
     : [];
   return {
+    site: text(answers.site),
     oneline: text(answers.oneline),
     promise: text(answers.promise),
     feel: picks(answers, "words"),
@@ -82,7 +85,7 @@ export function brandSheet(answers: Answers, notes = ""): BrandSheet {
 }
 
 export const sheetIsEmpty = (s: BrandSheet) =>
-  Object.values(s).every((v) => (Array.isArray(v) ? v.length === 0 : !v));
+  Object.entries(s).every(([k, v]) => k === "site" || (Array.isArray(v) ? v.length === 0 : !v));
 
 // A brand-notes line like "Never say: cheap, discount" or "À éviter : promo" adds its words to the list.
 const NOTE_RULE =
