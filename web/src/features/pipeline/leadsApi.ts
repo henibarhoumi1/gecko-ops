@@ -56,6 +56,7 @@ export type LeadPatch = Partial<
     | "contact"
     | "whatsapp"
     | "lost_reason"
+    | "client_id"
   >
 >;
 
