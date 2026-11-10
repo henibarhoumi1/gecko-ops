@@ -14,7 +14,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: 10px;
+  gap: 12px;
   max-width: 780px;
 }
 
@@ -71,12 +71,12 @@
 
 /* Team */
 .team-page h2 {
-  margin: 28px 0 12px;
+  margin: 32px 0 12px;
 }
 
 .team-invite {
   display: grid;
-  gap: 14px;
+  gap: 16px;
 }
 
 .invite-role select {
@@ -92,7 +92,7 @@
 .client-access {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 20px;
+  gap: 12px 20px;
   margin: 0;
   padding: 12px 0 0;
   border: 0;
@@ -207,7 +207,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px 14px;
+  gap: 12px 16px;
 }
 
 .file-btn {
@@ -230,7 +230,7 @@
 
 .upload {
   display: grid;
-  gap: 6px;
+  gap: 8px;
 }
 
 .upload p {
@@ -255,8 +255,8 @@
 }
 
 .reel-strip {
-  margin: 28px 0;
-  padding: 18px 20px 20px;
+  margin: 32px 0;
+  padding: 20px 20px 20px;
   border: 1.5px solid var(--edge);
   border-radius: var(--radius);
   background: var(--white);
@@ -268,7 +268,7 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 4px 16px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .reel-strip-head h2 {
@@ -283,7 +283,7 @@
 .frames {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -314,7 +314,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   margin: 12px 0 0;
 }
 
@@ -348,8 +348,8 @@
 
 .edit-part {
   display: grid;
-  gap: 14px;
-  padding-top: 22px;
+  gap: 16px;
+  padding-top: 24px;
   border-top: 1.5px solid var(--edge);
 }
 
@@ -365,7 +365,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 14px;
+  gap: 16px;
   margin: 8px -4px 0;
   padding: 12px 4px;
   background: var(--white);
@@ -384,7 +384,7 @@
 .client-row-top {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .tag-pink {

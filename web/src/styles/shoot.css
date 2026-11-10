@@ -2,18 +2,18 @@
 
 .shoot-offline {
   margin: 0 0 12px;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border-radius: 12px;
   background: var(--yellow-soft);
 }
 
 .shoot-h {
-  margin: 28px 0 10px;
+  margin: 32px 0 12px;
 }
 
 .shoot-days {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -24,7 +24,7 @@
   grid-template-columns: 120px minmax(0, 1fr) auto;
   align-items: center;
   gap: 16px;
-  padding: 14px 16px;
+  padding: 16px 16px;
   border: 1px solid var(--edge);
   border-radius: var(--radius);
   color: var(--ink);
@@ -62,7 +62,7 @@
 .shoot-day-count {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   justify-content: flex-end;
   white-space: nowrap;
 }
@@ -79,7 +79,7 @@
 .shoot-head .eyebrow {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .shoot-title {
@@ -90,7 +90,7 @@
 .shoot-when {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 18px;
+  gap: 8px 20px;
   margin: 8px 0 0;
 }
 
@@ -127,8 +127,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 18px;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
 .shoot-next {
@@ -136,8 +136,8 @@
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  margin-bottom: 18px;
-  padding: 16px 18px;
+  margin-bottom: 20px;
+  padding: 16px 20px;
   border-radius: var(--radius);
   background: var(--ink);
   color: var(--white);
@@ -167,12 +167,12 @@
 
 .shoot-section {
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 .shoot-section h3 {
   margin: 0;
-  font-size: 17px;
+  font-size: 18px;
   letter-spacing: -0.02em;
 }
 
@@ -180,7 +180,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .shoot-side .shoot-section {
@@ -191,7 +191,7 @@
 
 .shoot-reel-list {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -199,8 +199,8 @@
 
 .shoot-reel {
   display: grid;
-  gap: 10px;
-  padding: 14px 16px;
+  gap: 12px;
+  padding: 16px 16px;
   border: 1px solid var(--edge);
   border-left-width: 6px;
   border-radius: var(--radius);
@@ -246,7 +246,7 @@
 
 .shoot-slot {
   margin-right: 8px;
-  padding: 1px 6px;
+  padding: 1px 8px;
   border-radius: 6px;
   background: var(--yellow);
   font-size: 12px;
@@ -263,14 +263,14 @@
 .shoot-status {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
 }
 
 .shoot-status-btn {
   font: inherit;
   font-size: 13px;
   font-weight: 600;
-  padding: 7px 12px;
+  padding: 8px 12px;
   border: 1px solid var(--edge);
   border-radius: 999px;
   background: var(--white);
@@ -339,7 +339,7 @@
 
 .shoot-pick {
   display: grid;
-  gap: 6px;
+  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -350,7 +350,7 @@
   grid-template-columns: auto 22px minmax(0, 1fr);
   align-items: center;
   gap: 8px;
-  padding: 8px 10px;
+  padding: 8px 12px;
   border: 1px solid var(--line);
   border-radius: 10px;
   cursor: pointer;
@@ -388,13 +388,13 @@
 .shoot-person-links {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
 }
 
 .shoot-person-form {
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 .shoot-notes {
@@ -404,7 +404,7 @@
 
 .shoot-private {
   margin: 0;
-  padding: 10px 12px;
+  padding: 12px 12px;
   border-radius: 10px;
   background: var(--yellow-soft);
   white-space: pre-wrap;
@@ -419,7 +419,7 @@
   flex: 1 1 auto;
   min-width: 0;
   font: inherit;
-  padding: 9px 12px;
+  padding: 8px 12px;
   border: 1px solid var(--edge);
   border-radius: 999px;
 }
@@ -430,7 +430,7 @@
 }
 
 .shoot-wrap {
-  margin-bottom: 18px;
+  margin-bottom: 20px;
   padding: 16px;
   border-radius: var(--radius);
   background: var(--green-soft);
@@ -449,7 +449,7 @@
 @media (max-width: 560px) {
   .shoot-day-card {
     grid-template-columns: minmax(0, 1fr);
-    gap: 6px;
+    gap: 8px;
   }
 
   .shoot-day-count {
@@ -466,7 +466,7 @@
   }
 
   .shoot-status-btn {
-    padding: 7px 10px;
+    padding: 8px 12px;
   }
 }
 
@@ -509,7 +509,7 @@
   font: inherit;
   font-size: 13px;
   font-weight: 600;
-  padding: 8px 14px;
+  padding: 8px 16px;
   border: 1px solid var(--mat-major);
   border-radius: 999px;
   background: transparent;
@@ -599,7 +599,7 @@
 
 .reader-next {
   margin-top: 12px;
-  padding-top: 14px;
+  padding-top: 16px;
   border-top: 1px solid var(--mat-major);
   font-size: clamp(18px, 3.4vw, 28px);
   opacity: 0.55;
@@ -617,7 +617,7 @@
   font-weight: 700;
   flex: 1 1 auto;
   min-height: 52px;
-  padding: 12px 14px;
+  padding: 12px 16px;
   border: 1px solid var(--mat-major);
   border-radius: 16px;
   background: transparent;
@@ -645,7 +645,7 @@
 .reader-end {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
 }
 
 .reader .btn-secondary {
@@ -662,14 +662,14 @@
 
 .reader-edit {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   padding: 12px 16px max(14px, env(safe-area-inset-bottom, 0px));
 }
 
 .reader-edit textarea {
   font: inherit;
   font-size: 18px;
-  padding: 12px 14px;
+  padding: 12px 16px;
   border-radius: 14px;
   border: 1px solid var(--white);
   background: var(--ink);
@@ -689,8 +689,8 @@
 
 .prompter-line {
   display: grid;
-  gap: 6px;
-  margin: 0 0 36px;
+  gap: 8px;
+  margin: 0 0 32px;
   font-size: clamp(30px, 6.5vw, 64px);
   font-weight: 700;
   line-height: 1.15;

@@ -16,8 +16,8 @@
 .play-toggle {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+  gap: 8px;
+  padding: 8px 12px;
   border: 1px solid var(--ink);
   border-radius: 999px;
   background: var(--white);
@@ -59,7 +59,7 @@
 /* ---------- messages Gecko sends the client ---------- */
 
 .nudge-open {
-  margin: 0 0 18px;
+  margin: 0 0 20px;
 }
 
 .nudge {
@@ -77,7 +77,7 @@
 
 .message-preview {
   margin: 0;
-  padding: 12px 14px;
+  padding: 12px 16px;
   border-radius: var(--radius);
   background: var(--yellow-soft);
   white-space: pre-wrap;
@@ -90,7 +90,7 @@
 
 .refs li:has(.link-player) {
   list-style: none;
-  margin-left: -18px;
+  margin-left: -20px;
 }
 
 /* ---------- portal polish ---------- */
@@ -99,7 +99,7 @@
 .portal-hero {
   display: flex;
   align-items: center;
-  padding: 34px 28px;
+  padding: 34px 32px;
   border-radius: var(--radius);
 }
 
@@ -107,9 +107,9 @@
   position: relative;
   display: grid;
   justify-items: start;
-  gap: 10px;
+  gap: 12px;
   max-width: 100%;
-  padding: 26px 30px 22px;
+  padding: 24px 32px 24px;
   background: var(--white);
   color: var(--ink);
   border-radius: 4px;
@@ -132,7 +132,7 @@
 }
 
 .portal-label .portal-brand {
-  margin: 6px 0 0;
+  margin: 8px 0 0;
 }
 
 .portal-label .portal-brand img {
@@ -141,7 +141,7 @@
 }
 
 .portal-page .portal-tabs {
-  margin-top: 26px;
+  margin-top: 24px;
 }
 
 /* What needs the client: one list, not a stack of boxes. */
@@ -173,7 +173,7 @@
   }
 
   .portal-label {
-    padding: 22px 20px 16px;
+    padding: 24px 20px 16px;
   }
 
   .portal-who .muted {
@@ -221,7 +221,7 @@
   display: flex;
   justify-content: space-around;
   gap: 2px;
-  padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+  padding: 8px 8px calc(6px + env(safe-area-inset-bottom, 0px));
   background: var(--white);
   border-top: 1px solid var(--line);
 }
@@ -230,11 +230,11 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 9px 8px;
+  gap: 4px;
+  padding: 8px 8px;
   border-radius: 999px;
   color: var(--ink-2);
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
@@ -262,7 +262,7 @@
 
 .sub-nav {
   display: flex;
-  gap: 18px;
+  gap: 20px;
   margin: 4px 0 8px;
   border-bottom: 1px solid var(--line);
   overflow-x: auto;
@@ -271,8 +271,8 @@
 .sub-link {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 10px 0;
+  gap: 8px;
+  padding: 12px 0;
   margin-bottom: -1px;
   border-bottom: 2px solid transparent;
   color: var(--muted);
@@ -303,15 +303,15 @@
     top: 0;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 16px;
     height: 100vh;
-    padding: 22px 14px;
+    padding: 24px 16px;
     border-right: 1px solid var(--line);
     overflow-y: auto;
   }
 
   .portal-rail .logo {
-    margin: 2px 14px 0;
+    margin: 2px 16px 0;
   }
 
   .portal-v2 .portal-bar,
@@ -327,9 +327,9 @@
 }
 
 .rail-brand {
-  padding: 12px 14px 14px;
+  padding: 12px 16px 16px;
   border-bottom: 1px solid var(--line);
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.15;
@@ -350,11 +350,11 @@
 .rail-group {
   display: grid;
   gap: 1px;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .rail-group-name {
-  padding: 0 14px 4px;
+  padding: 0 16px 4px;
   font-size: 13px;
   font-weight: 700;
   color: var(--ink-2);
@@ -365,7 +365,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 6px 14px;
+  padding: 8px 16px;
   border-radius: 999px;
   color: var(--ink-2);
   font-weight: 500;
@@ -373,7 +373,7 @@
 }
 
 .rail-group .rail-link {
-  padding-left: 22px;
+  padding-left: 24px;
 }
 
 .rail-link:hover {
@@ -389,9 +389,9 @@
 .rail-me {
   display: grid;
   justify-items: start;
-  gap: 6px;
+  gap: 8px;
   margin-top: auto;
-  padding: 14px 14px 0;
+  padding: 16px 16px 0;
   border-top: 1px solid var(--line);
 }
 
@@ -402,7 +402,7 @@
 }
 
 .portal-head {
-  margin-bottom: 22px;
+  margin-bottom: 24px;
 }
 
 .portal-head .head-brand {
@@ -420,7 +420,7 @@
 
 .head-campaign {
   margin: 12px 0 0;
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
@@ -428,7 +428,7 @@
 .portal-head.perf {
   display: grid;
   justify-items: start;
-  padding: 18px 0 26px;
+  padding: 20px 0 24px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -441,7 +441,7 @@
   display: flex;
   align-items: flex-end;
   min-height: clamp(260px, 42vw, 420px);
-  padding: 28px;
+  padding: 32px;
   border-radius: var(--radius);
   background: var(--ink) center / cover no-repeat;
   color: var(--white);
@@ -466,7 +466,7 @@
 }
 
 .head-stage {
-  margin: 10px 0 0;
+  margin: 12px 0 0;
   font-size: 14px;
   font-weight: 600;
 }
@@ -475,7 +475,7 @@
 .stages {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
-  margin: 0 0 30px;
+  margin: 0 0 32px;
   padding: 0;
   list-style: none;
 }
@@ -485,7 +485,7 @@
   display: grid;
   align-content: start;
   justify-items: start;
-  gap: 6px;
+  gap: 8px;
   padding-right: 8px;
 }
 
@@ -560,19 +560,19 @@
   }
 
   .stages {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
   }
 
   .stages-phone {
     display: grid;
     gap: 2px;
-    margin: 0 0 26px;
+    margin: 0 0 24px;
   }
 }
 
 /* What the plan holds: one small card per script, then what's left to write. */
 .progress {
-  margin-top: 30px;
+  margin-top: 32px;
 }
 
 .progress-head {
@@ -594,8 +594,8 @@
 .pieces {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 10px;
-  margin: 14px 0 0;
+  gap: 12px;
+  margin: 16px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -605,7 +605,7 @@
   align-content: start;
   gap: 3px;
   height: 100%;
-  padding: 14px;
+  padding: 16px;
   border: 1px solid var(--edge);
   border-radius: 12px;
   color: var(--ink);
@@ -653,7 +653,7 @@ a.piece:hover {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
 }
 
 .teammate p {
@@ -663,7 +663,7 @@ a.piece:hover {
 .teammate-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
 .role-select {
@@ -680,7 +680,7 @@ a.piece:hover {
 }
 
 .invite-teammate {
-  margin-top: 28px;
+  margin-top: 32px;
 }
 
 .roles {
@@ -709,7 +709,7 @@ a.piece:hover {
 
 .look-panel {
   display: grid;
-  gap: 14px;
+  gap: 16px;
   margin-bottom: 16px;
 }
 
@@ -724,14 +724,14 @@ a.piece:hover {
 .template-pick {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 10px;
+  gap: 12px;
 }
 
 .template-option {
   position: relative;
   display: grid;
   gap: 4px;
-  padding: 14px;
+  padding: 16px;
   border: 1px solid var(--line);
   border-radius: 12px;
   cursor: pointer;
@@ -781,7 +781,7 @@ a.piece:hover {
 }
 
 .portal-head.cine {
-  margin-bottom: 28px;
+  margin-bottom: 32px;
 }
 
 /* ---------- Portal v2, phase B: talent, locations, props, budget ---------- */
@@ -789,8 +789,8 @@ a.piece:hover {
 .budget {
   display: grid;
   gap: 12px;
-  margin: 4px 0 28px;
-  padding: 18px 20px;
+  margin: 4px 0 32px;
+  padding: 20px 20px;
   border: 1.5px solid var(--edge);
   border-radius: var(--radius);
   background: var(--white);
@@ -806,11 +806,11 @@ a.piece:hover {
 
 .budget-head h2 {
   margin: 0;
-  font-size: 17px;
+  font-size: 18px;
 }
 
 .budget-cap {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
@@ -860,7 +860,7 @@ a.piece:hover {
 .budget-figures {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 26px;
+  gap: 8px 24px;
   margin: 0;
 }
 
@@ -871,7 +871,7 @@ a.piece:hover {
 .budget-figures dt {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   color: var(--muted);
   font-size: 13px;
 }
@@ -936,7 +936,7 @@ a.piece:hover {
 .prod-body {
   display: grid;
   gap: 8px;
-  padding: 14px 16px 16px;
+  padding: 16px 16px 16px;
 }
 
 .prod-body p {
@@ -948,7 +948,7 @@ a.piece:hover {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
 }
 
 .prod-head h3 {
@@ -1026,7 +1026,7 @@ a.piece:hover {
 .prod-steps {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 6px;
+  gap: 4px 8px;
   margin: 2px 0 0;
   padding: 0;
   list-style: none;
@@ -1056,7 +1056,7 @@ a.piece:hover {
 
 .over-note {
   flex-basis: 100%;
-  padding: 8px 10px;
+  padding: 8px 12px;
   border-left: 3px solid #a3261b;
   background: var(--pink-soft);
 }
@@ -1067,7 +1067,7 @@ a.piece:hover {
   align-items: center;
   gap: 8px 12px;
   flex-basis: 100%;
-  padding: 10px 12px;
+  padding: 12px 12px;
   border: 1.5px solid var(--edge);
   border-radius: 10px;
   background: var(--yellow-soft);
@@ -1078,7 +1078,7 @@ a.piece:hover {
 }
 
 .team-only {
-  padding: 6px 10px;
+  padding: 8px 12px;
   border-radius: 8px;
   background: #f4f4f2;
 }
@@ -1126,13 +1126,13 @@ a.piece:hover {
 
 .cost-table {
   width: 100%;
-  margin-bottom: 28px;
+  margin-bottom: 32px;
   border-collapse: collapse;
 }
 
 .cost-table th,
 .cost-table td {
-  padding: 10px 8px;
+  padding: 12px 8px;
   border-bottom: 1px solid var(--line);
   text-align: left;
 }
@@ -1163,7 +1163,7 @@ a.piece:hover {
 
 @media (max-width: 600px) {
   .budget {
-    padding: 14px;
+    padding: 16px;
   }
   .budget-left {
     margin-left: 0;

@@ -6,7 +6,7 @@
 
 .cboard {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   min-width: 0;
 }
 
@@ -132,7 +132,7 @@
   top: 12px;
   display: grid;
   gap: 4px;
-  padding: 6px;
+  padding: 8px;
   background: var(--white);
   border: 1.5px solid var(--edge);
   border-radius: 14px;
@@ -144,7 +144,7 @@
   justify-items: center;
   gap: 4px;
   width: 64px;
-  padding: 8px 2px 6px;
+  padding: 8px 2px 8px;
   border: 0;
   border-radius: 10px;
   background: none;
@@ -230,7 +230,7 @@
 .board-zoom button {
   min-width: 36px;
   height: 34px;
-  padding: 0 10px;
+  padding: 0 12px;
   border: 0;
   background: none;
   font: 600 14px var(--font);
@@ -252,7 +252,7 @@
   top: 50%;
   width: min(420px, calc(100% - 120px));
   transform: translate(-50%, -50%);
-  padding: 22px 24px;
+  padding: 24px 24px;
   background: var(--white);
   border: 1.5px solid var(--edge);
   border-radius: var(--radius);
@@ -261,11 +261,11 @@
 }
 
 .board-empty h3 {
-  margin: 0 0 6px;
+  margin: 0 0 8px;
 }
 
 .board-empty p {
-  margin: 0 0 14px;
+  margin: 0 0 16px;
 }
 
 .board-hint {
@@ -275,7 +275,7 @@
   left: 50%;
   top: 12px;
   margin: 0;
-  padding: 8px 14px;
+  padding: 8px 16px;
   transform: translateX(-50%);
   background: var(--yellow);
   border: 1.5px solid var(--edge);
@@ -380,7 +380,7 @@
 }
 
 .bc-note {
-  padding: 14px 16px;
+  padding: 16px 16px;
   border-radius: 9px;
   min-height: 56px;
 }
@@ -407,8 +407,8 @@
 
 .bc-colors {
   display: flex;
-  gap: 6px;
-  margin-top: 10px;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 .swatch {
@@ -441,7 +441,7 @@
 .bc-todo,
 .bc-link,
 .bc-table {
-  padding: 14px 16px;
+  padding: 16px 16px;
 }
 
 .bc-todo h4,
@@ -452,7 +452,7 @@
 
 .bc-todo ul {
   display: grid;
-  gap: 6px;
+  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -513,7 +513,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 10px;
+  padding: 8px 12px;
   cursor: grab;
 }
 
@@ -565,7 +565,7 @@
 
 .bc-caption {
   display: block;
-  padding: 8px 12px 10px;
+  padding: 8px 12px 12px;
   font-size: 13px;
 }
 
@@ -582,7 +582,7 @@
 
 .bc-table th,
 .bc-table td {
-  padding: 6px 8px;
+  padding: 8px 8px;
   border: 1px solid var(--line);
   text-align: left;
   vertical-align: top;
@@ -602,14 +602,14 @@
 .bc-table-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 14px;
+  gap: 4px 16px;
 }
 
 .bc-board {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 14px 16px;
+  gap: 16px;
+  padding: 16px 16px;
 }
 
 .bc-board-icon {
@@ -619,7 +619,7 @@
   flex: none;
   width: 54px;
   height: 54px;
-  padding: 7px;
+  padding: 8px;
   border-radius: 10px;
   background: var(--mat);
 }
@@ -668,19 +668,19 @@
 .bc-column h3 {
   display: grid;
   margin: 2px 4px 12px;
-  font-size: 17px;
+  font-size: 18px;
   text-align: center;
 }
 
 .bc-column-list {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   min-height: 60px;
 }
 
 .bc-column-empty {
   margin: 0;
-  padding: 18px 0;
+  padding: 20px 0;
   border: 1.5px dashed var(--line);
   border-radius: 10px;
   text-align: center;
@@ -721,7 +721,7 @@
 /* ---------- client logos ---------- */
 
 .portal-brand {
-  margin: 4px 0 22px;
+  margin: 4px 0 24px;
   line-height: 0;
 }
 
@@ -737,7 +737,7 @@
 .client-title {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
   flex-wrap: wrap;
 }
 
@@ -774,7 +774,7 @@
   display: grid;
   place-items: center;
   min-height: 110px;
-  padding: 18px;
+  padding: 20px;
   border-radius: var(--radius);
   background: var(--white);
   border: 1px solid var(--line);
