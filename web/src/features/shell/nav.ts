@@ -16,6 +16,7 @@ export const NAV: readonly NavItem[] = [
   { path: "shoots", label: "Shoots", roles: ALL },
   { path: "team", label: "Team", roles: ALL },
   { path: "alerts", label: "Alerts", roles: ["founder", "sales"] },
+  { path: "trash", label: "Trash", roles: ["founder", "sales"] },
 ];
 
 export function navFor(role: Role): NavItem[] {

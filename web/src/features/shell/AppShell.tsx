@@ -1,3 +1,4 @@
+import { UndoBar } from "@/features/trash/UndoBar";
 import { NavLink, Outlet } from "react-router-dom";
 import { Button } from "@/components/Button";
 import { Logo } from "@/components/Logo";
@@ -30,6 +31,7 @@ export function AppShell({ workspace, email }: { workspace: Workspace; email: st
       <main className="content">
         <Outlet />
       </main>
+      <UndoBar workspaceId={workspace.id} />
     </div>
   );
 }
