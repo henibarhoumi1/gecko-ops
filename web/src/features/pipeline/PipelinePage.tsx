@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import { useMembers, type Member } from "@/features/workspace/members";
@@ -42,7 +43,9 @@ export function PipelinePage() {
   const [filter, setFilter] = useState<Filter>("open");
   const [search, setSearch] = useState("");
   const [adding, setAdding] = useState(false);
-  const [openId, setOpenId] = useState<string | null>(null);
+  // Today links straight to a lead: /pipeline?lead=<id> opens its panel.
+  const [params] = useSearchParams();
+  const [openId, setOpenId] = useState<string | null>(() => params.get("lead"));
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const today = todayIso();
   const closePanel = useCallback(() => setOpenId(null), []);

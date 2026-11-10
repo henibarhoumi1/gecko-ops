@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { requireSupabase } from "@/lib/supabase";
 import type { Today } from "./model";
@@ -24,5 +24,27 @@ export function useToday() {
       };
     },
     refetchInterval: 60_000,
+  });
+}
+
+/** Quick capture: an idea goes to a client's ideas as a team draft; nothing reaches the client until sent. */
+export function useCaptureIdea() {
+  const { id: workspaceId } = useWorkspace();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { clientId: string; title: string; body: string }) => {
+      const { error } = await requireSupabase().from("concepts").insert({
+        workspace_id: workspaceId,
+        client_id: input.clientId,
+        title: input.title,
+        body: input.body,
+        format: "reel",
+        refs: "",
+        hook: "",
+        status: "draft",
+      });
+      if (error) throw error;
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["concepts", workspaceId] }),
   });
 }

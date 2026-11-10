@@ -7565,3 +7565,232 @@ a.piece:hover {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- Today, V1: the next shoot, whose move it is, the week ---------- */
+
+.today-v1 .page-head {
+  margin-bottom: 12px;
+}
+
+.today-capture {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.today-capture input {
+  flex: 1 1 320px;
+  min-width: 0;
+  font: inherit;
+  padding: 12px 16px;
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+}
+
+.today-capture select {
+  font: inherit;
+  padding: 10px 14px;
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  background: var(--white);
+}
+
+.today-capture-done {
+  flex: 1 1 100%;
+  margin: 0;
+}
+
+.today-next {
+  display: grid;
+  gap: 4px;
+  margin: 0 0 24px;
+  padding: 18px 20px;
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: var(--white);
+  text-decoration: none;
+}
+
+.today-next .eyebrow {
+  color: var(--yellow);
+  margin: 0;
+}
+
+.today-next strong {
+  font-size: 24px;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.today-next-go {
+  justify-self: start;
+  margin-top: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--pink);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.today-next-empty {
+  background: var(--yellow-soft);
+  color: var(--ink);
+}
+
+.today-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+  gap: 28px 32px;
+  margin-bottom: 28px;
+}
+
+.today-v1 > .today-section {
+  margin-bottom: 28px;
+}
+
+.today-lines {
+  display: grid;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.today-lines > li {
+  border-bottom: 1px solid var(--line);
+}
+
+.today-line-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.today-line {
+  font: inherit;
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 4px;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.today-line:hover {
+  background: var(--pink-soft);
+}
+
+.today-line > span:nth-child(2) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* On a phone, the brand and the wait share the first line; what's waiting goes underneath. */
+@media (max-width: 560px) {
+  .today-line {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2px 10px;
+  }
+
+  .today-line > span:nth-child(2) {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    white-space: normal;
+  }
+}
+
+.today-slow {
+  background: var(--pink);
+}
+
+.today-items {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 0 0 0 14px;
+  list-style: none;
+  border-left: 3px solid var(--yellow);
+}
+
+.today-items li {
+  display: grid;
+  gap: 1px;
+}
+
+.today-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.today-week > li {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  min-width: 0;
+  min-height: 96px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.today-week > li.is-today {
+  border-color: var(--ink);
+  background: var(--pink-soft);
+}
+
+.today-week-day {
+  font-size: 13px;
+}
+
+.today-week-item {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: var(--yellow-soft);
+  color: var(--ink);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.today-week-item.kind-shoot {
+  background: var(--ink);
+  color: var(--white);
+}
+
+.today-week-item.kind-invoice {
+  background: var(--green-soft);
+}
+
+.today-slipped {
+  margin: 10px 0 0;
+}
+
+@media (max-width: 900px) {
+  .today-week {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .today-week > li {
+    grid-template-columns: 64px minmax(0, 1fr);
+    min-height: 0;
+  }
+
+  .today-week > li > .today-week-item {
+    grid-column: 2;
+  }
+}
