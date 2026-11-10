@@ -804,8 +804,6 @@
 
 /* Running text stays readable however wide the page gets. */
 .lede,
-.notice,
-.empty-state,
 .tab-body > p,
 .concept-body,
 .script .line-main {
