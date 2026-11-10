@@ -381,7 +381,7 @@ function DayView({
           {page.canPlan && (
             <>
               <Button variant="secondary" onClick={() => setEditing(true)}>
-                Edit the day
+                {t("Edit the day", "Modifier la journée")}
               </Button>
               <Button
                 variant="link"
@@ -391,7 +391,7 @@ function DayView({
                   })
                 }
               >
-                Remove the day
+                {t("Remove the day", "Retirer la journée")}
               </Button>
             </>
           )}
@@ -431,7 +431,7 @@ function DayView({
             </h3>
             {page.canPlan && !picking && (
               <Button variant="secondary" className="btn-small" onClick={() => setPicking(true)}>
-                Choose reels
+                {t("Choose reels", "Choisir les vidéos")}
               </Button>
             )}
           </div>

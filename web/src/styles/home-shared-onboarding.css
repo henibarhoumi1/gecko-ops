@@ -1,0 +1,468 @@
+/* ---------- Home: what needs the client ---------- */
+.waiting-title {
+  margin: 8px 0 12px;
+}
+
+.waiting {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.waiting-item {
+  display: grid;
+  gap: 2px;
+  padding: 14px 18px;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius);
+  background: var(--yellow-soft);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.waiting-item:hover {
+  border-color: var(--ink);
+}
+
+.waiting-item strong {
+  font-size: 17px;
+}
+
+.waiting-item strong::after {
+  content: " \2192";
+}
+
+.waiting-none {
+  margin: 0 0 8px;
+  padding: 14px 18px;
+  border: 1px dashed var(--edge);
+  border-radius: var(--radius);
+}
+
+.doing {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.doing li + li {
+  margin-top: 4px;
+}
+
+/* ---------- Shared space ---------- */
+.brand-notes .page-head h2 {
+  margin: 8px 0 0;
+}
+
+.brand-notes-body {
+  margin: 8px 0 6px;
+  padding: 16px 18px;
+  border-radius: var(--radius);
+  background: var(--yellow-soft);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.refs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ref-card {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: 14px;
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+}
+
+.ref-card p {
+  margin: 0;
+}
+
+.ref-link {
+  justify-self: start;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ref-body,
+.request-body {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.requests {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.request {
+  display: grid;
+  gap: 6px;
+  padding: 14px 16px;
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+}
+
+.request-open {
+  border-left: 4px solid var(--pink);
+}
+
+.request p {
+  margin: 0;
+}
+
+/* ---------- Onboarding ---------- */
+.ob {
+  display: grid;
+  gap: 14px;
+  scroll-margin-top: 16px;
+}
+
+.ob-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.meter {
+  height: 8px;
+  border-radius: 999px;
+  background: #efede9;
+  overflow: hidden;
+}
+
+.meter i {
+  display: block;
+  height: 100%;
+  background: var(--mat);
+  border-radius: inherit;
+  transition: width 0.3s ease;
+}
+
+.save {
+  color: var(--muted);
+}
+
+.save-error {
+  color: #a3261b;
+  font-weight: 600;
+}
+
+.ob-rail {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+
+.ob-step {
+  font: inherit;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  cursor: pointer;
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--ink);
+}
+
+.ob-step .num {
+  font-size: 11px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.ob-step.full {
+  background: #e3efe8;
+  border-color: transparent;
+}
+
+.ob-step[aria-current="step"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--white);
+}
+
+.ob-step[aria-current="step"] .num {
+  color: inherit;
+}
+
+.ob-part {
+  display: grid;
+  gap: 16px;
+  padding: 22px;
+  border: 1px solid var(--edge);
+  border-radius: 18px;
+}
+
+.ob-head {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.ob-head .num {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--pink);
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.ob-head h2 {
+  margin: 4px 0 2px;
+  font-size: 20px;
+}
+
+.ob-head p {
+  margin: 0;
+}
+
+.ob-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.ob-f {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.ob-f.half {
+  grid-column: auto;
+}
+
+.ob-f > label,
+.ob-f > legend {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0;
+  margin-bottom: 6px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--ink);
+}
+
+.chip:hover {
+  border-color: var(--ink);
+}
+
+.chip[aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--white);
+}
+
+.chip-other {
+  width: auto;
+  flex: 1 1 160px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 14px;
+}
+
+.ob-f.scale {
+  grid-template-columns: 110px minmax(0, 1fr) 110px;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.ob-f.scale > span:last-child {
+  text-align: right;
+}
+
+.ob-f.scale.set {
+  color: var(--ink);
+}
+
+.ob-f.scale input {
+  accent-color: var(--ink);
+  width: 100%;
+}
+
+.ob-f.scale:not(.set) input {
+  opacity: 0.45;
+}
+
+.ob-list {
+  display: grid;
+  gap: 8px;
+}
+
+.ob-row {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 1), minmax(0, 1fr)) 36px;
+  gap: 8px;
+  align-items: center;
+}
+
+.ob-assets {
+  display: grid;
+  gap: 8px;
+}
+
+.ob-asset {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) 150px minmax(0, 1.4fr);
+  gap: 8px;
+  align-items: center;
+  font-size: 14px;
+}
+
+.ob-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+}
+
+.ob-gaps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.ob-gaps button {
+  font: inherit;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--ink);
+}
+
+.ob-gaps button:hover {
+  border-color: var(--ink);
+}
+
+.ob-summary {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.ob-summary div {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.ob-summary dt {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.ob-summary dd {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .ob-part {
+    padding: 16px;
+  }
+
+  .ob-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ob-f.scale {
+    grid-template-columns: 80px minmax(0, 1fr) 80px;
+    font-size: 13px;
+  }
+
+  .ob-row {
+    grid-template-columns: minmax(0, 1fr) 36px;
+  }
+
+  .ob-row > input:not(:first-child) {
+    grid-column: 1;
+  }
+
+  .ob-asset {
+    grid-template-columns: minmax(0, 1fr) 130px;
+  }
+
+  .ob-asset input {
+    grid-column: 1 / -1;
+  }
+
+  .ob-gaps button {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .ob-gaps button .muted {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  .ob-summary div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+
+  .ob-top {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .ob-top .save {
+    grid-column: 1 / -1;
+  }
+}

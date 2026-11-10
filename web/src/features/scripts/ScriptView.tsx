@@ -42,7 +42,7 @@ function savedMode(reader: "client" | "team"): ScriptMode {
   return reader === "client" ? "write" : "breakdown";
 }
 
-function useScriptMode(reader: "client" | "team") {
+export function useScriptMode(reader: "client" | "team") {
   const [mode, setMode] = useState<ScriptMode>(() => savedMode(reader));
   const choose = (next: ScriptMode) => {
     setMode(next);

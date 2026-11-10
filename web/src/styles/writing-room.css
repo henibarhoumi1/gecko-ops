@@ -1,0 +1,480 @@
+/* ---------- Writing Room: read time, never-say words, the brand sheet ---------- */
+
+.read-meter {
+  display: grid;
+  gap: 6px;
+  margin: 4px 0 12px;
+}
+
+.read-meter-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.read-meter-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ink);
+  transition: width 0.2s ease;
+}
+
+.read-meter.over .read-meter-bar span {
+  background: #a3261b;
+}
+
+.read-meter.over p {
+  color: #a3261b;
+  font-weight: 600;
+}
+
+.never-hits {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border-left: 4px solid #a3261b;
+  border-radius: 10px;
+  background: var(--pink-soft);
+}
+
+.never-hits ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+.brand-drawer {
+  margin: 0 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--white);
+}
+
+.brand-drawer-toggle {
+  font: inherit;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.brand-drawer-toggle > :last-child {
+  margin-left: auto;
+}
+
+.brand-sheet {
+  display: grid;
+  grid-template-columns: minmax(120px, 180px) minmax(0, 1fr);
+  gap: 8px 16px;
+  margin: 0;
+  padding: 4px 14px 14px;
+}
+
+.brand-sheet dt {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.brand-sheet dt.warn {
+  color: #a3261b;
+}
+
+.brand-sheet dd {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .brand-sheet {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+
+  .brand-sheet dd {
+    margin-bottom: 8px;
+  }
+}
+
+.hook-idea.more {
+  border-style: dashed;
+  font-weight: 700;
+}
+
+.hook-library {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--yellow-soft);
+}
+
+.hook-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.hook-group > .small {
+  min-width: 90px;
+  font-weight: 700;
+}
+
+/* ---------- Writing Room part 2: one page for ideas and scripts, two ways to read a script ---------- */
+
+.room-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0 18px;
+}
+
+.room-chip {
+  font: inherit;
+  padding: 7px 14px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.room-chip.on {
+  background: var(--ink);
+  color: var(--white);
+}
+
+.room-chip.mine {
+  border-color: var(--pink);
+  background: var(--pink);
+  font-weight: 700;
+}
+
+.room-chip.mine.on {
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.room-columns {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(250px, 1fr);
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  scroll-snap-type: x proximity;
+}
+
+.room-col {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.room-col-head {
+  margin: 0 0 2px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.room-write .room-col-head,
+.room-ready .room-col-head {
+  color: var(--ink);
+}
+
+.room-card {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--white);
+  transition:
+    transform 0.15s var(--ease),
+    border-color 0.15s;
+}
+
+.room-card:hover {
+  border-color: var(--ink);
+  transform: translateY(-1px);
+}
+
+.room-card.mine {
+  border: 2px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--pink);
+}
+
+.room-ready .room-card {
+  background: var(--green-soft);
+}
+
+.room-card h3 {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.room-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.room-up {
+  margin-left: auto;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--yellow);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.room-hook {
+  margin: 0;
+  font-size: 14px;
+  font-style: italic;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.room-links {
+  display: grid;
+  gap: 2px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+}
+
+.room-act {
+  font-weight: 700;
+}
+
+.room-empty {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  padding: 24px;
+  border: 1px dashed var(--ink);
+  border-radius: 14px;
+}
+
+@media (max-width: 700px) {
+  .room-columns {
+    grid-auto-columns: 82%;
+  }
+}
+
+/* Jumping to an idea or a script from the Writing Room. */
+.flash {
+  animation: flash 2s var(--ease);
+}
+
+@keyframes flash {
+  0%,
+  40% {
+    box-shadow: 0 0 0 4px var(--pink);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+.script-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 14px;
+}
+
+.script-title-row h3 {
+  margin: 0;
+}
+
+.mode-switch {
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+}
+
+.mode-switch button {
+  font: inherit;
+  font-size: 13px;
+  padding: 3px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.mode-switch button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--white);
+}
+
+/* Read: the words people hear, like a page, with the picture as a stage direction. */
+.line-prose {
+  display: grid;
+  gap: 4px;
+}
+
+.line-prose p {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.line-prose .see {
+  color: var(--ink-2);
+  font-size: 13.5px;
+  font-style: italic;
+}
+
+.line-prose .see::before {
+  content: "( ";
+}
+
+.line-prose .see::after {
+  content: " )";
+}
+
+.line-prose .hear {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.line-prose .onscreen {
+  justify-self: start;
+  padding: 0 6px;
+  background: var(--yellow);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.mode-write .beats > li {
+  border-bottom-color: transparent;
+}
+
+/* Comments in the margin when there's room, next to the line they're about. */
+@media (min-width: 1180px) {
+  .script .script-line:not(.hook) {
+    grid-template-columns: minmax(0, 1fr) 230px;
+    column-gap: 24px;
+  }
+
+  .script .script-line:not(.hook) > .line-side:not(:empty) {
+    padding-left: 14px;
+    border-left: 1px solid var(--line);
+  }
+
+  .script .beat > .line-side {
+    padding-left: 14px;
+  }
+
+  .script .script-line:not(.hook) .notes {
+    font-size: 13.5px;
+  }
+}
+
+/* ---------- Writing on the page: the words big, the picture as a stage direction, no boxes ---------- */
+
+.ad-mode {
+  justify-self: start;
+  margin: 0 0 12px;
+}
+
+.ad-parts {
+  display: grid;
+  gap: 12px;
+}
+
+.ad-parts.mode-write .script-lines {
+  padding: 4px 0 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+
+.ad-parts.mode-write .script-lines > legend {
+  padding: 0 8px 0 0;
+}
+
+.line-page {
+  display: grid;
+  gap: 2px;
+  padding: 6px 0 10px 14px;
+  border: 0;
+  border-left: 3px solid transparent;
+  background: transparent;
+  transition: border-color 0.15s;
+}
+
+.line-page:focus-within {
+  border-left-color: var(--pink);
+}
+
+.page-text {
+  display: block;
+  width: 100%;
+  padding: 2px 0;
+  border: 0;
+  outline: none;
+  resize: none;
+  overflow: hidden;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.45;
+}
+
+.page-text::placeholder {
+  color: var(--ink-2);
+  opacity: 0.55;
+}
+
+.page-see {
+  color: var(--ink-2);
+  font-size: 14px;
+  font-style: italic;
+}
+
+.page-hear {
+  font-size: 19px;
+  font-weight: 500;
+}
+
+.page-onscreen {
+  justify-self: start;
+  width: auto;
+  min-width: 12ch;
+  max-width: 100%;
+  padding: 0 6px;
+  background: var(--yellow-soft);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.page-onscreen:placeholder-shown {
+  background: transparent;
+}

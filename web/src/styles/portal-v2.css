@@ -1,0 +1,1175 @@
+/* ---------- links that play in place ---------- */
+
+.link-player {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.link-player-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.play-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.play-toggle:hover,
+.play-toggle[aria-expanded="true"] {
+  background: var(--yellow-soft);
+}
+
+.link-player-frame {
+  display: block;
+  width: min(100%, 340px);
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--ink);
+}
+
+.link-player-frame.provider-youtube,
+.link-player-frame.provider-vimeo,
+.link-player-frame.provider-loom,
+.link-player-frame.provider-drive {
+  width: min(100%, 560px);
+}
+
+.link-player-frame iframe,
+.link-player-frame video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* ---------- messages Gecko sends the client ---------- */
+
+.nudge-open {
+  margin: 0 0 18px;
+}
+
+.nudge {
+  max-width: 640px;
+  margin: 0 0 20px;
+}
+
+.nudge-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.message-preview {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  background: var(--yellow-soft);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.msg-lang {
+  justify-self: start;
+}
+
+.refs li:has(.link-player) {
+  list-style: none;
+  margin-left: -18px;
+}
+
+/* ---------- portal polish ---------- */
+
+/* The brand's label, taped onto the cutting mat. */
+.portal-hero {
+  display: flex;
+  align-items: center;
+  padding: 34px 28px;
+  border-radius: var(--radius);
+}
+
+.portal-label {
+  position: relative;
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  max-width: 100%;
+  padding: 26px 30px 22px;
+  background: var(--white);
+  color: var(--ink);
+  border-radius: 4px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  transform: rotate(-0.8deg);
+}
+
+.portal-label .tape {
+  position: absolute;
+  top: -12px;
+  left: 22px;
+  transform: rotate(-2deg);
+}
+
+.portal-label h1 {
+  margin: 4px 0 0;
+  font-size: clamp(32px, 6vw, 56px);
+  line-height: 1;
+  overflow-wrap: anywhere;
+}
+
+.portal-label .portal-brand {
+  margin: 6px 0 0;
+}
+
+.portal-label .portal-brand img {
+  max-height: clamp(40px, 8vw, 64px);
+  max-width: min(400px, 100%);
+}
+
+.portal-page .portal-tabs {
+  margin-top: 26px;
+}
+
+/* What needs the client: one list, not a stack of boxes. */
+.waiting {
+  gap: 0;
+  border-radius: var(--radius);
+  background: var(--yellow-soft);
+  overflow: hidden;
+}
+
+.waiting li + li {
+  border-top: 1px solid rgba(17, 17, 17, 0.12);
+}
+
+.waiting-item {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.waiting-item:hover {
+  background: var(--yellow);
+}
+
+@media (max-width: 560px) {
+  .portal-hero {
+    padding: 24px 16px;
+    margin-inline: -4px;
+  }
+
+  .portal-label {
+    padding: 22px 20px 16px;
+  }
+
+  .portal-who .muted {
+    display: none;
+  }
+
+  /* Tabs scroll sideways on a phone; the fade says there is more. */
+  .portal-tabs {
+    mask-image: linear-gradient(90deg, #000 85%, transparent);
+  }
+}
+
+/* The board already sits on the mat and names the brand; give it the room. */
+.portal-page.board-page .portal-hero {
+  display: none;
+}
+
+/* ---------- Portal v2: by stage, with a rail on desktop and a bottom bar on phones ---------- */
+
+.portal-v2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.portal-rail {
+  display: none;
+}
+
+.portal-v2 .portal-page {
+  max-width: 920px;
+  padding-bottom: 96px;
+}
+
+.portal-v2 .portal-foot {
+  margin-top: 48px;
+  padding-inline: 0;
+}
+
+/* Phone: the sections live in a bar at the bottom, the pages of a section in a row at the top. */
+.portal-bottom {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 20;
+  display: flex;
+  justify-content: space-around;
+  gap: 2px;
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px));
+  background: var(--white);
+  border-top: 1px solid var(--line);
+}
+
+.bottom-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 9px 8px;
+  border-radius: 999px;
+  color: var(--ink-2);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.bottom-link .badge {
+  position: absolute;
+  top: 4px;
+  right: -1px;
+  min-width: 0;
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  overflow: hidden;
+  border: 1.5px solid var(--white);
+  background: var(--ink);
+  color: transparent;
+  font-size: 0;
+}
+
+.bottom-link.active {
+  background: var(--pink);
+  color: var(--ink);
+}
+
+.sub-nav {
+  display: flex;
+  gap: 18px;
+  margin: 4px 0 8px;
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+}
+
+.sub-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 0;
+  margin-bottom: -1px;
+  border-bottom: 2px solid transparent;
+  color: var(--muted);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.sub-link.active {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+/* Links show their outline for keyboards only, never as a stray bar after a click. */
+.rail-link:focus:not(:focus-visible),
+.sub-link:focus:not(:focus-visible),
+.bottom-link:focus:not(:focus-visible) {
+  outline: none;
+}
+
+@media (min-width: 900px) {
+  .portal-v2 {
+    grid-template-columns: 236px minmax(0, 1fr);
+  }
+
+  .portal-rail {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    height: 100vh;
+    padding: 22px 14px;
+    border-right: 1px solid var(--line);
+    overflow-y: auto;
+  }
+
+  .portal-rail .logo {
+    margin: 2px 14px 0;
+  }
+
+  .portal-v2 .portal-bar,
+  .portal-bottom,
+  .sub-nav {
+    display: none;
+  }
+
+  .portal-v2 .portal-page {
+    padding-inline: 40px;
+    padding-bottom: 40px;
+  }
+}
+
+.rail-brand {
+  padding: 12px 14px 14px;
+  border-bottom: 1px solid var(--line);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.rail-brand img {
+  display: block;
+  max-width: 100%;
+  max-height: 44px;
+}
+
+.portal-rail nav {
+  display: grid;
+  gap: 2px;
+}
+
+.rail-group {
+  display: grid;
+  gap: 1px;
+  margin-top: 10px;
+}
+
+.rail-group-name {
+  padding: 0 14px 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+
+.rail-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  color: var(--ink-2);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.rail-group .rail-link {
+  padding-left: 22px;
+}
+
+.rail-link:hover {
+  background: var(--yellow-soft);
+}
+
+.rail-link.active {
+  background: var(--pink);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.rail-me {
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+  margin-top: auto;
+  padding: 14px 14px 0;
+  border-top: 1px solid var(--line);
+}
+
+/* ---------- Home ---------- */
+
+.home {
+  padding-top: 8px;
+}
+
+.portal-head {
+  margin-bottom: 22px;
+}
+
+.portal-head .head-brand {
+  margin: 0;
+  font-size: clamp(34px, 6vw, 56px);
+  line-height: 1;
+  overflow-wrap: anywhere;
+}
+
+.portal-head .head-brand img {
+  display: block;
+  max-width: min(420px, 100%);
+  max-height: clamp(44px, 8vw, 72px);
+}
+
+.head-campaign {
+  margin: 12px 0 0;
+  font-size: 19px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.portal-head.perf {
+  display: grid;
+  justify-items: start;
+  padding: 18px 0 26px;
+  border-bottom: 1px solid var(--line);
+}
+
+.head-tape {
+  margin-top: 16px;
+}
+
+.portal-head.cine {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: clamp(260px, 42vw, 420px);
+  padding: 28px;
+  border-radius: var(--radius);
+  background: var(--ink) center / cover no-repeat;
+  color: var(--white);
+  overflow: hidden;
+}
+
+.portal-head.cine.has-cover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 35%, rgba(0, 0, 0, 0.62));
+}
+
+.cine-inner {
+  position: relative;
+  display: grid;
+  gap: 4px;
+}
+
+.portal-head.cine .head-brand img {
+  filter: brightness(0) invert(1);
+}
+
+.head-stage {
+  margin: 10px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Plan, Prep, Shoot, Edit, Delivery, Results on one line. */
+.stages {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin: 0 0 30px;
+  padding: 0;
+  list-style: none;
+}
+
+.stages li {
+  position: relative;
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 6px;
+  padding-right: 8px;
+}
+
+.stages li::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--line);
+}
+
+.stages li.done::before,
+.stages li.now::before {
+  background: var(--ink);
+}
+
+.stages li.now::before {
+  right: 50%;
+}
+
+.stage-dot {
+  position: relative;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  background: var(--white);
+}
+
+.stages li.done .stage-dot {
+  border-color: var(--ink);
+  background: var(--ink);
+}
+
+.stages li.now .stage-dot {
+  border-color: var(--ink);
+  background: var(--pink);
+  box-shadow: 0 0 0 4px var(--pink-soft);
+}
+
+.stage-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.stages li.done .stage-name,
+.stages li.now .stage-name {
+  color: var(--ink);
+}
+
+.stage-when {
+  color: var(--ink-2);
+  line-height: 1.3;
+}
+
+/* Phone: one row of dots, only the current step named; the shoot date sits on its own line below. */
+.stages-phone {
+  display: none;
+}
+
+@media (max-width: 620px) {
+  .stages li {
+    padding-right: 0;
+  }
+
+  .stages .stage-name,
+  .stages .stage-when {
+    display: none;
+  }
+
+  .stages {
+    margin-bottom: 10px;
+  }
+
+  .stages-phone {
+    display: grid;
+    gap: 2px;
+    margin: 0 0 26px;
+  }
+}
+
+/* What the plan holds: one small card per script, then what's left to write. */
+.progress {
+  margin-top: 30px;
+}
+
+.progress-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+}
+
+.progress-head h2 {
+  margin: 0;
+}
+
+.progress-head p {
+  margin: 0;
+}
+
+.pieces {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.piece {
+  display: grid;
+  align-content: start;
+  gap: 3px;
+  height: 100%;
+  padding: 14px;
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+a.piece:hover {
+  background: var(--yellow-soft);
+}
+
+.piece strong {
+  overflow-wrap: anywhere;
+}
+
+.piece-review {
+  background: var(--yellow-soft);
+}
+
+.piece-approved {
+  background: var(--pink-soft);
+  border-color: transparent;
+}
+
+.piece-todo {
+  border-style: dashed;
+  border-color: rgba(0, 0, 0, 0.35);
+}
+
+/* Cinematic reads calmer: lighter headings, more air. */
+.tpl-cinematic .tab-body > h2,
+.tpl-cinematic .progress-head h2,
+.tpl-cinematic .waiting-title {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.tpl-cinematic .stages {
+  margin-bottom: 40px;
+}
+
+/* ---------- the client's team ---------- */
+
+.teammate {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.teammate p {
+  margin: 4px 0 0;
+}
+
+.teammate-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.role-select {
+  font: inherit;
+  padding: 8px 38px 8px 12px;
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+  background: var(--white);
+}
+
+.you {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.invite-teammate {
+  margin-top: 28px;
+}
+
+.roles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px 24px;
+  margin: 0;
+}
+
+.roles dt {
+  font-weight: 700;
+}
+
+.roles dd {
+  margin: 2px 0 0;
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+.decide-note {
+  margin: 0;
+  flex-basis: 100%;
+}
+
+/* ---------- team side: template and cover ---------- */
+
+.look-panel {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.look-panel h2 {
+  margin: 0 0 4px;
+}
+
+.look-panel p {
+  margin: 0;
+}
+
+.template-pick {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.template-option {
+  position: relative;
+  display: grid;
+  gap: 4px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.template-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.template-option.on {
+  border-color: var(--ink);
+  background: var(--pink-soft);
+}
+
+.template-option:focus-within {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.cover-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.cover-well {
+  display: grid;
+  place-items: center;
+  width: 240px;
+  height: 135px;
+  border-radius: 10px;
+  background: var(--ink);
+  overflow: hidden;
+}
+
+.cover-well img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cover-well.empty .muted {
+  color: #ffffff;
+}
+
+.portal-head.cine {
+  margin-bottom: 28px;
+}
+
+/* ---------- Portal v2, phase B: talent, locations, props, budget ---------- */
+
+.budget {
+  display: grid;
+  gap: 12px;
+  margin: 4px 0 28px;
+  padding: 18px 20px;
+  border: 1.5px solid var(--edge);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+
+.budget-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+}
+
+.budget-head h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.budget-cap {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.budget-bar {
+  position: relative;
+  display: flex;
+  height: 14px;
+  overflow: hidden;
+  border: 1.5px solid var(--edge);
+  border-radius: 999px;
+  background: var(--white);
+}
+
+.budget-bar .seg {
+  height: 100%;
+  transition: width 0.4s var(--ease);
+}
+
+.seg-talent,
+.key-talent {
+  background: var(--pink);
+}
+
+.seg-location,
+.key-location {
+  background: var(--yellow);
+}
+
+.seg-prop,
+.key-prop {
+  background: #9cc9b0;
+}
+
+.budget-line {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  background: var(--ink);
+}
+
+.budget.over .budget-bar {
+  border-color: #a3261b;
+}
+
+.budget-figures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 26px;
+  margin: 0;
+}
+
+.budget-figures div {
+  display: grid;
+}
+
+.budget-figures dt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.budget-figures dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.budget-left {
+  margin-left: auto;
+  text-align: right;
+}
+
+.budget.over .budget-left dd {
+  color: #a3261b;
+}
+
+.budget p {
+  margin: 0;
+}
+
+.key {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--edge);
+  border-radius: 3px;
+}
+
+.group-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.prod-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.prod-card {
+  display: grid;
+  overflow: hidden;
+  border: 1.5px solid var(--edge);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+
+.prod-card.prod-passed {
+  opacity: 0.65;
+}
+
+.prod-card.prod-proposed {
+  box-shadow: 4px 4px 0 var(--yellow);
+}
+
+.prod-body {
+  display: grid;
+  gap: 8px;
+  padding: 14px 16px 16px;
+}
+
+.prod-body p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.prod-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.prod-head h3 {
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+
+.prod-head .status {
+  flex-shrink: 0;
+}
+
+.prod-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+.over-tag {
+  padding: 0 8px;
+  border-radius: 4px;
+  background: var(--pink-soft);
+  color: #a3261b;
+  font-weight: 600;
+}
+
+.prod-photos {
+  display: grid;
+  gap: 2px;
+  background: var(--ink);
+}
+
+.prod-card > .prod-photos {
+  border-bottom: 1.5px solid var(--edge);
+}
+
+.prod-photos.n1 {
+  grid-template-columns: 1fr;
+}
+
+.prod-photos.n2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.prod-photos.n3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.prod-photo {
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--yellow-soft);
+}
+
+.prod-location .prod-photo {
+  aspect-ratio: 4 / 3;
+}
+
+.prod-photos.n1 .prod-photo {
+  aspect-ratio: 4 / 3;
+}
+
+.tpl-cinematic .prod-talent .prod-photos.n1 .prod-photo {
+  aspect-ratio: 4 / 5;
+}
+
+.prod-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.prod-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  margin: 2px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+}
+
+.prod-steps li {
+  color: var(--muted);
+}
+
+.prod-steps li + li::before {
+  content: "/";
+  margin-right: 4px;
+  color: var(--line);
+}
+
+.prod-steps li.done {
+  color: var(--mat-deep);
+}
+
+.prod-steps li.now {
+  padding: 0 4px;
+  background: var(--yellow);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.over-note {
+  flex-basis: 100%;
+  padding: 8px 10px;
+  border-left: 3px solid #a3261b;
+  background: var(--pink-soft);
+}
+
+.confirm-over {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  flex-basis: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--edge);
+  border-radius: 10px;
+  background: var(--yellow-soft);
+}
+
+.confirm-over p {
+  flex-basis: 100%;
+}
+
+.team-only {
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #f4f4f2;
+}
+
+.photo-picker .prod-photos {
+  max-width: 420px;
+  background: transparent;
+  gap: 8px;
+}
+
+.photo-picker .picked {
+  position: relative;
+  border: 1.5px solid var(--edge);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.photo-picker .unpick {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  border: 1.5px solid var(--edge);
+  border-radius: 50%;
+  background: var(--white);
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.add-photo {
+  aspect-ratio: 4 / 5;
+  border: 1.5px dashed var(--edge);
+  border-radius: 8px;
+  background: var(--white);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.add-photo:hover {
+  background: var(--yellow-soft);
+}
+
+.cost-table {
+  width: 100%;
+  margin-bottom: 28px;
+  border-collapse: collapse;
+}
+
+.cost-table th,
+.cost-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.cost-table thead th {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.cost-table .num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.cost-table tfoot th,
+.cost-table tfoot td {
+  border-bottom: 0;
+  font-weight: 700;
+}
+
+.budget-form .row,
+.prod-form .row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 600px) {
+  .budget {
+    padding: 14px;
+  }
+  .budget-left {
+    margin-left: 0;
+    text-align: left;
+  }
+  .prod-grid {
+    grid-template-columns: 1fr;
+  }
+}
