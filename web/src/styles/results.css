@@ -1,7 +1,7 @@
 /* ---------- Portal v2, phase F: results and the library ---------- */
 
 .results-waiting {
-  margin: 0 0 18px;
+  margin: 0 0 20px;
   padding: 12px 16px;
   border-radius: var(--radius);
   background: var(--yellow-soft);
@@ -24,9 +24,9 @@
 .post-row {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
-  gap: 6px 18px;
+  gap: 8px 20px;
   align-items: start;
-  padding: 14px 16px;
+  padding: 16px 16px;
   border: 1.5px solid var(--ink);
   border-radius: var(--radius);
   background: var(--white);
@@ -47,7 +47,7 @@
 .check-cell {
   display: grid;
   gap: 2px;
-  padding-left: 14px;
+  padding-left: 16px;
   border-left: 1px solid var(--line);
   min-width: 0;
 }
@@ -62,7 +62,7 @@
   display: inline-block;
   width: 8px;
   height: 8px;
-  margin-left: 6px;
+  margin-left: 8px;
   border-radius: 50%;
   background: var(--pink);
   border: 1px solid var(--ink);
@@ -89,7 +89,7 @@
 .lib-form {
   display: grid;
   gap: 12px;
-  margin: 12px 0 18px;
+  margin: 12px 0 20px;
   background: var(--white);
 }
 
@@ -100,7 +100,7 @@
 }
 
 .figures {
-  margin: 18px 0 6px;
+  margin: 20px 0 8px;
 }
 
 .figures dl {
@@ -138,19 +138,19 @@
 .read h3,
 .read-form h3 {
   margin: 0;
-  font-size: 17px;
+  font-size: 18px;
 }
 
 .press ul {
-  margin: 6px 0 0;
-  padding-left: 18px;
+  margin: 8px 0 0;
+  padding-left: 20px;
 }
 
 .checkpoints {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 16px;
-  margin: 18px 0;
+  margin: 20px 0;
   align-items: start;
 }
 
@@ -175,7 +175,7 @@
 .metric-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px 12px;
+  gap: 12px 12px;
 }
 
 .metric-grid .field {
@@ -198,15 +198,15 @@
 
 /* The monthly read: a page from Gecko, taped in. */
 .monthly {
-  margin-bottom: 26px;
+  margin-bottom: 24px;
 }
 
 .read {
   position: relative;
   display: grid;
-  gap: 10px;
+  gap: 12px;
   margin-top: 12px;
-  padding: 22px 20px 18px;
+  padding: 24px 20px 20px;
   border: 1.5px solid var(--ink);
   border-radius: var(--radius);
   background: var(--white);
@@ -233,11 +233,11 @@
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  gap: 6px 12px;
+  gap: 8px 12px;
 }
 
 .read h4 {
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   font-size: 14px;
 }
 
@@ -250,7 +250,7 @@
 .read-pick {
   display: grid;
   gap: 2px;
-  padding: 12px 14px;
+  padding: 12px 16px;
   border-radius: 10px;
 }
 
@@ -280,7 +280,7 @@
 }
 
 .older-reads {
-  margin-top: 14px;
+  margin-top: 16px;
 }
 
 .older-reads summary {
@@ -296,7 +296,7 @@
 
 .read-form fieldset {
   display: grid;
-  gap: 6px;
+  gap: 8px;
   margin: 0;
   padding: 0;
   border: 0;
@@ -311,14 +311,14 @@
   display: grid;
   grid-template-columns: 22px minmax(0, 1fr);
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   margin: 0;
 }
 
 /* Library */
 .lib-filters {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   margin-bottom: 16px;
 }
 
@@ -326,7 +326,7 @@
 .lib-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
 }
 
 .lib-filters .field {
@@ -337,7 +337,7 @@
 .lib-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 14px;
+  gap: 16px;
   padding-bottom: 90px;
 }
 
@@ -353,7 +353,7 @@
   display: grid;
   gap: 8px;
   width: 100%;
-  padding: 0 0 10px;
+  padding: 0 0 12px;
   border: 1.5px solid var(--ink);
   border-radius: var(--radius);
   overflow: hidden;
@@ -394,7 +394,7 @@
   position: absolute;
   right: 8px;
   bottom: 8px;
-  padding: 1px 6px;
+  padding: 1px 8px;
   border-radius: 6px;
   background: var(--ink);
   color: var(--white);
@@ -445,7 +445,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px 16px;
+  gap: 12px 16px;
   margin-top: -70px;
   padding: 12px 16px;
   border: 1.5px solid var(--ink);
@@ -475,7 +475,7 @@
 
 .lib-form-fields {
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 .lib-form .photo-picker .prod-photos {
@@ -498,7 +498,7 @@
 
   .lib-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
+    gap: 12px;
   }
 
   .lib-form-grid {
@@ -518,7 +518,7 @@
 
 /* The page's name in the wide layout; on a phone the row of pages above says it. */
 .portal-page .page-title {
-  margin: 0 0 6px;
+  margin: 0 0 8px;
   font-size: clamp(28px, 3vw, 36px);
   line-height: 1.1;
   letter-spacing: -0.03em;
@@ -546,8 +546,8 @@
 
 /* The first screen a new client sees: a warm opening above the brand questions. */
 .brand-welcome {
-  margin-bottom: 18px;
-  padding: 22px 24px;
+  margin-bottom: 20px;
+  padding: 24px 24px;
   border-radius: 18px;
   background: var(--yellow-soft);
 }
@@ -559,7 +559,7 @@
 }
 
 .brand-welcome .lede {
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   max-width: 62ch;
 }
 
@@ -569,7 +569,7 @@
 
 /* Alerts: problems people hit, and what clients did */
 .alerts-section {
-  margin-top: 28px;
+  margin-top: 32px;
 }
 .alerts-section-head {
   display: flex;
@@ -585,7 +585,7 @@
   list-style: none;
 }
 .alerts-list li {
-  padding: 12px 14px;
+  padding: 12px 16px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--white);
@@ -612,13 +612,13 @@
 }
 .alerts-message {
   display: block;
-  margin-top: 6px;
+  margin-top: 8px;
   font-size: 0.85em;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
 }
 .alerts-body {
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   color: var(--ink-2);
   overflow-wrap: anywhere;
 }
@@ -629,7 +629,7 @@
   margin: 12px 0 0;
 }
 .site-stats div {
-  padding: 12px 14px;
+  padding: 12px 16px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
 }
@@ -662,18 +662,18 @@
 .today-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
-  gap: 28px 32px;
+  gap: 32px 32px;
   margin-top: 24px;
 }
 .today-section {
   min-width: 0;
   border-top: 2px solid var(--ink);
-  padding-top: 14px;
+  padding-top: 16px;
 }
 .today-section h2 {
   display: flex;
   align-items: baseline;
-  gap: 10px;
+  gap: 12px;
   margin: 0;
   font-size: 1.3rem;
   letter-spacing: -0.02em;
@@ -694,7 +694,7 @@
   border-radius: 999px;
 }
 .today-sub {
-  margin: 14px 0 0;
+  margin: 16px 0 0;
   font-size: 0.85rem;
   font-weight: 700;
 }
@@ -706,14 +706,14 @@
   list-style: none;
 }
 .today-list > li {
-  padding: 12px 14px;
+  padding: 12px 16px;
   border: 1px solid var(--ink);
   border-radius: var(--radius);
   background: var(--white);
   min-width: 0;
 }
 .today-list.compact > li {
-  padding: 10px 12px;
+  padding: 12px 12px;
 }
 .today-list > li.why-changes {
   background: var(--pink-soft);
@@ -737,7 +737,7 @@
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-  padding: 1px 6px;
+  padding: 1px 8px;
   border-radius: 4px;
 }
 .today-title {
@@ -747,22 +747,22 @@
   overflow-wrap: anywhere;
 }
 .today-quote {
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   color: var(--ink);
   overflow-wrap: anywhere;
 }
 .today-group {
-  margin-top: 14px;
+  margin-top: 16px;
 }
 .today-group + .today-group {
-  padding-top: 14px;
+  padding-top: 16px;
   border-top: 1px solid var(--line);
 }
 .today-group .today-list {
   margin-top: 8px;
 }
 .btn.btn-small {
-  padding: 6px 12px;
+  padding: 8px 12px;
   font-size: 0.85rem;
 }
 .today-date {
@@ -782,7 +782,7 @@
 .today-kind {
   display: inline-block;
   margin-right: 8px;
-  padding: 1px 6px;
+  padding: 1px 8px;
   font-size: 0.75rem;
   font-weight: 700;
   border: 1px solid var(--ink);
@@ -813,7 +813,7 @@
 /* Portal Home: what Gecko did since the client's last visit */
 .since-visit {
   margin: 0 0 20px;
-  padding: 14px 16px;
+  padding: 16px 16px;
   border: 1px solid var(--ink);
   border-radius: var(--radius);
   background: var(--pink-soft);
@@ -825,7 +825,7 @@
 .since-visit ul {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 18px;
+  gap: 8px 20px;
   margin: 8px 0 0;
   padding: 0;
   list-style: none;
@@ -843,7 +843,7 @@
   place-items: center;
   width: 22px;
   height: 22px;
-  margin-right: 6px;
+  margin-right: 8px;
   border-radius: 50%;
   background: var(--ink);
   color: var(--white);
@@ -865,7 +865,7 @@
   font-weight: 500;
 }
 .script-idea {
-  padding: 12px 14px;
+  padding: 12px 16px;
   border: 1px solid var(--ink);
   border-radius: var(--radius);
   background: var(--yellow-soft);
@@ -874,7 +874,7 @@
   margin: 0;
 }
 .script-idea-hook {
-  margin: 6px 0 4px !important;
+  margin: 8px 0 4px !important;
   font-size: 1.05rem;
   font-weight: 700;
 }
@@ -885,7 +885,7 @@
 }
 .concept-hook span {
   display: inline-block;
-  margin-right: 6px;
+  margin-right: 8px;
   padding: 1px 8px;
   border-radius: 999px;
   background: var(--pink-soft);
@@ -896,8 +896,8 @@
 .approve-for {
   flex-basis: 100%;
   display: grid;
-  gap: 10px;
-  padding: 12px 14px;
+  gap: 12px;
+  padding: 12px 16px;
   border: 1px solid var(--ink);
   border-radius: var(--radius);
   background: var(--pink-soft);
@@ -911,7 +911,7 @@
   margin: -4px 0 4px;
 }
 .template-warn {
-  padding: 1px 6px;
+  padding: 1px 8px;
   border-radius: 4px;
   background: var(--yellow, #f3df9e);
   color: var(--ink);
@@ -920,11 +920,11 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
-  margin: 0 0 10px;
+  gap: 8px;
+  margin: 0 0 12px;
 }
 .hook-idea {
-  padding: 5px 10px;
+  padding: 4px 12px;
   border: 1px solid var(--ink);
   border-radius: 999px;
   background: var(--white);
@@ -946,7 +946,7 @@
 }
 .shoot-plan-row {
   display: grid;
-  gap: 6px;
+  gap: 8px;
 }
 .shoot-summary {
   display: flex;

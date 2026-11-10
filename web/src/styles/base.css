@@ -54,6 +54,25 @@
   --line: rgba(0, 0, 0, 0.12);
   --edge: var(--ink);
   --radius: 14px;
+  /* One spacing scale (4 px steps) and one type scale for the whole app. Values outside them were
+     snapped to the nearest step on 10 Nov 2026; new styles use these. */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-12: 48px;
+  --fs-xs: 12px;
+  --fs-sm: 13px;
+  --fs-md: 14px;
+  --fs-body: 15px;
+  --fs-lg: 18px;
+  --fs-xl: 20px;
+  --fs-2xl: 24px;
+  --fs-3xl: 28px;
+  --fs-4xl: 34px;
   /* The website's radii and lift (gecko-site src/styles/brand.css), for cards and panels. */
   --r-sm: 10px;
   --r: 14px;
@@ -113,7 +132,7 @@ a {
 
 /* Small labels above a title: bold, sentence case, like on the website. */
 .eyebrow {
-  margin: 0 0 6px;
+  margin: 0 0 8px;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0;
@@ -189,13 +208,13 @@ a {
 
 .stack {
   display: grid;
-  gap: 14px;
+  gap: 16px;
   margin-top: 20px;
 }
 
 .field {
   display: grid;
-  gap: 6px;
+  gap: 8px;
   min-width: 0;
 }
 
@@ -216,7 +235,7 @@ a {
 
 .field input {
   font: inherit;
-  padding: 12px 14px;
+  padding: 12px 16px;
   border: 1px solid var(--edge);
   border-radius: 12px;
   background: var(--white);
@@ -241,7 +260,7 @@ a {
 .btn {
   font: inherit;
   font-weight: 700;
-  font-size: 14.5px;
+  font-size: 14px;
   letter-spacing: -0.01em;
   line-height: 1.1;
   cursor: pointer;
@@ -293,7 +312,7 @@ a {
 
 .notice {
   margin: 16px 0 0;
-  padding: 14px 16px;
+  padding: 16px 16px;
   border-radius: var(--radius);
 }
 
@@ -355,7 +374,7 @@ a {
 
 .lang-switch button {
   min-width: 38px;
-  padding: 5px 10px;
+  padding: 4px 12px;
   font: inherit;
   font-size: 12px;
   font-weight: 600;
@@ -401,12 +420,12 @@ a {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 20px 14px;
+  padding: 20px 16px;
   border-right: 1px solid var(--line);
 }
 
 .side .logo {
-  margin: 2px 14px 22px;
+  margin: 2px 16px 24px;
 }
 
 .side nav {
@@ -415,7 +434,7 @@ a {
 }
 
 .nav-item {
-  padding: 9px 14px;
+  padding: 8px 16px;
   border-radius: 999px;
   text-decoration: none;
   color: var(--ink-2);
@@ -478,7 +497,7 @@ a {
 .empty-state {
   margin: 8px 0 0;
   max-width: 62ch;
-  padding: 20px 22px;
+  padding: 20px 24px;
   border: 1px dashed rgba(0, 0, 0, 0.28);
   border-radius: var(--radius);
   background: rgba(0, 0, 0, 0.015);
@@ -505,7 +524,7 @@ a {
 }
 .preview-roles {
   display: inline-flex;
-  gap: 10px;
+  gap: 12px;
 }
 .preview-roles a[aria-current="page"] {
   font-weight: 700;
@@ -523,12 +542,12 @@ a {
 .brand-switch {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 .brand-switch select {
   font: inherit;
   max-width: 180px;
-  padding: 2px 6px;
+  padding: 2px 8px;
   border: 1px solid var(--line);
   border-radius: 6px;
   background: transparent;
@@ -547,7 +566,7 @@ a {
 
 .list {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   padding: 0;
   list-style: none;
 }
@@ -589,7 +608,7 @@ h2 {
 
 .field select {
   font: inherit;
-  padding: 12px 14px;
+  padding: 12px 16px;
   border: 1px solid var(--edge);
   border-radius: 12px;
   background: var(--white);
@@ -630,7 +649,7 @@ input[type="radio"] {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 12px;
 }
 
 .count {
@@ -687,14 +706,14 @@ input[type="radio"] {
 .tabs {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   margin-bottom: 16px;
 }
 
 .tab {
   font: inherit;
   cursor: pointer;
-  padding: 7px 12px;
+  padding: 8px 12px;
   border: 1px solid var(--line);
   border-radius: 999px;
   background: var(--white);

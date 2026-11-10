@@ -54,7 +54,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 12px;
+  padding: 12px 12px;
   text-decoration: none;
   color: var(--muted);
   font-weight: 600;
@@ -74,7 +74,7 @@
 
 .badge {
   min-width: 20px;
-  padding: 1px 6px;
+  padding: 1px 8px;
   border-radius: 999px;
   background: var(--pink);
   color: var(--ink);
@@ -88,8 +88,8 @@
   }
 
   .portal-tab {
-    gap: 5px;
-    padding: 10px 8px;
+    gap: 4px;
+    padding: 12px 8px;
     font-size: 14px;
   }
 }
@@ -101,11 +101,11 @@
 .tab-body > h2,
 .group h2,
 .block h2 {
-  margin: 28px 0 12px;
+  margin: 32px 0 12px;
 }
 
 .lede {
-  margin: 0 0 18px;
+  margin: 0 0 20px;
   max-width: 62ch;
   color: var(--ink-2);
 }
@@ -115,7 +115,7 @@
 }
 
 .portal-foot {
-  padding: 20px max(16px, env(safe-area-inset-left, 0px)) 28px;
+  padding: 20px max(16px, env(safe-area-inset-left, 0px)) 32px;
   text-align: center;
   border-top: 1px solid var(--line);
 }
@@ -130,7 +130,7 @@
 .todo-card {
   display: grid;
   gap: 4px;
-  padding: 18px;
+  padding: 20px;
   border-radius: var(--radius);
   background: var(--yellow-soft);
   color: var(--ink);
@@ -168,7 +168,7 @@
 
 .fact ul {
   margin: 4px 0 0;
-  padding-left: 18px;
+  padding-left: 20px;
 }
 
 .fact-next {
@@ -189,7 +189,7 @@
   grid-template-columns: 18px minmax(0, 1fr) auto;
   gap: 12px;
   align-items: center;
-  padding: 10px 0;
+  padding: 12px 0;
   border-bottom: 1px solid var(--line);
 }
 
@@ -216,7 +216,7 @@
 
 .pay th,
 .pay td {
-  padding: 10px 8px 10px 0;
+  padding: 12px 8px 12px 0;
   border-bottom: 1px solid var(--line);
   text-align: left;
   font-weight: 400;
@@ -235,7 +235,7 @@
 
 .pill {
   display: inline-block;
-  padding: 2px 10px;
+  padding: 2px 12px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 600;

@@ -11,7 +11,7 @@
 .concept {
   display: grid;
   gap: 8px;
-  padding: 18px;
+  padding: 20px;
   border: 1px solid var(--edge);
   border-radius: var(--radius);
   background: var(--white);
@@ -38,7 +38,7 @@
 
 .concept h3 {
   margin: 0;
-  font-size: 19px;
+  font-size: 20px;
   letter-spacing: -0.01em;
 }
 
@@ -63,7 +63,7 @@
 
 .refs {
   margin: 0;
-  padding-left: 18px;
+  padding-left: 20px;
   font-size: 14px;
   overflow-wrap: anywhere;
 }
@@ -81,7 +81,7 @@
 }
 
 .note {
-  padding: 10px 12px;
+  padding: 12px 12px;
   border-radius: 12px;
   background: var(--yellow-soft);
 }
@@ -121,14 +121,14 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px 14px;
-  margin-top: 6px;
+  gap: 12px 16px;
+  margin-top: 8px;
 }
 
 .concept-form {
   display: grid;
   gap: 12px;
-  margin-top: 6px;
+  margin-top: 8px;
 }
 
 .concept-form.card,
@@ -172,21 +172,21 @@
 .hooks {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 10px;
+  gap: 12px;
 }
 
 .script-line {
   position: relative;
   display: grid;
   align-content: start;
-  gap: 6px;
+  gap: 8px;
 }
 
 .line-main,
 .line-side {
   display: grid;
   align-content: start;
-  gap: 6px;
+  gap: 8px;
   min-width: 0;
 }
 
@@ -203,20 +203,20 @@
   justify-self: start;
   padding: 0.3em 0.7em 0.25em;
   background: var(--pink);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   clip-path: polygon(0 8%, 6% 0, 94% 4%, 100% 0, 100% 92%, 94% 100%, 6% 94%, 0 100%);
 }
 
 .hook {
-  padding: 12px 14px;
+  padding: 12px 16px;
   border: 1px solid var(--edge);
   border-radius: 12px;
   background: var(--white);
 }
 
 .hook.changed {
-  padding-left: 14px;
+  padding-left: 16px;
   border-left-width: 4px;
   border-left-color: var(--pink);
 }
@@ -251,13 +251,13 @@
 }
 
 .beats > li {
-  padding: 10px 0;
+  padding: 12px 0;
   border-bottom: 1px solid var(--line);
 }
 
 .beat > .line-main {
   grid-template-columns: 28px 1fr;
-  column-gap: 10px;
+  column-gap: 12px;
 }
 
 .beat > .line-main > :not(.beat-n) {
@@ -287,7 +287,7 @@
 .line-text {
   display: grid;
   grid-template-columns: 76px 1fr;
-  gap: 2px 10px;
+  gap: 2px 12px;
   margin: 0;
 }
 
@@ -309,7 +309,7 @@
 
 .line-text .onscreen {
   justify-self: start;
-  padding: 0 6px;
+  padding: 0 8px;
   background: var(--yellow);
 }
 
@@ -346,7 +346,7 @@
 
 .script-lines {
   display: grid;
-  gap: 14px;
+  gap: 16px;
 }
 
 .line-edit {
@@ -357,7 +357,7 @@
 .line-edit-head {
   display: flex;
   align-items: baseline;
-  gap: 14px;
+  gap: 16px;
 }
 
 .line-edit-cols {
@@ -375,7 +375,7 @@
 
 .line-edit-cols textarea {
   width: 100%;
-  padding: 8px 10px;
+  padding: 8px 12px;
   border: 1px solid var(--edge);
   border-radius: 10px;
   font: inherit;

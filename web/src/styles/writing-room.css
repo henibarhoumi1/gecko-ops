@@ -2,7 +2,7 @@
 
 .read-meter {
   display: grid;
-  gap: 6px;
+  gap: 8px;
   margin: 4px 0 12px;
 }
 
@@ -31,20 +31,20 @@
 }
 
 .never-hits {
-  margin: 0 0 14px;
-  padding: 12px 14px;
+  margin: 0 0 16px;
+  padding: 12px 16px;
   border-left: 4px solid #a3261b;
   border-radius: 10px;
   background: var(--pink-soft);
 }
 
 .never-hits ul {
-  margin: 6px 0 0;
-  padding-left: 18px;
+  margin: 8px 0 0;
+  padding-left: 20px;
 }
 
 .brand-drawer {
-  margin: 0 0 14px;
+  margin: 0 0 16px;
   border: 1px solid var(--line);
   border-radius: var(--r);
   background: var(--white);
@@ -54,9 +54,9 @@
   font: inherit;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border: 0;
   background: transparent;
   color: var(--ink);
@@ -74,7 +74,7 @@
   grid-template-columns: minmax(120px, 180px) minmax(0, 1fr);
   gap: 8px 16px;
   margin: 0;
-  padding: 4px 14px 14px;
+  padding: 4px 16px 16px;
 }
 
 .brand-sheet dt {
@@ -111,7 +111,7 @@
 
 .hook-library {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   margin: 0 0 12px;
   padding: 12px;
   border-radius: var(--r-sm);
@@ -122,7 +122,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .hook-group > .small {
@@ -135,13 +135,13 @@
 .room-flow {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin: 4px 0 18px;
+  gap: 8px;
+  margin: 4px 0 20px;
 }
 
 .room-chip {
   font: inherit;
-  padding: 7px 14px;
+  padding: 8px 16px;
   border: 1px solid var(--ink);
   border-radius: 999px;
   background: var(--white);
@@ -169,7 +169,7 @@
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(250px, 1fr);
-  gap: 14px;
+  gap: 16px;
   overflow-x: auto;
   padding-bottom: 8px;
   scroll-snap-type: x proximity;
@@ -178,7 +178,7 @@
 .room-col {
   display: grid;
   align-content: start;
-  gap: 10px;
+  gap: 12px;
   min-width: 0;
   scroll-snap-align: start;
 }
@@ -196,8 +196,8 @@
 
 .room-card {
   display: grid;
-  gap: 6px;
-  padding: 14px;
+  gap: 8px;
+  padding: 16px;
   border: 1px solid var(--line);
   border-radius: var(--r);
   background: var(--white);
@@ -231,7 +231,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .room-up {
@@ -266,7 +266,7 @@
   display: grid;
   justify-items: start;
   gap: 12px;
-  padding: 20px 22px;
+  padding: 20px 24px;
   border: 1px dashed rgba(0, 0, 0, 0.28);
   border-radius: var(--r);
   background: rgba(0, 0, 0, 0.015);
@@ -298,7 +298,7 @@
   flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 8px 14px;
+  gap: 8px 16px;
 }
 
 .script-title-row h3 {
@@ -342,7 +342,7 @@
 
 .line-prose .see {
   color: var(--ink-2);
-  font-size: 13.5px;
+  font-size: 14px;
   font-style: italic;
 }
 
@@ -362,7 +362,7 @@
 
 .line-prose .onscreen {
   justify-self: start;
-  padding: 0 6px;
+  padding: 0 8px;
   background: var(--yellow);
   font-size: 14px;
   font-weight: 700;
@@ -380,16 +380,16 @@
   }
 
   .script .script-line:not(.hook) > .line-side:not(:empty) {
-    padding-left: 14px;
+    padding-left: 16px;
     border-left: 1px solid var(--line);
   }
 
   .script .beat > .line-side {
-    padding-left: 14px;
+    padding-left: 16px;
   }
 
   .script .script-line:not(.hook) .notes {
-    font-size: 13.5px;
+    font-size: 14px;
   }
 }
 
@@ -420,7 +420,7 @@
 .line-page {
   display: grid;
   gap: 2px;
-  padding: 6px 0 10px 14px;
+  padding: 8px 0 12px 16px;
   border: 0;
   border-left: 3px solid transparent;
   background: transparent;
@@ -457,7 +457,7 @@
 }
 
 .page-hear {
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 500;
 }
 
@@ -466,7 +466,7 @@
   width: auto;
   min-width: 12ch;
   max-width: 100%;
-  padding: 0 6px;
+  padding: 0 8px;
   background: var(--yellow-soft);
   font-size: 14px;
   font-weight: 700;

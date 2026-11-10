@@ -2,7 +2,7 @@
 
 .treatment {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   margin: 4px 0 8px;
 }
 
@@ -10,7 +10,7 @@
   display: grid;
   grid-template-columns: 96px 1fr;
   gap: 12px;
-  padding-bottom: 10px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -36,15 +36,15 @@
 
 .write-part {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   margin: 4px 0 0;
-  padding: 14px 16px 16px;
+  padding: 16px 16px 16px;
   border: 1.5px solid var(--edge);
   border-radius: 12px;
 }
 
 .write-part legend {
-  padding: 0 6px;
+  padding: 0 8px;
   font-weight: 600;
 }
 
@@ -55,9 +55,9 @@
 
 .write-beats {
   display: grid;
-  gap: 14px;
+  gap: 16px;
   margin: 0;
-  padding-left: 22px;
+  padding-left: 24px;
 }
 
 .write-beats li {
@@ -86,19 +86,19 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 10px 18px;
+  gap: 12px 20px;
 }
 
 .wb-tabs {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   min-width: 0;
   overflow-x: auto;
 }
 
 .wb-tab {
   flex: none;
-  padding: 6px 14px;
+  padding: 8px 16px;
   border: 1.5px solid var(--ink);
   border-radius: 999px;
   background: var(--white);
@@ -116,7 +116,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 14px;
+  gap: 8px 16px;
 }
 
 .wb-name input {
@@ -130,7 +130,7 @@
 
 .whiteboard {
   display: grid;
-  gap: 6px;
+  gap: 8px;
 }
 
 .whiteboard-canvas {

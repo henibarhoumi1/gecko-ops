@@ -16,7 +16,7 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 4px 16px;
-  padding: 14px 16px;
+  padding: 16px 16px;
   border: 1.5px solid var(--ink);
   border-radius: var(--radius);
   background: var(--white);
@@ -54,7 +54,7 @@
 
 .screen-main {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   min-width: 0;
 }
 
@@ -137,7 +137,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 14px;
+  gap: 8px 16px;
 }
 
 .screen-versions p {
@@ -146,11 +146,11 @@
 
 .screen-tabs {
   display: flex;
-  gap: 6px;
+  gap: 8px;
 }
 
 .screen-tab {
-  padding: 4px 10px;
+  padding: 4px 12px;
   border: 1.5px solid var(--ink);
   border-radius: 999px;
   background: var(--white);
@@ -177,7 +177,7 @@
 }
 
 .screen-note {
-  padding: 10px 0;
+  padding: 12px 0;
   border-top: 1px solid var(--line);
 }
 
@@ -187,14 +187,14 @@
 }
 
 .screen-note.kind-approve {
-  padding: 10px;
+  padding: 12px;
   border: 0;
   border-radius: 10px;
   background: var(--green-soft);
 }
 
 .screen-note.kind-changes {
-  padding: 10px;
+  padding: 12px;
   border: 0;
   border-radius: 10px;
   background: var(--pink-soft);
@@ -204,16 +204,16 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 10px;
+  gap: 4px 12px;
 }
 
 .screen-note-body {
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   white-space: pre-wrap;
 }
 
 .timecode {
-  padding: 1px 7px;
+  padding: 1px 8px;
   border: 1.5px solid var(--ink);
   border-radius: 6px;
   background: var(--yellow);
@@ -243,7 +243,7 @@
 .inline-form input,
 .wb-name input {
   width: 100%;
-  padding: 10px 12px;
+  padding: 12px 12px;
   border: 1px solid var(--edge);
   border-radius: 12px;
   background: var(--white);
@@ -262,18 +262,18 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 8px 14px;
+  gap: 8px 16px;
 }
 
 .screen-decide {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
 }
 
 .screen-decide-form {
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 .screen-decide-form p,
@@ -282,7 +282,7 @@
 }
 
 .screen-approved {
-  padding: 12px 14px;
+  padding: 12px 16px;
   border-radius: var(--radius);
   background: var(--green-soft);
 }
@@ -295,14 +295,14 @@
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  gap: 10px 14px;
+  gap: 12px 16px;
   margin: 12px 0;
 }
 
 .upload-version,
 .final-form {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   max-width: 560px;
 }
 
@@ -339,8 +339,8 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 10px 16px;
-  padding: 14px 16px;
+  gap: 12px 16px;
+  padding: 16px 16px;
   border: 1.5px solid var(--ink);
   border-radius: var(--radius);
   background: var(--white);
@@ -355,7 +355,7 @@
 }
 
 .shelf-lock {
-  padding: 4px 10px;
+  padding: 4px 12px;
   border: 1.5px dashed var(--ink);
   border-radius: 999px;
 }
