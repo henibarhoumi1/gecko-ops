@@ -5,6 +5,7 @@ import { whatsappTo } from "@/features/shoot/model";
 import type { Member } from "@/features/workspace/members";
 import { friendlyError } from "@/lib/errors";
 import { usePatchLeads, type LeadPatch } from "./leadsApi";
+import { LeadToClient } from "./LeadToClient";
 import { CHANNELS, OUTCOMES, STAGE_LABEL, STEPS, stepOf, type Lead, type Stage } from "./model";
 import {
   afterSend,
@@ -129,6 +130,8 @@ export function LeadPanel({
           Close
         </Button>
       </header>
+
+      <LeadToClient lead={lead} />
 
       <div className="lead-panel-grid">
         <label>

@@ -5,6 +5,9 @@ import { useActiveTabInView } from "@/components/useActiveTabInView";
 import { BoardRoute } from "@/features/board/BoardRoute";
 import { WhiteboardRoute } from "@/features/whiteboard/WhiteboardRoute";
 import { TeamRoom } from "@/features/writing/TeamRoom";
+import { TeamBrandPage } from "@/features/scripts/BrandPage";
+import { TeamTasks } from "@/features/tasks/TaskPanels";
+import { Presence } from "@/features/presence/Presence";
 import { OnboardingForm } from "@/features/onboarding/OnboardingForm";
 import { TeamVideos } from "@/features/videos/TeamVideos";
 import { videosOn } from "@/lib/features";
@@ -65,10 +68,14 @@ export function ClientPage() {
       name: "Prep",
       tabs: lead
         ? [
+            ["tasks", "Tasks"],
             ["production", "Production"],
             ["shoot", "Shoot days"],
           ]
-        : [["shoot", "Shoot days"]],
+        : [
+            ["tasks", "Tasks"],
+            ["shoot", "Shoot days"],
+          ],
     },
     { name: "Review", tabs: [["review", "Review"], ...videos] },
     {
@@ -85,10 +92,14 @@ export function ClientPage() {
             ["", "Overview"],
             ["money", "Money"],
             ["onboarding", "Onboarding"],
+            ["brand", "Brand sheet"],
             ["shared", "Shared"],
             ["logins", "Logins"],
           ]
-        : [["shared", "Shared"]],
+        : [
+            ["brand", "Brand sheet"],
+            ["shared", "Shared"],
+          ],
     },
   ];
   const here = section ?? "";
@@ -120,6 +131,7 @@ export function ClientPage() {
           </a>
         )}
       </div>
+      <Presence workspaceId={workspace.id} clientId={clientId} reader="team" />
       {lead && <ProjectsStrip target={target} />}
       <nav className="stage-tabs" aria-label={client.brand}>
         {groups.map((g) => (
@@ -189,9 +201,11 @@ export function ClientPage() {
           <Route index element={<Navigate to="concepts" replace />} />
         )}
         <Route path="room" element={<TeamRoom clientId={clientId} />} />
+        <Route path="tasks" element={<TeamTasks clientId={clientId} />} />
         <Route path="concepts" element={<TeamConcepts clientId={clientId} />} />
         <Route path="scripts" element={<TeamScripts clientId={clientId} />} />
         <Route path="shared" element={<TeamShared clientId={clientId} />} />
+        <Route path="brand" element={<TeamBrandPage clientId={clientId} />} />
         {["review", "review/:cutId"].map((path) => (
           <Route key={path} path={path} element={<TeamReview clientId={clientId} />} />
         ))}

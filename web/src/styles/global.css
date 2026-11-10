@@ -8643,3 +8643,295 @@ a.piece:hover {
     font-size: 13.5px;
   }
 }
+
+/* ---------- Guided tour ---------- */
+
+.tour {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+}
+
+.tour-dim {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 0.55);
+  pointer-events: auto;
+}
+
+/* The ring around the target also dims everything else, with a huge shadow. */
+.tour-ring {
+  position: fixed;
+  border: 2px solid var(--pink);
+  border-radius: 12px;
+  box-shadow: 0 0 0 9999px rgb(0 0 0 / 0.55);
+  transition:
+    top 0.2s var(--ease),
+    left 0.2s var(--ease),
+    width 0.2s var(--ease),
+    height 0.2s var(--ease);
+}
+
+.tour-card {
+  position: fixed;
+  width: min(320px, calc(100vw - 24px));
+  padding: 16px 18px;
+  border: 2px solid var(--ink);
+  border-radius: 16px;
+  background: var(--white);
+  color: var(--ink);
+  box-shadow: 5px 5px 0 var(--pink);
+  pointer-events: auto;
+  outline: none;
+}
+
+.tour-card h2 {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+
+.tour-card p {
+  margin: 0 0 12px;
+}
+
+.tour-count {
+  margin: 0 0 4px !important;
+  color: var(--ink-2);
+}
+
+.tour-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.tour-actions > :first-child {
+  margin-right: auto;
+}
+
+.side .me .btn-link {
+  color: var(--white);
+}
+
+/* ---------- Brand sheet page ---------- */
+
+.brand-page .brand-line {
+  margin: 4px 0 16px;
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.brand-page .brand-sheet {
+  padding: 16px 0 8px;
+  border-top: 1px solid var(--line);
+}
+
+/* ---------- Onboarding: quick or full ---------- */
+
+.ob-top .mode-switch {
+  margin-left: auto;
+}
+
+/* ---------- Tasks: one list both sides share ---------- */
+
+.tasks {
+  display: grid;
+  gap: 10px;
+}
+
+.task-add {
+  display: grid;
+  gap: 8px;
+}
+
+.task-add-row {
+  display: flex;
+  gap: 8px;
+}
+
+.task-add-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  font: inherit;
+}
+
+.task-add-more {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 10px;
+}
+
+.task-add-more label {
+  display: grid;
+  gap: 2px;
+}
+
+.task-add-more input,
+.task-add-more select {
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+}
+
+.task-add-more .task-private-pick {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.task-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.task {
+  display: grid;
+  gap: 2px;
+  padding: 10px 2px;
+  border-bottom: 1px solid var(--line);
+}
+
+.task.mine .task-title {
+  font-weight: 700;
+}
+
+.task.done .task-title {
+  color: var(--ink-2);
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.task-tick {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.task-tick input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+  accent-color: var(--ink);
+}
+
+.task-title {
+  overflow-wrap: anywhere;
+}
+
+.task-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  padding-left: 28px;
+}
+
+.task-who {
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--yellow-soft);
+}
+
+.task-who.side-client {
+  background: var(--pink-soft);
+}
+
+.task-due {
+  font-weight: 600;
+}
+
+.task-due.due-late {
+  color: #a3261b;
+}
+
+.task-due.due-today {
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--pink);
+}
+
+.task-private {
+  padding: 0 8px;
+  border: 1px dashed var(--ink);
+  border-radius: 999px;
+}
+
+.task-done summary {
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.home-tasks {
+  margin: 0 0 24px;
+  padding: 16px 18px;
+  border: 2px solid var(--ink);
+  border-radius: 16px;
+  box-shadow: 4px 4px 0 var(--pink);
+}
+
+.home-tasks h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+/* ---------- Presence: who else is on this page ---------- */
+
+.presence {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0 10px;
+}
+
+.presence-faces {
+  display: inline-flex;
+}
+
+.presence-face {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  margin-left: -6px;
+  border: 2px solid var(--white);
+  border-radius: 50%;
+  background: var(--pink);
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.presence-face:first-child {
+  margin-left: 0;
+}
+
+.presence-face.team {
+  background: var(--ink);
+  color: var(--white);
+}
+
+/* ---------- Pipeline: lead won → client ---------- */
+
+.lead-client {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--green-soft);
+}

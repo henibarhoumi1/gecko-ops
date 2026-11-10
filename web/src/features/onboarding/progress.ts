@@ -1,4 +1,11 @@
-import { QUESTIONS, SECTIONS, type Question, type Section, type Words } from "./questions";
+import {
+  ESSENTIAL,
+  QUESTIONS,
+  sheetSections,
+  type Question,
+  type Section,
+  type Words,
+} from "./questions";
 import { t } from "@/lib/i18n";
 
 export type Answers = Record<string, unknown>;
@@ -26,18 +33,23 @@ export function sectionCount(answers: Answers, section: Section): number {
   return section.fields.filter((q) => answered(answers, q)).length;
 }
 
-export function percentFilled(answers: Answers): number {
-  return Math.round(
-    (QUESTIONS.filter((q) => answered(answers, q)).length / QUESTIONS.length) * 100,
-  );
+/** How much is filled: of the 24 essential questions by default, of all 64 with full. */
+export function percentFilled(answers: Answers, full = false): number {
+  const list = full ? QUESTIONS : QUESTIONS.filter((q) => ESSENTIAL.includes(q.id));
+  return Math.round((list.filter((q) => answered(answers, q)).length / list.length) * 100);
 }
 
 /** Questions without an answer yet, per section, for the "still open" list before sending. */
-export function openQuestions(answers: Answers): { section: Section; missing: Question[] }[] {
-  return SECTIONS.map((section) => ({
-    section,
-    missing: section.fields.filter((q) => !answered(answers, q)),
-  })).filter((row) => row.missing.length > 0);
+export function openQuestions(
+  answers: Answers,
+  full = false,
+): { section: Section; missing: Question[] }[] {
+  return sheetSections(full)
+    .map((section) => ({
+      section,
+      missing: section.fields.filter((q) => !answered(answers, q)),
+    }))
+    .filter((row) => row.missing.length > 0);
 }
 
 /** The label to show for a question; a tone slider has none, so it shows its two ends. */
@@ -118,7 +130,7 @@ export function answerText(answers: Answers, q: Question): string {
 /** The whole sheet as plain text, section by section. */
 export function sheetText(brand: string, answers: Answers): string {
   const parts = [`${brand} onboarding`];
-  for (const section of SECTIONS) {
+  for (const section of sheetSections(true)) {
     const lines = section.fields
       .map((q) => [questionLabel(q), answerText(answers, q)] as const)
       .filter(([, a]) => a)

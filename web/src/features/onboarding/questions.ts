@@ -745,3 +745,44 @@ export const SECTIONS: readonly Section[] = [
 ];
 
 export const QUESTIONS: readonly Question[] = SECTIONS.flatMap((s) => s.fields);
+
+/**
+ * The quick sheet: the 24 answers Gecko can't start without. The rest of the 64 stay one tap away
+ * ("Full sheet") and are covered on a call; shoot details now live on the Shoot Day page.
+ * Same ids, so every answer already given still counts.
+ */
+export const ESSENTIAL: readonly string[] = [
+  "brand",
+  "contact",
+  "phone",
+  "insta",
+  "site",
+  "oneline",
+  "words",
+  "tone1",
+  "lang",
+  "never",
+  "hero",
+  "offer",
+  "who",
+  "want",
+  "stop",
+  "promise",
+  "reasons",
+  "proof",
+  "rivals",
+  "avoid",
+  "goal",
+  "face",
+  "must",
+  "approver",
+];
+
+/** The sections to walk through: only the essential questions unless the full sheet is open. */
+export function sheetSections(full: boolean): Section[] {
+  if (full) return [...SECTIONS];
+  return SECTIONS.map((s) => ({
+    ...s,
+    fields: s.fields.filter((q) => ESSENTIAL.includes(q.id)),
+  })).filter((s) => s.fields.length > 0);
+}
