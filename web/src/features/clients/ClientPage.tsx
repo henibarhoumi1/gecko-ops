@@ -4,6 +4,7 @@ import { Notice } from "@/components/Notice";
 import { useActiveTabInView } from "@/components/useActiveTabInView";
 import { BoardRoute } from "@/features/board/BoardRoute";
 import { WhiteboardRoute } from "@/features/whiteboard/WhiteboardRoute";
+import { TeamRoom } from "@/features/writing/TeamRoom";
 import { OnboardingForm } from "@/features/onboarding/OnboardingForm";
 import { TeamVideos } from "@/features/videos/TeamVideos";
 import { videosOn } from "@/lib/features";
@@ -54,6 +55,7 @@ export function ClientPage() {
     {
       name: "Write",
       tabs: [
+        ["room", "Writing room"],
         ["concepts", "Ideas"],
         ["scripts", "Scripts"],
         ["whiteboard", "Whiteboard"],
@@ -186,6 +188,7 @@ export function ClientPage() {
         ) : (
           <Route index element={<Navigate to="concepts" replace />} />
         )}
+        <Route path="room" element={<TeamRoom clientId={clientId} />} />
         <Route path="concepts" element={<TeamConcepts clientId={clientId} />} />
         <Route path="scripts" element={<TeamScripts clientId={clientId} />} />
         <Route path="shared" element={<TeamShared clientId={clientId} />} />

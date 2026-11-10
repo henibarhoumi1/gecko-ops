@@ -29,7 +29,7 @@ export function ConceptCard({
 }) {
   const refs = refLines(concept.refs);
   return (
-    <article className={`concept concept-${concept.status}`}>
+    <article id={`idea-${concept.id}`} className={`concept concept-${concept.status}`}>
       <header className="concept-head">
         <span className="tag">{FORMAT_LABEL[concept.format]}</span>
         <span className={`status status-${concept.status}`}>

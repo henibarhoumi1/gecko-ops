@@ -50,6 +50,7 @@ const PEOPLE = {
 const PAGES = {
   client: [
     "/",
+    "/room",
     "/concepts",
     "/scripts",
     "/talent",

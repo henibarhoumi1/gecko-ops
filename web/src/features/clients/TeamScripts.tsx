@@ -1,3 +1,4 @@
+import { useHashScroll } from "@/lib/useHashScroll";
 import { useState, type FormEvent } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/Button";
@@ -40,6 +41,7 @@ export function TeamScripts({ clientId }: { clientId: string }) {
   // ?idea=… comes from "Write the script" on an approved idea: the form opens linked to it.
   const [params, setParams] = useSearchParams();
   const fromIdea = params.get("idea") ?? undefined;
+  useHashScroll(scripts.isSuccess);
   const [adding, setAdding] = useState(Boolean(fromIdea));
   const done = () => {
     setAdding(false);
