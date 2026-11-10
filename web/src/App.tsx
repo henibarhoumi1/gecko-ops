@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MutationCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useRef, useState, type ReactElement } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -16,6 +16,8 @@ import { ClientsPage } from "@/features/clients/ClientsPage";
 import { PipelinePage } from "@/features/pipeline/PipelinePage";
 import { PortalPage } from "@/features/portal/PortalPage";
 import { ShootsPage } from "@/features/shoot/ShootsPage";
+import { TrashPage } from "@/features/trash/TrashPage";
+import { MUTATED } from "@/features/trash/trashApi";
 import {
   pickPortal,
   portalKey,
@@ -41,6 +43,10 @@ import { supabase } from "@/lib/supabase";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: true } },
+  // After any change, the Undo bar checks whether it was a delete (features/trash/UndoBar.tsx).
+  mutationCache: new MutationCache({
+    onSuccess: () => window.dispatchEvent(new Event(MUTATED)),
+  }),
 });
 
 /** One screen per section in the sidebar (see nav.ts). */
@@ -55,6 +61,7 @@ const SCREENS: Record<string, () => ReactElement> = {
   ),
   shoots: () => <ShootsPage />,
   team: () => <TeamPage />,
+  trash: () => <TrashPage />,
   alerts: () => <AlertsPage />,
 };
 

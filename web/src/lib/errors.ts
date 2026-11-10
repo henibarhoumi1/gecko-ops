@@ -407,6 +407,16 @@ const MESSAGES: [RegExp, string, string][] = [
     "The client needs to approve this before it can be booked.",
     "Le client doit d'abord valider avant la réservation.",
   ],
+  [
+    /trash_not_found/,
+    "That was already put back, or it's no longer in the trash.",
+    "C'est déjà restauré, ou ce n'est plus dans la corbeille.",
+  ],
+  [
+    /restore_failed/,
+    "It couldn't be put back: something with the same place already exists.",
+    "Impossible de le restaurer : un élément occupe déjà sa place.",
+  ],
   [/invalid_project/, "Give the project a name.", "Donnez un nom au projet."],
   [
     /project_not_found/,
