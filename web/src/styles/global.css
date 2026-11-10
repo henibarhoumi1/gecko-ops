@@ -8169,3 +8169,195 @@ a.piece:hover {
     gap: 4px 10px;
   }
 }
+
+/* ---------- The portal rail: the same black sidebar as the team app ---------- */
+
+@media (min-width: 900px) {
+  .portal-rail {
+    background: var(--ink);
+    color: var(--white);
+    border-right: 0;
+  }
+
+  .portal-rail .logo {
+    color: var(--white);
+  }
+
+  /* The client's own logo sits on a white card, so a dark logo still reads. */
+  .portal-rail .rail-brand {
+    border-bottom: 0;
+    border-radius: 14px;
+    background: var(--white);
+    color: var(--ink);
+  }
+
+  .portal-rail .rail-group-name {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--yellow);
+  }
+
+  .portal-rail .rail-link {
+    color: var(--white);
+    white-space: nowrap;
+  }
+
+  .portal-rail .rail-link:hover {
+    background: var(--mat-major);
+  }
+
+  .portal-rail .rail-link.active {
+    background: var(--pink);
+    color: var(--ink);
+  }
+
+  /* The bracket from the logo closes the page you are on. */
+  .portal-rail .rail-link.active::after {
+    content: "]";
+    margin-left: auto;
+    font-weight: 700;
+  }
+
+  .portal-rail .rail-me {
+    border-top-color: var(--mat-major);
+  }
+
+  .portal-rail .rail-me,
+  .portal-rail .rail-me .muted,
+  .portal-rail .rail-me .btn-link {
+    color: var(--white);
+  }
+}
+
+/* ---------- Writing Room: read time, never-say words, the brand sheet ---------- */
+
+.read-meter {
+  display: grid;
+  gap: 6px;
+  margin: 4px 0 12px;
+}
+
+.read-meter-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.read-meter-bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ink);
+  transition: width 0.2s ease;
+}
+
+.read-meter.over .read-meter-bar span {
+  background: #a3261b;
+}
+
+.read-meter.over p {
+  color: #a3261b;
+  font-weight: 600;
+}
+
+.never-hits {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border-left: 4px solid #a3261b;
+  border-radius: 10px;
+  background: var(--pink-soft);
+}
+
+.never-hits ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+.brand-drawer {
+  margin: 0 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--white);
+}
+
+.brand-drawer-toggle {
+  font: inherit;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.brand-drawer-toggle > :last-child {
+  margin-left: auto;
+}
+
+.brand-sheet {
+  display: grid;
+  grid-template-columns: minmax(120px, 180px) minmax(0, 1fr);
+  gap: 8px 16px;
+  margin: 0;
+  padding: 4px 14px 14px;
+}
+
+.brand-sheet dt {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.brand-sheet dt.warn {
+  color: #a3261b;
+}
+
+.brand-sheet dd {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 600px) {
+  .brand-sheet {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+
+  .brand-sheet dd {
+    margin-bottom: 8px;
+  }
+}
+
+.hook-idea.more {
+  border-style: dashed;
+  font-weight: 700;
+}
+
+.hook-library {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 12px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--yellow-soft);
+}
+
+.hook-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.hook-group > .small {
+  min-width: 90px;
+  font-weight: 700;
+}

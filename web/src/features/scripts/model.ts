@@ -21,7 +21,17 @@ export type ScriptStyle =
   | "demo"
   | "skit"
   | "ugc"
-  | "voiceover";
+  | "voiceover"
+  | "street-interview"
+  | "tutorial"
+  | "trend"
+  | "myth-fact"
+  | "day-in-life"
+  | "product-only"
+  | "reaction"
+  | "brand-film"
+  | "teaser"
+  | "portrait";
 
 /** Which part of the ad a scene line is. The hook and the CTA have their own fields. */
 export type ScriptPart = "lead" | "body";
@@ -215,6 +225,36 @@ export const STYLE_LABEL: Record<ScriptStyle, string> = {
   },
   get unboxing() {
     return t("Unboxing", "Unboxing");
+  },
+  get "street-interview"() {
+    return t("Street interview", "Micro-trottoir");
+  },
+  get tutorial() {
+    return t("How-to", "Tuto");
+  },
+  get trend() {
+    return t("Trend", "Tendance");
+  },
+  get "myth-fact"() {
+    return t("Myth vs fact", "Mythe ou réalité");
+  },
+  get "day-in-life"() {
+    return t("Day in the life", "Une journée avec");
+  },
+  get "product-only"() {
+    return t("Product only", "Produit seul");
+  },
+  get reaction() {
+    return t("Reaction", "Réaction");
+  },
+  get "brand-film"() {
+    return t("Brand film", "Film de marque");
+  },
+  get teaser() {
+    return t("Teaser", "Teaser");
+  },
+  get portrait() {
+    return t("Portrait", "Portrait");
   },
 };
 

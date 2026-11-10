@@ -5,7 +5,6 @@ import { Field } from "@/components/Field";
 import { Notice } from "@/components/Notice";
 import { Select } from "@/components/Select";
 import {
-  estimateSeconds,
   groupScripts,
   tidyLines,
   tidyTreatment,
@@ -17,6 +16,9 @@ import {
   type ShootPlan,
 } from "@/features/scripts/model";
 import { ScriptView } from "@/features/scripts/ScriptView";
+import { BrandDrawer, useBrand } from "@/features/scripts/BrandDrawer";
+import { useTeamShared } from "@/features/shared/sharedApi";
+import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { AdParts, adDraft, draftBeats, noWords, type AdDraft } from "@/features/scripts/AdParts";
 import {
   useDeleteScript,
@@ -298,6 +300,9 @@ function ScriptForm({
 }) {
   const save = useSaveScript(clientId);
   const concepts = useConcepts(clientId);
+  const { id: workspaceId } = useWorkspace();
+  const space = useTeamShared(clientId);
+  const brand = useBrand(workspaceId, clientId, space.data?.brandNotes.body);
   const approved = (concepts.data ?? []).filter((c) => c.status === "approved");
   const startIdea = approved.find((c) => c.id === fromIdea);
   const [draft, setDraft] = useState<AdDraft>(() =>
@@ -314,7 +319,6 @@ function ScriptForm({
   const [error, setError] = useState("");
   const shared = script && script.status !== "draft";
   const beats = draftBeats(draft);
-  const runs = estimateSeconds({ hooks: tidyLines(draft.hooks), beats, cta: draft.cta });
   const idea = approved.find((c) => c.id === conceptId);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
@@ -416,17 +420,15 @@ function ScriptForm({
         </fieldset>
       )}
 
+      <BrandDrawer sheet={brand.sheet} never={brand.never} />
       <AdParts
         draft={draft}
         onChange={setDraft}
         seconds={seconds}
+        never={brand.never}
         hookNote="write 2 or 3, the client picks"
       />
       <ShootPlanPicker clientId={clientId} plan={shoot} onChange={setShoot} />
-      <p className={`small script-runs${runs > seconds + 3 ? " over" : ""}`}>
-        Runs about {runs} s spoken with the first hook · made for {seconds} s
-        {runs > seconds + 3 && " · too long, trim it"}
-      </p>
       {shared && (
         <p className="small muted">
           The client has seen this script. Saving a change makes version {script.version + 1}, and

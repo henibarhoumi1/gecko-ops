@@ -1,4 +1,4 @@
-import { bodyFor, partTimes, template } from "./templates";
+import { anyHooks, bodyFor, hookLibrary, partTimes, template } from "./templates";
 import { describe, expect, it } from "vitest";
 import {
   changedParts,
@@ -124,6 +124,14 @@ describe("ad structure", () => {
     expect(times[0]).toBe("0–3 s");
     expect(times[4]!.endsWith("–30 s")).toBe(true);
     expect(partTimes(7, 1).at(-1)!.endsWith("–7 s")).toBe(true);
+  });
+
+  it("has a hook library with no repeats", () => {
+    const groups = hookLibrary();
+    expect(groups.length).toBeGreaterThanOrEqual(6);
+    const all = [...groups.flatMap((g) => g.hooks), ...anyHooks()];
+    expect(new Set(all).size).toBe(all.length);
+    for (const g of groups) expect(g.hooks.length).toBe(3);
   });
 
   it("gives every template but Blank hook ideas", () => {
