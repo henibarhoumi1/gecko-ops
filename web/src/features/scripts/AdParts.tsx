@@ -1,10 +1,26 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Select } from "@/components/Select";
 import { t } from "@/lib/i18n";
-import { hookName, STYLE_LABEL, tidyLines, type ScriptLine, type ScriptStyle } from "./model";
-import { anyHooks, bodyFor, GOAL_LABEL, partTimes, template, TEMPLATES } from "./templates";
+import { draftNever } from "./brand";
+import {
+  estimateSeconds,
+  hookName,
+  STYLE_LABEL,
+  tidyLines,
+  type ScriptLine,
+  type ScriptStyle,
+} from "./model";
+import {
+  anyHooks,
+  bodyFor,
+  GOAL_LABEL,
+  hookLibrary,
+  partTimes,
+  template,
+  TEMPLATES,
+} from "./templates";
 
 /** What a script is made of, the way an ad is built: Hook → Lead → Body 1, 2, 3 → CTA. */
 export interface AdDraft {
@@ -55,6 +71,7 @@ export function AdParts({
   onChange,
   hookNote,
   seconds,
+  never = [],
 }: {
   draft: AdDraft;
   onChange: (next: AdDraft) => void;
@@ -62,6 +79,8 @@ export function AdParts({
   hookNote: string;
   /** The video's length: it sets how many body parts there are and when each part plays. */
   seconds: number;
+  /** Words the brand never uses: any line that has one gets flagged. */
+  never?: readonly string[];
 }) {
   const tpl = template(draft.style);
   const hints = bodyFor(tpl, seconds);
@@ -85,6 +104,8 @@ export function AdParts({
     else if (hooks.length < 3) set({ hooks: [...hooks, { hear: line }] });
   }
   const canAddHook = emptyHook >= 0 || hooks.length < 3;
+  const hits = draftNever(draft, never);
+  const [library, setLibrary] = useState(false);
 
   return (
     <>
@@ -137,6 +158,35 @@ export function AdParts({
               <button key={line} type="button" className="hook-idea" onClick={() => takeHook(line)}>
                 {line}
               </button>
+            ))}
+            <button
+              type="button"
+              className="hook-idea more"
+              aria-expanded={library}
+              onClick={() => setLibrary((v) => !v)}
+            >
+              {library
+                ? t("Fewer hooks", "Moins d'accroches")
+                : t("Hook library", "Bibliothèque d'accroches")}
+            </button>
+          </div>
+        )}
+        {canAddHook && library && (
+          <div className="hook-library">
+            {hookLibrary().map((group) => (
+              <div key={group.name} className="hook-group">
+                <span className="small">{group.name}</span>
+                {group.hooks.map((line) => (
+                  <button
+                    key={line}
+                    type="button"
+                    className="hook-idea"
+                    onClick={() => takeHook(line)}
+                  >
+                    {line}
+                  </button>
+                ))}
+              </div>
             ))}
           </div>
         )}
@@ -225,7 +275,52 @@ export function AdParts({
           placeholder={tpl.cta}
         />
       </fieldset>
+
+      <ReadMeter draft={draft} seconds={seconds} />
+      {hits.length > 0 && (
+        <div className="never-hits" role="status">
+          <strong>
+            {t("Words the brand never uses", "Des mots que la marque n'utilise jamais")}
+          </strong>
+          <ul>
+            {hits.map((h) => (
+              <li key={`${h.where}-${h.term}`}>
+                “{h.term}” · {h.where}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </>
+  );
+}
+
+/**
+ * How long the script reads out loud, live while typing, with the first hook. The bar fills up to
+ * the video's length and turns red past it.
+ */
+export function ReadMeter({ draft, seconds }: { draft: AdDraft; seconds: number }) {
+  const runs = estimateSeconds({
+    hooks: tidyLines(draft.hooks),
+    beats: draftBeats(draft),
+    cta: draft.cta,
+  });
+  const over = runs > seconds + 3;
+  const fill = Math.min(100, Math.round((runs / Math.max(1, seconds)) * 100));
+  return (
+    <div className={`read-meter${over ? " over" : ""}`} aria-live="polite">
+      <div className="read-meter-bar">
+        <span style={{ width: `${fill}%` }} />
+      </div>
+      <p className="small">
+        {t(
+          `Reads in about ${runs} s with the first hook · made for ${seconds} s`,
+          `Se lit en environ ${runs} s avec la première accroche · prévu pour ${seconds} s`,
+        )}
+        {over &&
+          ` · ${t(`${runs - seconds} s too long, trim it`, `${runs - seconds} s de trop, coupez`)}`}
+      </p>
+    </div>
   );
 }
 

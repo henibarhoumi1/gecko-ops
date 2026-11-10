@@ -16,6 +16,8 @@ import {
 } from "@/features/scripts/model";
 import { useClientWriteScript } from "@/features/scripts/scriptsApi";
 import { AdParts, adDraft, draftBeats, type AdDraft } from "@/features/scripts/AdParts";
+import { BrandDrawer, useBrand } from "@/features/scripts/BrandDrawer";
+import { useMyShared } from "@/features/shared/sharedApi";
 import { friendlyError } from "@/lib/errors";
 import { t } from "@/lib/i18n";
 import { isCinematic, tw } from "@/lib/wording";
@@ -46,6 +48,8 @@ export function WriteScript({
   onDone: () => void;
 }) {
   const write = useClientWriteScript(portal);
+  const space = useMyShared(portal);
+  const brand = useBrand(portal.workspaceId, portal.clientId, space.data?.brandNotes.body);
   const cine = isCinematic();
   const [beats, setBeats] = useState<ScriptLine[]>(script?.beats.length ? script.beats : [{}, {}]);
   // Everyone but film clients writes the ad in parts, the same way the team does.
@@ -200,12 +204,16 @@ export function WriteScript({
           />
         </>
       ) : (
-        <AdParts
-          draft={draft}
-          onChange={setDraft}
-          seconds={seconds}
-          hookNote={t("write 1 to 3, Gecko helps pick", "écrivez-en 1 à 3, Gecko aide à choisir")}
-        />
+        <>
+          <BrandDrawer sheet={brand.sheet} never={brand.never} />
+          <AdParts
+            draft={draft}
+            onChange={setDraft}
+            seconds={seconds}
+            never={brand.never}
+            hookNote={t("write 1 to 3, Gecko helps pick", "écrivez-en 1 à 3, Gecko aide à choisir")}
+          />
+        </>
       )}
       {error && <Notice tone="error">{error}</Notice>}
       <div className="actions">
