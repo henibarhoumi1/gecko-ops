@@ -1,0 +1,761 @@
+/* Gecko's look, shared with the website (gecko-site src/styles/brand.css): white paper, black ink, a pink marker,
+   yellow tape and the green cutting mat. One type family, Inter, self-hosted so every screen shows the same letters.
+   Cards and inputs have a black edge; separators are lighter hairlines. Buttons are pills. */
+@font-face {
+  font-family: "Gecko Sans";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/inter-latin.woff2") format("woff2");
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Gecko Sans";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/inter-latin-ext.woff2") format("woff2");
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+1D00-1DBF, U+1E00-1E9F,
+    U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Gecko Fallback";
+  src: local("Arial"), local("Helvetica Neue"), local("Roboto");
+  size-adjust: 107.1%;
+  ascent-override: 90.4%;
+  descent-override: 22.5%;
+  line-gap-override: 0%;
+}
+
+:root {
+  --white: #ffffff;
+  --ink: #000000;
+  /* No grey text anywhere: secondary text is ink too, quieter only by size and weight (as on the website). */
+  --ink-2: #000000;
+  --muted: #000000;
+  --pink: #f4c1c4;
+  --pink-soft: #fbe3e4;
+  --yellow: #f3df9e;
+  --yellow-soft: #faf0cf;
+  --green: #9cc9b0;
+  --green-soft: #e3f0e8;
+  --mat: #2e6b4e;
+  --mat-deep: #1f4d37;
+  --mat-minor: rgba(255, 255, 255, 0.07);
+  --mat-major: rgba(255, 255, 255, 0.17);
+  --line: rgba(0, 0, 0, 0.12);
+  --edge: var(--ink);
+  --radius: 14px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --font: "Gecko Sans", "Gecko Fallback", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--white);
+  color: var(--ink);
+  font: 15px/1.5 var(--font);
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--pink);
+  color: var(--ink);
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+a {
+  color: var(--ink);
+  text-underline-offset: 3px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.center {
+  text-align: center;
+}
+
+/* Small labels above a title: bold, sentence case, like on the website. */
+.eyebrow {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--ink-2);
+}
+
+/* The wordmark, drawn from the website's logo. */
+.logo {
+  display: block;
+  width: 64px;
+  margin: 0 0 24px;
+  line-height: 0;
+  color: var(--ink);
+}
+
+.logo svg {
+  width: 100%;
+  height: auto;
+}
+
+/* The pink marker under the words that matter. */
+.hl {
+  padding-inline: 0.04em;
+  margin-inline: -0.04em;
+  background: linear-gradient(var(--pink), var(--pink)) 0 86% / 100% 34% no-repeat;
+}
+
+/* Yellow tape: holds things down and labels them, with slightly torn ends. Used instead of badges. */
+.tape {
+  display: inline-block;
+  padding: 0.45em 0.85em 0.4em;
+  background: var(--yellow);
+  color: var(--ink);
+  font: 700 12px/1.1 var(--font);
+  white-space: nowrap;
+  clip-path: polygon(
+    0 6%,
+    3% 0,
+    6% 8%,
+    9% 1%,
+    91% 0,
+    94% 7%,
+    97% 1%,
+    100% 6%,
+    100% 94%,
+    97% 100%,
+    94% 92%,
+    91% 99%,
+    9% 100%,
+    6% 93%,
+    3% 100%,
+    0 94%
+  );
+  transform: rotate(-1.6deg);
+}
+
+/* The green cutting mat: a fine grid, a bolder one every 5 squares. */
+.mat {
+  color: var(--white);
+  background-color: var(--mat);
+  background-image:
+    linear-gradient(var(--mat-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mat-major) 1px, transparent 1px),
+    linear-gradient(var(--mat-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mat-minor) 1px, transparent 1px);
+  background-size:
+    120px 120px,
+    120px 120px,
+    24px 24px,
+    24px 24px;
+  background-position: -1px -1px;
+}
+
+.stack {
+  display: grid;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* A field never pushes past its column: inputs shrink with the layout instead of keeping the browser's own width. */
+.field input:not([type="checkbox"], [type="radio"]),
+.field select,
+.field textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.field label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-2);
+}
+
+.field input {
+  font: inherit;
+  padding: 12px 14px;
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+  background: var(--white);
+}
+
+/* Inputs look and react like the website's brief form: a black edge, a soft ring on focus. */
+.field input:focus,
+.field select:focus,
+.field textarea:focus,
+.ob-f input:focus,
+.ob-f textarea:focus,
+.ob-f select:focus,
+.ob-asset select:focus,
+.milestone input:focus,
+.chip-other:focus {
+  outline: none;
+  border-color: var(--ink);
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.06);
+}
+
+/* Buttons are pills, like on the website: black for the main action, an ink outline for the rest. */
+.btn {
+  font: inherit;
+  font-weight: 700;
+  font-size: 14.5px;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  cursor: pointer;
+  border-radius: 999px;
+  padding: 12px 20px;
+  border: 1px solid var(--ink);
+  white-space: nowrap;
+  transition:
+    background 200ms var(--ease),
+    color 200ms var(--ease),
+    border-color 200ms var(--ease);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.btn-primary {
+  background: var(--ink);
+  color: var(--white);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--pink);
+  border-color: var(--pink);
+  color: var(--ink);
+}
+
+.btn-secondary {
+  background: var(--white);
+  color: var(--ink);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--ink);
+  color: var(--white);
+}
+
+.btn-link {
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  font-weight: 600;
+  background: none;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.notice {
+  margin: 16px 0 0;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+}
+
+.notice-info {
+  background: var(--yellow-soft);
+}
+
+.notice-error {
+  background: var(--pink-soft);
+}
+
+/* Sign in, sign up, join */
+.auth {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding-block: 32px;
+  padding-inline: max(16px, env(safe-area-inset-left, 0px));
+  color: var(--white);
+  background-color: var(--mat);
+  background-image:
+    linear-gradient(var(--mat-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mat-major) 1px, transparent 1px),
+    linear-gradient(var(--mat-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--mat-minor) 1px, transparent 1px);
+  background-size:
+    120px 120px,
+    120px 120px,
+    24px 24px,
+    24px 24px;
+  background-position: -1px -1px;
+}
+
+/* The sign-in card sits on the cutting mat like a sheet of paper. */
+.auth-card {
+  width: min(100%, 420px);
+  padding: 32px;
+  color: var(--ink);
+  background: var(--white);
+  border: 1px solid var(--ink);
+  border-radius: 18px;
+}
+
+.auth-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* EN · FR: two small pill halves with an ink edge, the picked one filled pink. */
+.lang-switch {
+  display: inline-flex;
+  flex: none;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.lang-switch button {
+  min-width: 38px;
+  padding: 5px 10px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  background: var(--white);
+  border: 0;
+  cursor: pointer;
+}
+
+.lang-switch button + button {
+  border-left: 1px solid var(--ink);
+}
+
+.lang-switch button.on {
+  background: var(--pink);
+}
+
+.lang-switch button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -3px;
+}
+
+.first-time {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.first-time summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* Agency app */
+.shell {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px 14px;
+  border-right: 1px solid var(--line);
+}
+
+.side .logo {
+  margin: 2px 14px 22px;
+}
+
+.side nav {
+  display: grid;
+  gap: 2px;
+}
+
+.nav-item {
+  padding: 9px 14px;
+  border-radius: 999px;
+  text-decoration: none;
+  color: var(--ink-2);
+  font-weight: 500;
+}
+
+.nav-item:hover {
+  background: var(--yellow-soft);
+}
+
+.nav-item.active {
+  background: var(--pink);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.me {
+  margin-top: auto;
+  display: grid;
+  gap: 2px;
+  font-size: 13px;
+  justify-items: start;
+}
+
+.me-email {
+  overflow-wrap: anywhere;
+}
+
+.content {
+  min-width: 0;
+}
+
+.page {
+  max-width: 880px;
+  padding-block: 32px;
+  padding-inline: max(16px, env(safe-area-inset-left, 0px));
+}
+
+.loading {
+  padding: 32px;
+  color: var(--muted);
+}
+
+/* A screen that crashed: calm message and a reload button, never a blank page */
+.crash {
+  max-width: 520px;
+  margin: 15vh auto 0;
+  padding: 24px max(16px, env(safe-area-inset-left, 0px));
+  text-align: center;
+}
+.crash h1 {
+  font-size: 1.4rem;
+  margin-bottom: 8px;
+}
+.crash .btn {
+  margin-top: 16px;
+}
+
+/* Empty states in the portal: a calm card that says what comes next, instead of a loose grey line */
+.empty-state {
+  margin: 8px 0 0;
+  max-width: 62ch;
+  padding: 20px 22px;
+  border: 1px dashed rgba(0, 0, 0, 0.28);
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, 0.015);
+  color: var(--ink-2);
+  line-height: 1.5;
+}
+
+/* View as client: a strip above the portal that says the team is looking, read-only */
+.preview-banner {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 8px max(16px, env(safe-area-inset-left, 0px));
+  background: var(--yellow);
+  color: var(--ink);
+  font-size: 0.9rem;
+}
+.preview-banner a {
+  color: inherit;
+}
+.preview-roles {
+  display: inline-flex;
+  gap: 10px;
+}
+.preview-roles a[aria-current="page"] {
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 2px solid var(--ink);
+}
+.client-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+/* Brand switcher, for a client who works with Gecko on more than one brand */
+.brand-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.brand-switch select {
+  font: inherit;
+  max-width: 180px;
+  padding: 2px 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+}
+
+/* Client portal */
+.portal-bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px max(16px, env(safe-area-inset-left, 0px));
+  background: var(--yellow-soft);
+  font-size: 13px;
+}
+
+.list {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.card {
+  padding: 16px;
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+}
+
+@media (max-width: 720px) {
+  .shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .side {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .side nav {
+    grid-auto-flow: column;
+    overflow-x: auto;
+  }
+}
+
+/* Shared bits */
+h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+.small {
+  font-size: 13px;
+}
+
+.field select {
+  font: inherit;
+  padding: 12px 14px;
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+  background: var(--white);
+}
+
+/* Every dropdown gets the same drawn arrow as the website's brief form, not the browser's own. */
+.field select,
+.ob-f select,
+.ob-asset select,
+.invite-role select,
+.money-new select,
+select.role-select {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 38px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position:
+    calc(100% - 20px) 55%,
+    calc(100% - 15px) 55%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--ink);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.count {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+/* Format labels are yellow tape, like on the website. */
+.tag {
+  justify-self: start;
+  padding: 0.4em 0.8em 0.35em;
+  border-radius: 0;
+  background: var(--yellow);
+  font-size: 12px;
+  font-weight: 700;
+  clip-path: polygon(
+    0 6%,
+    4% 0,
+    8% 8%,
+    12% 1%,
+    88% 0,
+    92% 7%,
+    96% 1%,
+    100% 6%,
+    100% 94%,
+    96% 100%,
+    92% 92%,
+    88% 99%,
+    12% 100%,
+    8% 93%,
+    4% 100%,
+    0 94%
+  );
+  transform: rotate(-1.6deg);
+}
+
+.page.wide {
+  max-width: none;
+}
+
+.page-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.page-head p {
+  margin: 0;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.tab {
+  font: inherit;
+  cursor: pointer;
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--white);
+}
+
+.tab[aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--white);
+}
+
+.tab[aria-pressed="true"] .count {
+  color: inherit;
+}
+
+/* Pipeline */
+.board {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(220px, 1fr));
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.column {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+  padding: 12px;
+  border-radius: var(--radius);
+  background: var(--pink-soft);
+}
+
+.column h2 {
+  font-size: 14px;
+}
+
+.lead {
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  display: grid;
+  gap: 4px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--ink);
+}
+
+.lead:hover {
+  border-color: var(--ink);
+}
+
+.lead-unsafe {
+  border-left: 4px solid var(--yellow);
+}
+
+.late {
+  color: #a3261b;
+  font-weight: 600;
+}
+
+.dialog {
+  width: min(100% - 32px, 560px);
+  padding: 24px;
+  border: 1px solid var(--ink);
+  border-radius: 18px;
+}
+
+.dialog::backdrop {
+  background: rgba(0, 0, 0, 0.35);
+}

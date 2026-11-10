@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Select } from "@/components/Select";
 import { t } from "@/lib/i18n";
 import { draftNever } from "./brand";
+import { useScriptMode, type ScriptMode } from "./ScriptView";
 import {
   estimateSeconds,
   hookName,
@@ -109,9 +110,22 @@ export function AdParts({
   const canAddHook = emptyHook >= 0 || hooks.length < 3;
   const hits = draftNever(draft, never);
   const [library, setLibrary] = useState(false);
+  // Write on the page (the words big, the picture as a stage direction) or in the see / hear / on-screen table.
+  const [mode, setMode] = useScriptMode("client");
 
   return (
-    <>
+    <div className={`ad-parts mode-${mode}`}>
+      <div
+        className="mode-switch ad-mode"
+        role="group"
+        aria-label={t("How to write", "Mode d'écriture")}
+      >
+        {(["write", "breakdown"] as const).map((m) => (
+          <button key={m} type="button" aria-pressed={mode === m} onClick={() => setMode(m)}>
+            {m === "write" ? t("Page", "Page") : t("Breakdown", "Découpage")}
+          </button>
+        ))}
+      </div>
       <Select
         label={t("Template", "Modèle")}
         name="style"
@@ -205,6 +219,7 @@ export function AdParts({
         )}
         {hooks.map((hook, i) => (
           <LineEditor
+            mode={mode}
             key={i}
             name={hookName(i)}
             line={hook}
@@ -229,6 +244,7 @@ export function AdParts({
           </span>
         </legend>
         <LineEditor
+          mode={mode}
           name="Lead"
           hint={tpl.lead}
           line={draft.lead}
@@ -245,6 +261,7 @@ export function AdParts({
         </legend>
         {body.map((part, i) => (
           <LineEditor
+            mode={mode}
             key={i}
             name={`Body ${i + 1} · ${times[2 + i]}`}
             hint={hints[i]}
@@ -304,7 +321,7 @@ export function AdParts({
           </ul>
         </div>
       )}
-    </>
+    </div>
   );
 }
 
@@ -338,6 +355,7 @@ export function ReadMeter({ draft, seconds }: { draft: AdDraft; seconds: number 
 }
 
 function LineEditor({
+  mode,
   name,
   hint,
   line,
@@ -345,6 +363,7 @@ function LineEditor({
   onRemove,
   onUp,
 }: {
+  mode: ScriptMode;
   name: string;
   /** What this part is for, from the template. */
   hint?: string;
@@ -355,22 +374,55 @@ function LineEditor({
 }) {
   const set = (key: keyof ScriptLine) => (e: { target: { value: string } }) =>
     onChange({ ...line, [key]: e.target.value });
+  const head = (
+    <div className="line-edit-head">
+      <strong>{name}</strong>
+      {hint && <span className="part-hint inline">{hint}</span>}
+      {onUp && (
+        <button type="button" className="line-comment" onClick={onUp}>
+          {t("Move up", "Monter")}
+        </button>
+      )}
+      {onRemove && (
+        <button type="button" className="line-comment" onClick={onRemove}>
+          {t("Remove", "Retirer")}
+        </button>
+      )}
+    </div>
+  );
+  if (mode === "write")
+    return (
+      <div className="line-edit line-page">
+        {head}
+        <AutoText
+          className="page-see"
+          value={line.see ?? ""}
+          onChange={set("see")}
+          maxLength={1000}
+          placeholder={t("(what we see)", "(ce qu'on voit)")}
+          label={t("We see", "On voit")}
+        />
+        <AutoText
+          className="page-hear"
+          value={line.hear ?? ""}
+          onChange={set("hear")}
+          maxLength={1000}
+          placeholder={hint || t("What we hear…", "Ce qu'on entend…")}
+          label={t("We hear", "On entend")}
+        />
+        <AutoText
+          className="page-onscreen"
+          value={line.text ?? ""}
+          onChange={set("text")}
+          maxLength={300}
+          placeholder={t("On screen", "À l'écran")}
+          label={t("On screen", "À l'écran")}
+        />
+      </div>
+    );
   return (
     <div className="line-edit">
-      <div className="line-edit-head">
-        <strong>{name}</strong>
-        {hint && <span className="part-hint inline">{hint}</span>}
-        {onUp && (
-          <button type="button" className="line-comment" onClick={onUp}>
-            {t("Move up", "Monter")}
-          </button>
-        )}
-        {onRemove && (
-          <button type="button" className="line-comment" onClick={onRemove}>
-            {t("Remove", "Retirer")}
-          </button>
-        )}
-      </div>
+      {head}
       <div className="line-edit-cols">
         <label>
           <span>{t("We see", "On voit")}</span>
@@ -404,5 +456,43 @@ function LineEditor({
         </label>
       </div>
     </div>
+  );
+}
+
+/** A text box with no frame that grows with what's typed, for writing on the page. */
+function AutoText({
+  value,
+  onChange,
+  className,
+  placeholder,
+  maxLength,
+  label,
+}: {
+  value: string;
+  onChange: (e: { target: { value: string } }) => void;
+  className: string;
+  placeholder: string;
+  maxLength: number;
+  label: string;
+}) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [value]);
+  return (
+    <textarea
+      ref={ref}
+      className={`page-text ${className}`}
+      dir="auto"
+      rows={1}
+      aria-label={label}
+      value={value}
+      onChange={onChange}
+      maxLength={maxLength}
+      placeholder={placeholder}
+    />
   );
 }

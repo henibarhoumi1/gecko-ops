@@ -1,0 +1,992 @@
+/* ---------- Portal v2, phase F: results and the library ---------- */
+
+.results-waiting {
+  margin: 0 0 18px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  background: var(--yellow-soft);
+  border: 1.5px solid var(--ink);
+  font-weight: 600;
+}
+
+.post-list,
+.lib-grid {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.post-list {
+  display: grid;
+  gap: 8px;
+}
+
+.post-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 6px 18px;
+  align-items: start;
+  padding: 14px 16px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.post-row:hover {
+  background: var(--yellow-soft);
+}
+
+.post-row-head {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.check-cell {
+  display: grid;
+  gap: 2px;
+  padding-left: 14px;
+  border-left: 1px solid var(--line);
+  min-width: 0;
+}
+
+.check-day {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.check-cell.is-due .check-day::after {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-left: 6px;
+  border-radius: 50%;
+  background: var(--pink);
+  border: 1px solid var(--ink);
+  vertical-align: 1px;
+}
+
+.check-cell.is-shots {
+  color: var(--ink);
+}
+
+.check-figures {
+  display: grid;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.check-figures b {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.post-form,
+.read-form,
+.lib-form {
+  display: grid;
+  gap: 12px;
+  margin: 12px 0 18px;
+  background: var(--white);
+}
+
+.post-form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.figures {
+  margin: 18px 0 6px;
+}
+
+.figures dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  margin: 0;
+  border-top: 2px solid var(--ink);
+  border-bottom: 1px solid var(--line);
+}
+
+.figures dl > div {
+  padding: 12px 12px 12px 0;
+}
+
+.figures dt {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.figures dd {
+  margin: 2px 0 0;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.figures .empty dd {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.press h3,
+.checkpoint h3,
+.read h3,
+.read-form h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.press ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+.checkpoints {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin: 18px 0;
+  align-items: start;
+}
+
+.checkpoint {
+  display: grid;
+  gap: 12px;
+  border-width: 1.5px;
+}
+
+.checkpoint.is-early {
+  border-style: dashed;
+}
+
+.checkpoint-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 12px;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px;
+}
+
+.metric-grid .field {
+  margin: 0;
+  min-width: 0;
+}
+
+.metric-grid input,
+.post-form-row input,
+.post-form-row select,
+.read-form input,
+.lib-form input {
+  width: 100%;
+  min-width: 0;
+}
+
+.btn-link.danger {
+  color: #a3262a;
+}
+
+/* The monthly read: a page from Gecko, taped in. */
+.monthly {
+  margin-bottom: 26px;
+}
+
+.read {
+  position: relative;
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 22px 20px 18px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+
+.read::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: 22px;
+  width: 74px;
+  height: 18px;
+  background: var(--yellow);
+  transform: rotate(-3deg);
+  opacity: 0.92;
+}
+
+.read.is-draft {
+  border-style: dashed;
+}
+
+.read header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px 12px;
+}
+
+.read h4 {
+  margin: 6px 0 0;
+  font-size: 14px;
+}
+
+.read-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.read-pick {
+  display: grid;
+  gap: 2px;
+  padding: 12px 14px;
+  border-radius: 10px;
+}
+
+.read-pick.best {
+  background: var(--green-soft);
+}
+
+.read-pick.worst {
+  background: var(--pink-soft);
+}
+
+.read-pick p {
+  margin: 4px 0 0;
+}
+
+.read-label {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.read-lines,
+.read-tests {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 4px;
+}
+
+.older-reads {
+  margin-top: 14px;
+}
+
+.older-reads summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.read-form-pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.read-form fieldset {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.read-form legend {
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.read-form fieldset .field {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+/* Library */
+.lib-filters {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.lib-kinds,
+.lib-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.lib-filters .field {
+  max-width: 280px;
+  margin: 0;
+}
+
+.lib-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 14px;
+  padding-bottom: 90px;
+}
+
+.lib-card {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.lib-card-body {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  padding: 0 0 10px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  align-content: start;
+}
+
+.lib-card-body:hover {
+  background: var(--yellow-soft);
+}
+
+.lib-card.is-picked .lib-card-body {
+  background: var(--pink-soft);
+  box-shadow: 0 0 0 3px var(--pink);
+}
+
+.lib-thumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: var(--green-soft);
+}
+
+.lib-thumb img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.lib-length {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--ink);
+  color: var(--white);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.lib-meta {
+  display: grid;
+  gap: 2px;
+  padding: 0 12px;
+}
+
+.lib-card-tags {
+  color: var(--ink-2);
+}
+
+.lib-usage {
+  margin-top: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--yellow-soft);
+}
+
+.lib-pick {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  background: var(--white);
+  font-weight: 700;
+}
+
+.lib-card.is-picked .lib-pick {
+  background: var(--ink);
+  color: var(--white);
+}
+
+.lib-ask {
+  position: sticky;
+  bottom: 16px;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  margin-top: -70px;
+  padding: 12px 16px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--white);
+  box-shadow: 0 6px 0 var(--ink);
+}
+
+.lib-ask > span {
+  font-weight: 700;
+}
+
+.lib-ask .field {
+  flex: 1 1 100%;
+  margin: 0;
+}
+
+.lib-ask.done {
+  background: var(--green-soft);
+}
+
+.lib-form-grid {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 16px;
+}
+
+.lib-form-fields {
+  display: grid;
+  gap: 10px;
+}
+
+.lib-form .photo-picker .prod-photos {
+  grid-template-columns: 1fr;
+}
+
+@media (max-width: 720px) {
+  .post-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .post-row-head {
+    grid-column: 1 / -1;
+  }
+
+  .post-row-head + .check-cell {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .lib-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .lib-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lib-ask {
+    bottom: 76px;
+  }
+}
+
+@media (max-width: 420px) {
+  .metric-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* The page's name in the wide layout; on a phone the row of pages above says it. */
+.portal-page .page-title {
+  margin: 0 0 6px;
+  font-size: clamp(28px, 3vw, 36px);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+@media (max-width: 899px) {
+  .portal-page .page-title {
+    display: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .portal-tabs {
+    flex-wrap: nowrap;
+  }
+}
+
+.pay .pill {
+  white-space: nowrap;
+}
+
+.money-new select {
+  padding-right: 34px;
+}
+
+/* The first screen a new client sees: a warm opening above the brand questions. */
+.brand-welcome {
+  margin-bottom: 18px;
+  padding: 22px 24px;
+  border-radius: 18px;
+  background: var(--yellow-soft);
+}
+
+.brand-welcome h2 {
+  margin: 0 0 8px;
+  font-size: clamp(22px, 3vw, 28px);
+  letter-spacing: -0.02em;
+}
+
+.brand-welcome .lede {
+  margin: 0 0 10px;
+  max-width: 62ch;
+}
+
+.brand-welcome .small {
+  margin: 0;
+}
+
+/* Alerts: problems people hit, and what clients did */
+.alerts-section {
+  margin-top: 28px;
+}
+.alerts-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.alerts-list {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.alerts-list li {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+.alerts-list li.new {
+  border-color: var(--edge);
+  background: var(--pink-soft);
+}
+.alerts-list li.seen {
+  background: var(--white);
+}
+.alerts-list li.action-approve {
+  border-left: 4px solid var(--green);
+}
+.alerts-list li.action-changes {
+  border-left: 4px solid var(--yellow);
+}
+.alerts-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+.alerts-message {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.85em;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.alerts-body {
+  margin: 6px 0 0;
+  color: var(--ink-2);
+  overflow-wrap: anywhere;
+}
+.site-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+  margin: 12px 0 0;
+}
+.site-stats div {
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.site-stats dd {
+  margin: 4px 0 0;
+  font-size: 1.6em;
+  font-weight: 600;
+}
+
+/* Today: the founder's and producers' home. Black on white, hierarchy by size and weight. */
+.today .page-head {
+  align-items: flex-end;
+}
+.today h1 {
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.today-sum {
+  margin: 8px 0 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.today-date-now {
+  margin: 0;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.today-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+  gap: 28px 32px;
+  margin-top: 24px;
+}
+.today-section {
+  min-width: 0;
+  border-top: 2px solid var(--ink);
+  padding-top: 14px;
+}
+.today-section h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0;
+  font-size: 1.3rem;
+  letter-spacing: -0.02em;
+}
+.today-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+}
+.today-count {
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  padding: 2px 8px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+}
+.today-sub {
+  margin: 14px 0 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+.today-list {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.today-list > li {
+  padding: 12px 14px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--white);
+  min-width: 0;
+}
+.today-list.compact > li {
+  padding: 10px 12px;
+}
+.today-list > li.why-changes {
+  background: var(--pink-soft);
+}
+.today-list > li.slow .today-wait {
+  background: var(--yellow);
+}
+.today-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 4px 12px;
+  min-width: 0;
+}
+.today-row > :first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.today-wait {
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+.today-title {
+  display: block;
+  margin-top: 4px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.today-quote {
+  margin: 6px 0 0;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.today-group {
+  margin-top: 14px;
+}
+.today-group + .today-group {
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.today-group .today-list {
+  margin-top: 8px;
+}
+.btn.btn-small {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
+.today-date {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr);
+  gap: 12px;
+  align-items: baseline;
+}
+.today-when {
+  display: flex;
+  flex-direction: column;
+  font-variant-numeric: tabular-nums;
+}
+.today-what {
+  overflow-wrap: anywhere;
+}
+.today-kind {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 1px 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid var(--ink);
+  border-radius: 4px;
+}
+.today-date.kind-shoot .today-kind {
+  background: var(--ink);
+  color: var(--white);
+}
+.today-date.kind-drafts .today-kind {
+  background: var(--pink);
+  border-color: var(--pink);
+}
+.today-list.late > li {
+  background: var(--yellow-soft);
+}
+@media (max-width: 520px) {
+  .today-date {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+  .today-when {
+    flex-direction: row;
+    gap: 8px;
+  }
+}
+
+/* Portal Home: what Gecko did since the client's last visit */
+.since-visit {
+  margin: 0 0 20px;
+  padding: 14px 16px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--pink-soft);
+}
+.since-visit-head {
+  margin: 0;
+  font-weight: 700;
+}
+.since-visit ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.since-visit li {
+  font-weight: 600;
+}
+.since-visit a {
+  color: var(--ink);
+}
+
+/* Writing room: the script form's parts (Hook → Lead → Body → CTA), the idea it's written for, approving for a client */
+.part-tag {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--white);
+  font-size: 0.75rem;
+  font-weight: 700;
+  vertical-align: 1px;
+}
+.part-hint {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.part-hint::before {
+  content: "→ ";
+}
+.part-hint.inline {
+  margin: 0 auto 0 8px;
+  font-weight: 500;
+}
+.script-idea {
+  padding: 12px 14px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--yellow-soft);
+}
+.script-idea p {
+  margin: 0;
+}
+.script-idea-hook {
+  margin: 6px 0 4px !important;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.concept-hook {
+  margin: 4px 0 8px;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.concept-hook span {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--pink-soft);
+  font-size: 0.75rem;
+  font-weight: 700;
+  vertical-align: 2px;
+}
+.approve-for {
+  flex-basis: 100%;
+  display: grid;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--pink-soft);
+}
+.approve-for p {
+  margin: 0;
+}
+
+/* Script templates: when to use one, and hook ideas to start from. */
+.template-when {
+  margin: -4px 0 4px;
+}
+.template-warn {
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--yellow, #f3df9e);
+  color: var(--ink);
+}
+.hook-ideas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 10px;
+}
+.hook-idea {
+  padding: 5px 10px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.8rem;
+  text-align: left;
+  cursor: pointer;
+}
+.hook-idea:hover,
+.hook-idea:focus-visible {
+  background: var(--pink, #f4c1c4);
+}
+
+/* A script's shoot plan: who plays it, where, with what. */
+.shoot-plan {
+  display: grid;
+  gap: 12px;
+}
+.shoot-plan-row {
+  display: grid;
+  gap: 6px;
+}
+.shoot-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 8px 0 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--yellow-soft);
+}
+
+/* The clean copy of a script: plain text, ready to copy or print. */
+.clean-copy {
+  margin-top: 12px;
+  padding: 16px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+.clean-copy pre {
+  margin: 0 0 12px;
+  white-space: pre-wrap;
+  font: inherit;
+  line-height: 1.6;
+}
+
+/* The founder marks the onboarding done after a call. */
+.ob-done {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 16px;
+  padding: 12px 16px;
+  border: 1px solid var(--ink);
+  border-radius: var(--radius);
+  background: var(--yellow-soft);
+}
+.ob-done p {
+  flex: 1 1 320px;
+  margin: 0;
+}

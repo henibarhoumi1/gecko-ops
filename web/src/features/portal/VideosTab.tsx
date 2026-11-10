@@ -7,6 +7,7 @@ import { downloadFinal } from "@/features/videos/media";
 import { fileSize, groupVideos, type Video } from "@/features/videos/model";
 import { VideoCard } from "@/features/videos/VideoCard";
 import { friendlyError } from "@/lib/errors";
+import { t } from "@/lib/i18n";
 import { useVideoNote, type MyVideos } from "./portalApi";
 
 export function VideosTab({ portal, data }: { portal: ClientPortal; data: MyVideos }) {
@@ -16,16 +17,26 @@ export function VideosTab({ portal, data }: { portal: ClientPortal; data: MyVide
   return (
     <section className="tab-body">
       <p className="lede">
-        Watch each cut here. Previews carry a Gecko watermark. Approve a cut or tell us what to
-        change; the clean files are ready to download once the balance is paid.
+        {t(
+          "Watch each cut here. Previews carry a Gecko watermark. Approve a cut or tell us what to change; the clean files are ready to download once the balance is paid.",
+          "Regardez chaque montage ici. Les aperçus portent un filigrane Gecko. Validez un montage ou dites-nous quoi changer ; les fichiers propres se téléchargent une fois le solde payé.",
+        )}
       </p>
       {locked && (
         <Notice>
-          Your final files are ready. They unlock here as soon as the balance is paid.
+          {t(
+            "Your final files are ready. They unlock here as soon as the balance is paid.",
+            "Vos fichiers finaux sont prêts. Ils se débloquent ici dès que le solde est payé.",
+          )}
         </Notice>
       )}
       {groups.length === 0 && (
-        <p className="muted">Your videos appear here as soon as the first cut is ready.</p>
+        <p className="muted">
+          {t(
+            "Your videos appear here as soon as the first cut is ready.",
+            "Vos vidéos apparaissent ici dès que le premier montage est prêt.",
+          )}
+        </p>
       )}
       {groups.map((group) => (
         <div key={group.status} className="group">
@@ -66,10 +77,19 @@ function FinalFile({ video, balancePaid }: { video: Video; balancePaid: boolean 
 
   if (!video.hasFinal)
     return video.status === "approved" ? (
-      <p className="small muted">Gecko is preparing the final file.</p>
+      <p className="small muted">
+        {t("Gecko is preparing the final file.", "Gecko prépare le fichier final.")}
+      </p>
     ) : null;
   if (!balancePaid)
-    return <p className="small muted">The final file unlocks here once the balance is paid.</p>;
+    return (
+      <p className="small muted">
+        {t(
+          "The final file unlocks here once the balance is paid.",
+          "Le fichier final se débloque ici une fois le solde payé.",
+        )}
+      </p>
+    );
 
   return (
     <div className="video-files">
@@ -83,7 +103,7 @@ function FinalFile({ video, balancePaid }: { video: Video; balancePaid: boolean 
             .finally(() => setOpening(false));
         }}
       >
-        Download the final file
+        {t("Download the final file", "Télécharger le fichier final")}
       </Button>
       {video.finalSize != null && <span className="small muted">{fileSize(video.finalSize)}</span>}
       {error && <Notice tone="error">{error}</Notice>}

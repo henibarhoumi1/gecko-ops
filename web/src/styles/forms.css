@@ -1,0 +1,97 @@
+/* ---------- Forms: shared bits ---------- */
+.field textarea,
+.ob-f input,
+.ob-f textarea,
+.ob-f select,
+.ob-asset select,
+.milestone input,
+.chip-other {
+  font: inherit;
+  padding: 12px 14px;
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--ink);
+  width: 100%;
+}
+
+.field textarea,
+.ob-f textarea {
+  resize: vertical;
+  min-height: 72px;
+}
+
+.actions.start {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.icon-btn {
+  font: inherit;
+  font-size: 20px;
+  line-height: 1;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--white);
+  cursor: pointer;
+}
+
+.icon-btn:hover {
+  background: var(--ink);
+  color: var(--white);
+}
+
+a.btn {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.fieldset {
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+  padding: 14px 16px 16px;
+  display: grid;
+  gap: 10px;
+}
+
+.fieldset legend {
+  padding: 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.milestone {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 160px auto auto auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.milestone-move {
+  display: inline-flex;
+  gap: 4px;
+}
+.milestone-move .icon-btn {
+  font-size: 16px;
+}
+.milestone-move .icon-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+  background: var(--white);
+  color: var(--ink);
+}
+
+@media (max-width: 560px) {
+  .milestone {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}

@@ -1,0 +1,398 @@
+/* ---------- Concepts ---------- */
+.group h2 .count {
+  font-size: 15px;
+}
+
+.concepts {
+  display: grid;
+  gap: 12px;
+}
+
+.concept {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+  background: var(--white);
+}
+
+.concept-approved {
+  border-left: 4px solid var(--mat);
+}
+
+.concept-changes {
+  border-left: 4px solid var(--pink);
+}
+
+.concept-draft {
+  border-style: dashed;
+}
+
+.concept-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.concept h3 {
+  margin: 0;
+  font-size: 19px;
+  letter-spacing: -0.01em;
+}
+
+.status {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.status-approved {
+  color: var(--mat);
+}
+
+.status-changes {
+  color: #a3261b;
+}
+
+.concept-body {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.refs {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.concept > .small {
+  margin: 0;
+}
+
+.notes {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.note {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--yellow-soft);
+}
+
+.note.from-client {
+  background: var(--yellow-soft);
+}
+
+.note-approve {
+  background: #e3efe8;
+}
+
+.note-changes {
+  background: var(--pink-soft);
+}
+
+.note p {
+  margin: 0;
+}
+
+.note-kind {
+  margin-left: 8px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--white);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.note-body {
+  margin-top: 4px !important;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.concept-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin-top: 6px;
+}
+
+.concept-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.concept-form.card,
+.concept-edit {
+  margin-bottom: 16px;
+}
+
+.concept-form h3,
+.concept-edit h3 {
+  margin: 0;
+}
+
+/* ---------- Scripts ---------- */
+.script-runs {
+  margin: 0;
+  color: var(--ink-2);
+}
+
+.script-runs.over {
+  color: #a3261b;
+  font-weight: 600;
+}
+
+.script-changed-note {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--pink-soft);
+}
+
+.script-part h4 {
+  margin: 8px 0 8px;
+  font-size: 15px;
+}
+
+.script-goal,
+.script-cta {
+  margin: 0;
+}
+
+.hooks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.script-line {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 6px;
+}
+
+.line-main,
+.line-side {
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  min-width: 0;
+}
+
+.line-side:empty {
+  display: none;
+}
+
+.script-line.changed {
+  padding-left: 12px;
+  border-left: 4px solid var(--pink);
+}
+
+.changed-tag {
+  justify-self: start;
+  padding: 0.3em 0.7em 0.25em;
+  background: var(--pink);
+  font-size: 11px;
+  font-weight: 700;
+  clip-path: polygon(0 8%, 6% 0, 94% 4%, 100% 0, 100% 92%, 94% 100%, 6% 94%, 0 100%);
+}
+
+.hook {
+  padding: 12px 14px;
+  border: 1px solid var(--edge);
+  border-radius: 12px;
+  background: var(--white);
+}
+
+.hook.changed {
+  padding-left: 14px;
+  border-left-width: 4px;
+  border-left-color: var(--pink);
+}
+
+.hook.picked {
+  background: var(--yellow-soft);
+  border-width: 2px;
+}
+
+.hook.not-picked {
+  opacity: 0.55;
+}
+
+.hook-pick {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.hook-name {
+  font-weight: 700;
+}
+
+.beats {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.beats > li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.beat > .line-main {
+  grid-template-columns: 28px 1fr;
+  column-gap: 10px;
+}
+
+.beat > .line-main > :not(.beat-n) {
+  grid-column: 2;
+}
+
+.beat > .line-side {
+  padding-left: 38px;
+}
+
+.beat-n {
+  grid-row: 1 / span 4;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--edge);
+  border-radius: 50%;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 24px;
+  text-align: center;
+}
+
+.beat.changed .beat-n {
+  background: var(--pink);
+}
+
+.line-text {
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: 2px 10px;
+  margin: 0;
+}
+
+.line-text dt {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.line-text dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.line-text .hear {
+  font-weight: 600;
+}
+
+.line-text .onscreen {
+  justify-self: start;
+  padding: 0 6px;
+  background: var(--yellow);
+}
+
+.line-comment {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.line-comment:hover {
+  color: var(--ink);
+}
+
+/* With a mouse, a line's comment link shows when you point at the line, so a script reads as a script. */
+@media (hover: hover) and (pointer: fine) {
+  .script-line .line-comment {
+    opacity: 0;
+    transition: opacity 0.12s;
+  }
+
+  .script-line:hover .line-comment,
+  .script-line:focus-within .line-comment,
+  .line-comment:focus-visible {
+    opacity: 1;
+  }
+}
+
+.script-lines {
+  display: grid;
+  gap: 14px;
+}
+
+.line-edit {
+  display: grid;
+  gap: 8px;
+}
+
+.line-edit-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+}
+
+.line-edit-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.8fr;
+  gap: 8px;
+}
+
+.line-edit-cols label {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--ink-2);
+}
+
+.line-edit-cols textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--edge);
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+  resize: vertical;
+}
+
+@media (max-width: 640px) {
+  .line-edit-cols {
+    grid-template-columns: 1fr;
+  }
+
+  .line-text {
+    grid-template-columns: 1fr;
+  }
+
+  .line-text dt {
+    line-height: 1.3;
+  }
+}
