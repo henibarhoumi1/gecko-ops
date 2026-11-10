@@ -1,3 +1,4 @@
+import { useHashScroll } from "@/lib/useHashScroll";
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/Button";
@@ -27,6 +28,7 @@ const FORMATS = Object.entries(FORMAT_LABEL) as [ConceptFormat, string][];
 /** The team writes concepts, shares them with the client, and answers the client's notes. */
 export function TeamConcepts({ clientId }: { clientId: string }) {
   const concepts = useConcepts(clientId);
+  useHashScroll(concepts.isSuccess);
   const [adding, setAdding] = useState(false);
 
   if (concepts.isPending) return <p className="muted">Loading ideas…</p>;

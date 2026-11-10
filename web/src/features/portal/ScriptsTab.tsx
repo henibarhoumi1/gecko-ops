@@ -1,3 +1,4 @@
+import { useHashScroll } from "@/lib/useHashScroll";
 import { useState } from "react";
 import type { ClientPortal } from "@/features/auth/account";
 import { ReviewActions } from "@/features/concepts/ReviewActions";
@@ -12,6 +13,7 @@ import { tw } from "@/lib/wording";
 
 export function ScriptsTab({ portal, scripts }: { portal: ClientPortal; scripts: Script[] }) {
   const groups = groupScripts(scripts, "client");
+  useHashScroll(true);
   const role = useClientRole();
   const [writing, setWriting] = useState(false);
   const canWrite = canApprove(role);

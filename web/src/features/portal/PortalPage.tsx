@@ -1,4 +1,5 @@
 import { byClient } from "@/features/scripts/model";
+import { WritingRoom } from "@/features/writing/WritingRoom";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { Link, NavLink, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Button } from "@/components/Button";
@@ -92,8 +93,9 @@ function navGroups(badges: {
     {
       id: "plan",
       label: t("Plan", "Plan"),
-      to: "/concepts",
+      to: "/room",
       items: [
+        { to: "/room", label: t("Writing room", "Atelier d'écriture") },
         { to: "/concepts", label: words.ideas(), badge: badges.ideas },
         { to: "/scripts", label: words.scripts(), badge: badges.scripts },
         { to: "/whiteboard", label: words.board() },
@@ -391,6 +393,19 @@ export function PortalPage({
                   element={<BoardRoute target={target} base="/board" reader="client" />}
                 />
               ))}
+              <Route
+                path="room"
+                element={
+                  <section className="tab-body">
+                    <WritingRoom
+                      concepts={page.data.concepts}
+                      scripts={page.data.scripts}
+                      reader="client"
+                      base=""
+                    />
+                  </section>
+                }
+              />
               <Route
                 path="scripts"
                 element={<ScriptsTab portal={portal} scripts={page.data.scripts} />}

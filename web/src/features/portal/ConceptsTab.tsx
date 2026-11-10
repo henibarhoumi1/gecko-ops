@@ -1,3 +1,4 @@
+import { useHashScroll } from "@/lib/useHashScroll";
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
@@ -15,6 +16,7 @@ import { tw } from "@/lib/wording";
 export function ConceptsTab({ portal, concepts }: { portal: ClientPortal; concepts: Concept[] }) {
   const [adding, setAdding] = useState(false);
   const groups = groupConcepts(concepts, "client");
+  useHashScroll(true);
 
   return (
     <section className="tab-body">
