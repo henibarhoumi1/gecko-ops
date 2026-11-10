@@ -48,3 +48,10 @@ describe("navFor", () => {
       expect(paths(role).length).toBeGreaterThan(0);
   });
 });
+
+describe("sidebar groups", () => {
+  it("puts Today first, the work in the middle, the studio last", () => {
+    const groups = navFor("founder").map((n) => n.group);
+    expect(groups).toEqual(["home", "work", "work", "work", "studio", "studio", "studio"]);
+  });
+});

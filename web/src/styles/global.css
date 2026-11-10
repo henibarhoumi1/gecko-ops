@@ -7973,3 +7973,198 @@ a.piece:hover {
 .member-role {
   margin-top: 8px;
 }
+
+/* ---------- The team app's look: a black sidebar like the website's dark sections ---------- */
+
+.side {
+  background: var(--ink);
+  color: var(--white);
+  border-right: 0;
+}
+
+.side .logo {
+  color: var(--white);
+}
+
+.side-search {
+  font: inherit;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 9px 14px;
+  border: 1px solid var(--mat-major);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--white);
+  cursor: pointer;
+  text-align: left;
+}
+
+.side-search:hover {
+  border-color: var(--white);
+}
+
+.side-search kbd {
+  font: inherit;
+  font-size: 11px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--mat-major);
+}
+
+.side-group {
+  display: grid;
+  gap: 2px;
+  margin-bottom: 14px;
+}
+
+.side-group-name {
+  padding: 0 14px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--yellow);
+}
+
+.side .nav-item {
+  color: var(--white);
+}
+
+.side .nav-item:hover {
+  background: var(--mat-major);
+}
+
+.side .nav-item.active {
+  background: var(--pink);
+  color: var(--ink);
+}
+
+/* The bracket from the logo marks where you are. */
+.side .nav-item.active::after {
+  content: " ]";
+  font-weight: 700;
+}
+
+.side .me,
+.side .me .btn-link {
+  color: var(--white);
+}
+
+.me-name {
+  overflow-wrap: anywhere;
+}
+
+/* The client page by stage. */
+.stage-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 18px 0 4px;
+}
+
+.stage-tab {
+  padding: 8px 16px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.stage-tab:hover {
+  background: var(--yellow-soft);
+}
+
+.stage-tab.active {
+  background: var(--ink);
+  color: var(--white);
+}
+
+.stage-tabs + .portal-tabs {
+  margin-top: 8px;
+}
+
+/* Search and jump. */
+.palette-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  justify-items: center;
+  align-items: start;
+  padding: 12vh 12px 0;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.palette {
+  display: grid;
+  width: min(620px, 100%);
+  max-height: 70vh;
+  border-radius: 18px;
+  background: var(--white);
+  overflow: hidden;
+  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.6);
+}
+
+.palette input {
+  font: inherit;
+  font-size: 18px;
+  padding: 18px 20px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  outline: none;
+}
+
+.palette ul {
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  overflow-y: auto;
+}
+
+.palette li button {
+  font: inherit;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.palette li[aria-selected="true"] button {
+  background: var(--pink);
+}
+
+.palette-empty {
+  padding: 14px;
+}
+
+@media (max-width: 720px) {
+  .side-search {
+    display: none;
+  }
+
+  .side-group {
+    display: contents;
+  }
+
+  .side-group-name {
+    display: none;
+  }
+
+  .side .me {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 10px;
+  }
+}
