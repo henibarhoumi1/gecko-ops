@@ -74,6 +74,8 @@ const PAGES = {
 const SIZES = [
   { name: "390", width: 390, height: 844 },
   { name: "360", width: 360, height: 740 },
+  // A laptop, to see the desktop layout too (the rail, the sidebar, the wide grids).
+  { name: "1280", width: 1280, height: 800, desktop: true },
 ];
 
 const server = spawn("npx", ["vite", "preview", "--port", "4173", "--strictPort"], {
@@ -88,9 +90,9 @@ try {
     for (const size of SIZES) {
       const context = await browser.newContext({
         viewport: { width: size.width, height: size.height },
-        deviceScaleFactor: 2,
-        isMobile: true,
-        hasTouch: true,
+        deviceScaleFactor: size.desktop ? 1 : 2,
+        isMobile: !size.desktop,
+        hasTouch: !size.desktop,
       });
       await context.addInitScript(
         ([key, value]) => {
