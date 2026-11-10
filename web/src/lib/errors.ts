@@ -423,6 +423,32 @@ const MESSAGES: [RegExp, string, string][] = [
     "Ce lien a expiré. Demandez-en un nouveau à Gecko.",
   ],
   [/link_not_found/, "That link is already closed.", "Ce lien est déjà fermé."],
+  [/name_required/, "Write your name to accept.", "Écrivez votre nom pour accepter."],
+  [
+    /proposal_not_found/,
+    "That proposal isn't there any more, or it was already accepted.",
+    "Cette proposition n'existe plus, ou elle a déjà été acceptée.",
+  ],
+  [
+    /invalid_proposal/,
+    "Something in the proposal can't be saved.",
+    "Un élément de la proposition ne peut pas être enregistré.",
+  ],
+  [
+    /task_not_found/,
+    "That task isn't yours to change, or it's gone.",
+    "Cette tâche n'est pas modifiable par vous, ou elle n'existe plus.",
+  ],
+  [
+    /invalid_task/,
+    "A task needs a title, and a due date if any.",
+    "Une tâche a besoin d'un titre, et d'une date valide s'il y en a une.",
+  ],
+  [
+    /task_not_allowed/,
+    "Viewers can read tasks but not change them.",
+    "Les lecteurs voient les tâches mais ne peuvent pas les modifier.",
+  ],
   [/invalid_link/, "Say who the link is for.", "Indiquez pour qui est le lien."],
   [
     /member_not_found/,

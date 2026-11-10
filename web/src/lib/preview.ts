@@ -40,6 +40,7 @@ const PREVIEW_READS: Record<string, string> = {
   get_my_invoices: "invoices",
   get_shoot_days: "shoot",
   get_tasks: "tasks",
+  get_client_history: "history",
 };
 
 /** A portal read: the client's own function, or the same read as a preview when previewing. */

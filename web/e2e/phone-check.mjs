@@ -53,6 +53,7 @@ const PAGES = {
     "/room",
     "/brand",
     "/tasks",
+    "/history",
     "/concepts",
     "/scripts",
     "/talent",
