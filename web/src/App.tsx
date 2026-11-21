@@ -17,6 +17,7 @@ import { PipelinePage } from "@/features/pipeline/PipelinePage";
 import { PortalPage } from "@/features/portal/PortalPage";
 import { CrewDayPage } from "@/features/shoot/CrewDayPage";
 import { ProposalPage } from "@/features/pipeline/ProposalPage";
+import { RosterPage } from "@/features/roster/RosterPage";
 import { ShootsPage } from "@/features/shoot/ShootsPage";
 import { TrashPage } from "@/features/trash/TrashPage";
 import { MUTATED } from "@/features/trash/trashApi";
@@ -62,6 +63,8 @@ const SCREENS: Record<string, () => ReactElement> = {
     </Routes>
   ),
   shoots: () => <ShootsPage />,
+  talent: () => <RosterPage key="talent" kind="talent" />,
+  locations: () => <RosterPage key="location" kind="location" />,
   team: () => <TeamPage />,
   trash: () => <TrashPage />,
   alerts: () => <AlertsPage />,

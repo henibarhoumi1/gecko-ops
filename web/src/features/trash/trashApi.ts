@@ -45,6 +45,7 @@ const KINDS: Record<string, string> = {
   cut_versions: "Video version",
   whiteboards: "Whiteboard",
   leads: "Lead",
+  studio_roster: "Talent or location",
 };
 
 export const kindName = (kind: string) => KINDS[kind] ?? kind;

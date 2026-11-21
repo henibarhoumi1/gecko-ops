@@ -1045,3 +1045,353 @@ textarea {
 .portal-v2 .portal-page {
   background: var(--canvas);
 }
+
+/* ---------- The "⋯" menu on any item ---------- */
+
+.item-menu {
+  position: relative;
+  flex: none;
+}
+
+.item-menu-btn {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  font: 800 18px/1 var(--font);
+  cursor: pointer;
+  transition: background 140ms var(--ease);
+}
+
+.item-menu-btn:hover,
+.item-menu-btn[aria-expanded="true"] {
+  background: var(--soft);
+}
+
+.item-menu-list {
+  position: absolute;
+  z-index: 60;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 220px;
+  margin: 0;
+  padding: 6px;
+  border-radius: 14px;
+  background: var(--card);
+  box-shadow: var(--pop);
+  list-style: none;
+  animation: studio-pop 140ms var(--ease) both;
+}
+
+.item-menu-list button {
+  display: block;
+  width: 100%;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  font: 600 14px/1.2 var(--font);
+  text-align: left;
+  cursor: pointer;
+}
+
+.item-menu-list button:hover:not(:disabled) {
+  background: var(--soft);
+}
+
+.item-menu-list button.danger {
+  color: #b3261e;
+}
+
+.item-menu-sep {
+  height: 1px;
+  margin: 6px 4px;
+  background: var(--line);
+}
+
+/* ---------- Side peek: open an item beside the list, like a page that slides in ---------- */
+
+.peek-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(0, 0, 0, 0.22);
+  animation: studio-fade 140ms var(--ease) both;
+}
+
+.peek {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  width: min(560px, 100%);
+  height: 100%;
+  padding: 24px 28px 40px;
+  overflow-y: auto;
+  background: var(--canvas);
+  box-shadow: var(--pop);
+  animation: peek-in 220ms var(--ease) both;
+}
+
+.peek-small {
+  width: min(440px, 100%);
+}
+
+@keyframes peek-in {
+  from {
+    transform: translateX(32px);
+    opacity: 0;
+  }
+}
+
+.peek-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.peek-head h2 {
+  margin: 0;
+  font-size: 28px;
+  font-stretch: 92%;
+  letter-spacing: -0.04em;
+}
+
+.peek-photo {
+  width: 100%;
+  max-height: 320px;
+  border-radius: var(--r-lg);
+  object-fit: cover;
+}
+
+.peek-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.peek-fields .field > span {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.peek-wide {
+  grid-column: 1 / -1;
+}
+
+.propose-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.propose-list button {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: var(--r);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  font: 700 15px/1.2 var(--font);
+  cursor: pointer;
+}
+
+.propose-list button:hover {
+  box-shadow: var(--shadow-hover);
+}
+
+/* ---------- Talent and Locations: a gallery ---------- */
+
+.roster-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.roster-search {
+  flex: 1 1 260px;
+  padding: 11px 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  font: 500 15px/1.2 var(--font);
+}
+
+.roster-hidden-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.roster-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.roster-tags .chip {
+  padding: 6px 12px;
+  border: 0;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+
+.roster-tags .chip[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--white);
+}
+
+.roster-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.roster-card {
+  display: grid;
+  border-radius: var(--r-lg);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  overflow: visible;
+  transition:
+    box-shadow 200ms var(--ease),
+    transform 200ms var(--ease);
+}
+
+.roster-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+.roster-card.is-hidden {
+  opacity: 0.55;
+}
+
+.roster-photo {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  background: var(--soft);
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.roster-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 400ms var(--ease);
+}
+
+.roster-card:hover .roster-photo img {
+  transform: scale(1.03);
+}
+
+.roster-initials {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  font-size: 56px;
+  font-weight: 800;
+  font-stretch: 92%;
+  letter-spacing: -0.04em;
+}
+
+.tone-pink {
+  background: var(--pink);
+}
+
+.tone-yellow {
+  background: var(--yellow);
+}
+
+.tone-blue {
+  background: #b8d4f5;
+}
+
+.roster-flag {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.roster-body {
+  display: grid;
+  gap: 6px;
+  padding: 12px 14px 16px;
+}
+
+.roster-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.roster-title strong {
+  font-size: 17px;
+  letter-spacing: -0.02em;
+}
+
+.roster-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.roster-stars {
+  color: var(--ink);
+  letter-spacing: 1px;
+}
+
+.roster-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .peek-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .peek {
+    padding: 18px 16px 32px;
+  }
+}
