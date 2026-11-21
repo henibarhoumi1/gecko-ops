@@ -1,0 +1,501 @@
+/* ---------- Studio: the finished look (21 Nov 2026) ----------
+   One layer over everything above, so the whole app reads as one product: the website's typeface (Archivo, the
+   same file as gecko-site), one type scale, quiet cards that are filled instead of outlined, lines only where a
+   table needs them, and the same pills, chips and motion everywhere. Loaded last on purpose.
+   The work area sits on --canvas (a warm paper white) so white cards stand out without black edges. Set --canvas to
+   #ffffff to go back to plain white. */
+
+@font-face {
+  font-family: "Archivo";
+  src: url("/fonts/archivo-latin.woff") format("woff");
+  font-weight: 400 900;
+  font-stretch: 90% 100%;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font: "Archivo", "Gecko Fallback", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --canvas: #faf7f2;
+  --card: #ffffff;
+  --card-hover: #fffdf8;
+  --soft: #f3eee5;
+  --line: rgba(0, 0, 0, 0.1);
+  --line-strong: rgba(0, 0, 0, 0.18);
+  --radius: 16px;
+  --r-sm: 12px;
+  --r: 16px;
+  --r-lg: 22px;
+  --shadow: 0 1px 0 rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-hover: 0 1px 0 rgba(0, 0, 0, 0.04), 0 10px 30px -12px rgba(0, 0, 0, 0.22);
+  --pop: 0 24px 60px -20px rgba(0, 0, 0, 0.35), 0 2px 6px rgba(0, 0, 0, 0.06);
+  --fs-body: 15px;
+}
+
+body {
+  font-family: var(--font);
+  font-size: var(--fs-body);
+  letter-spacing: -0.005em;
+  background: var(--canvas);
+}
+
+/* Type: headlines narrow and tight like the website; everything else plain. */
+h1,
+.screen-title {
+  font-family: var(--font);
+  font-weight: 800;
+  font-stretch: 92%;
+  font-size: clamp(32px, 3vw, 44px);
+  line-height: 1;
+  letter-spacing: -0.045em;
+}
+
+h2 {
+  font-weight: 800;
+  font-stretch: 94%;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+h3,
+h4 {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.lede {
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.small {
+  font-size: 13px;
+}
+
+/* ---------- The team sidebar ---------- */
+
+@media (min-width: 900px) {
+  .shell {
+    grid-template-columns: 244px minmax(0, 1fr);
+  }
+
+  .shell > .side {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+}
+
+.side {
+  padding: 18px 12px 16px;
+  gap: 2px;
+}
+
+.side .logo {
+  width: 72px;
+  margin: 4px 12px 20px;
+}
+
+.side-search {
+  margin: 0 0 14px;
+  padding: 10px 12px 10px 14px;
+  border-radius: 12px;
+  border-color: rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 14px;
+  transition:
+    background 160ms var(--ease),
+    border-color 160ms var(--ease);
+}
+
+.side-search:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.32);
+}
+
+.side-group {
+  margin-bottom: 14px;
+}
+
+.side-group-name {
+  padding: 0 12px 6px;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.side .nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14.5px;
+  transition:
+    background 140ms var(--ease),
+    color 140ms var(--ease);
+}
+
+.side .nav-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.side .nav-item.active {
+  background: var(--white);
+  color: var(--ink);
+}
+
+.nav-ic {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.side .me {
+  margin-top: auto;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 13px;
+}
+
+/* ---------- Pages ---------- */
+
+.content {
+  background: var(--canvas);
+}
+
+.page {
+  padding-block: clamp(28px, 3.4vw, 48px) 64px;
+}
+
+.page-head {
+  margin-bottom: 28px;
+}
+
+.page-head h1 {
+  margin-bottom: 6px;
+}
+
+/* ---------- Cards and panels: filled, soft, no black edge ---------- */
+
+.card,
+.today-section,
+.shoot-section,
+.empty-state,
+.ob-card,
+.panel {
+  border: 0;
+  border-radius: var(--r-lg);
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+.card,
+.today-section,
+.shoot-section,
+.panel {
+  padding: 20px 22px;
+}
+
+.empty-state {
+  padding: 22px;
+  border-style: none;
+  font-weight: 500;
+}
+
+a.card,
+button.card {
+  transition:
+    box-shadow 200ms var(--ease),
+    transform 200ms var(--ease);
+}
+
+a.card:hover,
+button.card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-1px);
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  transition:
+    background 160ms var(--ease),
+    color 160ms var(--ease),
+    border-color 160ms var(--ease),
+    transform 120ms var(--ease),
+    box-shadow 160ms var(--ease);
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #222;
+  border-color: #222;
+  color: var(--white);
+}
+
+.btn-secondary {
+  border-color: var(--line-strong);
+  background: var(--card);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--white);
+}
+
+.btn-small {
+  padding: 7px 13px;
+  font-size: 13px;
+}
+
+.btn-link {
+  font-weight: 600;
+  text-decoration-thickness: 1px;
+  text-decoration-color: var(--line-strong);
+  transition: text-decoration-color 160ms var(--ease);
+}
+
+.btn-link:hover {
+  text-decoration-color: currentColor;
+}
+
+/* ---------- Fields ---------- */
+
+.field input,
+.field select,
+.field textarea,
+input[type="text"],
+input[type="email"],
+input[type="search"],
+input[type="date"],
+input[type="number"],
+input[type="url"],
+input[type="tel"],
+select,
+textarea {
+  font-family: var(--font);
+  border-color: var(--line-strong);
+  border-radius: 12px;
+  background-color: var(--card);
+  transition:
+    border-color 160ms var(--ease),
+    box-shadow 160ms var(--ease);
+}
+
+.field input:hover,
+.field select:hover,
+.field textarea:hover {
+  border-color: rgba(0, 0, 0, 0.4);
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 4px rgba(244, 193, 196, 0.55);
+}
+
+/* ---------- Tabs, chips, counts ---------- */
+
+.portal-tabs,
+.tabs {
+  gap: 4px;
+}
+
+.stage-tab {
+  border-color: transparent;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  font-size: 14px;
+  padding: 8px 16px;
+}
+
+.stage-tab:hover {
+  background: var(--soft);
+}
+
+.stage-tab.active {
+  background: var(--ink);
+  color: var(--white);
+}
+
+.chip,
+.tag {
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 12.5px;
+}
+
+.today-count,
+.count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  vertical-align: 2px;
+}
+
+.notice {
+  border-radius: var(--r);
+  font-weight: 500;
+}
+
+/* ---------- Search and jump ---------- */
+
+.palette {
+  border-radius: 20px;
+  box-shadow: var(--pop);
+}
+
+.palette-veil {
+  background: rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(2px);
+  animation: studio-fade 140ms var(--ease) both;
+}
+
+.palette {
+  animation: studio-pop 180ms var(--ease) both;
+}
+
+/* ---------- Motion: screens arrive, they don't jump ---------- */
+
+.content > * {
+  animation: studio-rise 260ms var(--ease) both;
+}
+
+@keyframes studio-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@keyframes studio-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes studio-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .content > *,
+  .palette,
+  .palette-veil {
+    animation: none;
+  }
+}
+
+/* ---------- Home: the studio at a glance (founder) ---------- */
+
+.pulse {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 28px;
+}
+
+.pulse-tile {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  min-height: 128px;
+  padding: 18px 18px 16px;
+  border-radius: var(--r-lg);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    box-shadow 200ms var(--ease),
+    transform 200ms var(--ease);
+}
+
+.pulse-tile:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+.pulse-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.pulse-value {
+  margin-top: auto;
+  font-size: clamp(24px, 2.2vw, 34px);
+  font-weight: 800;
+  font-stretch: 92%;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.pulse-hint {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.pulse-alert {
+  background: var(--pink);
+}
+
+.pulse-good {
+  background: var(--yellow);
+}
+
+@media (max-width: 1200px) {
+  .pulse {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .pulse {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pulse-tile {
+    min-height: 104px;
+  }
+}

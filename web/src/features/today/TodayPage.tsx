@@ -34,6 +34,9 @@ import {
   when,
   whyText,
 } from "./model";
+import { greeting } from "./pulse";
+import { StudioPulse } from "./StudioPulse";
+import { MyDay } from "./MyDay";
 import { useCaptureIdea, useToday } from "./todayApi";
 
 /** "Wed" for 2026-11-04. */
@@ -48,8 +51,19 @@ const KIND: Record<string, string> = {
   lead: "Lead",
 };
 
-/** The founder's and producers' home: the next shoot, whose move it is, the week, and who to write to. */
+/** Home for everyone on the team (Heni, 21 Nov 2026: one dashboard, the CEO just sees more). The founder and
+ * producers get the whole studio; editors and assistants get their own day: their tasks and their shoots. */
 export function TodayPage() {
+  const { role } = useWorkspace();
+  return role === "founder" || role === "sales" ? (
+    <LeadsToday founder={role === "founder"} />
+  ) : (
+    <MyDay />
+  );
+}
+
+/** The founder's and producers' home: the next shoot, whose move it is, the week, and who to write to. */
+function LeadsToday({ founder }: { founder: boolean }) {
   const { id: workspaceId } = useWorkspace();
   const today = useToday();
   const shoots = useTeamShoots(workspaceId);
@@ -84,10 +98,12 @@ export function TodayPage() {
       <header className="page-head">
         <div>
           <p className="eyebrow">{shortDay(t.today)}</p>
-          <h1>Today</h1>
+          <h1>{greeting(new Date().getHours())}.</h1>
           <p className="today-sum">{headline(t)}</p>
         </div>
       </header>
+
+      {founder && <StudioPulse today={t.today} />}
 
       <Capture />
 
