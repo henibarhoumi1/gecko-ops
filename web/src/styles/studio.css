@@ -1395,3 +1395,24 @@ textarea {
     padding: 18px 16px 32px;
   }
 }
+
+/* Client Home, the plan's progress: soft rows instead of outlined yellow cards. */
+.home .progress {
+  padding: 18px;
+}
+
+.home .pieces {
+  gap: 6px;
+}
+
+.home .piece {
+  border: 0;
+  border-radius: var(--r-sm);
+  background: var(--soft);
+  box-shadow: none;
+}
+
+.home .piece-todo {
+  border: 1px dashed var(--line-strong);
+  background: transparent;
+}
