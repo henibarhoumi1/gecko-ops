@@ -786,3 +786,262 @@ textarea {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ---------- Client Home: one clear order, no stack of coloured boxes ----------
+   The brand and the stages, then three facts at a glance, then what needs the client (numbered, the first one
+   big), then their to-dos and what's new, with the plan, the timeline and the payment underneath. */
+
+.home .portal-head .tape,
+.home .head-tape {
+  padding: 0;
+  background: none;
+  clip-path: none;
+  transform: none;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.glance {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 8px 0 32px;
+}
+
+.glance-tile {
+  display: grid;
+  gap: 6px;
+  padding: 18px 20px;
+  border-radius: var(--r-lg);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    box-shadow 200ms var(--ease),
+    transform 200ms var(--ease);
+}
+
+.glance-tile:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+.glance-k {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.glance-v {
+  font-size: clamp(24px, 2.2vw, 32px);
+  font-weight: 800;
+  font-stretch: 92%;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+
+.home .waiting-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  font-size: 24px;
+}
+
+.home .waiting {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  overflow: visible;
+  list-style: none;
+}
+
+.home .waiting > li {
+  border: 0;
+}
+
+.home .waiting-item {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 28px;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border: 0;
+  border-radius: var(--r);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    box-shadow 180ms var(--ease),
+    transform 180ms var(--ease);
+}
+
+.home .waiting-item:hover {
+  background: var(--card);
+  box-shadow: var(--shadow-hover);
+  transform: translateX(3px);
+}
+
+.home .waiting-item strong::after {
+  content: none;
+}
+
+.waiting-n {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--soft);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.waiting-text {
+  display: grid;
+  gap: 2px;
+}
+
+.waiting-text strong {
+  font-size: 16px;
+}
+
+.waiting-go {
+  justify-self: end;
+  font-size: 18px;
+  font-weight: 700;
+  transition: transform 180ms var(--ease);
+}
+
+.home .waiting-item:hover .waiting-go {
+  transform: translateX(3px);
+}
+
+/* The first thing to do is the biggest, in black. */
+.home .waiting-first {
+  padding: 20px 22px;
+  background: var(--ink);
+  color: var(--white);
+}
+
+.home .waiting-first:hover {
+  background: var(--ink);
+}
+
+.home .waiting-first .waiting-n {
+  background: var(--pink);
+  color: var(--ink);
+}
+
+.home .waiting-first .waiting-text strong {
+  font-size: 19px;
+}
+
+.home .waiting-none {
+  padding: 20px 22px;
+  border-radius: var(--r);
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+.home .home-tasks,
+.home .since-visit,
+.home .home-doing,
+.home .progress {
+  border: 0;
+  border-radius: var(--r-lg);
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+.home .since-visit {
+  background: var(--pink-soft);
+  box-shadow: none;
+}
+
+.home .home-links {
+  display: grid;
+  gap: 2px;
+  padding: 8px;
+  border-radius: var(--r-lg);
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+.home .home-link {
+  padding: 10px 12px;
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  box-shadow: none;
+  transition: background 140ms var(--ease);
+}
+
+.home .home-link:hover {
+  background: var(--soft);
+}
+
+.home .fact {
+  border: 0;
+  border-radius: var(--r-lg);
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+.home .fact-next {
+  background: var(--yellow-soft);
+  box-shadow: none;
+}
+
+.home .block {
+  margin-top: 36px;
+}
+
+/* ---------- The client's sidebar: same as the team's ---------- */
+
+@media (min-width: 900px) {
+  .portal-rail {
+    padding: 18px 12px 16px;
+  }
+
+  .portal-rail .rail-link {
+    padding: 7px 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 14.5px;
+    transition: background 140ms var(--ease);
+  }
+
+  .portal-rail .rail-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .portal-rail .rail-link.active {
+    background: var(--white);
+    color: var(--ink);
+  }
+
+  .portal-rail .rail-group-name {
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+  }
+
+  .portal-rail .badge {
+    background: var(--pink);
+    color: var(--ink);
+  }
+}
+
+.portal-v2 .portal-page {
+  background: var(--canvas);
+}
