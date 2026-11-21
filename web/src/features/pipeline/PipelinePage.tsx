@@ -7,6 +7,7 @@ import { friendlyError } from "@/lib/errors";
 import { todayIso } from "@/lib/dates";
 import { LeadDialog, blankLead } from "./LeadDialog";
 import { LeadPanel } from "./LeadPanel";
+import { OutreachSession } from "./OutreachSession";
 import type { LeadInput, LeadPatch } from "./leadsApi";
 import { newLeadId, useAddLeads, useLeads, usePatchLeads } from "./leadsApi";
 import {
@@ -46,6 +47,8 @@ export function PipelinePage() {
   // Today links straight to a lead: /pipeline?lead=<id> opens its panel.
   const [params] = useSearchParams();
   const [openId, setOpenId] = useState<string | null>(() => params.get("lead"));
+  // Home's "Follow-ups due" opens straight into a session: /pipeline?view=outreach.
+  const [session, setSession] = useState(() => params.get("view") === "outreach");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const today = todayIso();
   const closePanel = useCallback(() => setOpenId(null), []);
@@ -118,10 +121,17 @@ export function PipelinePage() {
           </p>
         </div>
         <div className="actions">
+          {!session && (
+            <Button onClick={() => setSession(true)}>
+              Start outreach{due.length > 0 && ` · ${due.length}`}
+            </Button>
+          )}
           <Button variant="secondary" onClick={() => setView(view === "list" ? "board" : "list")}>
             {view === "list" ? "Board view" : "List view"}
           </Button>
-          <Button onClick={() => setAdding(!adding)}>{adding ? "Close" : "Add leads"}</Button>
+          <Button variant="secondary" onClick={() => setAdding(!adding)}>
+            {adding ? "Close" : "Add leads"}
+          </Button>
         </div>
       </header>
 
@@ -149,7 +159,16 @@ export function PipelinePage() {
       )}
       {patch.isError && <Notice tone="error">{friendlyError(patch.error)}</Notice>}
 
-      {view === "board" ? (
+      {session ? (
+        <OutreachSession
+          leads={all}
+          members={members.data}
+          me={me}
+          today={today}
+          onClose={() => setSession(false)}
+          onOpenLead={(id) => setOpenId(id)}
+        />
+      ) : view === "board" ? (
         <Board
           leads={all}
           members={members.data}
