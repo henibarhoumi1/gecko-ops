@@ -94,3 +94,21 @@ export function useAddLeads() {
     onSettled: () => queryClient.invalidateQueries({ queryKey: ["leads", workspaceId] }),
   });
 }
+
+/** Deletes leads; each one goes to the trash (and the Undo bar) and can be restored. */
+export function useDeleteLeads() {
+  const { id: workspaceId } = useWorkspace();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (ids: string[]) => {
+      if (!ids.length) return;
+      const { error } = await requireSupabase()
+        .from("leads")
+        .delete()
+        .eq("workspace_id", workspaceId)
+        .in("id", ids);
+      if (error) throw error;
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["leads", workspaceId] }),
+  });
+}
