@@ -65,6 +65,7 @@ export function BudgetMeter({
           <span className="seg seg-talent" style={{ width: pct(by.talent) }} />
           <span className="seg seg-location" style={{ width: pct(by.location) }} />
           <span className="seg seg-prop" style={{ width: pct(by.prop) }} />
+          <span className="seg seg-cost" style={{ width: pct(by.cost) }} />
           {budget.committed > cap && (
             <span className="budget-line" style={{ left: pct(cap) }} aria-hidden="true" />
           )}

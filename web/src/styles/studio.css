@@ -3278,3 +3278,86 @@ section.budget,
 .key-cost {
   background: var(--ink);
 }
+
+/* ---------- Finance ---------- */
+.fin-bars {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: var(--gap);
+  align-items: end;
+  height: 220px;
+}
+.fin-bar {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  justify-items: center;
+  gap: 6px;
+  height: 100%;
+}
+.fin-bar-col {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  max-width: 72px;
+  height: 100%;
+  border-radius: 10px;
+  background: var(--blue-soft);
+  overflow: hidden;
+}
+.fin-bar-col > span {
+  width: 100%;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.75);
+  transition: height 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.fin-bar.is-now .fin-bar-col > span {
+  background: var(--ink);
+}
+.fin-table-wrap {
+  overflow-x: auto;
+}
+.fin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.fin-table th {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--hair);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.6;
+}
+.fin-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--hair);
+}
+.fin-table tr:hover td {
+  background: var(--blue-soft);
+}
+.fin-table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.fin-status {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--hair);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+.fin-status.st-overdue {
+  background: var(--pink);
+  box-shadow: none;
+}
+.fin-status.st-paid {
+  background: var(--ink);
+  color: #fff;
+  box-shadow: none;
+}

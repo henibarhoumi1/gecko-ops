@@ -6,6 +6,7 @@ import type { ClientPortal } from "@/features/auth/account";
 import { AlertsPage } from "@/features/alerts/AlertsPage";
 import { CalendarPage } from "@/features/calendar/CalendarPage";
 import { CeoPage } from "@/features/ceo/CeoPage";
+import { FinancePage } from "@/features/finance/FinancePage";
 import { AuthProvider, useAuth } from "@/features/auth/AuthProvider";
 import { ForgotPage } from "@/features/auth/ForgotPage";
 import { InvitePage } from "@/features/auth/InvitePage";
@@ -72,6 +73,7 @@ const SCREENS: Record<string, () => ReactElement> = {
   alerts: () => <AlertsPage />,
   ceo: () => <CeoPage />,
   calendar: () => <CalendarPage />,
+  finance: () => <FinancePage />,
 };
 
 export function App() {
