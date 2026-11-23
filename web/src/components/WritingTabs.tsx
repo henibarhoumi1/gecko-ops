@@ -44,7 +44,7 @@ export function WritingTabs({ tabs, initial }: { tabs: WritingTab[]; initial?: s
             aria-selected={current === tab.key}
             tabIndex={current === tab.key ? 0 : -1}
             className="wtab"
-            title={`Alt+${i + 1}`}
+            aria-keyshortcuts={`Alt+${i + 1}`}
             onClick={() => setOpen(tab.key)}
             onKeyDown={(e) => {
               if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;

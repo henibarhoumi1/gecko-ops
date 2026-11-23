@@ -1674,9 +1674,7 @@ section.budget,
 }
 
 /* Inputs: white, hairline, black ring on focus. */
-input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
-select,
-textarea {
+:where(input:not([type="checkbox"], [type="radio"], [type="range"]), select, textarea) {
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.16);
   border-radius: var(--r-sm);
@@ -1685,9 +1683,7 @@ textarea {
     box-shadow 0.15s ease;
 }
 
-input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus,
-select:focus,
-textarea:focus {
+:where(input:not([type="checkbox"], [type="radio"], [type="range"]), select, textarea):focus {
   outline: none;
   border-color: var(--ink);
   box-shadow: 0 0 0 3px var(--blue);
@@ -2070,4 +2066,9 @@ textarea:focus {
   .home-owed {
     justify-self: start;
   }
+}
+
+/* No grey (Heni): the quiet info boxes use the site's pale blue. */
+.team-only {
+  background: var(--blue-soft) !important;
 }

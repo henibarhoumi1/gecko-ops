@@ -139,7 +139,7 @@
 .meter {
   height: 8px;
   border-radius: 999px;
-  background: #efede9;
+  background: var(--blue-soft, #edf4fd);
   overflow: hidden;
 }
 

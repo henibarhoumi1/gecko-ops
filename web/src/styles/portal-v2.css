@@ -1080,7 +1080,7 @@ a.piece:hover {
 .team-only {
   padding: 8px 12px;
   border-radius: 8px;
-  background: #f4f4f2;
+  background: var(--blue-soft, #edf4fd);
 }
 
 .photo-picker .prod-photos {

@@ -237,7 +237,7 @@ function ConceptForm({
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={save.isPending} title="⌘S">
+          <Button type="submit" disabled={save.isPending} aria-keyshortcuts="Meta+S">
             {concept ? "Save" : "Add idea"}
           </Button>
         </div>

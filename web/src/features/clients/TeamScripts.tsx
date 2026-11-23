@@ -469,7 +469,7 @@ function ScriptForm({
             Cancel
           </Button>
           {script ? (
-            <Button type="submit" disabled={save.isPending} title="⌘S">
+            <Button type="submit" disabled={save.isPending} aria-keyshortcuts="Meta+S">
               Save
             </Button>
           ) : (
@@ -479,11 +479,16 @@ function ScriptForm({
                 variant="secondary"
                 value="draft"
                 disabled={save.isPending}
-                title="⌘S"
+                aria-keyshortcuts="Meta+S"
               >
                 Save draft
               </Button>
-              <Button type="submit" value="share" disabled={save.isPending} title="⌘↵">
+              <Button
+                type="submit"
+                value="share"
+                disabled={save.isPending}
+                aria-keyshortcuts="Meta+Enter"
+              >
                 Share with the client
               </Button>
             </>
