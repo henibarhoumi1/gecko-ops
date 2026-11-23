@@ -37,6 +37,7 @@ import {
 import { greeting } from "./pulse";
 import { StudioPulse } from "./StudioPulse";
 import { MyDay } from "./MyDay";
+import { LiveHeader, QuickActions } from "./LiveHeader";
 import { CampaignBoard, ClientActivity, DoNext, TeamLoad } from "./HomeMore";
 import { useCaptureIdea, useToday } from "./todayApi";
 
@@ -96,13 +97,8 @@ function LeadsToday({ founder }: { founder: boolean }) {
 
   return (
     <section className="page wide today today-v1">
-      <header className="page-head">
-        <div>
-          <p className="eyebrow">{shortDay(t.today)}</p>
-          <h1>{greeting(new Date().getHours())}.</h1>
-          <p className="today-sum">{headline(t)}</p>
-        </div>
-      </header>
+      <LiveHeader greeting={`${greeting(new Date().getHours())}.`} brief={headline(t)} />
+      <QuickActions />
 
       {founder && <StudioPulse today={t.today} />}
 

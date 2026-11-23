@@ -2905,3 +2905,255 @@ section.budget,
   font: 700 12px/1.3 var(--font);
   text-align: center;
 }
+
+/* ======================================================================
+   v4 (24 Nov): white dominant, colour only as small accents; Home alive
+   ====================================================================== */
+
+/* Live header: greeting left, clock and Tunis weather right. */
+.live-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px 32px;
+  margin-bottom: clamp(16px, 1.6vw, 28px);
+}
+.live-hello h1 {
+  margin: 4px 0 6px;
+}
+.live-brief {
+  margin: 0;
+  font-size: clamp(15px, 1.05vw, 18px);
+}
+.live-side {
+  display: grid;
+  justify-items: end;
+  gap: 6px;
+}
+.live-clock {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-variant-numeric: tabular-nums;
+}
+.live-clock strong {
+  font-size: clamp(40px, 4vw, 68px);
+  font-weight: 800;
+  font-stretch: 92%;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.live-sec {
+  min-width: 2ch;
+  font-size: clamp(16px, 1.3vw, 22px);
+  font-weight: 700;
+  opacity: 0.35;
+}
+.live-weather {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+.live-weather-icon {
+  font-size: 20px;
+}
+@media (max-width: 700px) {
+  .live-side {
+    justify-items: start;
+  }
+}
+
+/* Quick actions: quiet pills, the icon in a small circle. */
+.quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: clamp(16px, 1.6vw, 24px);
+}
+.quick-actions a,
+.quick-actions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px 7px 7px;
+  border: 1px solid var(--hair);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  font: 600 13.5px/1 var(--font);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+.quick-actions a:hover,
+.quick-actions button:hover {
+  border-color: var(--ink);
+  transform: translateY(-1px);
+}
+.qa-icon {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: var(--blue-soft);
+  font-size: 13px;
+}
+
+/* Do next: white, light, a thin list (no black panel). */
+.do-next {
+  padding: 0;
+  background: transparent;
+  color: var(--ink);
+}
+.do-next-head h2 {
+  color: var(--ink);
+  font-size: clamp(20px, 1.6vw, 26px);
+}
+.do-next-head .small {
+  opacity: 0.55;
+}
+.do-next-list {
+  gap: 0;
+  border-radius: var(--r-lg);
+  background: #fff;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.do-next-item {
+  grid-template-columns: 28px 1fr auto;
+  padding: 14px 18px;
+  border-radius: 0;
+  background: #fff;
+  border-top: 1px solid var(--hair);
+}
+.do-next-item:first-child {
+  border-top: 0;
+}
+.do-next-item:hover {
+  background: #fff;
+}
+.do-next-n,
+.do-next-item.tone-them .do-next-n,
+.do-next-item.tone-leads .do-next-n,
+.do-next-item.tone-shoot .do-next-n {
+  width: 28px;
+  height: 28px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+  font-size: 13px;
+}
+.do-next-item:first-child .do-next-n {
+  background: var(--ink);
+  color: #fff;
+}
+.do-next-text strong {
+  font-size: 15px;
+}
+.do-next-tag {
+  opacity: 0.45;
+}
+.do-next .do-next-go {
+  border: 1px solid var(--hair);
+  background: #fff;
+  color: var(--ink);
+  font-size: 13.5px;
+}
+.do-next .do-next-go:hover {
+  border-color: var(--ink);
+  background: #fff;
+}
+.do-next-item:first-child .do-next-go {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+}
+
+/* Less colour: tiles are white; a small coloured dot says when one needs you. */
+.pulse-tile,
+.pulse-alert,
+.pulse-good {
+  background: #fff !important;
+  color: var(--ink) !important;
+}
+.pulse-tile {
+  position: relative;
+}
+.pulse-alert::after,
+.pulse-good::after {
+  content: "";
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--pink);
+}
+.pulse-good::after {
+  background: var(--yellow);
+}
+.ceo-ring,
+.ceo-ring:nth-child(2),
+.ceo-ring:nth-child(3) {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+.ceo-ring .ring-fill,
+.ceo-ring:nth-child(n + 2) .ring-fill {
+  stroke: var(--ink);
+}
+.ceo-ring .ring-bg {
+  stroke-opacity: 0.08;
+}
+.home-campaign {
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--hair);
+}
+.home-campaign:hover {
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+.home-bar-track {
+  background: var(--blue-soft);
+}
+.room-col {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--hair);
+}
+
+/* ---------- One layout logic for every screen (14" → 27") ----------
+   Page width grows with the screen but stops where lines get too long; type and gaps scale smoothly. */
+:root {
+  --page-max: clamp(1040px, 86vw, 1680px);
+  --gap: clamp(12px, 1.1vw, 20px);
+}
+.content > .page,
+.content > .page.wide,
+.content > section.page {
+  width: 100%;
+  max-width: var(--page-max);
+  margin-inline: auto;
+  padding-inline: clamp(20px, 3vw, 56px);
+}
+.today-cols {
+  gap: var(--gap);
+}
+.pulse {
+  grid-template-columns: repeat(auto-fit, minmax(clamp(150px, 12vw, 220px), 1fr));
+  gap: var(--gap);
+}
+.prod-grid {
+  grid-template-columns: repeat(auto-fill, minmax(clamp(260px, 22vw, 360px), 1fr));
+  gap: var(--gap);
+}
+@media (min-width: 2000px) {
+  :root {
+    --fs-body: 16px;
+  }
+}
