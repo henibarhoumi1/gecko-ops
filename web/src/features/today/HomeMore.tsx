@@ -1,7 +1,7 @@
 // More on Home (Heni, 23 Nov 2026: "home needs some real work, right now it's just dates and a lead list").
 // Every client's campaign at a glance, what clients just did, who on the team has what, and (founder) money.
 // All from data the app already reads; nothing new is stored.
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { describeAction, useAlerts } from "@/features/alerts/alertsApi";
 import { useClients } from "@/features/clients/clientsApi";
@@ -86,6 +86,7 @@ function CampaignRow({
         </span>
         {p ? (
           <>
+            <StageTrack at={stageOf(p, new Date().toISOString().slice(0, 10))} />
             <Bar done={p.approved} of={p.scripts} label="Scripts approved" />
             <span className="home-campaign-facts small">
               <span>
@@ -217,5 +218,129 @@ export function TeamLoad({ today }: { today: string }) {
         })}
       </ul>
     </section>
+  );
+}
+
+/** Counts a number up from 0 when it first shows ("36", "1,300 DT"); text without a number shows as is. */
+export function CountUp({ value }: { value: string }) {
+  const match = /^([^0-9]*)([0-9][0-9 ,.]*)(.*)$/.exec(value);
+  const target = match ? Number((match[2] ?? "").replace(/[ ,]/g, "")) : NaN;
+  const [shown, setShown] = useState(0);
+  const started = useRef(false);
+  useEffect(() => {
+    if (!Number.isFinite(target) || started.current) return;
+    started.current = true;
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return setShown(target);
+    const t0 = performance.now();
+    let raf = 0;
+    const step = (now: number) => {
+      const k = Math.min(1, (now - t0) / 700);
+      setShown(Math.round(target * (1 - Math.pow(1 - k, 3))));
+      if (k < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [target]);
+  if (!match || !Number.isFinite(target)) return <>{value}</>;
+  return (
+    <>
+      {match[1]}
+      {shown.toLocaleString("fr-FR")}
+      {match[3]}
+    </>
+  );
+}
+
+export interface NextItem {
+  key: string;
+  tone: "us" | "them" | "leads" | "shoot";
+  title: string;
+  detail: string;
+  action: { label: string; to?: string; href?: string };
+}
+
+const TONE_LABEL: Record<NextItem["tone"], string> = {
+  us: "Your move",
+  them: "Nudge",
+  leads: "Sales",
+  shoot: "Shoot",
+};
+
+/** The few things worth doing next, each with the one button that does it. */
+export function DoNext({ items }: { items: NextItem[] }) {
+  return (
+    <section className="do-next" aria-label="Do next">
+      <div className="do-next-head">
+        <h2>Do next</h2>
+        <span className="small">
+          {items.length === 0
+            ? "You're clear. Nothing is waiting on you."
+            : `${items.length} ${items.length === 1 ? "thing" : "things"}, most urgent first`}
+        </span>
+      </div>
+      {items.length > 0 && (
+        <ol className="do-next-list">
+          {items.slice(0, 6).map((it, i) => (
+            <li
+              key={it.key}
+              className={`do-next-item tone-${it.tone}`}
+              style={{ animationDelay: `${i * 60}ms` }}
+            >
+              <span className="do-next-n" aria-hidden="true">
+                {i + 1}
+              </span>
+              <span className="do-next-text">
+                <span className="do-next-tag">{TONE_LABEL[it.tone]}</span>
+                <strong dir="auto">{it.title}</strong>
+                <span className="small" dir="auto">
+                  {it.detail}
+                </span>
+              </span>
+              {it.action.href ? (
+                <a
+                  className="btn btn-primary do-next-go"
+                  href={it.action.href}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  {it.action.label}
+                </a>
+              ) : (
+                <Link className="btn btn-primary do-next-go" to={it.action.to ?? "/"}>
+                  {it.action.label} →
+                </Link>
+              )}
+            </li>
+          ))}
+        </ol>
+      )}
+    </section>
+  );
+}
+
+const STAGES = ["Ideas", "Scripts", "Shoot", "Edit", "Deliver"] as const;
+
+/** Where a campaign is: ideas, then scripts approved, then the shoot, the edit and delivery. */
+export function stageOf(
+  p: { ideas: number; scripts: number; approved: number; reels: number; nextShoot: string | null },
+  today: string,
+): number {
+  if (p.reels > 0) return 3;
+  if (p.nextShoot && p.nextShoot.slice(0, 10) <= today) return 3;
+  if (p.approved > 0) return 2;
+  if (p.scripts > 0 || p.ideas > 0) return p.scripts > 0 ? 1 : 0;
+  return 0;
+}
+
+export function StageTrack({ at }: { at: number }) {
+  return (
+    <ol className="stage-track" aria-label={`Stage: ${STAGES[at] ?? ""}`}>
+      {STAGES.map((name, i) => (
+        <li key={name} className={i < at ? "done" : i === at ? "now" : ""}>
+          <span className="stage-dot" aria-hidden="true" />
+          <span className="stage-name">{name}</span>
+        </li>
+      ))}
+    </ol>
   );
 }

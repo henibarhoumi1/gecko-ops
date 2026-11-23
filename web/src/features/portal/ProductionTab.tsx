@@ -1,3 +1,4 @@
+import { toast } from "@/components/Toast";
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
@@ -214,6 +215,15 @@ function ClientActions({
     try {
       await act.decide.mutateAsync({ id: option.id, decision, body: "", over: overOk });
       setConfirm(false);
+      toast(
+        decision === "approve"
+          ? {
+              text: t(`${option.name} approved`, `${option.name} validé`),
+              detail: t("Gecko is told right away.", "Gecko est prévenu tout de suite."),
+              celebrate: true,
+            }
+          : { text: t(`${option.name} set aside`, `${option.name} écarté`) },
+      );
     } catch (e) {
       setError(friendlyError(e));
     }

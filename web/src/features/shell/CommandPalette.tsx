@@ -99,12 +99,51 @@ export function CommandPalette({ role }: { role: Role }) {
   }, [open]);
 
   const all = useMemo<Hit[]>(() => {
-    const hits: Hit[] = navFor(role).map((n) => ({
-      key: `page-${n.path}`,
-      label: n.label,
-      hint: "Page",
-      to: `/${n.path}`,
-    }));
+    // Actions first: the things people do most, one Enter away.
+    const hits: Hit[] = [];
+    if (lead) {
+      hits.push(
+        {
+          key: "act-outreach",
+          label: "Start outreach",
+          hint: "Action",
+          to: "/pipeline?view=outreach",
+        },
+        { key: "act-leads", label: "Add leads", hint: "Action", to: "/pipeline?add=1" },
+      );
+    }
+    for (const c of clients.data ?? []) {
+      const base = `/clients/${encodeURIComponent(c.id)}`;
+      hits.push(
+        {
+          key: `act-idea-${c.id}`,
+          label: `New idea for ${c.brand}`,
+          hint: "Action",
+          to: `${base}/concepts?new=1`,
+        },
+        {
+          key: `act-script-${c.id}`,
+          label: `New script for ${c.brand}`,
+          hint: "Action",
+          to: `${base}/scripts?new=1`,
+        },
+      );
+      if (lead)
+        hits.push({
+          key: `act-approve-${c.id}`,
+          label: `Approve shoot choices for ${c.brand}`,
+          hint: "Action",
+          to: `${base}/production`,
+        });
+    }
+    hits.push(
+      ...navFor(role).map((n) => ({
+        key: `page-${n.path}`,
+        label: n.label,
+        hint: "Page",
+        to: `/${n.path}`,
+      })),
+    );
     for (const c of clients.data ?? []) {
       const base = `/clients/${encodeURIComponent(c.id)}`;
       for (const [path, name] of clientPlaces(lead))
@@ -127,8 +166,12 @@ export function CommandPalette({ role }: { role: Role }) {
 
   const shown = useMemo(() => {
     const q = query.trim();
-    if (!q) return all.filter((h) => h.hint === "Page" || h.hint === "Client").slice(0, 12);
-    return all.filter((h) => matches(`${h.label} ${h.hint}`, q)).slice(0, 12);
+    if (!q)
+      return [
+        ...all.filter((h) => h.hint === "Action").slice(0, 6),
+        ...all.filter((h) => h.hint === "Page" || h.hint === "Client").slice(0, 8),
+      ];
+    return all.filter((h) => matches(`${h.label} ${h.hint}`, q)).slice(0, 14);
   }, [all, query]);
 
   if (!open) return null;
@@ -150,7 +193,7 @@ export function CommandPalette({ role }: { role: Role }) {
         <input
           ref={input}
           value={query}
-          placeholder="A client, a lead, a page… try “dany scripts”"
+          placeholder="Do or find anything… try “new script dany” or “outreach”"
           aria-label="Search"
           onChange={(e) => {
             setQuery(e.target.value);
@@ -173,9 +216,28 @@ export function CommandPalette({ role }: { role: Role }) {
           {shown.length === 0 && <li className="palette-empty">Nothing matches.</li>}
           {shown.map((h, i) => (
             <li key={h.key} role="option" aria-selected={i === index}>
-              <button type="button" onMouseEnter={() => setIndex(i)} onClick={() => go(h)}>
+              <button
+                type="button"
+                className={h.hint === "Action" ? "is-action" : ""}
+                onMouseEnter={() => setIndex(i)}
+                onClick={() => go(h)}
+              >
+                <span className="palette-icon" aria-hidden="true">
+                  {h.hint === "Action"
+                    ? "→"
+                    : h.hint === "Lead"
+                      ? "@"
+                      : h.hint === "Page"
+                        ? "#"
+                        : "◆"}
+                </span>
                 <span dir="auto">{h.label}</span>
                 <span className="small">{h.hint}</span>
+                {i === index && (
+                  <kbd className="palette-enter" aria-hidden="true">
+                    ↵
+                  </kbd>
+                )}
               </button>
             </li>
           ))}

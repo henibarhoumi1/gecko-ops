@@ -10,6 +10,7 @@ import { teamSteps } from "@/features/tour/steps";
 import { UndoBar } from "@/features/trash/UndoBar";
 import { memberLabel, ROLE_LABEL, useMembers } from "@/features/workspace/members";
 import { CommandPalette, openPalette } from "./CommandPalette";
+import { Toaster } from "@/components/Toast";
 import { GROUP_LABEL, navFor, type NavGroup } from "./nav";
 
 const GROUPS: NavGroup[] = ["home", "work", "studio"];
@@ -88,6 +89,7 @@ export function AppShell({ workspace, email }: { workspace: Workspace; email: st
         <Outlet />
       </main>
       <CommandPalette role={workspace.role} />
+      <Toaster />
       <UndoBar workspaceId={workspace.id} />
       <Tour steps={teamSteps()} storageKey="gecko.tour.team" />
     </div>

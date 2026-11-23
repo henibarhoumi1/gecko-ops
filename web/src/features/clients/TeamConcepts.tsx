@@ -1,11 +1,12 @@
+import { toast } from "@/components/Toast";
 import { WritingTabs, useSaveKeys } from "@/components/WritingTabs";
 import { IdeaStarters } from "@/features/concepts/IdeaStarters";
 import { DraftNotice } from "@/components/DraftNotice";
 import { useFormDraft } from "@/lib/drafts";
 import { StageList } from "@/components/StageList";
 import { useHashScroll } from "@/lib/useHashScroll";
-import { useState, type FormEvent, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState, type FormEvent, useRef } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import { Select } from "@/components/Select";
@@ -34,7 +35,14 @@ const FORMATS = Object.entries(FORMAT_LABEL) as [ConceptFormat, string][];
 export function TeamConcepts({ clientId }: { clientId: string }) {
   const concepts = useConcepts(clientId);
   useHashScroll(concepts.isSuccess);
-  const [adding, setAdding] = useState(false);
+  // ?new=1 comes from the command bar (⌘K → "New idea for …").
+  const [params, setParams] = useSearchParams();
+  const [adding, setAdding] = useState(params.get("new") === "1");
+  // Already on this page when ⌘K asks for a new one: open it too.
+  const wantsNew = params.get("new") === "1";
+  useEffect(() => {
+    if (wantsNew) setAdding(true);
+  }, [wantsNew]);
 
   if (concepts.isPending) return <p className="muted">Loading ideas…</p>;
   if (concepts.isError) return <Notice tone="error">{friendlyError(concepts.error)}</Notice>;
@@ -50,7 +58,10 @@ export function TeamConcepts({ clientId }: { clientId: string }) {
           <ConceptForm
             clientId={clientId}
             position={nextPosition}
-            onDone={() => setAdding(false)}
+            onDone={() => {
+              setAdding(false);
+              if (params.get("new")) setParams({}, { replace: true });
+            }}
           />
         ) : null
       }
@@ -216,6 +227,11 @@ function ConceptForm({
         ...(concept ? {} : { status: form.get("share") ? "review" : "draft", position }),
       });
       keep.clear();
+      toast(
+        !concept && form.get("share")
+          ? { text: "Idea shared with the client", detail: text("title"), celebrate: true }
+          : { text: concept ? "Idea saved" : "Idea added", detail: text("title") },
+      );
       onDone();
     } catch (e) {
       setError(friendlyError(e));
@@ -237,7 +253,7 @@ function ConceptForm({
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={save.isPending} title="⌘S">
+          <Button type="submit" disabled={save.isPending} aria-keyshortcuts="Meta+S">
             {concept ? "Save" : "Add idea"}
           </Button>
         </div>

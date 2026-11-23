@@ -2,7 +2,8 @@ import { DraftNotice } from "@/components/DraftNotice";
 import { useDraft } from "@/lib/drafts";
 import { StageList } from "@/components/StageList";
 import { useHashScroll } from "@/lib/useHashScroll";
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { toast } from "@/components/Toast";
 import { WritingTabs, useSaveKeys, type WritingTab } from "@/components/WritingTabs";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/Button";
@@ -54,10 +55,16 @@ export function TeamScripts({ clientId }: { clientId: string }) {
   const [params, setParams] = useSearchParams();
   const fromIdea = params.get("idea") ?? undefined;
   useHashScroll(scripts.isSuccess);
-  const [adding, setAdding] = useState(Boolean(fromIdea));
+  // ?new=1 comes from the command bar (⌘K → "New script for …").
+  const [adding, setAdding] = useState(Boolean(fromIdea) || params.get("new") === "1");
+  // Already on this page when ⌘K asks for a new one: open it too.
+  const wantsNew = params.get("new") === "1";
+  useEffect(() => {
+    if (wantsNew) setAdding(true);
+  }, [wantsNew]);
   const done = () => {
     setAdding(false);
-    if (fromIdea) setParams({}, { replace: true });
+    if (fromIdea || params.get("new")) setParams({}, { replace: true });
   };
 
   if (scripts.isPending) return <p className="muted">Loading scripts…</p>;
@@ -369,6 +376,12 @@ function ScriptForm({
         ...(script ? {} : { status: submitter?.value === "share" ? "review" : "draft", position }),
       });
       keep.clear();
+      const sharing = !script && submitter?.value === "share";
+      toast(
+        sharing
+          ? { text: "Shared with the client", detail: title.trim(), celebrate: true }
+          : { text: script ? "Script saved" : "Draft saved", detail: title.trim() },
+      );
       onDone();
     } catch (e) {
       setError(friendlyError(e));
@@ -469,7 +482,7 @@ function ScriptForm({
             Cancel
           </Button>
           {script ? (
-            <Button type="submit" disabled={save.isPending} title="⌘S">
+            <Button type="submit" disabled={save.isPending} aria-keyshortcuts="Meta+S">
               Save
             </Button>
           ) : (
@@ -479,11 +492,16 @@ function ScriptForm({
                 variant="secondary"
                 value="draft"
                 disabled={save.isPending}
-                title="⌘S"
+                aria-keyshortcuts="Meta+S"
               >
                 Save draft
               </Button>
-              <Button type="submit" value="share" disabled={save.isPending} title="⌘↵">
+              <Button
+                type="submit"
+                value="share"
+                disabled={save.isPending}
+                aria-keyshortcuts="Meta+Enter"
+              >
                 Share with the client
               </Button>
             </>

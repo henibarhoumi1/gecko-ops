@@ -1,3 +1,4 @@
+import { toast } from "@/components/Toast";
 import { useMemo, useState, type FormEvent } from "react";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
@@ -201,7 +202,21 @@ function TeamOption({ target, option }: { target: ProductionTarget; option: Prod
             busy={studio.isPending}
             onStudio={
               role === "founder"
-                ? (ok) => void run(studio.mutateAsync({ id: option.id, ok }))
+                ? (ok) =>
+                    void run(
+                      studio.mutateAsync({ id: option.id, ok }).then(() =>
+                        toast(
+                          ok
+                            ? {
+                                text: `${option.name} approved`,
+                                detail: "Final. The client is told, not asked.",
+                                celebrate: true,
+                                undo: () => studio.mutateAsync({ id: option.id, ok: false }),
+                              }
+                            : { text: `${option.name} back with the client` },
+                        ),
+                      ),
+                    )
                 : undefined
             }
           />

@@ -37,7 +37,7 @@ import {
 import { greeting } from "./pulse";
 import { StudioPulse } from "./StudioPulse";
 import { MyDay } from "./MyDay";
-import { CampaignBoard, ClientActivity, TeamLoad } from "./HomeMore";
+import { CampaignBoard, ClientActivity, DoNext, TeamLoad } from "./HomeMore";
 import { useCaptureIdea, useToday } from "./todayApi";
 
 /** "Wed" for 2026-11-04. */
@@ -105,6 +105,60 @@ function LeadsToday({ founder }: { founder: boolean }) {
       </header>
 
       {founder && <StudioPulse today={t.today} />}
+
+      <DoNext
+        items={[
+          ...t.us
+            .slice()
+            .sort((a, b) => a.at.localeCompare(b.at))
+            .slice(0, 3)
+            .map((u) => ({
+              key: `us-${u.part}-${u.id}-${u.why}`,
+              tone: "us" as const,
+              title: `${partName(u.part)}: ${u.title}`,
+              detail: `${u.brand} · ${whyText(u.why)} · ${waited(daysSince(u.at)).toLowerCase()}`,
+              action: { label: "Open", to: linkFor(u) },
+            })),
+          ...themGroups
+            .filter((g) => daysSince(g.oldest) >= 3 && hasCreative(g.waiting))
+            .slice(0, 2)
+            .map((g) => ({
+              key: `nudge-${g.client_id}`,
+              tone: "them" as const,
+              title: `Nudge ${g.brand}`,
+              detail: `${summarise(g.items)} waiting ${waited(daysSince(g.oldest)).toLowerCase()}`,
+              action: {
+                label: "Remind on WhatsApp",
+                href: whatsappLink(nudgeMessage(lang, g.waiting, portal)),
+              },
+            })),
+          ...(touch.length > 0
+            ? [
+                {
+                  key: "outreach",
+                  tone: "leads" as const,
+                  title: `Write to ${touch.length} ${touch.length === 1 ? "lead" : "leads"}`,
+                  detail: "Messages are ready: copy, send, one click to log it.",
+                  action: { label: "Start outreach", to: "/pipeline?view=outreach" },
+                },
+              ]
+            : []),
+          ...(next && daysUntil(next.day, t.today) <= 3
+            ? [
+                {
+                  key: "shoot",
+                  tone: "shoot" as const,
+                  title: `Get ${next.brand}'s shoot ready`,
+                  detail: `${when(next.day, t.today)} · ${next.reels ? `${next.reels} reels` : "no reels on it yet"}`,
+                  action: {
+                    label: "Open Shoot Day",
+                    to: `/shoots/${encodeURIComponent(next.clientId)}/${next.id}`,
+                  },
+                },
+              ]
+            : []),
+        ]}
+      />
 
       <Capture />
 
