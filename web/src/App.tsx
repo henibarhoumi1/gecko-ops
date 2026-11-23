@@ -68,6 +68,8 @@ const SCREENS: Record<string, () => ReactElement> = {
   shoots: () => <ShootsPage />,
   talent: () => <RosterPage key="talent" kind="talent" />,
   locations: () => <RosterPage key="location" kind="location" />,
+  creators: () => <RosterPage key="creator" kind="creator" />,
+  studios: () => <RosterPage key="studio" kind="studio" />,
   team: () => <TeamPage />,
   trash: () => <TrashPage />,
   alerts: () => <AlertsPage />,

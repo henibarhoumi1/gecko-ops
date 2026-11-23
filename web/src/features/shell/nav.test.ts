@@ -14,6 +14,8 @@ describe("navFor", () => {
       "shoots",
       "talent",
       "locations",
+      "creators",
+      "studios",
       "team",
       "alerts",
       "trash",
@@ -45,6 +47,8 @@ describe("navFor", () => {
       "shoots",
       "talent",
       "locations",
+      "creators",
+      "studios",
       "team",
     ]);
   });
@@ -58,6 +62,8 @@ describe("navFor", () => {
       "shoots",
       "talent",
       "locations",
+      "creators",
+      "studios",
       "team",
     ]);
   });
@@ -76,6 +82,8 @@ describe("sidebar groups", () => {
       "home",
       "home",
       "home",
+      "work",
+      "work",
       "work",
       "work",
       "work",

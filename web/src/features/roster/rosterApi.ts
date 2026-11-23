@@ -4,7 +4,7 @@ import { requireSupabase } from "@/lib/supabase";
 import type { RosterEntry, RosterInput, RosterKind } from "./model";
 
 const COLUMNS =
-  "id,workspace_id,kind,name,role,city,phone,instagram,link,photo_url,rate,rate_note,tags,notes,rating,hidden,author_name,created_at,updated_at";
+  "id,workspace_id,kind,name,role,city,phone,instagram,link,photo_url,rate,rate_note,tags,notes,rating,email,gear,hidden,author_name,created_at,updated_at";
 
 const key = (workspaceId: string, kind: RosterKind) => ["roster", workspaceId, kind];
 
@@ -72,12 +72,21 @@ export function useRosterActions(kind: RosterKind) {
     /** Copies the entry into a client's production options, proposed, for the client to approve. */
     propose: useMutation({
       mutationFn: async ({ entry, clientId }: { entry: RosterEntry; clientId: string }) => {
-        const details = [entry.role, entry.city, entry.notes].filter(Boolean).join(" · ");
+        const gear = (entry.gear ?? [])
+          .map(
+            (g) => `${g.name}${g.rate != null ? ` ${g.rate} DT${g.unit ? `/${g.unit}` : ""}` : ""}`,
+          )
+          .join(", ");
+        const details = [entry.role, entry.city, gear && `Gear: ${gear}`, entry.notes]
+          .filter(Boolean)
+          .join(" · ");
         const { error } = await requireSupabase().rpc("save_production_option", {
           p_workspace_id: workspaceId,
           p_client_id: clientId,
           p_option: {
-            kind: entry.kind,
+            // Creators are cast like talent; a studio's rental is a cost.
+            kind:
+              entry.kind === "creator" ? "talent" : entry.kind === "studio" ? "cost" : entry.kind,
             name: entry.name,
             role: entry.role,
             details: details.slice(0, 4000),

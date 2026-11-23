@@ -25,6 +25,8 @@ export const NAV: readonly NavItem[] = [
   { path: "shoots", label: "Shoots", roles: ALL, group: "work" },
   { path: "talent", label: "Talent", roles: ALL, group: "work" },
   { path: "locations", label: "Locations", roles: ALL, group: "work" },
+  { path: "creators", label: "UGC creators", roles: ALL, group: "work" },
+  { path: "studios", label: "Gear & studios", roles: ALL, group: "work" },
   { path: "team", label: "Team", roles: ALL, group: "studio" },
   { path: "alerts", label: "Alerts", roles: ["founder", "sales"], group: "studio" },
   { path: "trash", label: "Trash", roles: ["founder", "sales"], group: "studio" },
