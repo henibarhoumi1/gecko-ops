@@ -66,7 +66,7 @@ describe("committedByKind", () => {
       option({ kind: "location", cost: 700, status: "paid" }),
       option({ kind: "prop", cost: 90, status: "approved", boughtBy: "client" }),
     ]);
-    expect(by).toEqual({ talent: 400, location: 700, prop: 0 });
+    expect(by).toEqual({ talent: 400, location: 700, prop: 0, cost: 0 });
   });
 });
 
