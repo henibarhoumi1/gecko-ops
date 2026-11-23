@@ -8,6 +8,7 @@ import {
   BudgetMeter,
   CommentBox,
   OptionCard,
+  TalentYeses,
   PhotoPicker,
 } from "@/features/production/ProductionParts";
 import {
@@ -20,11 +21,14 @@ import {
   type ProductionOption,
 } from "@/features/production/model";
 import {
+  useSetStudioApproval,
+  useTalentApprovals,
   useTeamProduction,
   useTeamProductionActions,
   type OptionDraft,
   type ProductionTarget,
 } from "@/features/production/productionApi";
+import { SetList } from "@/features/projects/SetList";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { friendlyError } from "@/lib/errors";
 
@@ -64,11 +68,13 @@ export function TeamProduction({ clientId }: { clientId: string }) {
     <section className="tab-body production">
       <p className="lede">
         Propose talent, locations and props with their cost. The client approves each against the
-        budget; anything over it needs their owner or finance. Book only what's approved, then mark
-        it shot and paid so it lands on the balance invoice.
+        budget; anything over it needs their owner or finance. Talent takes two yeses: Gecko's (the
+        founder) and the brand owner's. Book only what's approved, then mark it shot and paid so it
+        lands on the balance invoice.
       </p>
       {budget && <BudgetMeter budget={budget} options={options} reader="team" />}
       <BudgetEditor target={target} budget={budget} />
+      <SetList clientId={clientId} />
       {KINDS.map((k) => {
         const list = options.filter((o) => o.kind === k.kind);
         return (
@@ -164,6 +170,9 @@ function BudgetEditor({ target, budget }: { target: ProductionTarget; budget: Bu
 
 function TeamOption({ target, option }: { target: ProductionTarget; option: ProductionOption }) {
   const act = useTeamProductionActions(target);
+  const { role } = useWorkspace();
+  const approvals = useTalentApprovals(target);
+  const studio = useSetStudioApproval(target);
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState("");
   if (editing)
@@ -183,14 +192,27 @@ function TeamOption({ target, option }: { target: ProductionTarget; option: Prod
       option={option}
       reader="team"
       extra={
-        (option.privateNotes || option.kind === "talent") && (
-          <p className="small team-only">
-            <span className="muted">Team only · </span>
-            {option.kind === "talent" &&
-              (option.releaseOnFile ? "Release on file. " : "No release yet. ")}
-            {option.privateNotes}
-          </p>
-        )
+        <>
+          <TalentYeses
+            option={option}
+            approval={approvals.data?.[option.id]}
+            reader="team"
+            busy={studio.isPending}
+            onStudio={
+              role === "founder"
+                ? (ok) => void run(studio.mutateAsync({ id: option.id, ok }))
+                : undefined
+            }
+          />
+          {(option.privateNotes || option.kind === "talent") && (
+            <p className="small team-only">
+              <span className="muted">Team only · </span>
+              {option.kind === "talent" &&
+                (option.releaseOnFile ? "Release on file. " : "No release yet. ")}
+              {option.privateNotes}
+            </p>
+          )}
+        </>
       }
     >
       <div className="concept-actions">

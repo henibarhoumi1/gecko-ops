@@ -98,10 +98,10 @@ function TeamScript({
   nextPosition: number;
 }) {
   const [mode, setMode] = useState<"idle" | "edit" | "delete" | "changes" | "clean">("idle");
-  const production = useApprovedProduction(clientId);
+  const production = useApprovedProduction(clientId, script.projectId);
   const plan = script.shoot ?? {};
   const optionName = (id: string | null | undefined) =>
-    production.all.find((o) => o.id === id)?.name ?? "";
+    production.named.find((o) => o.id === id)?.name ?? "";
   const planParts = [
     ["Talent", (plan.talent ?? []).map(optionName).filter(Boolean).join(", ")],
     ["Set", optionName(plan.set)],
@@ -144,7 +144,7 @@ function TeamScript({
         </p>
       )}
       {mode === "clean" && (
-        <CleanCopy script={script} options={production.all} onClose={() => setMode("idle")} />
+        <CleanCopy script={script} options={production.named} onClose={() => setMode("idle")} />
       )}
       {mode === "idle" && (
         <div className="concept-actions">
@@ -316,7 +316,10 @@ function ScriptForm({
       title: script?.title ?? startIdea?.title ?? "",
       conceptId: script?.conceptId ?? startIdea?.id ?? fromIdea ?? "",
       seconds: script?.seconds ?? 30,
-      shoot: script?.shoot ?? ({} as ShootPlan),
+      // A script written from an idea starts with the idea's talent.
+      shoot:
+        script?.shoot ??
+        ((startIdea?.talent?.length ? { talent: startIdea.talent } : {}) as ShootPlan),
     }),
   );
   const { draft, title, conceptId, seconds, shoot } = keep.value;
@@ -444,7 +447,12 @@ function ScriptForm({
         proven={proven}
         hookNote="write 2 or 3, the client picks"
       />
-      <ShootPlanPicker clientId={clientId} plan={shoot} onChange={setShoot} />
+      <ShootPlanPicker
+        clientId={clientId}
+        projectId={script?.projectId ?? null}
+        plan={shoot}
+        onChange={setShoot}
+      />
       {shared && (
         <p className="small muted">
           The client has seen this script. Saving a change makes version {script.version + 1}, and

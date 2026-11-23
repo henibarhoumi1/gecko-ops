@@ -8,6 +8,7 @@ import {
   BudgetMeter,
   CommentBox,
   OptionCard,
+  TalentYeses,
   PhotoPicker,
 } from "@/features/production/ProductionParts";
 import {
@@ -19,7 +20,11 @@ import {
   type OptionKind,
   type ProductionOption,
 } from "@/features/production/model";
-import { useClientProduction, useMyProduction } from "@/features/production/productionApi";
+import {
+  useClientProduction,
+  useMyProduction,
+  useTalentApprovals,
+} from "@/features/production/productionApi";
 import { friendlyError } from "@/lib/errors";
 import { t } from "@/lib/i18n";
 import { tw } from "@/lib/wording";
@@ -154,6 +159,7 @@ function Group({
   portal: ClientPortal;
   budget: Budget | null;
 }) {
+  const approvals = useTalentApprovals(portal);
   if (items.length === 0) return null;
   return (
     <div className="group">
@@ -162,7 +168,12 @@ function Group({
       </h2>
       <div className="prod-grid">
         {items.map((o) => (
-          <OptionCard key={o.id} option={o} reader="client">
+          <OptionCard
+            key={o.id}
+            option={o}
+            reader="client"
+            extra={<TalentYeses option={o} approval={approvals.data?.[o.id]} reader="client" />}
+          >
             <ClientActions portal={portal} option={o} budget={budget} />
           </OptionCard>
         ))}
@@ -186,6 +197,9 @@ function ClientActions({
   const [confirm, setConfirm] = useState(false);
   const over = wouldGoOver(option, budget);
   const busy = act.decide.isPending;
+  // Who plays in the brand's ads is the brand owner's call (Heni, 23 Nov 2026).
+  const ownerOnly = option.kind === "talent" && role !== "owner";
+  const mayApprove = canSpend(role) && !ownerOnly;
 
   async function decide(decision: "approve" | "pass", overOk = false) {
     setError("");
@@ -229,7 +243,15 @@ function ClientActions({
           )}
         </p>
       )}
-      {open && canSpend(role) && over && !confirm && (
+      {open && canSpend(role) && ownerOnly && (
+        <p className="small muted decide-note">
+          {t(
+            "Only the brand owner approves talent.",
+            "Seul le responsable de la marque valide les talents.",
+          )}
+        </p>
+      )}
+      {open && mayApprove && over && !confirm && (
         <p className="small over-note">
           {budget?.cap != null && option.cost != null
             ? t(
@@ -245,7 +267,7 @@ function ClientActions({
               )}
         </p>
       )}
-      {open && canSpend(role) && !over && (
+      {open && mayApprove && !over && (
         <Button disabled={busy} onClick={() => void decide("approve")}>
           {option.status === "passed"
             ? t("Approve after all", "Valider finalement")
@@ -255,7 +277,7 @@ function ClientActions({
             : ""}
         </Button>
       )}
-      {open && canSpend(role) && over && canGoOver(role) && !confirm && (
+      {open && mayApprove && over && canGoOver(role) && !confirm && (
         <Button disabled={busy} onClick={() => setConfirm(true)}>
           {t("Approve over budget", "Valider hors budget")}
         </Button>

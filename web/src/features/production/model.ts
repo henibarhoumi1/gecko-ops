@@ -135,3 +135,25 @@ export function talentRole(role: string): string {
   if (role === "voice") return t("Voice", "Voix");
   return role;
 }
+
+/**
+ * Talent is ready to shoot once both said yes: Gecko (the founder) and the brand owner (Heni, 23 Nov 2026).
+ * Places and props only need the brand's yes, as before.
+ */
+export function talentReady(
+  o: Pick<ProductionOption, "kind" | "status">,
+  approval?: { studioAt: string | null } | null,
+): boolean {
+  return isCommitted(o) && (o.kind !== "talent" || Boolean(approval?.studioAt));
+}
+
+/** Where a talent stands, in a few words, for pickers and lists. */
+export function talentWaiting(
+  o: Pick<ProductionOption, "kind" | "status">,
+  approval?: { studioAt: string | null } | null,
+): "ready" | "gecko" | "brand" | "both" | "passed" {
+  if (o.status === "passed") return "passed";
+  const brand = isCommitted(o);
+  const studio = Boolean(approval?.studioAt);
+  return brand && studio ? "ready" : brand ? "gecko" : studio ? "brand" : "both";
+}

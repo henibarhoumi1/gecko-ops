@@ -190,3 +190,46 @@ export function useTeamProductionActions(target: ProductionTarget) {
     }),
   };
 }
+
+// ---------- talent: two yeses ----------
+
+/** Talent needs Gecko's yes (the founder) and the brand's (the brand owner). One entry per talent of the client. */
+export interface TalentApproval {
+  id: string;
+  studioBy: string | null;
+  studioAt: string | null;
+  brandBy: string | null;
+  brandAt: string | null;
+}
+
+const approvalsKey = (t: ProductionTarget) => ["talent-approvals", t.workspaceId, t.clientId];
+
+/** Both sides read it the same way; the database checks the reader is on the team or the client's people. */
+export function useTalentApprovals(target: ProductionTarget) {
+  return useQuery({
+    queryKey: approvalsKey(target),
+    queryFn: async (): Promise<Record<string, TalentApproval>> => {
+      const { data, error } = await requireSupabase().rpc("get_talent_approvals", ids(target));
+      if (error) throw error;
+      const list = Array.isArray(data) ? (data as TalentApproval[]) : [];
+      return Object.fromEntries(list.map((a) => [a.id, a]));
+    },
+    refetchInterval: 30_000,
+  });
+}
+
+/** The founder says yes for Gecko (or takes it back). */
+export function useSetStudioApproval(target: ProductionTarget) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { id: string; ok: boolean }) => {
+      const { error } = await requireSupabase().rpc("set_talent_studio_approval", {
+        ...ids(target),
+        p_id: input.id,
+        p_ok: input.ok,
+      });
+      if (error) throw error;
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: approvalsKey(target) }),
+  });
+}
