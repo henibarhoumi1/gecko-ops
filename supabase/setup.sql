@@ -11416,8 +11416,9 @@ $$;
 -- 2. set_studio_approval: the founder approves any production option (talent, location, prop). A waiting option
 --    becomes approved at once, budget or not (over_budget still records it). Taking it back returns an option
 --    Gecko approved to "proposed"; an option the client approved stays approved.
---    set_talent_studio_approval (23 Nov) now calls it, so older screens keep working.
--- 3. get_talent_approvals: every kind, plus "gecko" when Gecko made the call (the client is told, not asked).
+--    set_talent_studio_approval and get_talent_approvals (23 Nov) stay as they were, for the app that is live
+--    while this runs; the new app uses set_studio_approval and get_option_approvals.
+-- 3. get_option_approvals: every kind, plus "gecko" when Gecko made the call (the client is told, not asked).
 -- 4. client_decide_option: the client can't pass on what Gecko approved (they can still comment).
 -- 5. client_portal_visit: "confirmed", the options Gecko approved since the client's last visit, shown in
 --    "New since your last visit". Gecko's approval note doesn't also count as a reply.
@@ -11502,20 +11503,10 @@ $$;
 revoke all on function public.set_studio_approval(uuid, text, uuid, boolean) from public, anon;
 grant execute on function public.set_studio_approval(uuid, text, uuid, boolean) to authenticated;
 
-create or replace function public.set_talent_studio_approval(p_workspace_id uuid, p_client_id text, p_id uuid, p_ok boolean)
-returns void
-language plpgsql
-security definer
-set search_path = ''
-as $$
-begin
-  perform public.set_studio_approval(p_workspace_id, p_client_id, p_id, p_ok);
-end
-$$;
 
 -- ---------- 3. who said yes, for every option ----------
 
-create or replace function public.get_talent_approvals(p_workspace_id uuid, p_client_id text)
+create function public.get_option_approvals(p_workspace_id uuid, p_client_id text)
 returns jsonb
 language plpgsql
 stable
@@ -11545,6 +11536,8 @@ begin
   ), '[]'::jsonb);
 end
 $$;
+revoke all on function public.get_option_approvals(uuid, text) from public, anon;
+grant execute on function public.get_option_approvals(uuid, text) to authenticated;
 
 -- ---------- 4. the client's side ----------
 

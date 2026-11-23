@@ -39,9 +39,9 @@ select extensions.throws_ok(
   'P0001', 'founder_only', 'an editor cannot approve talent for Gecko'
 );
 select pg_temp.act_as('00000000-0000-4000-8000-0000000000e1', 'founder@talent.test');
-select public.set_talent_studio_approval('10000000-0000-4000-8000-0000000000e1', 'c-t', '20000000-0000-4000-8000-0000000000e1', true);
+select public.set_studio_approval('10000000-0000-4000-8000-0000000000e1', 'c-t', '20000000-0000-4000-8000-0000000000e1', true);
 select extensions.is(
-  (select a->>'studioBy' from jsonb_array_elements(public.get_talent_approvals('10000000-0000-4000-8000-0000000000e1', 'c-t')) a
+  (select a->>'studioBy' from jsonb_array_elements(public.get_option_approvals('10000000-0000-4000-8000-0000000000e1', 'c-t')) a
    where a->>'id' = '20000000-0000-4000-8000-0000000000e1'),
   'Heni', 'the founder approves talent for Gecko'
 );
@@ -82,7 +82,7 @@ select extensions.throws_ok(
 select pg_temp.act_as('00000000-0000-4000-8000-0000000000e3', 'owner@brand.test');
 select public.client_decide_option('10000000-0000-4000-8000-0000000000e1', 'c-t', '20000000-0000-4000-8000-0000000000e3', 'approve', '');
 select extensions.is(
-  (select a->>'brandBy' from jsonb_array_elements(public.get_talent_approvals('10000000-0000-4000-8000-0000000000e1', 'c-t')) a
+  (select a->>'brandBy' from jsonb_array_elements(public.get_option_approvals('10000000-0000-4000-8000-0000000000e1', 'c-t')) a
    where a->>'id' = '20000000-0000-4000-8000-0000000000e3'),
   'Olfa', 'the brand owner approves talent, and sees who said yes'
 );
@@ -90,7 +90,7 @@ select extensions.is(
 -- Another studio reads nothing.
 select pg_temp.act_as('00000000-0000-4000-8000-0000000000e5', 'stranger@other.test');
 select extensions.throws_ok(
-  $$select public.get_talent_approvals('10000000-0000-4000-8000-0000000000e1', 'c-t')$$,
+  $$select public.get_option_approvals('10000000-0000-4000-8000-0000000000e1', 'c-t')$$,
   'P0001', 'forbidden', 'another studio cannot read the approvals'
 );
 

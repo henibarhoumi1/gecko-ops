@@ -212,7 +212,7 @@ export function useTalentApprovals(target: ProductionTarget) {
   return useQuery({
     queryKey: approvalsKey(target),
     queryFn: async (): Promise<Record<string, TalentApproval>> => {
-      const { data, error } = await requireSupabase().rpc("get_talent_approvals", ids(target));
+      const { data, error } = await requireSupabase().rpc("get_option_approvals", ids(target));
       if (error) throw error;
       const list = Array.isArray(data) ? (data as TalentApproval[]) : [];
       return Object.fromEntries(list.map((a) => [a.id, a]));

@@ -72,13 +72,13 @@ describe("committedByKind", () => {
 
 describe("talent needs two yeses", () => {
   it("is ready once Gecko or the brand said yes", () => {
-    expect(talentReady({ kind: "talent", status: "proposed" }, null)).toBe(false);
-    expect(talentReady({ kind: "talent", status: "approved" }, null)).toBe(true);
-    expect(talentReady({ kind: "location", status: "booked" }, null)).toBe(true);
+    expect(talentReady({ kind: "talent", status: "proposed" })).toBe(false);
+    expect(talentReady({ kind: "talent", status: "approved" })).toBe(true);
+    expect(talentReady({ kind: "location", status: "booked" })).toBe(true);
   });
   it("says where it stands", () => {
-    expect(talentWaiting({ kind: "talent", status: "proposed" }, null)).toBe("waiting");
-    expect(talentWaiting({ kind: "talent", status: "approved" }, null)).toBe("ready");
-    expect(talentWaiting({ kind: "talent", status: "passed" }, { studioAt: "x" })).toBe("passed");
+    expect(talentWaiting({ kind: "talent", status: "proposed" })).toBe("waiting");
+    expect(talentWaiting({ kind: "talent", status: "approved" })).toBe("ready");
+    expect(talentWaiting({ kind: "talent", status: "passed" })).toBe("passed");
   });
 });
