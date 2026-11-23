@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/Toast";
 import { SideToggle } from "@/components/SideToggle";
 import { useSideFolded } from "@/lib/sideMode";
 import { byClient } from "@/features/scripts/model";
@@ -332,6 +333,7 @@ export function PortalPage({
           <ProjectPicker target={target} />
           <Presence workspaceId={portal.workspaceId} clientId={portal.clientId} reader="client" />
           <UndoBar workspaceId={portal.workspaceId} />
+          <Toaster />
           <Tour steps={clientSteps()} storageKey="gecko.tour.client" />
           {current && !onBoard && <h1 className="page-title">{current.label}</h1>}
           {group && group.items.length > 1 && (

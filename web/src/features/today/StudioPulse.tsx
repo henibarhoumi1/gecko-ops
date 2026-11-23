@@ -5,6 +5,7 @@ import { useTeamShoots } from "@/features/shoot/shootApi";
 import { useTeamTasks } from "@/features/tasks/tasksApi";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { pulse } from "./pulse";
+import { CountUp } from "./HomeMore";
 
 /** The founder's view of the studio, on top of Home: money in the pipeline, wins, follow-ups, clients, tasks. */
 export function StudioPulse({ today }: { today: string }) {
@@ -26,7 +27,9 @@ export function StudioPulse({ today }: { today: string }) {
       {tiles.map((tile) => (
         <Link key={tile.key} to={tile.to} className={`pulse-tile pulse-${tile.tone}`}>
           <span className="pulse-label">{tile.label}</span>
-          <strong className="pulse-value">{loading ? "…" : tile.value}</strong>
+          <strong className="pulse-value">
+            {loading ? <span className="skeleton-line" /> : <CountUp value={tile.value} />}
+          </strong>
           <span className="pulse-hint">{tile.hint}</span>
         </Link>
       ))}

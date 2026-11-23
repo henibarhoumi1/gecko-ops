@@ -46,9 +46,9 @@ export function PipelinePage() {
   const [view, setView] = useState<"list" | "table" | "board">("list");
   const [filter, setFilter] = useState<Filter>("open");
   const [search, setSearch] = useState("");
-  const [adding, setAdding] = useState(false);
-  // Today links straight to a lead: /pipeline?lead=<id> opens its panel.
+  // Today links straight to a lead: /pipeline?lead=<id> opens its panel; ⌘K "Add leads" uses ?add=1.
   const [params] = useSearchParams();
+  const [adding, setAdding] = useState(() => params.get("add") === "1");
   const [openId, setOpenId] = useState<string | null>(() => params.get("lead"));
   // Home's "Follow-ups due" opens straight into a session: /pipeline?view=outreach.
   const [session, setSession] = useState(() => params.get("view") === "outreach");
