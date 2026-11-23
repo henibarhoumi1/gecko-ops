@@ -174,7 +174,12 @@ function Group({
             reader="client"
             extra={<TalentYeses option={o} approval={approvals.data?.[o.id]} reader="client" />}
           >
-            <ClientActions portal={portal} option={o} budget={budget} />
+            <ClientActions
+              portal={portal}
+              option={o}
+              budget={budget}
+              geckoDecided={Boolean(approvals.data?.[o.id]?.gecko)}
+            />
           </OptionCard>
         ))}
       </div>
@@ -186,10 +191,13 @@ function ClientActions({
   portal,
   option,
   budget,
+  geckoDecided,
 }: {
   portal: ClientPortal;
   option: ProductionOption;
   budget: Budget | null;
+  /** Gecko approved it: final, the client can comment but not pass. */
+  geckoDecided: boolean;
 }) {
   const role = useClientRole();
   const act = useClientProduction(portal);
@@ -299,7 +307,7 @@ function ClientActions({
         </div>
       )}
       {canSpend(role) &&
-        (option.status === "proposed" || option.status === "approved") &&
+        (option.status === "proposed" || (option.status === "approved" && !geckoDecided)) &&
         !confirm && (
           <Button variant="secondary" disabled={busy} onClick={() => void decide("pass")}>
             {t("Pass", "Écarter")}

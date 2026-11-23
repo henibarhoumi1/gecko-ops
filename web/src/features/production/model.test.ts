@@ -71,17 +71,14 @@ describe("committedByKind", () => {
 });
 
 describe("talent needs two yeses", () => {
-  it("is ready only once the brand and Gecko both said yes", () => {
-    const t = { kind: "talent" as const, status: "approved" as const };
-    expect(talentReady(t, null)).toBe(false);
-    expect(talentReady(t, { studioAt: "2026-11-23" })).toBe(true);
-    expect(talentReady({ kind: "location", status: "approved" }, null)).toBe(true);
+  it("is ready once Gecko or the brand said yes", () => {
+    expect(talentReady({ kind: "talent", status: "proposed" })).toBe(false);
+    expect(talentReady({ kind: "talent", status: "approved" })).toBe(true);
+    expect(talentReady({ kind: "location", status: "booked" })).toBe(true);
   });
-  it("says who is still to answer", () => {
-    expect(talentWaiting({ kind: "talent", status: "proposed" }, null)).toBe("both");
-    expect(talentWaiting({ kind: "talent", status: "proposed" }, { studioAt: "x" })).toBe("brand");
-    expect(talentWaiting({ kind: "talent", status: "approved" }, null)).toBe("gecko");
-    expect(talentWaiting({ kind: "talent", status: "booked" }, { studioAt: "x" })).toBe("ready");
-    expect(talentWaiting({ kind: "talent", status: "passed" }, { studioAt: "x" })).toBe("passed");
+  it("says where it stands", () => {
+    expect(talentWaiting({ kind: "talent", status: "proposed" })).toBe("waiting");
+    expect(talentWaiting({ kind: "talent", status: "approved" })).toBe("ready");
+    expect(talentWaiting({ kind: "talent", status: "passed" })).toBe("passed");
   });
 });

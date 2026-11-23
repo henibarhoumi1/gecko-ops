@@ -2,7 +2,8 @@ import { DraftNotice } from "@/components/DraftNotice";
 import { useDraft } from "@/lib/drafts";
 import { StageList } from "@/components/StageList";
 import { useHashScroll } from "@/lib/useHashScroll";
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
+import { WritingTabs, useSaveKeys, type WritingTab } from "@/components/WritingTabs";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
@@ -336,6 +337,8 @@ function ScriptForm({
   const shared = script && script.status !== "draft";
   const beats = draftBeats(draft);
   const idea = approved.find((c) => c.id === conceptId);
+  const formRef = useRef<HTMLFormElement>(null);
+  useSaveKeys(formRef);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -372,45 +375,149 @@ function ScriptForm({
     }
   }
 
-  return (
-    <form className="card stack concept-edit script-edit" onSubmit={onSubmit}>
-      <h3>{script ? `Edit "${script.title}"` : "New script"}</h3>
-      {keep.restored && <DraftNotice onDiscard={keep.discard} />}
-      <Select
-        label="For the idea"
-        name="concept"
-        value={conceptId}
-        onChange={(e) => {
-          setConceptId(e.target.value);
-          const concept = approved.find((c) => c.id === e.target.value);
-          if (concept && !title.trim()) setTitle(concept.title);
-          if (concept?.hook && noWords(draft.hooks))
-            setDraft({ ...draft, hooks: [{ hear: concept.hook }, {}] });
-        }}
-        options={[["", "No idea yet"], ...approved.map((c) => [c.id, c.title] as const)]}
-      />
-      {idea && (
+  const shootCount = (shoot.talent?.length ?? 0) + (shoot.set ? 1 : 0) + (shoot.props?.length ?? 0);
+  const tabs: WritingTab[] = [
+    {
+      key: "script",
+      label: "Script",
+      body: (
+        <>
+          <BrandDrawer sheet={brand.sheet} never={brand.never} />
+          <AdParts
+            draft={draft}
+            onChange={setDraft}
+            seconds={seconds}
+            never={brand.never}
+            proven={proven}
+            hookNote="write 2 or 3, the client picks"
+          />
+        </>
+      ),
+    },
+    {
+      key: "shoot",
+      label: "Shoot plan",
+      badge: shootCount || undefined,
+      body: (
+        <ShootPlanPicker
+          clientId={clientId}
+          projectId={script?.projectId ?? null}
+          plan={shoot}
+          onChange={setShoot}
+        />
+      ),
+    },
+    ...(cinematic
+      ? [
+          {
+            key: "treatment",
+            label: "Treatment",
+            body: (
+              <fieldset className="fieldset">
+                <legend>
+                  Treatment: the film before the scenes. The client approves this with the rest.
+                </legend>
+                {TREATMENT_KEYS.map((k) => (
+                  <TextArea
+                    key={k}
+                    label={treatmentLabel(k)}
+                    name={`t-${k}`}
+                    rows={2}
+                    maxLength={2000}
+                    defaultValue={script?.treatment?.[k]}
+                  />
+                ))}
+              </fieldset>
+            ),
+          },
+        ]
+      : []),
+    {
+      key: "idea",
+      label: "The idea",
+      badge: idea ? "✓" : undefined,
+      body: idea ? (
         <div className="script-idea">
           <p className="small">
-            <strong>The idea</strong>
+            <strong>{idea.title}</strong>
             {idea.format ? ` · ${idea.format}` : ""}
           </p>
           {idea.hook && <p className="script-idea-hook">&ldquo;{idea.hook}&rdquo;</p>}
-          {idea.body && <p className="small">{idea.body}</p>}
+          {idea.body && <p>{idea.body}</p>}
         </div>
-      )}
-      <div className="row">
-        <Field
-          label="Title"
-          name="title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          maxLength={160}
-          autoFocus={!startIdea}
-          required
+      ) : (
+        <p className="muted">No idea linked. Pick one above to keep its hook and talent close.</p>
+      ),
+    },
+  ];
+
+  return (
+    <form ref={formRef} className="write-space script-edit" onSubmit={onSubmit}>
+      <div className="write-top">
+        <span className="eyebrow">
+          {script ? `Script · version ${script.version}` : "New script · kept on this device"}
+        </span>
+        <div className="write-actions">
+          <Button
+            variant="link"
+            onClick={() => {
+              keep.clear();
+              onDone();
+            }}
+            disabled={save.isPending}
+          >
+            Cancel
+          </Button>
+          {script ? (
+            <Button type="submit" disabled={save.isPending} title="⌘S">
+              Save
+            </Button>
+          ) : (
+            <>
+              <Button
+                type="submit"
+                variant="secondary"
+                value="draft"
+                disabled={save.isPending}
+                title="⌘S"
+              >
+                Save draft
+              </Button>
+              <Button type="submit" value="share" disabled={save.isPending} title="⌘↵">
+                Share with the client
+              </Button>
+            </>
+          )}
+        </div>
+      </div>
+      {keep.restored && <DraftNotice onDiscard={keep.discard} />}
+      <input
+        className="write-title"
+        name="title"
+        aria-label="Title"
+        placeholder="Untitled script"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        maxLength={160}
+        autoFocus={!startIdea && !script}
+        required
+      />
+      <div className="write-meta">
+        <Select
+          label="Idea"
+          name="concept"
+          value={conceptId}
+          onChange={(e) => {
+            setConceptId(e.target.value);
+            const concept = approved.find((c) => c.id === e.target.value);
+            if (concept && !title.trim()) setTitle(concept.title);
+            if (concept?.hook && noWords(draft.hooks))
+              setDraft({ ...draft, hooks: [{ hear: concept.hook }, {}] });
+          }}
+          options={[["", "No idea yet"], ...approved.map((c) => [c.id, c.title] as const)]}
         />
         <Field
-          label="Length (seconds)"
+          label="Seconds"
           name="seconds"
           type="number"
           min={5}
@@ -418,41 +525,11 @@ function ScriptForm({
           value={seconds}
           onChange={(e) => setSeconds(Number(e.target.value) || 30)}
         />
+        <p className="small write-keys" aria-hidden="true">
+          ⌘S save{script ? "" : " · ⌘↵ share"} · Alt+1–{tabs.length} sections
+        </p>
       </div>
-
-      {cinematic && (
-        <fieldset className="fieldset">
-          <legend>
-            Treatment: the film before the scenes. The client approves this with the rest.
-          </legend>
-          {TREATMENT_KEYS.map((k) => (
-            <TextArea
-              key={k}
-              label={treatmentLabel(k)}
-              name={`t-${k}`}
-              rows={2}
-              maxLength={2000}
-              defaultValue={script?.treatment?.[k]}
-            />
-          ))}
-        </fieldset>
-      )}
-
-      <BrandDrawer sheet={brand.sheet} never={brand.never} />
-      <AdParts
-        draft={draft}
-        onChange={setDraft}
-        seconds={seconds}
-        never={brand.never}
-        proven={proven}
-        hookNote="write 2 or 3, the client picks"
-      />
-      <ShootPlanPicker
-        clientId={clientId}
-        projectId={script?.projectId ?? null}
-        plan={shoot}
-        onChange={setShoot}
-      />
+      <WritingTabs tabs={tabs} />
       {shared && (
         <p className="small muted">
           The client has seen this script. Saving a change makes version {script.version + 1}, and
@@ -460,32 +537,6 @@ function ScriptForm({
         </p>
       )}
       {error && <Notice tone="error">{error}</Notice>}
-      <div className="actions">
-        <Button
-          variant="secondary"
-          onClick={() => {
-            keep.clear();
-            onDone();
-          }}
-          disabled={save.isPending}
-        >
-          Cancel
-        </Button>
-        {script ? (
-          <Button type="submit" disabled={save.isPending}>
-            Save
-          </Button>
-        ) : (
-          <>
-            <Button type="submit" variant="secondary" value="draft" disabled={save.isPending}>
-              Save as draft
-            </Button>
-            <Button type="submit" value="share" disabled={save.isPending}>
-              Share with the client
-            </Button>
-          </>
-        )}
-      </div>
     </form>
   );
 }

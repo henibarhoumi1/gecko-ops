@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(11);
+select extensions.plan(14);
 
 insert into auth.users (id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at) values
   ('00000000-0000-4000-8000-0000000000e1', 'authenticated', 'authenticated', 'founder@talent.test', '', now(), '{}', '{}', now(), now()),
@@ -22,7 +22,8 @@ insert into public.client_accounts (workspace_id, client_id, email, display_name
 insert into public.client_assignments (workspace_id, client_id, member_id) values ('10000000-0000-4000-8000-0000000000e1', 'c-t', 'editor');
 insert into public.production_options (id, workspace_id, client_id, kind, name, status) values
   ('20000000-0000-4000-8000-0000000000e1', '10000000-0000-4000-8000-0000000000e1', 'c-t', 'talent', 'Yasmine', 'proposed'),
-  ('20000000-0000-4000-8000-0000000000e2', '10000000-0000-4000-8000-0000000000e1', 'c-t', 'prop', 'Blender', 'proposed');
+  ('20000000-0000-4000-8000-0000000000e2', '10000000-0000-4000-8000-0000000000e1', 'c-t', 'prop', 'Blender', 'proposed'),
+  ('20000000-0000-4000-8000-0000000000e3', '10000000-0000-4000-8000-0000000000e1', 'c-t', 'talent', 'Karim', 'proposed');
 
 create function pg_temp.act_as(p_user text, p_email text) returns void language sql as $$
   select set_config('request.jwt.claim.sub', p_user, true),
@@ -38,33 +39,58 @@ select extensions.throws_ok(
   'P0001', 'founder_only', 'an editor cannot approve talent for Gecko'
 );
 select pg_temp.act_as('00000000-0000-4000-8000-0000000000e1', 'founder@talent.test');
-select public.set_talent_studio_approval('10000000-0000-4000-8000-0000000000e1', 'c-t', '20000000-0000-4000-8000-0000000000e1', true);
+select public.set_studio_approval('10000000-0000-4000-8000-0000000000e1', 'c-t', '20000000-0000-4000-8000-0000000000e1', true);
 select extensions.is(
-  (select a->>'studioBy' from jsonb_array_elements(public.get_talent_approvals('10000000-0000-4000-8000-0000000000e1', 'c-t')) a),
+  (select a->>'studioBy' from jsonb_array_elements(public.get_option_approvals('10000000-0000-4000-8000-0000000000e1', 'c-t')) a
+   where a->>'id' = '20000000-0000-4000-8000-0000000000e1'),
   'Heni', 'the founder approves talent for Gecko'
 );
-select extensions.throws_ok(
-  $$select public.set_talent_studio_approval('10000000-0000-4000-8000-0000000000e1', 'c-t', '20000000-0000-4000-8000-0000000000e2', true)$$,
-  'P0001', 'option_not_found', 'only talent takes the founder''s approval'
+-- Gecko's yes is final: approved at once, the client is told, not asked.
+reset role;
+select extensions.is(
+  (select status from public.production_options where id = '20000000-0000-4000-8000-0000000000e1'),
+  'approved', 'Gecko''s approval doesn''t wait for the client'
 );
+set local role authenticated;
+select public.set_studio_approval('10000000-0000-4000-8000-0000000000e1', 'c-t', '20000000-0000-4000-8000-0000000000e2', true);
+reset role;
+select extensions.is(
+  (select status from public.production_options where id = '20000000-0000-4000-8000-0000000000e2'),
+  'approved', 'Gecko approves props and locations too'
+);
+set local role authenticated;
+select pg_temp.act_as('00000000-0000-4000-8000-0000000000e3', 'owner@brand.test');
+select extensions.throws_ok(
+  $$select public.client_decide_option('10000000-0000-4000-8000-0000000000e1', 'c-t', '20000000-0000-4000-8000-0000000000e1', 'pass', '')$$,
+  'P0001', 'gecko_decided', 'the client can''t undo what Gecko approved'
+);
+select pg_temp.act_as('00000000-0000-4000-8000-0000000000e1', 'founder@talent.test');
+select public.set_studio_approval('10000000-0000-4000-8000-0000000000e1', 'c-t', '20000000-0000-4000-8000-0000000000e2', false);
+reset role;
+select extensions.is(
+  (select status from public.production_options where id = '20000000-0000-4000-8000-0000000000e2'),
+  'proposed', 'taking Gecko''s yes back returns the option to the client'
+);
+set local role authenticated;
 
 -- The brand's side: an approver can't say yes to talent, the owner can.
 select pg_temp.act_as('00000000-0000-4000-8000-0000000000e4', 'approver@brand.test');
 select extensions.throws_ok(
-  $$select public.client_decide_option('10000000-0000-4000-8000-0000000000e1', 'c-t', '20000000-0000-4000-8000-0000000000e1', 'approve', '')$$,
+  $$select public.client_decide_option('10000000-0000-4000-8000-0000000000e1', 'c-t', '20000000-0000-4000-8000-0000000000e3', 'approve', '')$$,
   'P0001', 'talent_owner_only', 'only the brand owner approves talent'
 );
 select pg_temp.act_as('00000000-0000-4000-8000-0000000000e3', 'owner@brand.test');
-select public.client_decide_option('10000000-0000-4000-8000-0000000000e1', 'c-t', '20000000-0000-4000-8000-0000000000e1', 'approve', '');
+select public.client_decide_option('10000000-0000-4000-8000-0000000000e1', 'c-t', '20000000-0000-4000-8000-0000000000e3', 'approve', '');
 select extensions.is(
-  (select a->>'brandBy' from jsonb_array_elements(public.get_talent_approvals('10000000-0000-4000-8000-0000000000e1', 'c-t')) a),
-  'Olfa', 'the brand owner approves talent, and sees both approvals'
+  (select a->>'brandBy' from jsonb_array_elements(public.get_option_approvals('10000000-0000-4000-8000-0000000000e1', 'c-t')) a
+   where a->>'id' = '20000000-0000-4000-8000-0000000000e3'),
+  'Olfa', 'the brand owner approves talent, and sees who said yes'
 );
 
 -- Another studio reads nothing.
 select pg_temp.act_as('00000000-0000-4000-8000-0000000000e5', 'stranger@other.test');
 select extensions.throws_ok(
-  $$select public.get_talent_approvals('10000000-0000-4000-8000-0000000000e1', 'c-t')$$,
+  $$select public.get_option_approvals('10000000-0000-4000-8000-0000000000e1', 'c-t')$$,
   'P0001', 'forbidden', 'another studio cannot read the approvals'
 );
 

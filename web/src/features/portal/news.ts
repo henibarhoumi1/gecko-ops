@@ -8,6 +8,8 @@ export interface News {
   scripts: number;
   cuts: number;
   options: number;
+  /** Options Gecko approved for them since the last visit: told, not asked. */
+  confirmed?: number;
   replies: number;
   delivered: number;
   invoices: number;
@@ -49,6 +51,15 @@ export function newsLines(news: News): NewsLine[] {
       n: news.ideas,
       label: plural(news.ideas, ["new idea", "new ideas"], ["nouvelle idée", "nouvelles idées"]),
       to: "/concepts",
+    },
+    (news.confirmed ?? 0) > 0 && {
+      n: news.confirmed ?? 0,
+      label: plural(
+        news.confirmed ?? 0,
+        ["shoot choice confirmed by Gecko", "shoot choices confirmed by Gecko"],
+        ["choix de tournage confirmé par Gecko", "choix de tournage confirmés par Gecko"],
+      ),
+      to: "/talent",
     },
     news.options > 0 && {
       n: news.options,

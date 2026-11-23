@@ -37,6 +37,7 @@ import {
 import { greeting } from "./pulse";
 import { StudioPulse } from "./StudioPulse";
 import { MyDay } from "./MyDay";
+import { CampaignBoard, ClientActivity, TeamLoad } from "./HomeMore";
 import { useCaptureIdea, useToday } from "./todayApi";
 
 /** "Wed" for 2026-11-04. */
@@ -251,6 +252,13 @@ function LeadsToday({ founder }: { founder: boolean }) {
         </section>
       </div>
 
+      <CampaignBoard founder={founder} />
+
+      <div className="today-cols">
+        <ClientActivity />
+        <TeamLoad today={t.today} />
+      </div>
+
       <TodayTasks />
 
       <section className="today-section">
@@ -272,12 +280,32 @@ function LeadsToday({ founder }: { founder: boolean }) {
           ))}
         </ol>
         {late.length > 0 && (
-          <p className="small today-slipped">
-            <strong>Slipped:</strong>{" "}
-            {late
-              .map((d) => `${d.brand}, ${d.label} (${when(d.date, t.today).toLowerCase()})`)
-              .join(" · ")}
-          </p>
+          <details className="small today-slipped">
+            <summary>
+              <strong>{late.length} slipped</strong>
+              {late.some((d) => d.kind !== "lead") &&
+                ` · ${late.filter((d) => d.kind !== "lead").length} on clients`}
+              {late.some((d) => d.kind === "lead") &&
+                ` · ${late.filter((d) => d.kind === "lead").length} leads to write to`}
+            </summary>
+            <ul>
+              {late.slice(0, 12).map((d, i) => (
+                <li key={i}>
+                  <Link
+                    to={
+                      d.kind === "lead" || !d.client_id
+                        ? "/pipeline"
+                        : `/clients/${encodeURIComponent(d.client_id)}`
+                    }
+                  >
+                    {d.brand}
+                  </Link>
+                  , {d.label} ({when(d.date, t.today).toLowerCase()})
+                </li>
+              ))}
+              {late.length > 12 && <li>and {late.length - 12} more</li>}
+            </ul>
+          </details>
         )}
       </section>
 

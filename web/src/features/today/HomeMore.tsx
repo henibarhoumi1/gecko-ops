@@ -1,0 +1,221 @@
+// More on Home (Heni, 23 Nov 2026: "home needs some real work, right now it's just dates and a lead list").
+// Every client's campaign at a glance, what clients just did, who on the team has what, and (founder) money.
+// All from data the app already reads; nothing new is stored.
+import { useMemo } from "react";
+import { Link } from "react-router-dom";
+import { describeAction, useAlerts } from "@/features/alerts/alertsApi";
+import { useClients } from "@/features/clients/clientsApi";
+import { useInvoices } from "@/features/invoices/invoicesApi";
+import { useProjects } from "@/features/projects/projectsApi";
+import { useTeamTasks } from "@/features/tasks/tasksApi";
+import { useMembers } from "@/features/workspace/members";
+import { useWorkspace } from "@/features/workspace/WorkspaceContext";
+import { daysSince, waited } from "./model";
+
+const day = (iso: string) =>
+  new Date(`${iso.slice(0, 10)}T12:00:00Z`).toLocaleDateString("en-GB", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    timeZone: "UTC",
+  });
+
+const money = (n: number) => `${Math.round(n).toLocaleString("fr-FR")} DT`;
+
+function Bar({ done, of, label }: { done: number; of: number; label: string }) {
+  const pct = of > 0 ? Math.min(100, Math.round((done / of) * 100)) : 0;
+  return (
+    <div className="home-bar" title={`${label}: ${done} of ${of}`}>
+      <span className="small">
+        {label} <strong>{of > 0 ? `${done}/${of}` : "none yet"}</strong>
+      </span>
+      <span className="home-bar-track" aria-hidden="true">
+        <span style={{ width: `${pct}%` }} />
+      </span>
+    </div>
+  );
+}
+
+/** One row per client: the current campaign's progress, the next shoot and (founder) what they owe. */
+export function CampaignBoard({ founder }: { founder: boolean }) {
+  const clients = useClients();
+  const list = clients.data ?? [];
+  if (clients.isPending || list.length === 0) return null;
+  return (
+    <section className="today-section home-campaigns">
+      <div className="today-section-head">
+        <h2>
+          Campaigns <span className="today-count">{list.length}</span>
+        </h2>
+        <Link className="small" to="/clients">
+          All clients →
+        </Link>
+      </div>
+      <ul className="home-campaign-list">
+        {list.map((c) => (
+          <CampaignRow key={c.id} clientId={c.id} brand={c.brand} founder={founder} />
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function CampaignRow({
+  clientId,
+  brand,
+  founder,
+}: {
+  clientId: string;
+  brand: string;
+  founder: boolean;
+}) {
+  const { id: workspaceId } = useWorkspace();
+  const target = useMemo(() => ({ workspaceId, clientId }), [workspaceId, clientId]);
+  const projects = useProjects(target);
+  const active = (projects.data?.projects ?? []).filter((p) => p.status === "active");
+  const p = active[0];
+  return (
+    <li>
+      <Link className="home-campaign" to={`/clients/${encodeURIComponent(clientId)}`}>
+        <span className="home-campaign-name">
+          <strong dir="auto">{brand}</strong>
+          <span className="small" dir="auto">
+            {p ? p.name : "No active campaign"}
+            {active.length > 1 ? ` · +${active.length - 1} more` : ""}
+          </span>
+        </span>
+        {p ? (
+          <>
+            <Bar done={p.approved} of={p.scripts} label="Scripts approved" />
+            <span className="home-campaign-facts small">
+              <span>
+                <strong>{p.ideas}</strong> ideas
+              </span>
+              <span>
+                <strong>{p.reels}</strong> reels
+              </span>
+              <span>{p.nextShoot ? `Shoot ${day(p.nextShoot)}` : "No shoot planned"}</span>
+            </span>
+          </>
+        ) : (
+          <span className="small">Start one from the client&rsquo;s page.</span>
+        )}
+        {founder && <Owed workspaceId={workspaceId} clientId={clientId} />}
+      </Link>
+    </li>
+  );
+}
+
+function Owed({ workspaceId, clientId }: { workspaceId: string; clientId: string }) {
+  const target = useMemo(() => ({ workspaceId, clientId }), [workspaceId, clientId]);
+  const invoices = useInvoices(target);
+  const open = (invoices.data?.invoices ?? []).filter((v) => v.status === "sent");
+  if (open.length === 0) return <span className="home-owed small">Nothing owed</span>;
+  const total = open.reduce((s, v) => s + Number(v.total || 0), 0);
+  const late = open.some((v) => v.overdue);
+  return (
+    <span className={`home-owed small${late ? " is-late" : ""}`}>
+      Owes <strong>{money(total)}</strong>
+      {late ? " · late" : ""}
+    </span>
+  );
+}
+
+/** The last things clients approved, asked to change or said, newest first. */
+export function ClientActivity() {
+  const alerts = useAlerts(14);
+  const activity = (alerts.data?.activity ?? []).slice(0, 8);
+  return (
+    <section className="today-section">
+      <div className="today-section-head">
+        <h2>What clients did</h2>
+        <Link className="small" to="/alerts">
+          All →
+        </Link>
+      </div>
+      {alerts.isPending ? (
+        <p className="small muted">Loading…</p>
+      ) : activity.length === 0 ? (
+        <p className="empty-state">No approvals, change requests or comments in two weeks.</p>
+      ) : (
+        <ul className="home-feed">
+          {activity.map((a, i) => (
+            <li key={`${a.at}-${i}`} className={`home-feed-item kind-${a.kind}`}>
+              <span className="home-feed-dot" aria-hidden="true" />
+              <span>
+                <strong>{a.author || "Client"}</strong> {describeAction(a)}{" "}
+                <Link to={`/clients/${encodeURIComponent(a.client_id)}`} dir="auto">
+                  {a.title}
+                </Link>
+                <span className="small muted">
+                  {" "}
+                  · {a.brand} · {waited(daysSince(a.at))}
+                </span>
+                {a.body && (
+                  <q className="small" dir="auto">
+                    {a.body}
+                  </q>
+                )}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+/** Who on the team has what: open Gecko tasks per person, and how many are late. */
+export function TeamLoad({ today }: { today: string }) {
+  const { id: workspaceId } = useWorkspace();
+  const members = useMembers();
+  const tasks = useTeamTasks(workspaceId);
+  const open = (tasks.data ?? []).filter((x) => !x.doneAt && x.side === "gecko");
+  const people = members.data ?? [];
+  if (people.length === 0) return null;
+  const rows = [
+    ...people.map((m) => {
+      const mine = open.filter((x) => x.assignee && (x.assignee === m.id || x.assignee === m.name));
+      return { key: m.id, name: m.name, title: m.title || "", tasks: mine };
+    }),
+    {
+      key: "_none",
+      name: "Nobody yet",
+      title: "Not assigned",
+      tasks: open.filter((x) => !x.assignee),
+    },
+  ].filter((r) => r.key !== "_none" || r.tasks.length > 0);
+  return (
+    <section className="today-section">
+      <div className="today-section-head">
+        <h2>
+          The team <span className="today-count">{people.length}</span>
+        </h2>
+        <Link className="small" to="/team">
+          Team →
+        </Link>
+      </div>
+      <ul className="home-team">
+        {rows.map((r) => {
+          const late = r.tasks.filter((x) => x.due && x.due < today).length;
+          return (
+            <li key={r.key}>
+              <span className="home-avatar" aria-hidden="true">
+                {r.name.slice(0, 1).toUpperCase()}
+              </span>
+              <span className="home-team-who">
+                <strong>{r.name}</strong>
+                {r.title && <span className="small">{r.title}</span>}
+              </span>
+              <span className="small">
+                {r.tasks.length === 0
+                  ? "Free"
+                  : `${r.tasks.length} open${late ? ` · ${late} late` : ""}`}
+              </span>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}

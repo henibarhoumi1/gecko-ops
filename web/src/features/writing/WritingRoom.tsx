@@ -92,8 +92,8 @@ export function WritingRoom({
             className={`room-col room-${stage}${filter(columns[stage]).length ? "" : " empty"}`}
           >
             <h2 className="room-col-head">
-              [ {stageLabel(stage, reader)} ]{" "}
-              <span className="muted">{filter(columns[stage]).length}</span>
+              {stageLabel(stage, reader)}{" "}
+              <span className="count">{filter(columns[stage]).length}</span>
             </h2>
             {filter(columns[stage]).map((p) => (
               <PieceCard key={p.key} piece={p} reader={reader} base={base} />
