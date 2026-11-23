@@ -2403,10 +2403,9 @@ section.budget,
 
 /* ---------- Campaign stage track ---------- */
 .home-campaign {
-  grid-template-columns: minmax(150px, 1fr) minmax(260px, 1.6fr) minmax(150px, 1fr) minmax(
-      150px,
-      1fr
-    ) auto;
+  grid-template-columns:
+    minmax(150px, 1fr) minmax(260px, 1.6fr) minmax(150px, 1fr) minmax(150px, 1fr)
+    auto;
 }
 .stage-track {
   list-style: none;
