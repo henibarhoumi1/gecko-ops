@@ -3157,3 +3157,119 @@ section.budget,
     --fs-body: 16px;
   }
 }
+
+/* Calendar v4: studio entries, add-to-day, more room on big screens. */
+.cal-chip.kind-meeting,
+.kind-meeting .cal-dot {
+  background: var(--ink);
+  color: #fff;
+}
+.cal-chip.kind-event,
+.kind-event .cal-dot,
+.cal-chip.kind-task,
+.kind-task .cal-dot,
+.cal-chip.kind-note,
+.kind-note .cal-dot {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--hair);
+}
+.kind-task .cal-dot {
+  border-radius: 3px;
+}
+.cal-item-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 4px 4px 0;
+  font-size: 12.5px;
+}
+.cal-item-tools a,
+.cal-item-tools button {
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: 600 12.5px/1.4 var(--font);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.cal-add {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--hair);
+}
+.cal-add-kinds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.cal-add-kinds button {
+  padding: 6px 10px;
+  border: 1px solid var(--hair);
+  border-radius: 999px;
+  background: #fff;
+  font: 600 12.5px/1 var(--font);
+  cursor: pointer;
+}
+.cal-add-kinds button[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+}
+.cal-add input,
+.cal-add select {
+  width: 100%;
+  padding: 9px 12px;
+  font: inherit;
+}
+.cal-add-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+}
+.cal-add-row:has(> :only-child) {
+  grid-template-columns: 1fr;
+}
+.cal-layout {
+  grid-template-columns: minmax(0, 1fr) clamp(280px, 22vw, 380px);
+}
+.cal-day {
+  min-height: clamp(92px, 9vw, 150px);
+}
+.cal-day,
+.cal-day:hover {
+  box-shadow: inset 0 0 0 1px var(--hair);
+  transform: none;
+}
+.cal-day:hover {
+  box-shadow: inset 0 0 0 1px var(--ink);
+}
+.cal-day.is-picked {
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+.cal-day.is-today .cal-num {
+  background: var(--ink);
+  color: #fff;
+}
+.cal-chip.kind-drafts,
+.cal-chip.kind-milestone,
+.cal-chip.kind-invoice,
+.cal-chip.kind-lead {
+  background: #fff;
+  box-shadow:
+    inset 3px 0 0 var(--yellow),
+    inset 0 0 0 1px var(--hair);
+}
+.cal-chip.kind-invoice {
+  box-shadow:
+    inset 3px 0 0 var(--pink),
+    inset 0 0 0 1px var(--hair);
+}
+.cal-chip.kind-milestone,
+.cal-chip.kind-lead {
+  box-shadow:
+    inset 3px 0 0 var(--blue),
+    inset 0 0 0 1px var(--hair);
+}

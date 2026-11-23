@@ -123,7 +123,10 @@ function DayList({
   const navigate = useNavigate();
   const location = useLocation();
   const today = todayIso();
-  const [adding, setAdding] = useState(false);
+  // The calendar's "Shoot day" sends ?day=YYYY-MM-DD: the form opens on that date.
+  const askedDay = new URLSearchParams(window.location.search).get("day");
+  const wantDay = askedDay && /^\d{4}-\d{2}-\d{2}$/.test(askedDay) ? askedDay : null;
+  const [adding, setAdding] = useState(Boolean(wantDay));
   // A day just removed from its page: offer to bring it back.
   const [removed, setRemoved] = useState<string | null>(
     () => (location.state as { removed?: string } | null)?.removed ?? null,
@@ -159,7 +162,7 @@ function DayList({
       )}
       {adding && (
         <DayForm
-          initial={blankDay(today, projectId)}
+          initial={{ ...blankDay(today, projectId), ...(wantDay ? { day: wantDay } : {}) }}
           actions={actions}
           onCancel={() => setAdding(false)}
           onSaved={(id) => navigate(`${base}/${id}`)}
