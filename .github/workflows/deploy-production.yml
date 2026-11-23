@@ -27,6 +27,9 @@ on:
 
 permissions:
   contents: read
+  # Read the production environment's protection rules with the run's own token (an unsigned request
+  # from a shared runner gets 403 when GitHub's anonymous rate limit is hit).
+  actions: read
 
 concurrency:
   group: deploy-production
@@ -47,8 +50,9 @@ jobs:
       - name: Refuse to run unless the production environment requires approval
         env:
           REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
         run: |
-          rules=$(curl -fsSL -H "Accept: application/vnd.github+json" \
+          rules=$(curl -fsSL -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $GH_TOKEN" \
             "https://api.github.com/repos/$REPO/environments/production" \
             | jq -r '[.protection_rules[]?.type] | join(",")') || rules=""
           case ",$rules," in
