@@ -279,7 +279,7 @@ export function useSaveLogo(clientId: string) {
 // ---------- concepts ----------
 
 const CONCEPT_COLUMNS =
-  "id,title,format,hook,body,refs,position,from_client,status,version,approved_version,approved_at,approved_by,author_name,created_at,updated_at,project_id";
+  "id,title,format,hook,body,refs,position,from_client,status,version,approved_version,approved_at,approved_by,author_name,created_at,updated_at,project_id,talent";
 
 /** Every concept of one client (or of all clients, for the list), with its conversation. */
 export function useConcepts(clientId: string | null) {
@@ -322,6 +322,8 @@ export interface ConceptInput {
   body: string;
   refs: string;
   hook: string;
+  /** Talent the idea is written for. Left out, it stays as it is. */
+  talent?: string[];
   status?: ConceptStatus;
   position?: number;
 }
@@ -339,6 +341,7 @@ export function useSaveConcept(clientId: string) {
         body: input.body,
         refs: input.refs,
         hook: input.hook,
+        ...(input.talent ? { talent: input.talent.slice(0, 12) } : {}),
         ...(input.status ? { status: input.status } : {}),
         ...(input.position != null ? { position: input.position } : {}),
       };

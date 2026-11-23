@@ -24,6 +24,8 @@ export interface Concept {
   hook?: string;
   body: string;
   refs: string;
+  /** Talent the idea is written for (production option ids). Team side only. */
+  talent?: string[];
   position: number;
   fromClient: boolean;
   status: ConceptStatus;
@@ -169,6 +171,7 @@ export interface ConceptRow {
   body: string;
   refs: string;
   hook?: string;
+  talent?: string[] | null;
   position: number;
   from_client: boolean;
   status: ConceptStatus;
@@ -201,6 +204,7 @@ export function fromRows(rows: ConceptRow[], notes: NoteRow[]): Concept[] {
     body: r.body,
     refs: r.refs,
     hook: r.hook ?? "",
+    talent: r.talent ?? [],
     position: r.position,
     fromClient: r.from_client,
     status: r.status,

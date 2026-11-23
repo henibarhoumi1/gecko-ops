@@ -19,6 +19,7 @@ import {
 } from "@/features/concepts/model";
 import { friendlyError } from "@/lib/errors";
 import { ApproveForClient } from "./ApproveForClient";
+import { TalentPicker } from "./ShootPlan";
 import {
   useAddNote,
   useConcepts,
@@ -191,6 +192,7 @@ function ConceptForm({
 }) {
   const save = useSaveConcept(clientId);
   const [error, setError] = useState("");
+  const [talent, setTalent] = useState<string[]>(concept?.talent ?? []);
   const shared = concept && concept.status !== "draft" && concept.status !== "idea";
   // Kept on this device while writing: closing the tab doesn't lose it.
   const formRef = useRef<HTMLFormElement>(null);
@@ -209,6 +211,7 @@ function ConceptForm({
         body: text("body"),
         refs: text("refs"),
         hook: text("hook"),
+        talent,
         ...(concept ? {} : { status: form.get("share") ? "review" : "draft", position }),
       });
       keep.clear();
@@ -246,6 +249,7 @@ function ConceptForm({
         maxLength={200}
         placeholder="Your skin feels tight every morning? Not anymore."
       />
+      <TalentPicker clientId={clientId} value={talent} onChange={setTalent} />
       <TextArea
         label="The idea"
         name="body"
