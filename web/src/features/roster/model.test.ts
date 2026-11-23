@@ -23,6 +23,8 @@ const entry = (over: Partial<RosterEntry>): RosterEntry => ({
   tags: [],
   notes: "",
   rating: null,
+  email: "",
+  gear: [],
   hidden: false,
   author_name: "",
   created_at: "",
