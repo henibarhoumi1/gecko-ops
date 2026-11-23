@@ -6,6 +6,8 @@ describe("navFor", () => {
   it("gives the founder everything", () => {
     expect(paths("founder")).toEqual([
       "today",
+      "ceo",
+      "calendar",
       "pipeline",
       "clients",
       "shoots",
@@ -35,13 +37,28 @@ describe("navFor", () => {
   });
 
   it("gives editors the clients they are on, their shoots, and the team list", () => {
-    expect(paths("editor")).toEqual(["today", "clients", "shoots", "talent", "locations", "team"]);
+    expect(paths("editor")).toEqual([
+      "today",
+      "calendar",
+      "clients",
+      "shoots",
+      "talent",
+      "locations",
+      "team",
+    ]);
   });
 
   it("gives everyone on the team the shoots", () => {
     for (const role of ["founder", "sales", "editor", "assistant"] as const)
       expect(paths(role)).toContain("shoots");
-    expect(paths("assistant")).toEqual(["today", "shoots", "talent", "locations", "team"]);
+    expect(paths("assistant")).toEqual([
+      "today",
+      "calendar",
+      "shoots",
+      "talent",
+      "locations",
+      "team",
+    ]);
   });
 
   it("gives everyone a screen to land on", () => {
@@ -54,6 +71,8 @@ describe("sidebar groups", () => {
   it("puts Today first, the work in the middle, the studio last", () => {
     const groups = navFor("founder").map((n) => n.group);
     expect(groups).toEqual([
+      "home",
+      "home",
       "home",
       "work",
       "work",
