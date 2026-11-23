@@ -21,9 +21,10 @@ export function WritingTabs({ tabs, initial }: { tabs: WritingTab[]; initial?: s
     function onKey(e: KeyboardEvent) {
       if (!e.altKey || e.metaKey || e.ctrlKey) return;
       const n = Number(e.code.replace("Digit", ""));
-      if (n >= 1 && n <= tabs.length) {
+      const tab = n >= 1 ? tabs[n - 1] : undefined;
+      if (tab) {
         e.preventDefault();
-        setOpen(tabs[n - 1].key);
+        setOpen(tab.key);
       }
     }
     window.addEventListener("keydown", onKey);
@@ -47,9 +48,11 @@ export function WritingTabs({ tabs, initial }: { tabs: WritingTab[]; initial?: s
             onClick={() => setOpen(tab.key)}
             onKeyDown={(e) => {
               if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
-              const next = tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length];
+              const at = (i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length;
+              const next = tabs[at];
+              if (!next) return;
               setOpen(next.key);
-              (e.currentTarget.parentElement?.children[tabs.indexOf(next)] as HTMLElement)?.focus();
+              (e.currentTarget.parentElement?.children[at] as HTMLElement | undefined)?.focus();
             }}
           >
             {tab.label}
