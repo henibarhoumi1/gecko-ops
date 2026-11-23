@@ -53,6 +53,13 @@ const KINDS: { kind: OptionKind; title: string; add: string; empty: string }[] =
     add: "Add a prop",
     empty: "No props yet. List what Gecko buys and what the client brings.",
   },
+  {
+    kind: "cost",
+    title: "Costs and fees",
+    add: "Add a cost",
+    empty:
+      "No costs yet. Transport, gear rental, a studio, permits, catering: each one is shared with the client and approved like the rest.",
+  },
 ];
 
 /** Talent, locations, props and the budget, from the team's side. */
@@ -354,9 +361,9 @@ function OptionForm({
             placeholder="La Marsa"
           />
         )}
-        {kind === "prop" && (
+        {(kind === "prop" || kind === "cost") && (
           <Select
-            label="Who brings it"
+            label={kind === "cost" ? "Who pays" : "Who brings it"}
             name="boughtBy"
             defaultValue={option?.boughtBy ?? "gecko"}
             options={[
@@ -385,7 +392,7 @@ function OptionForm({
       {committed && (
         <p className="small muted">Changing the cost sends it back to the client for a new yes.</p>
       )}
-      {kind !== "prop" && (
+      {kind !== "prop" && kind !== "cost" && (
         <Field
           label={kind === "talent" ? "Availability on the shoot date" : "Time slot"}
           name="when"
@@ -394,7 +401,7 @@ function OptionForm({
           placeholder={kind === "talent" ? "Free on 12 Nov" : "12 Nov, 8:00 to 18:00"}
         />
       )}
-      {kind !== "prop" && (
+      {kind !== "prop" && kind !== "cost" && (
         <Field
           label={kind === "talent" ? "Instagram or portfolio link" : "Listing link"}
           name="link"
@@ -434,7 +441,9 @@ function OptionForm({
           defaultValue={option?.usage}
         />
       )}
-      {kind !== "prop" && <PhotoPicker target={target} value={photos} onChange={setPhotos} />}
+      {kind !== "prop" && kind !== "cost" && (
+        <PhotoPicker target={target} value={photos} onChange={setPhotos} />
+      )}
       <TextArea
         label={
           kind === "talent"

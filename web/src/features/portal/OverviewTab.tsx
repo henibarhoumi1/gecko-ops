@@ -163,6 +163,7 @@ function waitingOnYou(
       ["talent", "/talent"],
       ["location", "/locations"],
       ["prop", "/budget"],
+      ["cost", "/budget"],
     ] as const) {
       const n = production.filter((o) => o.kind === kind && o.status === "proposed").length;
       if (n === 0) continue;

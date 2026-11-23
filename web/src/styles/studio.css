@@ -3273,3 +3273,8 @@ section.budget,
     inset 3px 0 0 var(--blue),
     inset 0 0 0 1px var(--hair);
 }
+
+.seg-cost,
+.key-cost {
+  background: var(--ink);
+}
