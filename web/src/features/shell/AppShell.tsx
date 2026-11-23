@@ -11,6 +11,7 @@ import { UndoBar } from "@/features/trash/UndoBar";
 import { memberLabel, ROLE_LABEL, useMembers } from "@/features/workspace/members";
 import { CommandPalette, openPalette } from "./CommandPalette";
 import { Toaster } from "@/components/Toast";
+import { Shortcuts } from "./Shortcuts";
 import { GROUP_LABEL, navFor, type NavGroup } from "./nav";
 
 const GROUPS: NavGroup[] = ["home", "work", "studio"];
@@ -18,6 +19,9 @@ const GROUPS: NavGroup[] = ["home", "work", "studio"];
 /** One line icon per section (24 px grid, drawn with the stroke of the text). */
 const ICONS: Record<string, string> = {
   today: "M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1z",
+  ceo: "M4 19h16M6 16V11M10 16V7M14 16v-6M18 16V5",
+  calendar:
+    "M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zM4 10h16M8 4v4M16 4v4",
   pipeline: "M4 6h16M7 12h10M10 18h4",
   clients:
     "M4 20a6 6 0 0 1 12 0M10 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM17 11a3.2 3.2 0 1 0 0-6.4M20 20a5 5 0 0 0-3-4.6",
@@ -90,6 +94,7 @@ export function AppShell({ workspace, email }: { workspace: Workspace; email: st
       </main>
       <CommandPalette role={workspace.role} />
       <Toaster />
+      <Shortcuts allowed={items.map((i) => i.path)} />
       <UndoBar workspaceId={workspace.id} />
       <Tour steps={teamSteps()} storageKey="gecko.tour.team" />
     </div>
