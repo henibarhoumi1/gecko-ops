@@ -7,6 +7,9 @@ import { friendlyError } from "@/lib/errors";
 import { todayIso } from "@/lib/dates";
 import { LeadDialog, blankLead } from "./LeadDialog";
 import { LeadPanel } from "./LeadPanel";
+import { OutreachSession } from "./OutreachSession";
+import { CrmTable } from "./CrmTable";
+import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import type { LeadInput, LeadPatch } from "./leadsApi";
 import { newLeadId, useAddLeads, useLeads, usePatchLeads } from "./leadsApi";
 import {
@@ -39,13 +42,16 @@ export function PipelinePage() {
   const members = useMembers();
   const patch = usePatchLeads();
   const [editing, setEditing] = useState<Editing>(null);
-  const [view, setView] = useState<"list" | "board">("list");
+  const { role } = useWorkspace();
+  const [view, setView] = useState<"list" | "table" | "board">("list");
   const [filter, setFilter] = useState<Filter>("open");
   const [search, setSearch] = useState("");
   const [adding, setAdding] = useState(false);
   // Today links straight to a lead: /pipeline?lead=<id> opens its panel.
   const [params] = useSearchParams();
   const [openId, setOpenId] = useState<string | null>(() => params.get("lead"));
+  // Home's "Follow-ups due" opens straight into a session: /pipeline?view=outreach.
+  const [session, setSession] = useState(() => params.get("view") === "outreach");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const today = todayIso();
   const closePanel = useCallback(() => setOpenId(null), []);
@@ -118,10 +124,21 @@ export function PipelinePage() {
           </p>
         </div>
         <div className="actions">
-          <Button variant="secondary" onClick={() => setView(view === "list" ? "board" : "list")}>
-            {view === "list" ? "Board view" : "List view"}
+          {!session && (
+            <Button onClick={() => setSession(true)}>
+              Start outreach{due.length > 0 && ` · ${due.length}`}
+            </Button>
+          )}
+          <div className="seg" role="group" aria-label="View">
+            {(["list", "table", "board"] as const).map((v) => (
+              <button key={v} type="button" aria-pressed={view === v} onClick={() => setView(v)}>
+                {v === "list" ? "List" : v === "table" ? "Table" : "Board"}
+              </button>
+            ))}
+          </div>
+          <Button variant="secondary" onClick={() => setAdding(!adding)}>
+            {adding ? "Close" : "Add leads"}
           </Button>
-          <Button onClick={() => setAdding(!adding)}>{adding ? "Close" : "Add leads"}</Button>
         </div>
       </header>
 
@@ -149,7 +166,16 @@ export function PipelinePage() {
       )}
       {patch.isError && <Notice tone="error">{friendlyError(patch.error)}</Notice>}
 
-      {view === "board" ? (
+      {session ? (
+        <OutreachSession
+          leads={all}
+          members={members.data}
+          me={me}
+          today={today}
+          onClose={() => setSession(false)}
+          onOpenLead={(id) => setOpenId(id)}
+        />
+      ) : view === "board" ? (
         <Board
           leads={all}
           members={members.data}
@@ -237,6 +263,15 @@ export function PipelinePage() {
                   ? "Nobody to touch today. Good."
                   : "No lead matches."}
             </p>
+          ) : view === "table" ? (
+            <CrmTable
+              leads={shown}
+              members={members.data}
+              today={today}
+              canDelete={role === "founder" || role === "sales"}
+              openId={openId}
+              onOpen={(id) => setOpenId(id)}
+            />
           ) : (
             <ul className="pipe-list">
               {shown.map((lead) => (

@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { committedByKind, wouldGoOver, type Budget, type ProductionOption } from "./model";
+import {
+  committedByKind,
+  talentReady,
+  talentWaiting,
+  wouldGoOver,
+  type Budget,
+  type ProductionOption,
+} from "./model";
 
 const option = (o: Partial<ProductionOption>): ProductionOption => ({
   id: "x",
@@ -60,5 +67,21 @@ describe("committedByKind", () => {
       option({ kind: "prop", cost: 90, status: "approved", boughtBy: "client" }),
     ]);
     expect(by).toEqual({ talent: 400, location: 700, prop: 0 });
+  });
+});
+
+describe("talent needs two yeses", () => {
+  it("is ready only once the brand and Gecko both said yes", () => {
+    const t = { kind: "talent" as const, status: "approved" as const };
+    expect(talentReady(t, null)).toBe(false);
+    expect(talentReady(t, { studioAt: "2026-11-23" })).toBe(true);
+    expect(talentReady({ kind: "location", status: "approved" }, null)).toBe(true);
+  });
+  it("says who is still to answer", () => {
+    expect(talentWaiting({ kind: "talent", status: "proposed" }, null)).toBe("both");
+    expect(talentWaiting({ kind: "talent", status: "proposed" }, { studioAt: "x" })).toBe("brand");
+    expect(talentWaiting({ kind: "talent", status: "approved" }, null)).toBe("gecko");
+    expect(talentWaiting({ kind: "talent", status: "booked" }, { studioAt: "x" })).toBe("ready");
+    expect(talentWaiting({ kind: "talent", status: "passed" }, { studioAt: "x" })).toBe("passed");
   });
 });

@@ -9,16 +9,17 @@ describe("navFor", () => {
       "pipeline",
       "clients",
       "shoots",
+      "talent",
+      "locations",
       "team",
       "alerts",
       "trash",
     ]);
   });
 
-  it("lands the founder and producers on Today, editors on their clients", () => {
-    expect(paths("founder")[0]).toBe("today");
-    expect(paths("sales")[0]).toBe("today");
-    expect(paths("editor")[0]).toBe("clients");
+  it("lands everyone on Home (today): one dashboard, the founder just sees more", () => {
+    for (const role of ["founder", "sales", "editor", "assistant"] as const)
+      expect(paths(role)[0]).toBe("today");
   });
 
   it("keeps the pipeline to the founder and client leads", () => {
@@ -34,13 +35,13 @@ describe("navFor", () => {
   });
 
   it("gives editors the clients they are on, their shoots, and the team list", () => {
-    expect(paths("editor")).toEqual(["clients", "shoots", "team"]);
+    expect(paths("editor")).toEqual(["today", "clients", "shoots", "talent", "locations", "team"]);
   });
 
-  it("gives everyone on the team the shoots, and lands production on them", () => {
+  it("gives everyone on the team the shoots", () => {
     for (const role of ["founder", "sales", "editor", "assistant"] as const)
       expect(paths(role)).toContain("shoots");
-    expect(paths("assistant")[0]).toBe("shoots");
+    expect(paths("assistant")).toEqual(["today", "shoots", "talent", "locations", "team"]);
   });
 
   it("gives everyone a screen to land on", () => {
@@ -52,6 +53,16 @@ describe("navFor", () => {
 describe("sidebar groups", () => {
   it("puts Today first, the work in the middle, the studio last", () => {
     const groups = navFor("founder").map((n) => n.group);
-    expect(groups).toEqual(["home", "work", "work", "work", "studio", "studio", "studio"]);
+    expect(groups).toEqual([
+      "home",
+      "work",
+      "work",
+      "work",
+      "work",
+      "work",
+      "studio",
+      "studio",
+      "studio",
+    ]);
   });
 });

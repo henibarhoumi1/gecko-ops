@@ -6,6 +6,7 @@ import { IMAGE_TYPES, uploadImage, useImageUrl } from "@/features/board/boardApi
 import { shortDate } from "@/features/concepts/model";
 import { dt } from "@/features/portal/portalApi";
 import { friendlyError } from "@/lib/errors";
+import type { TalentApproval } from "./productionApi";
 import { t } from "@/lib/i18n";
 import {
   committedByKind,
@@ -426,5 +427,71 @@ export function CommentBox({ onSend }: { onSend: (body: string) => Promise<unkno
         </Button>
       </div>
     </form>
+  );
+}
+
+/**
+ * Talent needs two yeses: Gecko's (the founder) and the brand owner's. Shown on every talent card, on both sides.
+ * The founder gets the button on the team side.
+ */
+export function TalentYeses({
+  option,
+  approval,
+  reader,
+  onStudio,
+  busy,
+}: {
+  option: ProductionOption;
+  approval: TalentApproval | undefined;
+  reader: "client" | "team";
+  /** Only for the founder, on the team side. */
+  onStudio?: (ok: boolean) => void;
+  busy?: boolean;
+}) {
+  if (option.kind !== "talent" || option.status === "suggested") return null;
+  const studio = approval?.studioAt ? approval : null;
+  const brand = approval?.brandAt ? approval : null;
+  return (
+    <div className="talent-yeses">
+      <p className="small">
+        <span className={studio ? "yes" : "wait"} aria-hidden="true">
+          {studio ? "✓" : "○"}
+        </span>{" "}
+        <strong>Gecko</strong>{" "}
+        {studio
+          ? t(
+              `approved (${studio.studioBy ?? "Gecko"}, ${shortDate(studio.studioAt!)})`,
+              `a validé (${studio.studioBy ?? "Gecko"}, ${shortDate(studio.studioAt!)})`,
+            )
+          : t("hasn't approved yet", "n'a pas encore validé")}
+        {onStudio && (
+          <>
+            {" "}
+            <Button variant="link" disabled={busy} onClick={() => onStudio(!studio)}>
+              {studio ? "Take back" : "Approve for Gecko"}
+            </Button>
+          </>
+        )}
+      </p>
+      <p className="small">
+        <span className={brand ? "yes" : "wait"} aria-hidden="true">
+          {brand ? "✓" : "○"}
+        </span>{" "}
+        <strong>
+          {reader === "client" ? t("Brand owner", "Responsable de la marque") : "Brand owner"}
+        </strong>{" "}
+        {brand
+          ? t(
+              `approved (${brand.brandBy ?? ""}, ${shortDate(brand.brandAt!)})`,
+              `a validé (${brand.brandBy ?? ""}, ${shortDate(brand.brandAt!)})`,
+            )
+          : t("hasn't approved yet", "n'a pas encore validé")}
+      </p>
+      {studio && brand && (
+        <p className="small">
+          <strong>{t("Ready to shoot", "Prêt pour le tournage")}</strong>
+        </p>
+      )}
+    </div>
   );
 }

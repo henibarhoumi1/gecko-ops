@@ -1,83 +1,212 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
+import { Notice } from "@/components/Notice";
 import { Select } from "@/components/Select";
-import { isCommitted, talentRole, type ProductionOption } from "@/features/production/model";
-import { useTeamProduction } from "@/features/production/productionApi";
+import {
+  isCommitted,
+  talentRole,
+  talentWaiting,
+  type ProductionOption,
+} from "@/features/production/model";
+import { useTalentApprovals, useTeamProduction } from "@/features/production/productionApi";
+import {
+  setsForProject,
+  useCurrentProject,
+  useProjectSets,
+  useSetActions,
+} from "@/features/projects/setsApi";
+import { friendlyError } from "@/lib/errors";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { cleanText } from "@/features/scripts/clean";
 import type { Script, ShootPlan } from "@/features/scripts/model";
 
-/** The client's approved talent, sets and props: what a script can be shot with. */
-export function useApprovedProduction(clientId: string) {
+/**
+ * What a script can be shot with: the client's talent (with where each stands: Gecko's yes and the brand owner's),
+ * the campaign's set list, and the approved props. "named" turns any picked id into a name, sets included.
+ */
+export function useApprovedProduction(clientId: string, projectId?: string | null) {
   const { id: workspaceId } = useWorkspace();
-  const production = useTeamProduction({ workspaceId, clientId });
-  const ok = (production.data?.options ?? []).filter(isCommitted);
+  const target = useMemo(() => ({ workspaceId, clientId }), [workspaceId, clientId]);
+  const production = useTeamProduction(target);
+  const approvals = useTalentApprovals(target);
+  const allSets = useProjectSets(clientId);
+  const all = production.data?.options ?? [];
+  const ok = all.filter(isCommitted);
+  const order = { ready: 0, gecko: 1, brand: 2, both: 3, passed: 4 } as const;
+  const talent = all
+    .filter((o) => o.kind === "talent" && o.status !== "suggested" && o.status !== "passed")
+    .map((o) => ({ option: o, stands: talentWaiting(o, approvals.data?.[o.id]) }))
+    .sort(
+      (a, b) => order[a.stands] - order[b.stands] || a.option.name.localeCompare(b.option.name),
+    );
+  const sets = setsForProject(allSets.data ?? [], projectId ?? null);
+  // Scripts written before the set list picked an approved location; those still show.
+  const places = ok.filter((o) => o.kind === "location");
   return {
-    talent: ok.filter((o) => o.kind === "talent"),
-    sets: ok.filter((o) => o.kind === "location"),
+    talent,
+    sets,
+    places,
     props: ok.filter((o) => o.kind === "prop"),
-    all: production.data?.options ?? [],
+    all,
+    named: [...all, ...(allSets.data ?? [])].map((x) => ({ id: x.id, name: x.name })),
   };
 }
 
-/** Who plays it, where, with what. Picks from what the client approved in Production. */
+const STANDS: Record<string, string> = {
+  ready: "approved by both",
+  gecko: "waiting for Gecko",
+  brand: "waiting for the brand owner",
+  both: "waiting for both",
+};
+
+/** One or more talent for an idea: the client's talent, with where each one's approvals stand. */
+export function TalentPicker({
+  clientId,
+  value,
+  onChange,
+}: {
+  clientId: string;
+  value: string[];
+  onChange: (ids: string[]) => void;
+}) {
+  const { talent } = useApprovedProduction(clientId);
+  return (
+    <div className="shoot-plan-row">
+      <span className="small">
+        <strong>Talent</strong> (one or more, optional)
+      </span>
+      {talent.length === 0 ? (
+        <span className="small">No talent proposed yet. Propose some in Production.</span>
+      ) : (
+        <div className="chips">
+          {talent.map(({ option: o, stands }) => (
+            <button
+              key={o.id}
+              type="button"
+              className={`chip talent-${stands}`}
+              aria-pressed={value.includes(o.id)}
+              title={STANDS[stands]}
+              onClick={() =>
+                onChange(value.includes(o.id) ? value.filter((x) => x !== o.id) : [...value, o.id])
+              }
+            >
+              {stands === "ready" ? "✓ " : ""}
+              {o.name}
+              {stands !== "ready" ? ` · ${STANDS[stands]}` : ""}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** Who plays it, on which set, with what. Talent can be picked while its approvals come in; the set comes from the campaign's set list. */
 export function ShootPlanPicker({
   clientId,
+  projectId,
   plan,
   onChange,
 }: {
   clientId: string;
+  projectId?: string | null;
   plan: ShootPlan;
   onChange: (plan: ShootPlan) => void;
 }) {
-  const { talent, sets, props } = useApprovedProduction(clientId);
+  const current = useCurrentProject(clientId);
+  const campaign = projectId ?? current.id;
+  const { talent, sets, places, props } = useApprovedProduction(clientId, campaign);
+  const setActions = useSetActions(clientId);
+  const [newSet, setNewSet] = useState("");
+  const [error, setError] = useState("");
   const toggle = (list: string[] | undefined, id: string) =>
     (list ?? []).includes(id) ? (list ?? []).filter((x) => x !== id) : [...(list ?? []), id];
+
+  async function addSet() {
+    const name = newSet.trim();
+    if (!name) return;
+    setError("");
+    try {
+      const id = await setActions.add.mutateAsync({
+        name,
+        projectId: campaign,
+        position: (sets.at(-1)?.position ?? 0) + 1,
+      });
+      onChange({ ...plan, set: id });
+      setNewSet("");
+    } catch (e) {
+      setError(friendlyError(e));
+    }
+  }
+
+  const setOptions: (readonly [string, string])[] = [
+    ["", "Not picked yet"],
+    ...sets.map((o) => [o.id, o.name] as const),
+    ...places.map((o) => [o.id, `${o.name} (place)`] as const),
+  ];
 
   return (
     <fieldset className="fieldset shoot-plan">
       <legend>Shoot plan · who, where, what</legend>
       <div className="shoot-plan-row">
         <span className="small">
-          <strong>Talent</strong>
+          <strong>Talent</strong> (one or more)
         </span>
         {talent.length === 0 ? (
-          <span className="small">No approved talent yet. Propose some in Production.</span>
+          <span className="small">No talent proposed yet. Propose some in Production.</span>
         ) : (
           <div className="chips">
-            {talent.map((o) => (
+            {talent.map(({ option: o, stands }) => (
               <button
                 key={o.id}
                 type="button"
-                className="chip"
+                className={`chip talent-${stands}`}
                 aria-pressed={(plan.talent ?? []).includes(o.id)}
+                title={STANDS[stands]}
                 onClick={() => onChange({ ...plan, talent: toggle(plan.talent, o.id) })}
               >
+                {stands === "ready" ? "✓ " : ""}
                 {o.name}
                 {o.role ? ` · ${talentRole(o.role)}` : ""}
+                {stands !== "ready" ? ` · ${STANDS[stands]}` : ""}
               </button>
             ))}
           </div>
         )}
       </div>
       <div className="shoot-plan-row">
-        {sets.length === 0 ? (
-          <>
-            <span className="small">
-              <strong>Set</strong>
-            </span>
-            <span className="small">No approved place yet. Propose one in Production.</span>
-          </>
-        ) : (
-          <Select
-            label="Set"
-            name="shoot-set"
-            value={plan.set ?? ""}
-            onChange={(e) => onChange({ ...plan, set: e.target.value || null })}
-            options={[["", "Not picked yet"], ...sets.map((o) => [o.id, o.name] as const)]}
+        <Select
+          label="Set"
+          name="shoot-set"
+          value={plan.set ?? ""}
+          onChange={(e) => onChange({ ...plan, set: e.target.value || null })}
+          options={setOptions}
+        />
+        <div className="set-quick">
+          <Field
+            label="New set for this campaign"
+            name="shoot-new-set"
+            value={newSet}
+            maxLength={120}
+            placeholder="Kitchen counter"
+            onChange={(e) => setNewSet(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                void addSet();
+              }
+            }}
           />
-        )}
+          <Button
+            variant="secondary"
+            disabled={!newSet.trim() || setActions.add.isPending}
+            onClick={() => void addSet()}
+          >
+            Add set
+          </Button>
+        </div>
+        {error && <Notice tone="error">{error}</Notice>}
       </div>
       <div className="shoot-plan-row">
         <span className="small">
@@ -118,7 +247,7 @@ export function CleanCopy({
   onClose,
 }: {
   script: Script;
-  options: ProductionOption[];
+  options: Pick<ProductionOption, "id" | "name">[];
   onClose: () => void;
 }) {
   const text = cleanText(script, options);

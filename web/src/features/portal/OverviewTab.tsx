@@ -257,6 +257,58 @@ const HOME_LINKS = () => [
   },
 ];
 
+/** Three facts at a glance under the stages: what's next and when, where the scripts are, what's owed. */
+function Glance({ data, showMoney }: { data: PortalData; showMoney: boolean }) {
+  const o = data.overview;
+  const today = new Date().toISOString().slice(0, 10);
+  const nextMilestone = (o?.milestones ?? []).find((m) => !m.done && m.date && m.date >= today);
+  const shoot = o?.shootDate && o.shootDate >= today ? o.shootDate : null;
+  const next =
+    shoot && (!nextMilestone?.date || shoot <= nextMilestone.date)
+      ? { label: t("Shoot day", "Tournage"), date: shoot, to: "/shoot" }
+      : nextMilestone
+        ? { label: nextMilestone.label, date: nextMilestone.date!, to: "/" }
+        : null;
+  const approved = data.scripts.filter((x) => x.status === "approved").length;
+  const planned = o?.reels ?? data.scripts.length;
+  const due = o && o.price != null ? paymentLines(o).find((l) => l.state === "Due") : undefined;
+  const tiles = [
+    {
+      k: t("Next", "Ensuite"),
+      v: next ? shortDate(next.date) : t("To be set", "À fixer"),
+      d: next ? next.label : t("Gecko sets the dates with you", "Gecko fixe les dates avec vous"),
+      to: next?.to ?? "/",
+    },
+    {
+      k: t("Scripts approved", "Scripts validés"),
+      v: `${approved} / ${planned || "–"}`,
+      d: t("Read them, approve in one click", "Lisez-les, validez en un clic"),
+      to: "/scripts",
+    },
+    ...(showMoney && o && o.price != null
+      ? [
+          {
+            k: t("Payment", "Paiement"),
+            v: due?.amount != null ? dt(due.amount) : t("Up to date", "À jour"),
+            d: due ? due.label : t("Nothing to pay right now", "Rien à régler pour l'instant"),
+            to: "/#payment",
+          },
+        ]
+      : []),
+  ];
+  return (
+    <div className="glance">
+      {tiles.map((x) => (
+        <Link key={x.k} to={x.to} className="glance-tile">
+          <span className="glance-k">{x.k}</span>
+          <strong className="glance-v">{x.v}</strong>
+          <span className="small">{x.d}</span>
+        </Link>
+      ))}
+    </div>
+  );
+}
+
 export function OverviewTab({ data, target }: { data: PortalData; target: SheetTarget }) {
   const onboarding = useOnboardingStatus(target);
   const counts = countByStatus(data.concepts);
@@ -314,10 +366,13 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
         shootPlace={o?.shootPlace ?? ""}
       />
 
+      <Glance data={data} showMoney={seesMoney(role)} />
+
       <div className="home-grid">
         <div className="home-main">
           <h2 className="waiting-title">
             {t(`${first}, here's what needs you`, `${first}, voici ce qui vous attend`)}
+            {todo.length > 0 && <span className="today-count">{todo.length}</span>}
           </h2>
           {todo.length === 0 ? (
             <p className="waiting-none">
@@ -328,11 +383,19 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
             </p>
           ) : (
             <ul className="waiting">
-              {todo.map((item) => (
+              {todo.map((item, i) => (
                 <li key={item.to}>
-                  <Link to={item.to} className="waiting-item">
-                    <strong>{item.title}</strong>
-                    <span className="small">{item.detail}</span>
+                  <Link to={item.to} className={`waiting-item${i === 0 ? " waiting-first" : ""}`}>
+                    <span className="waiting-n" aria-hidden="true">
+                      {i + 1}
+                    </span>
+                    <span className="waiting-text">
+                      <strong>{item.title}</strong>
+                      <span className="small">{item.detail}</span>
+                    </span>
+                    <span className="waiting-go" aria-hidden="true">
+                      →
+                    </span>
                   </Link>
                 </li>
               ))}
