@@ -44,7 +44,7 @@ export function BrandDrawer({ sheet, never }: { sheet: BrandSheet; never: string
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
       >
-        <span>[ {t("Brand sheet", "Fiche marque")} ]</span>
+        <span>{t("Brand sheet", "Fiche marque")}</span>
         {never.length > 0 && (
           <span className="small muted">
             {t(`${never.length} words to avoid`, `${never.length} mots à éviter`)}

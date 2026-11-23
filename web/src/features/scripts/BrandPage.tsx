@@ -48,7 +48,7 @@ export function BrandPage({
         <>
           {sheet.oneline && (
             <p className="brand-line" dir="auto">
-              [ {sheet.oneline} ]
+              {sheet.oneline}
             </p>
           )}
           {never.length > 0 && (

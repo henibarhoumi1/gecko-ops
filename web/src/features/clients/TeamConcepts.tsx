@@ -1,3 +1,4 @@
+import { WritingTabs, useSaveKeys } from "@/components/WritingTabs";
 import { IdeaStarters } from "@/features/concepts/IdeaStarters";
 import { DraftNotice } from "@/components/DraftNotice";
 import { useFormDraft } from "@/lib/drafts";
@@ -6,7 +7,6 @@ import { useHashScroll } from "@/lib/useHashScroll";
 import { useState, type FormEvent, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/Button";
-import { Field } from "@/components/Field";
 import { Notice } from "@/components/Notice";
 import { Select } from "@/components/Select";
 import { TextArea } from "@/components/TextArea";
@@ -197,6 +197,7 @@ function ConceptForm({
   // Kept on this device while writing: closing the tab doesn't lose it.
   const formRef = useRef<HTMLFormElement>(null);
   const keep = useFormDraft(formRef, `idea.${clientId}.${concept?.id ?? "new"}`);
+  useSaveKeys(formRef);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -222,54 +223,101 @@ function ConceptForm({
   }
 
   return (
-    <form ref={formRef} className="card stack concept-edit" onSubmit={onSubmit}>
-      <h3>{concept ? `Edit "${concept.title}"` : "New idea"}</h3>
+    <form ref={formRef} className="write-space concept-edit" onSubmit={onSubmit}>
+      <div className="write-top">
+        <span className="eyebrow">{concept ? "Idea" : "New idea · kept on this device"}</span>
+        <div className="write-actions">
+          <Button
+            variant="link"
+            onClick={() => {
+              keep.clear();
+              onDone();
+            }}
+            disabled={save.isPending}
+          >
+            Cancel
+          </Button>
+          <Button type="submit" disabled={save.isPending} title="⌘S">
+            {concept ? "Save" : "Add idea"}
+          </Button>
+        </div>
+      </div>
       {keep.restored && <DraftNotice onDiscard={keep.discard} />}
-      {!concept && <IdeaStarters form={formRef} />}
-      <div className="row">
-        <Field
-          label="Title"
-          name="title"
-          defaultValue={concept?.title}
-          maxLength={160}
-          autoFocus
-          required
-        />
+      <input
+        className="write-title"
+        name="title"
+        aria-label="Title"
+        placeholder="Untitled idea"
+        defaultValue={concept?.title}
+        maxLength={160}
+        autoFocus
+        required
+      />
+      <div className="write-meta">
         <Select
           label="Format"
           name="format"
           defaultValue={concept?.format ?? "reel"}
           options={FORMATS}
         />
+        {!concept && (
+          <label className="check">
+            <input type="checkbox" name="share" /> Share with the client now
+          </label>
+        )}
+        <p className="small write-keys" aria-hidden="true">
+          ⌘S save · Alt+1–3 sections
+        </p>
       </div>
-      <Field
-        label="Hook line: the first words of the ad"
-        name="hook"
-        defaultValue={concept?.hook}
-        maxLength={200}
-        placeholder="Your skin feels tight every morning? Not anymore."
+      <WritingTabs
+        tabs={[
+          {
+            key: "idea",
+            label: "The idea",
+            body: (
+              <>
+                {!concept && <IdeaStarters form={formRef} />}
+                <input
+                  className="write-hook"
+                  name="hook"
+                  aria-label="Hook line: the first words of the ad"
+                  defaultValue={concept?.hook}
+                  maxLength={200}
+                  placeholder="Hook: the first words of the ad…"
+                />
+                <textarea
+                  className="write-body"
+                  name="body"
+                  aria-label="The idea"
+                  rows={10}
+                  defaultValue={concept?.body}
+                  maxLength={10000}
+                  placeholder="What happens, in a few lines: who, where, what we show, how it ends."
+                />
+              </>
+            ),
+          },
+          {
+            key: "talent",
+            label: "Talent",
+            badge: talent.length || undefined,
+            body: <TalentPicker clientId={clientId} value={talent} onChange={setTalent} />,
+          },
+          {
+            key: "refs",
+            label: "References",
+            body: (
+              <TextArea
+                label="One link per line"
+                name="refs"
+                rows={4}
+                defaultValue={concept?.refs}
+                maxLength={2000}
+              />
+            ),
+          },
+        ]}
       />
-      <TalentPicker clientId={clientId} value={talent} onChange={setTalent} />
-      <TextArea
-        label="The idea"
-        name="body"
-        rows={6}
-        defaultValue={concept?.body}
-        maxLength={10000}
-        placeholder="What happens, in a few lines: who, where, what we show, how it ends."
-      />
-      <TextArea
-        label="References (one link per line)"
-        name="refs"
-        rows={2}
-        defaultValue={concept?.refs}
-        maxLength={2000}
-      />
-      {!concept && (
-        <label className="check">
-          <input type="checkbox" name="share" /> Share with the client now
-        </label>
-      )}
       {shared && (
         <p className="small muted">
           Changing the title, format, hook, idea or references makes a new version, and the client
@@ -277,21 +325,6 @@ function ConceptForm({
         </p>
       )}
       {error && <Notice tone="error">{error}</Notice>}
-      <div className="actions">
-        <Button
-          variant="secondary"
-          onClick={() => {
-            keep.clear();
-            onDone();
-          }}
-          disabled={save.isPending}
-        >
-          Cancel
-        </Button>
-        <Button type="submit" disabled={save.isPending}>
-          {concept ? "Save" : "Add idea"}
-        </Button>
-      </div>
     </form>
   );
 }

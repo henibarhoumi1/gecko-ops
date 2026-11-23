@@ -196,6 +196,9 @@ export function useTeamProductionActions(target: ProductionTarget) {
 /** Talent needs Gecko's yes (the founder) and the brand's (the brand owner). One entry per talent of the client. */
 export interface TalentApproval {
   id: string;
+  kind?: string;
+  /** Gecko made the call: approved without waiting for the client. */
+  gecko?: boolean;
   studioBy: string | null;
   studioAt: string | null;
   brandBy: string | null;
@@ -218,18 +221,21 @@ export function useTalentApprovals(target: ProductionTarget) {
   });
 }
 
-/** The founder says yes for Gecko (or takes it back). */
+/** The founder says yes for Gecko, which is final (or takes it back). Any kind of option. */
 export function useSetStudioApproval(target: ProductionTarget) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (input: { id: string; ok: boolean }) => {
-      const { error } = await requireSupabase().rpc("set_talent_studio_approval", {
+      const { error } = await requireSupabase().rpc("set_studio_approval", {
         ...ids(target),
         p_id: input.id,
         p_ok: input.ok,
       });
       if (error) throw error;
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: approvalsKey(target) }),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: approvalsKey(target) });
+      queryClient.invalidateQueries({ queryKey: teamKey(target) });
+    },
   });
 }

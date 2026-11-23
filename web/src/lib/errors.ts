@@ -398,6 +398,16 @@ const MESSAGES: [RegExp, string, string][] = [
     "Seuls votre responsable, un valideur ou les finances peuvent accepter une dépense. Vous pouvez commenter.",
   ],
   [
+    /gecko_decided/,
+    "Gecko already approved this. You can still leave a comment.",
+    "Gecko l'a déjà validé. Vous pouvez laisser un commentaire.",
+  ],
+  [
+    /talent_owner_only/,
+    "Only the brand owner approves talent.",
+    "Seul le responsable de la marque valide les talents.",
+  ],
+  [
     /over_budget_owner/,
     "This goes over the budget, so your owner or finance needs to approve it.",
     "Cela dépasse le budget : votre responsable ou les finances doivent le valider.",

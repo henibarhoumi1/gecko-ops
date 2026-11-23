@@ -10,6 +10,7 @@ import type { TalentApproval } from "./productionApi";
 import { t } from "@/lib/i18n";
 import {
   committedByKind,
+  isCommitted,
   kindName,
   statusName,
   STEPS,
@@ -431,8 +432,8 @@ export function CommentBox({ onSend }: { onSend: (body: string) => Promise<unkno
 }
 
 /**
- * Talent needs two yeses: Gecko's (the founder) and the brand owner's. Shown on every talent card, on both sides.
- * The founder gets the button on the team side.
+ * Who said yes. Gecko's yes (the founder's) is final: the option is approved at once and the client is told.
+ * Without it, the client approves (for talent, only the brand owner). Shown on both sides, for every option.
  */
 export function TalentYeses({
   option,
@@ -448,49 +449,60 @@ export function TalentYeses({
   onStudio?: (ok: boolean) => void;
   busy?: boolean;
 }) {
-  if (option.kind !== "talent" || option.status === "suggested") return null;
+  if (option.status === "suggested" || option.status === "passed") return null;
   const studio = approval?.studioAt ? approval : null;
   const brand = approval?.brandAt ? approval : null;
+  const gecko = Boolean(approval?.gecko);
+  const ready = isCommitted(option);
+  const owner = option.kind === "talent";
   return (
-    <div className="talent-yeses">
-      <p className="small">
-        <span className={studio ? "yes" : "wait"} aria-hidden="true">
-          {studio ? "✓" : "○"}
-        </span>{" "}
-        <strong>Gecko</strong>{" "}
-        {studio
-          ? t(
-              `approved (${studio.studioBy ?? "Gecko"}, ${shortDate(studio.studioAt!)})`,
-              `a validé (${studio.studioBy ?? "Gecko"}, ${shortDate(studio.studioAt!)})`,
-            )
-          : t("hasn't approved yet", "n'a pas encore validé")}
-        {onStudio && (
-          <>
-            {" "}
-            <Button variant="link" disabled={busy} onClick={() => onStudio(!studio)}>
-              {studio ? "Take back" : "Approve for Gecko"}
-            </Button>
-          </>
-        )}
-      </p>
-      <p className="small">
-        <span className={brand ? "yes" : "wait"} aria-hidden="true">
-          {brand ? "✓" : "○"}
-        </span>{" "}
-        <strong>
-          {reader === "client" ? t("Brand owner", "Responsable de la marque") : "Brand owner"}
-        </strong>{" "}
-        {brand
-          ? t(
-              `approved (${brand.brandBy ?? ""}, ${shortDate(brand.brandAt!)})`,
-              `a validé (${brand.brandBy ?? ""}, ${shortDate(brand.brandAt!)})`,
-            )
-          : t("hasn't approved yet", "n'a pas encore validé")}
-      </p>
-      {studio && brand && (
-        <p className="small">
-          <strong>{t("Ready to shoot", "Prêt pour le tournage")}</strong>
+    <div className={`talent-yeses ${ready ? "is-ready" : ""}`}>
+      {ready ? (
+        <p className="yes-line">
+          <span className="yes" aria-hidden="true">
+            ✓
+          </span>{" "}
+          <strong>{t("Approved", "Validé")}</strong>{" "}
+          {gecko && studio
+            ? reader === "team"
+              ? `by Gecko (${studio.studioBy ?? "Gecko"}, ${shortDate(studio.studioAt!)}) · the client was told`
+              : t(
+                  `by Gecko, ${shortDate(studio.studioAt!)}`,
+                  `par Gecko, le ${shortDate(studio.studioAt!)}`,
+                )
+            : brand
+              ? t(
+                  `by ${brand.brandBy ?? ""}, ${shortDate(brand.brandAt!)}`,
+                  `par ${brand.brandBy ?? ""}, le ${shortDate(brand.brandAt!)}`,
+                )
+              : ""}
         </p>
+      ) : (
+        <p className="small">
+          <span className="wait" aria-hidden="true">
+            ○
+          </span>{" "}
+          {reader === "team"
+            ? owner
+              ? "Waiting for your yes or the brand owner's."
+              : "Waiting for your yes or the client's."
+            : owner
+              ? t(
+                  "Waiting for the brand owner's yes.",
+                  "En attente du oui du responsable de la marque.",
+                )
+              : t("Waiting for your yes.", "En attente de votre oui.")}
+        </p>
+      )}
+      {onStudio && (!ready || gecko) && (
+        <Button
+          variant={ready ? "link" : "primary"}
+          className="yes-btn"
+          disabled={busy}
+          onClick={() => onStudio(!(ready && gecko))}
+        >
+          {ready && gecko ? "Take back" : "Approve (final)"}
+        </Button>
       )}
     </div>
   );

@@ -68,9 +68,10 @@ export function TeamProduction({ clientId }: { clientId: string }) {
     <section className="tab-body production">
       <p className="lede">
         Propose talent, locations and props with their cost. The client approves each against the
-        budget; anything over it needs their owner or finance. Talent takes two yeses: Gecko's (the
-        founder) and the brand owner's. Book only what's approved, then mark it shot and paid so it
-        lands on the balance invoice.
+        budget; anything over it needs their owner or finance. Your yes is final: approve anything
+        and it's approved at once, the client is told. Otherwise the client says yes (talent: only
+        the brand owner). Book what's approved, then mark it shot and paid so it lands on the
+        balance invoice.
       </p>
       {budget && <BudgetMeter budget={budget} options={options} reader="team" />}
       <BudgetEditor target={target} budget={budget} />

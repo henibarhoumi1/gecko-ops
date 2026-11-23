@@ -117,7 +117,7 @@ export function Tour({ steps, storageKey }: { steps: TourStep[]; storageKey: str
         <p className="small tour-count">
           {at + 1} / {steps.length}
         </p>
-        <h2 id="tour-title">[ {step.title} ]</h2>
+        <h2 id="tour-title">{step.title}</h2>
         <p>{step.text}</p>
         <div className="tour-actions">
           <Button variant="link" onClick={close}>

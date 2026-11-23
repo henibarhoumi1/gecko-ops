@@ -33,7 +33,7 @@ export function useApprovedProduction(clientId: string, projectId?: string | nul
   const allSets = useProjectSets(clientId);
   const all = production.data?.options ?? [];
   const ok = all.filter(isCommitted);
-  const order = { ready: 0, gecko: 1, brand: 2, both: 3, passed: 4 } as const;
+  const order = { ready: 0, waiting: 1, passed: 2 } as const;
   const talent = all
     .filter((o) => o.kind === "talent" && o.status !== "suggested" && o.status !== "passed")
     .map((o) => ({ option: o, stands: talentWaiting(o, approvals.data?.[o.id]) }))
@@ -54,10 +54,8 @@ export function useApprovedProduction(clientId: string, projectId?: string | nul
 }
 
 const STANDS: Record<string, string> = {
-  ready: "approved by both",
-  gecko: "waiting for Gecko",
-  brand: "waiting for the brand owner",
-  both: "waiting for both",
+  ready: "approved",
+  waiting: "not approved yet",
 };
 
 /** One or more talent for an idea: the client's talent, with where each one's approvals stand. */
