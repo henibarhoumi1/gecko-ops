@@ -3361,3 +3361,94 @@ section.budget,
   color: #fff;
   box-shadow: none;
 }
+
+/* ---------- Client hub → campaign workspace ---------- */
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.crumbs a {
+  color: var(--ink);
+  opacity: 0.6;
+  text-decoration: none;
+}
+.crumbs a:hover {
+  opacity: 1;
+}
+.crumb-select {
+  width: auto;
+  padding: 4px 28px 4px 10px;
+  border-radius: 999px;
+  font: 700 13px/1.4 var(--font);
+}
+.client-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.client-top .client-title {
+  margin: 0;
+}
+.hub-block {
+  margin: 0 0 clamp(20px, 2vw, 32px);
+}
+.hub-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  margin-bottom: 12px;
+}
+.hub-head h2 {
+  margin: 0;
+}
+.hub-head .small {
+  opacity: 0.6;
+}
+.hub-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(170px, 14vw, 240px), 1fr));
+  gap: var(--gap);
+}
+.hub-tile {
+  display: grid;
+  gap: 4px;
+  padding: 16px 18px;
+  border-radius: var(--r-lg);
+  background: #fff;
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  text-decoration: none;
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+.hub-tile:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+.hub-tile .small {
+  opacity: 0.6;
+}
+.client-hub .projects-strip ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(260px, 22vw, 360px), 1fr));
+  gap: var(--gap);
+}
+.client-hub .project-card {
+  display: grid;
+  gap: 10px;
+  padding: 18px;
+}
+.project-open {
+  justify-self: start;
+  border: 0 !important;
+  background: var(--ink) !important;
+  color: #fff !important;
+}

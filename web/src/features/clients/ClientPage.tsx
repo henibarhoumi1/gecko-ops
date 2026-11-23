@@ -1,5 +1,14 @@
 import { useMemo } from "react";
-import { Link, NavLink, Navigate, Route, Routes, useLocation, useParams } from "react-router-dom";
+import {
+  Link,
+  NavLink,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 import { Notice } from "@/components/Notice";
 import { useActiveTabInView } from "@/components/useActiveTabInView";
 import { BoardRoute } from "@/features/board/BoardRoute";
@@ -31,6 +40,8 @@ import { TeamReview } from "./TeamReview";
 import { LibraryScreen } from "@/features/results/LibraryScreen";
 import { ResultsScreen } from "@/features/results/ResultsScreen";
 import { ProjectsStrip } from "@/features/projects/ProjectsStrip";
+import { useProjectChoice } from "@/features/projects/projectChoice";
+import { useProjects } from "@/features/projects/projectsApi";
 import { ShootScreen } from "@/features/shoot/ShootScreen";
 
 /** One client's portal, from the team's side. */
@@ -47,6 +58,7 @@ export function ClientPage() {
   const lead = workspace.role === "founder" || workspace.role === "sales";
   const logos = useLogos();
   const templates = useTemplates();
+  const navigate = useNavigate();
 
   if (clients.isPending) return <p className="loading">Loading…</p>;
   if (clients.isError) return <Notice tone="error">{friendlyError(clients.error)}</Notice>;
@@ -109,56 +121,114 @@ export function ClientPage() {
   const currentGroup =
     groups.find((g) => g.tabs.some(([p]) => p === here)) ?? groups.at(lead ? -1 : 0)!;
 
+  const hub = !section;
   return (
-    <section className={`page${onBoard ? " board-page" : ""}`}>
-      <p className="small">
-        <Link to="/clients">← Clients</Link>
-      </p>
-      <h1 className="client-title">
-        {logos.data?.[clientId] && (
-          <img className="client-title-logo" src={logos.data[clientId]} alt="" />
+    <section
+      className={`page${onBoard ? " board-page" : ""}${hub ? " client-hub" : " client-work"}`}
+    >
+      <nav className="crumbs small" aria-label="Where you are">
+        <Link to="/clients">Clients</Link>
+        <span aria-hidden="true">/</span>
+        {hub ? (
+          <span>{client.brand}</span>
+        ) : (
+          <>
+            <Link to={`/clients/${clientId}`}>{client.brand}</Link>
+            <span aria-hidden="true">/</span>
+            <CampaignSwitch target={target} />
+          </>
         )}
-        {client.brand}
-      </h1>
-      <div className="client-actions">
-        <ClientNudge clientId={clientId} />
-        {lead && (
-          <a
-            className="btn btn-secondary"
-            href={previewPath(clientId)}
-            target="_blank"
-            rel="noopener"
-            title="Opens the portal exactly as this client sees it, read-only, in a new tab"
-          >
-            View as client
-          </a>
-        )}
+      </nav>
+      <div className="client-top">
+        <h1 className="client-title">
+          {logos.data?.[clientId] && (
+            <img className="client-title-logo" src={logos.data[clientId]} alt="" />
+          )}
+          {client.brand}
+        </h1>
+        <div className="client-actions">
+          <ClientNudge clientId={clientId} />
+          {lead && (
+            <a
+              className="btn btn-secondary"
+              href={previewPath(clientId)}
+              target="_blank"
+              rel="noopener"
+              title="Opens the portal exactly as this client sees it, read-only, in a new tab"
+            >
+              View as client
+            </a>
+          )}
+        </div>
       </div>
       <Presence workspaceId={workspace.id} clientId={clientId} reader="team" />
-      {lead && <ProjectsStrip target={target} />}
-      <nav className="stage-tabs" aria-label={client.brand}>
-        {groups.map((g) => (
-          <NavLink
-            key={g.name}
-            to={`/clients/${clientId}${g.tabs[0]![0] ? `/${g.tabs[0]![0]}` : ""}`}
-            className={() => `stage-tab${g === currentGroup ? " active" : ""}`}
-          >
-            {g.name}
-          </NavLink>
-        ))}
-      </nav>
-      {currentGroup.tabs.length > 1 && (
+      {hub && (
+        <>
+          <section className="hub-block">
+            <div className="hub-head">
+              <h2>Campaigns</h2>
+              <p className="small">Open a campaign to write, prepare, shoot and review it.</p>
+            </div>
+            <ProjectsStrip target={target} onOpen={() => navigate(`/clients/${clientId}/room`)} />
+          </section>
+          <section className="hub-block">
+            <div className="hub-head">
+              <h2>The client</h2>
+            </div>
+            <div className="hub-tiles">
+              {(lead
+                ? [
+                    ["money", "Money", "Invoices, deposit, balance"],
+                    ["onboarding", "Onboarding", "What they told us"],
+                    ["brand", "Brand sheet", "Voice, words, never"],
+                    ["shared", "Shared", "Files and links"],
+                    ["history", "History", "Everything that happened"],
+                    ["logins", "Logins", "Who has access"],
+                  ]
+                : [
+                    ["brand", "Brand sheet", "Voice, words, never"],
+                    ["shared", "Shared", "Files and links"],
+                    ["history", "History", "Everything that happened"],
+                  ]
+              ).map(([path, label, hint]) => (
+                <Link key={path} to={`/clients/${clientId}/${path}`} className="hub-tile">
+                  <strong>{label}</strong>
+                  <span className="small">{hint}</span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        </>
+      )}
+      {!hub && (
+        <nav className="stage-tabs" aria-label={client.brand}>
+          {groups
+            .filter((g) => g.name !== "Client" || currentGroup === g)
+            .map((g) => (
+              <NavLink
+                key={g.name}
+                to={`/clients/${clientId}${g.tabs[0]![0] ? `/${g.tabs[0]![0]}` : ""}`}
+                className={() => `stage-tab${g === currentGroup ? " active" : ""}`}
+              >
+                {g.name}
+              </NavLink>
+            ))}
+        </nav>
+      )}
+      {!hub && currentGroup.tabs.length > 1 && (
         <nav className="portal-tabs" aria-label={currentGroup.name}>
-          {currentGroup.tabs.map(([path, label]) => (
-            <NavLink
-              key={path}
-              to={`/clients/${clientId}${path ? `/${path}` : ""}`}
-              end={!["whiteboard", "review", "money", "results", "shoot"].includes(path)}
-              className="portal-tab"
-            >
-              {label}
-            </NavLink>
-          ))}
+          {currentGroup.tabs
+            .filter(([path]) => path !== "")
+            .map(([path, label]) => (
+              <NavLink
+                key={path}
+                to={`/clients/${clientId}${path ? `/${path}` : ""}`}
+                end={!["whiteboard", "review", "money", "results", "shoot"].includes(path)}
+                className="portal-tab"
+              >
+                {label}
+              </NavLink>
+            ))}
         </nav>
       )}
       <Routes>
@@ -167,11 +237,14 @@ export function ClientPage() {
             <Route
               index
               element={
-                <>
+                <section className="hub-block">
+                  <div className="hub-head">
+                    <h2>Client details</h2>
+                  </div>
                   <LogoPanel clientId={clientId} brand={client.brand} />
                   <LookPanel clientId={clientId} brand={client.brand} />
                   <OverviewEditor clientId={clientId} />
-                </>
+                </section>
               }
             />
             <Route
@@ -201,7 +274,7 @@ export function ClientPage() {
             />
           </>
         ) : (
-          <Route index element={<Navigate to="concepts" replace />} />
+          <Route index element={null} />
         )}
         <Route path="room" element={<TeamRoom clientId={clientId} />} />
         <Route path="tasks" element={<TeamTasks clientId={clientId} />} />
@@ -278,5 +351,29 @@ export function ClientPage() {
         <Route path="*" element={<Navigate to={`/clients/${clientId}`} replace />} />
       </Routes>
     </section>
+  );
+}
+
+/** The campaign the workspace shows, switchable in the breadcrumb ("All campaigns" shows everything). */
+function CampaignSwitch({ target }: { target: { workspaceId: string; clientId: string } }) {
+  const list = useProjects(target);
+  const [chosen, choose] = useProjectChoice(target.workspaceId, target.clientId);
+  const projects = (list.data?.projects ?? []).filter((p) => p.status !== "archived");
+  const value = projects.some((p) => p.id === chosen) ? (chosen as string) : "";
+  return (
+    <select
+      className="crumb-select"
+      aria-label="Campaign"
+      value={value}
+      onChange={(e) => choose(e.target.value || null)}
+    >
+      <option value="">All campaigns</option>
+      {projects.map((p) => (
+        <option key={p.id} value={p.id}>
+          {p.name}
+          {p.status === "done" ? " (done)" : ""}
+        </option>
+      ))}
+    </select>
   );
 }
