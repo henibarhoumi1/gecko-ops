@@ -1,6 +1,8 @@
 // The top of Home, alive (Heni, 24 Nov 2026): a ticking clock, the weather in Tunis, a one-line brief, and the
 // buttons people reach for many times a day (a Meet, a calendar event, WhatsApp, Drive).
 import { useQuery } from "@tanstack/react-query";
+import { BrandIcon } from "@/components/BrandIcon";
+import type { BrandName } from "@/components/brands";
 import { useEffect, useState, type ReactNode } from "react";
 import { Icon, type IconName } from "@/components/Icon";
 import { openPalette } from "@/features/shell/CommandPalette";
@@ -117,27 +119,49 @@ export function LiveHeader({ greeting, brief }: { greeting: string; brief: React
   );
 }
 
-const QUICK: { label: string; href?: string; run?: () => void; icon: IconName; hint: string }[] = [
+const QUICK: {
+  label: string;
+  href?: string;
+  run?: () => void;
+  icon: IconName;
+  brand?: BrandName;
+  hint: string;
+}[] = [
   {
     label: "New Meet",
     href: "https://meet.google.com/new",
     icon: "video",
+    brand: "googlemeet",
     hint: "Opens a fresh Google Meet",
   },
   {
     label: "Calendar event",
     href: "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Gecko%20%C2%B7%20",
     icon: "calendar",
+    brand: "googlecalendar",
     hint: "New Google Calendar event",
   },
-  { label: "WhatsApp", href: "https://web.whatsapp.com/", icon: "chat", hint: "WhatsApp Web" },
+  {
+    label: "WhatsApp",
+    href: "https://web.whatsapp.com/",
+    icon: "chat",
+    brand: "whatsapp",
+    hint: "WhatsApp Web",
+  },
   {
     label: "Drive",
     href: "https://drive.google.com/drive/my-drive",
     icon: "folder",
+    brand: "googledrive",
     hint: "Google Drive",
   },
-  { label: "Mail", href: "https://mail.zoho.com/", icon: "mail", hint: "Your Gecko inbox" },
+  {
+    label: "Mail",
+    href: "https://mail.zoho.com/",
+    icon: "mail",
+    brand: "zoho",
+    hint: "Your Gecko inbox in Zoho Mail",
+  },
   { label: "Do anything", run: openPalette, icon: "command", hint: "⌘K: new idea, script, lead…" },
 ];
 
@@ -148,7 +172,7 @@ export function QuickActions() {
         q.href ? (
           <a key={q.label} href={q.href} target="_blank" rel="noreferrer noopener" title={q.hint}>
             <span className="qa-icon" aria-hidden="true">
-              <Icon name={q.icon} size={15} />
+              {q.brand ? <BrandIcon name={q.brand} size={16} /> : <Icon name={q.icon} size={15} />}
             </span>
             {q.label}
           </a>
