@@ -4119,3 +4119,80 @@ section.budget,
   text-decoration: underline;
   cursor: pointer;
 }
+
+/* ---------- Gecko content ---------- */
+.content-add {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.content-add input {
+  flex: 1;
+  padding: 10px 14px;
+}
+.content-board {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(200px, 1fr));
+  gap: var(--gap);
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+.content-col {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 200px;
+  padding: 10px;
+  border-radius: var(--r-lg);
+  box-shadow: inset 0 0 0 1px var(--hair);
+}
+.content-card {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border-radius: var(--r);
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+.content-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.content-meta input,
+.content-meta select,
+.content-hook {
+  min-width: 0;
+  padding: 6px 8px;
+  font-size: 12.5px;
+}
+.content-move {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.content-move button {
+  border: 0;
+  border-radius: 8px;
+  background: var(--blue-soft);
+  padding: 4px 10px;
+  font: 700 14px/1 var(--font);
+  cursor: pointer;
+}
+.content-move button:disabled {
+  opacity: 0.3;
+}
+.content-move .content-del {
+  background: none;
+  font-size: 12px;
+  text-decoration: underline;
+}
+.ads-table .ad-num {
+  width: 92px;
+  padding: 6px 8px;
+}
+.ads-table select {
+  width: auto;
+  padding: 4px 24px 4px 8px;
+  font-size: 12.5px;
+}
