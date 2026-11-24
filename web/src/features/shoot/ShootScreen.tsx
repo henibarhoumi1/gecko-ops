@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { CallSheetDocButton } from "./CallSheetDoc";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
@@ -358,6 +359,7 @@ function DayView({
               >
                 Send the call sheet
               </a>
+              <CallSheetDocButton brand={brand} day={day} clientId={target.clientId} />
               <Button
                 variant="secondary"
                 onClick={() => {
