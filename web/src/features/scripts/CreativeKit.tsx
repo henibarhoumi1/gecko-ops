@@ -2,6 +2,7 @@
 // Formats that work with their structure, hooks filled with the brand's name, angles to try, and one tap to put
 // a hook or a beat into the script.
 import { useState } from "react";
+import { useHookBank } from "@/features/tools/HookBank";
 import { FORMATS, STAGE_LABEL } from "@/features/tools/strategy";
 
 const ANGLES = [
@@ -40,9 +41,31 @@ export function CreativeKit({
   onBeat: (line: string) => void;
 }) {
   const [open, setOpen] = useState<string | null>(FORMATS[0]?.key ?? null);
+  const bank = useHookBank();
+  const winners = (bank.data ?? []).filter((h) => h.picked).slice(0, 8);
   const fill = (s: string) => s.replace(/\[brand\]/gi, brand || "the brand");
   return (
     <div className="kit">
+      {winners.length > 0 && (
+        <section className="kit-block">
+          <h3>From your hook bank</h3>
+          <p className="small muted">
+            Hooks clients picked before. Tap to reuse one as a starting point.
+          </p>
+          <div className="kit-chips">
+            {winners.map((h) => (
+              <button
+                key={h.key}
+                type="button"
+                className="kit-chip is-win"
+                onClick={() => onHook(h.line)}
+              >
+                {h.line}
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
       <section className="kit-block">
         <h3>Hooks to start from</h3>
         <p className="small muted">Tap one to add it as a hook option; fill the [brackets].</p>

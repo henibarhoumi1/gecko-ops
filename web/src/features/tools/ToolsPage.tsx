@@ -9,6 +9,7 @@ import { block, type Block } from "@/features/pages/blocks";
 import { usePageActions } from "@/features/pages/pagesApi";
 import { useMembers } from "@/features/workspace/members";
 import { friendlyError } from "@/lib/errors";
+import { HookBank } from "./HookBank";
 import { batch, deliverableName } from "./naming";
 import {
   campaignMix,
@@ -21,7 +22,7 @@ import {
   type Stage,
 } from "./strategy";
 
-type Tab = "strategy" | "formats" | "naming";
+type Tab = "strategy" | "formats" | "hooks" | "naming";
 
 export function ToolsPage() {
   const [tab, setTab] = useState<Tab>("strategy");
@@ -40,6 +41,7 @@ export function ToolsPage() {
           [
             ["strategy", "Campaign builder"],
             ["formats", "Formats that work"],
+            ["hooks", "Hook bank"],
             ["naming", "File names"],
           ] as const
         ).map(([k, label]) => (
@@ -57,6 +59,7 @@ export function ToolsPage() {
       </div>
       {tab === "strategy" && <Builder />}
       {tab === "formats" && <Formats />}
+      {tab === "hooks" && <HookBank />}
       {tab === "naming" && <Naming />}
     </section>
   );

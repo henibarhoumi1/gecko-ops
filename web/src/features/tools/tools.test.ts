@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { batch, code, deliverableName } from "./naming";
 import { campaignMix } from "./strategy";
+import { toBank } from "./hookBank";
 
 describe("deliverableName", () => {
   it("builds the standard name", () => {
@@ -38,5 +39,35 @@ describe("campaignMix", () => {
     const mix = campaignMix("launch", 10);
     expect(mix.reduce((s, m) => s + m.count, 0)).toBe(10);
     expect(mix.every((m) => m.formats.length > 0)).toBe(true);
+  });
+});
+
+describe("toBank", () => {
+  it("puts hooks clients picked and approved first, skips empty ones", () => {
+    const bank = toBank([
+      {
+        id: "a",
+        client_id: "c",
+        title: "A",
+        style: "ugc",
+        status: "draft",
+        hook: null,
+        hooks: [{ hear: "Old" }, {}],
+        updated_at: "2026-11-20",
+      },
+      {
+        id: "b",
+        client_id: "c",
+        title: "B",
+        style: "ugc",
+        status: "approved",
+        hook: 1,
+        hooks: [{ hear: "One" }, { hear: "Winner" }],
+        updated_at: "2026-11-01",
+      },
+    ]);
+    expect(bank[0]?.line).toBe("Winner");
+    expect(bank.map((h) => h.line)).not.toContain("");
+    expect(bank).toHaveLength(3);
   });
 });
