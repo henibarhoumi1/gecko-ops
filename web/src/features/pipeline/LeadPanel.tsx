@@ -5,6 +5,7 @@ import { whatsappTo } from "@/features/shoot/model";
 import type { Member } from "@/features/workspace/members";
 import { friendlyError } from "@/lib/errors";
 import { usePatchLeads, type LeadPatch } from "./leadsApi";
+import { CallPanel } from "./CallPanel";
 import { LeadToClient } from "./LeadToClient";
 import { ProposalPanel } from "./ProposalPanel";
 import { CHANNELS, OUTCOMES, STAGE_LABEL, STEPS, stepOf, type Lead, type Stage } from "./model";
@@ -221,6 +222,8 @@ export function LeadPanel({
           />
         </label>
       </div>
+
+      <CallPanel lead={lead} me={me} save={save} />
 
       <section className="lead-compose">
         <h3>Write the message</h3>

@@ -6,6 +6,10 @@ import type { ClientPortal } from "@/features/auth/account";
 import { AlertsPage } from "@/features/alerts/AlertsPage";
 import { CalendarPage } from "@/features/calendar/CalendarPage";
 import { CeoPage } from "@/features/ceo/CeoPage";
+import { FinancePage } from "@/features/finance/FinancePage";
+import { PagesPage } from "@/features/pages/PagesPage";
+import { ContentPage } from "@/features/content/ContentPage";
+import { ToolsPage } from "@/features/tools/ToolsPage";
 import { AuthProvider, useAuth } from "@/features/auth/AuthProvider";
 import { ForgotPage } from "@/features/auth/ForgotPage";
 import { InvitePage } from "@/features/auth/InvitePage";
@@ -67,11 +71,17 @@ const SCREENS: Record<string, () => ReactElement> = {
   shoots: () => <ShootsPage />,
   talent: () => <RosterPage key="talent" kind="talent" />,
   locations: () => <RosterPage key="location" kind="location" />,
+  creators: () => <RosterPage key="creator" kind="creator" />,
+  studios: () => <RosterPage key="studio" kind="studio" />,
   team: () => <TeamPage />,
   trash: () => <TrashPage />,
   alerts: () => <AlertsPage />,
   ceo: () => <CeoPage />,
   calendar: () => <CalendarPage />,
+  finance: () => <FinancePage />,
+  pages: () => <PagesPage />,
+  content: () => <ContentPage />,
+  tools: () => <ToolsPage />,
 };
 
 export function App() {

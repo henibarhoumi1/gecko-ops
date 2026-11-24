@@ -15,6 +15,7 @@ import {
   KIND_LABEL,
   parseTags,
   ROLES,
+  type GearItem,
   type RosterEntry,
   type RosterInput,
   type RosterKind,
@@ -37,6 +38,19 @@ const COPY: Record<RosterKind, { lead: string; empty: string; add: string; rate:
       "No locations yet. Add the places you shoot in, and propose them to a client in one click.",
     add: "Add a location",
     rate: "Rate (DT)",
+  },
+  creator: {
+    lead: "Gecko's bank of UGC creators: who films what, their rate, their audience and how to reach them.",
+    empty:
+      "No creators yet. Add the UGC creators you work with, and cast them for a client in one click.",
+    add: "Add a creator",
+    rate: "Rate per video (DT)",
+  },
+  studio: {
+    lead: "Rental houses and studios: the gear each one rents, the rates, and who to call.",
+    empty: "No studios yet. Add a rental house with its gear list and rates.",
+    add: "Add a studio",
+    rate: "Day rate for the space (DT)",
   },
 };
 
@@ -195,6 +209,21 @@ export function RosterPage({ kind }: { kind: RosterKind }) {
                   <span className="small">
                     {[e.role, e.city].filter(Boolean).join(" · ") || " "}
                   </span>
+                  {(e.gear ?? []).length > 0 && (
+                    <ul className="gear-list small">
+                      {(e.gear ?? []).slice(0, 4).map((g, i) => (
+                        <li key={i}>
+                          <span dir="auto">{g.name}</span>
+                          {g.rate != null && (
+                            <strong>
+                              {g.rate.toLocaleString("fr-FR")} DT{g.unit ? `/${g.unit}` : ""}
+                            </strong>
+                          )}
+                        </li>
+                      ))}
+                      {(e.gear ?? []).length > 4 && <li>+{(e.gear ?? []).length - 4} more</li>}
+                    </ul>
+                  )}
                   <div className="roster-meta">
                     {e.rate != null && (
                       <span className="roster-rate">
@@ -252,8 +281,14 @@ export function RosterPage({ kind }: { kind: RosterKind }) {
               </Button>
             </header>
             <p className="small">
-              It goes to the client&rsquo;s {kind === "talent" ? "Talent" : "Locations"} as a
-              proposal, with its cost against their budget. The phone number stays on the team side.
+              It goes to the client&rsquo;s{" "}
+              {kind === "talent" || kind === "creator"
+                ? "Talent"
+                : kind === "studio"
+                  ? "Costs and fees"
+                  : "Locations"}{" "}
+              as a proposal, with its cost against their budget. The phone number stays on the team
+              side.
             </p>
             <ul className="propose-list">
               {(clients.data ?? []).map((c) => (
@@ -300,6 +335,8 @@ const pick = (e: RosterEntry): RosterInput => ({
   tags: e.tags,
   notes: e.notes,
   rating: e.rating,
+  email: e.email ?? "",
+  gear: e.gear ?? [],
 });
 
 /** A steady colour per name for cards without a photo. */
@@ -447,6 +484,16 @@ function Editor({
               ))}
             </select>
           </label>
+          <label className="field">
+            <span>Email</span>
+            <input
+              type="email"
+              value={v.email}
+              onChange={(e) => set("email", e.target.value)}
+              maxLength={200}
+            />
+          </label>
+          {kind === "studio" && <GearEditor value={v.gear} onChange={(g) => set("gear", g)} />}
           <label className="field peek-wide">
             <span>Tags, separated by commas</span>
             <input
@@ -467,5 +514,64 @@ function Editor({
         </div>
       </form>
     </div>
+  );
+}
+
+/** The gear a studio rents: one row per item, with its rate and unit (day, half day, hour). */
+function GearEditor({ value, onChange }: { value: GearItem[]; onChange: (g: GearItem[]) => void }) {
+  const rows = value.length ? value : [];
+  const put = (i: number, patch: Partial<GearItem>) =>
+    onChange(rows.map((g, j) => (j === i ? { ...g, ...patch } : g)));
+  return (
+    <fieldset className="field peek-wide gear-editor">
+      <legend>Gear they rent</legend>
+      {rows.map((g, i) => (
+        <div key={i} className="gear-row">
+          <input
+            aria-label="Item"
+            placeholder="Sony FX3 kit"
+            value={g.name}
+            maxLength={120}
+            onChange={(e) => put(i, { name: e.target.value })}
+          />
+          <input
+            aria-label="Rate (DT)"
+            type="number"
+            min={0}
+            placeholder="DT"
+            value={g.rate ?? ""}
+            onChange={(e) =>
+              put(i, { rate: e.target.value === "" ? null : Number(e.target.value) })
+            }
+          />
+          <select
+            aria-label="Per"
+            value={g.unit}
+            onChange={(e) => put(i, { unit: e.target.value })}
+          >
+            <option value="day">per day</option>
+            <option value="half day">per half day</option>
+            <option value="hour">per hour</option>
+            <option value="">flat</option>
+          </select>
+          <button
+            type="button"
+            className="gear-x"
+            aria-label="Remove"
+            onClick={() => onChange(rows.filter((_, j) => j !== i))}
+          >
+            ×
+          </button>
+        </div>
+      ))}
+      {rows.length < 100 && (
+        <Button
+          variant="secondary"
+          onClick={() => onChange([...rows, { name: "", rate: null, unit: "day" }])}
+        >
+          Add gear
+        </Button>
+      )}
+    </fieldset>
   );
 }

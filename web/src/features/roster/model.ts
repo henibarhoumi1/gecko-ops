@@ -1,6 +1,13 @@
 // The studio's lists of talent and locations (supabase/migrations/202612040001_studio_roster.sql).
 
-export type RosterKind = "talent" | "location";
+export type RosterKind = "talent" | "location" | "creator" | "studio";
+
+/** One thing a studio rents, and its rate. */
+export interface GearItem {
+  name: string;
+  rate: number | null;
+  unit: string;
+}
 
 export interface RosterEntry {
   id: string;
@@ -18,6 +25,8 @@ export interface RosterEntry {
   tags: string[];
   notes: string;
   rating: number | null;
+  email: string;
+  gear: GearItem[];
   hidden: boolean;
   author_name: string;
   created_at: string;
@@ -39,16 +48,22 @@ export type RosterInput = Pick<
   | "tags"
   | "notes"
   | "rating"
+  | "email"
+  | "gear"
 >;
 
 export const ROLES: Record<RosterKind, string[]> = {
   talent: ["Actor", "Model", "Creator", "Voice", "Extra", "Host"],
   location: ["Studio", "Home", "Shop", "Café", "Outdoor", "Office"],
+  creator: ["UGC creator", "Influencer", "Reviewer", "Voice", "Faceless", "Family"],
+  studio: ["Rental house", "Photo studio", "Video studio", "Lighting", "Sound", "Drone"],
 };
 
 export const KIND_LABEL: Record<RosterKind, { one: string; many: string }> = {
   talent: { one: "Talent", many: "Talent" },
   location: { one: "Location", many: "Locations" },
+  creator: { one: "Creator", many: "UGC creators" },
+  studio: { one: "Studio", many: "Gear & studios" },
 };
 
 export function blank(kind: RosterKind): RosterInput {
@@ -66,6 +81,8 @@ export function blank(kind: RosterKind): RosterInput {
     tags: [],
     notes: "",
     rating: null,
+    email: "",
+    gear: [],
   };
 }
 

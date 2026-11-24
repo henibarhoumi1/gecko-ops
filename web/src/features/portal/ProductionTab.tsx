@@ -77,7 +77,7 @@ export function ProductionTab({
   if (page.isPending) return <p className="muted">{t("Loading…", "Chargement…")}</p>;
   if (page.isError) return <Notice tone="error">{friendlyError(page.error)}</Notice>;
   const { budget, options } = page.data;
-  const kinds: OptionKind[] = kind === "budget" ? ["prop"] : [kind];
+  const kinds: OptionKind[] = kind === "budget" ? ["prop", "cost"] : [kind];
   const mine = options.filter((o) => kinds.includes(o.kind));
   const waiting = mine.filter((o) => o.status === "proposed");
   const yes = mine.filter(isCommitted);
@@ -134,7 +134,9 @@ export function ProductionTab({
       )}
 
       {kind === "budget" && mine.length > 0 && (
-        <h2 className="section-title">{kindName("prop", true)}</h2>
+        <h2 className="section-title">
+          {kindName("prop", true)} · {kindName("cost", true)}
+        </h2>
       )}
       <Group title={t("Needs you", "À valider")} items={waiting} portal={portal} budget={budget} />
       <Group title={t("Approved", "Validé")} items={yes} portal={portal} budget={budget} />

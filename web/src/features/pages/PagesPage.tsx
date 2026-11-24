@@ -1,0 +1,650 @@
+// Pages and documents (Heni, 24 Nov 2026). Pages like Notion but simpler: type, press Enter, "/" for any block,
+// "## " for a heading, "[] " for a to-do. Documents are the same pages printed on Gecko paper: briefs, proposals,
+// call sheets, messages, exported to PDF (the browser's Save as PDF) or sent as text.
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import { Link, Route, Routes, useNavigate, useParams } from "react-router-dom";
+import { Button } from "@/components/Button";
+import { Notice } from "@/components/Notice";
+import { toast } from "@/components/Toast";
+import { useClients } from "@/features/clients/clientsApi";
+import { whatsappLink } from "@/features/clients/messages";
+import { useMembers } from "@/features/workspace/members";
+import { useWorkspace } from "@/features/workspace/WorkspaceContext";
+import { friendlyError } from "@/lib/errors";
+import {
+  block,
+  BLOCK_MENU,
+  shortcut,
+  TEMPLATES,
+  toText,
+  type Block,
+  type BlockType,
+  type Template,
+} from "./blocks";
+import { usePage, usePageActions, usePages } from "./pagesApi";
+
+export function PagesPage() {
+  return (
+    <Routes>
+      <Route index element={<PagesHome />} />
+      <Route path=":pageId" element={<PageEditor />} />
+    </Routes>
+  );
+}
+
+function ago(iso: string): string {
+  const mins = Math.round((Date.now() - Date.parse(iso)) / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins} min ago`;
+  const h = Math.round(mins / 60);
+  if (h < 24) return `${h} h ago`;
+  return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+}
+
+function PagesHome() {
+  const pages = usePages();
+  const act = usePageActions();
+  const navigate = useNavigate();
+  const members = useMembers();
+  const me = members.data?.find((m) => m.userId)?.name ?? "";
+  const clients = useClients();
+  const brand = (id: string | null) => clients.data?.find((c) => c.id === id)?.brand;
+  const [q, setQ] = useState("");
+  const [show, setShow] = useState<"all" | "page" | "doc">("all");
+
+  async function start(t: Template) {
+    try {
+      const id = await act.create.mutateAsync({
+        title: t.key === "blank" ? "" : t.name,
+        icon: t.icon,
+        kind: t.kind,
+        template: t.key,
+        blocks: t.blocks(),
+        authorName: me,
+      });
+      navigate(`/pages/${id}`);
+    } catch (e) {
+      toast({ text: friendlyError(e), tone: "error" });
+    }
+  }
+
+  const list = (pages.data ?? []).filter(
+    (p) =>
+      (show === "all" || p.kind === show) &&
+      (!q || `${p.title} ${brand(p.clientId) ?? ""}`.toLowerCase().includes(q.toLowerCase())),
+  );
+  const pinned = list.filter((p) => p.pinned);
+  const rest = list.filter((p) => !p.pinned);
+
+  return (
+    <section className="page wide pages">
+      <header className="page-head ceo-head">
+        <div>
+          <p className="eyebrow">Pages & docs</p>
+          <h1>Write anything</h1>
+          <p className="lede">Notes, plans and Gecko documents you can print to PDF or send.</p>
+        </div>
+        <Button onClick={() => void start(TEMPLATES[0]!)} disabled={act.create.isPending}>
+          New page
+        </Button>
+      </header>
+
+      <section className="hub-block">
+        <div className="hub-head">
+          <h2>Start from a template</h2>
+        </div>
+        <div className="tpl-grid">
+          {TEMPLATES.map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              className="tpl-card"
+              disabled={act.create.isPending}
+              onClick={() => void start(t)}
+            >
+              <span className="tpl-icon" aria-hidden="true">
+                {t.icon}
+              </span>
+              <strong>{t.name}</strong>
+              <span className="small">{t.blurb}</span>
+              {t.kind === "doc" && <span className="tpl-tag">Gecko document</span>}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="hub-block">
+        <div className="hub-head pages-head">
+          <h2>Your pages</h2>
+          <div className="seg" role="group" aria-label="Show">
+            {(["all", "page", "doc"] as const).map((k) => (
+              <button key={k} type="button" aria-pressed={show === k} onClick={() => setShow(k)}>
+                {k === "all" ? "All" : k === "page" ? "Pages" : "Documents"}
+              </button>
+            ))}
+          </div>
+          <input
+            className="pages-search"
+            placeholder="Search"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            aria-label="Search pages"
+          />
+        </div>
+        {pages.isPending ? (
+          <p className="loading">Loading</p>
+        ) : pages.isError ? (
+          <Notice tone="error">{friendlyError(pages.error)}</Notice>
+        ) : list.length === 0 ? (
+          <p className="empty-state">No pages yet. Start one above.</p>
+        ) : (
+          <ul className="page-list">
+            {[...pinned, ...rest].map((p) => (
+              <li key={p.id}>
+                <Link to={`/pages/${p.id}`} className="page-row">
+                  <span className="page-row-icon" aria-hidden="true">
+                    {p.icon || "◻"}
+                  </span>
+                  <span className="page-row-title" dir="auto">
+                    <strong>{p.title || "Untitled"}</strong>
+                    <span className="small">
+                      {[
+                        p.kind === "doc" ? "Document" : "Page",
+                        brand(p.clientId),
+                        p.authorName && `by ${p.authorName}`,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </span>
+                  </span>
+                  {p.pinned && <span className="small">Pinned</span>}
+                  <span className="small">{ago(p.updatedAt)}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </section>
+  );
+}
+
+const LISTY: BlockType[] = ["bullet", "number", "todo"];
+
+function PageEditor() {
+  const { pageId } = useParams();
+  const page = usePage(pageId);
+  const act = usePageActions();
+  const navigate = useNavigate();
+  const { role } = useWorkspace();
+  const clients = useClients();
+  const [title, setTitle] = useState("");
+  const [blocks, setBlocks] = useState<Block[]>([]);
+  const [loaded, setLoaded] = useState<string | null>(null);
+  const [dirty, setDirty] = useState(false);
+  const [saving, setSaving] = useState<"idle" | "saving" | "saved">("idle");
+  const [focus, setFocus] = useState<{ id: string; at: "start" | "end" } | null>(null);
+
+  useEffect(() => {
+    if (page.data && loaded !== page.data.id) {
+      setTitle(page.data.title);
+      setBlocks(page.data.blocks.length ? page.data.blocks : [block("text")]);
+      setLoaded(page.data.id);
+    }
+  }, [page.data, loaded]);
+
+  // Saves a moment after you stop typing.
+  useEffect(() => {
+    if (!dirty || !pageId) return;
+    const t = window.setTimeout(() => {
+      setSaving("saving");
+      act.save
+        .mutateAsync({ id: pageId, title, blocks })
+        .then(() => {
+          setSaving("saved");
+          setDirty(false);
+        })
+        .catch((e: unknown) => {
+          setSaving("idle");
+          toast({ text: friendlyError(e), tone: "error" });
+        });
+    }, 700);
+    return () => window.clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [title, blocks, dirty, pageId]);
+
+  const change = (next: Block[]) => {
+    setBlocks(next);
+    setDirty(true);
+  };
+
+  if (page.isPending) return <p className="loading">Loading</p>;
+  if (page.isError) return <Notice tone="error">{friendlyError(page.error)}</Notice>;
+  if (!page.data) return <Notice>This page is gone (maybe in the Trash).</Notice>;
+  const p = page.data;
+  const doc = p.kind === "doc";
+  const text = toText(title || "Untitled", blocks);
+
+  const at = (id: string) => blocks.findIndex((b) => b.id === id);
+  const update = (id: string, patch: Partial<Block>) =>
+    change(blocks.map((b) => (b.id === id ? { ...b, ...patch } : b)));
+  const insertAfter = (id: string, b: Block) => {
+    const i = at(id);
+    change([...blocks.slice(0, i + 1), b, ...blocks.slice(i + 1)]);
+    setFocus({ id: b.id, at: "start" });
+  };
+  const remove = (id: string) => {
+    const i = at(id);
+    if (blocks.length === 1) return change([block("text")]);
+    const prev = blocks[i - 1] ?? blocks[i + 1];
+    change(blocks.filter((b) => b.id !== id));
+    if (prev) setFocus({ id: prev.id, at: "end" });
+  };
+  const move = (id: string, d: -1 | 1) => {
+    const i = at(id);
+    const j = i + d;
+    if (j < 0 || j >= blocks.length) return;
+    const next = blocks.slice();
+    [next[i], next[j]] = [next[j]!, next[i]!];
+    change(next);
+  };
+
+  return (
+    <section className={`page wide page-editor${doc ? " is-doc" : ""}`}>
+      <div className="editor-bar no-print">
+        <nav className="crumbs small">
+          <Link to="/pages">Pages</Link>
+          <span aria-hidden="true">/</span>
+          <span>{title || "Untitled"}</span>
+        </nav>
+        <span className="small editor-saved" aria-live="polite">
+          {saving === "saving" ? "Saving…" : dirty ? "Editing" : saving === "saved" ? "Saved" : ""}
+        </span>
+        <div className="editor-actions">
+          <select
+            aria-label="Client"
+            value={p.clientId ?? ""}
+            onChange={(e) =>
+              void act.save
+                .mutateAsync({ id: p.id, clientId: e.target.value || null })
+                .then(() => void page.refetch())
+            }
+          >
+            <option value="">No client</option>
+            {(clients.data ?? []).map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.brand}
+              </option>
+            ))}
+          </select>
+          <Button
+            variant="secondary"
+            onClick={() =>
+              void navigator.clipboard
+                .writeText(text)
+                .then(() => toast({ text: "Copied as text" }))
+                .catch(() => toast({ text: "Couldn't copy", tone: "error" }))
+            }
+          >
+            Copy text
+          </Button>
+          <a
+            className="btn btn-secondary"
+            href={whatsappLink(text)}
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            WhatsApp
+          </a>
+          <a
+            className="btn btn-secondary"
+            href={`mailto:?subject=${encodeURIComponent(title || "Gecko")}&body=${encodeURIComponent(text)}`}
+          >
+            Email
+          </a>
+          <Button onClick={() => window.print()}>{doc ? "PDF" : "Print / PDF"}</Button>
+          <Button
+            variant="link"
+            onClick={() =>
+              void act.save
+                .mutateAsync({ id: p.id, pinned: !p.pinned })
+                .then(() => void page.refetch())
+            }
+          >
+            {p.pinned ? "Unpin" : "Pin"}
+          </Button>
+          {(role === "founder" || role === "sales") && (
+            <Button
+              variant="link"
+              onClick={() =>
+                void act.remove.mutateAsync(p.id).then(() => {
+                  toast({ text: "Moved to the trash", detail: title || "Untitled" });
+                  navigate("/pages");
+                })
+              }
+            >
+              Delete
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <article className="paper">
+        {doc && (
+          <header className="paper-head">
+            <span className="paper-logo">gecko.]</span>
+            <span className="small">Video ads that sell · Tunis</span>
+          </header>
+        )}
+        <div className="paper-title">
+          <span className="paper-icon" aria-hidden="true">
+            {p.icon}
+          </span>
+          <input
+            className="paper-title-input"
+            value={title}
+            placeholder="Untitled"
+            aria-label="Title"
+            maxLength={200}
+            onChange={(e) => {
+              setTitle(e.target.value);
+              setDirty(true);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === "ArrowDown") {
+                e.preventDefault();
+                if (blocks[0]) setFocus({ id: blocks[0].id, at: "start" });
+              }
+            }}
+          />
+        </div>
+        <div className="blocks">
+          {blocks.map((b, i) => (
+            <BlockRow
+              key={b.id}
+              b={b}
+              n={numberOf(blocks, i)}
+              focus={focus?.id === b.id ? focus.at : null}
+              onFocused={() => setFocus(null)}
+              onChange={(patch) => update(b.id, patch)}
+              onEnter={(rest) => {
+                if (LISTY.includes(b.type) && !b.text.trim()) return update(b.id, { type: "text" });
+                insertAfter(b.id, block(LISTY.includes(b.type) ? b.type : "text", rest));
+              }}
+              onRemove={() => remove(b.id)}
+              onUp={() => blocks[i - 1] && setFocus({ id: blocks[i - 1]!.id, at: "end" })}
+              onDown={() => blocks[i + 1] && setFocus({ id: blocks[i + 1]!.id, at: "start" })}
+              onMove={(d) => move(b.id, d)}
+              onDuplicate={() => insertAfter(b.id, { ...b, id: block("text").id })}
+            />
+          ))}
+        </div>
+        <button
+          type="button"
+          className="blocks-add no-print"
+          onClick={() => {
+            const nb = block("text");
+            change([...blocks, nb]);
+            setFocus({ id: nb.id, at: "start" });
+          }}
+        >
+          + Add a block
+        </button>
+        {doc && (
+          <footer className="paper-foot small">
+            Gecko · gecko-creative.com · contact@gecko-creative.com
+          </footer>
+        )}
+      </article>
+    </section>
+  );
+}
+
+/** The number a numbered-list block shows: counts up through a run of numbered blocks. */
+function numberOf(blocks: readonly Block[], i: number): number {
+  let n = 0;
+  for (let j = i; j >= 0 && blocks[j]?.type === "number"; j--) n++;
+  return n;
+}
+
+function BlockRow({
+  b,
+  n,
+  focus,
+  onFocused,
+  onChange,
+  onEnter,
+  onRemove,
+  onUp,
+  onDown,
+  onMove,
+  onDuplicate,
+}: {
+  b: Block;
+  n: number;
+  focus: "start" | "end" | null;
+  onFocused: () => void;
+  onChange: (patch: Partial<Block>) => void;
+  onEnter: (rest: string) => void;
+  onRemove: () => void;
+  onUp: () => void;
+  onDown: () => void;
+  onMove: (d: -1 | 1) => void;
+  onDuplicate: () => void;
+}) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+  const [menu, setMenu] = useState(0);
+  const [tools, setTools] = useState(false);
+  const slash = b.text.startsWith("/") ? b.text.slice(1).toLowerCase() : null;
+  const options = useMemo(
+    () =>
+      slash === null
+        ? []
+        : BLOCK_MENU.filter((m) => `${m.label} ${m.hint}`.toLowerCase().includes(slash)),
+    [slash],
+  );
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.height = "0px";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [b.text, b.type]);
+
+  useEffect(() => {
+    if (!focus || !ref.current) return;
+    const el = ref.current;
+    el.focus();
+    const pos = focus === "start" ? 0 : el.value.length;
+    el.setSelectionRange(pos, pos);
+    onFocused();
+  }, [focus, onFocused]);
+
+  const pick = (type: BlockType) => {
+    onChange({ type, text: "" });
+    setMenu(0);
+    window.setTimeout(() => ref.current?.focus(), 0);
+  };
+
+  function onKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
+    const el = e.currentTarget;
+    if (slash !== null && options.length) {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setMenu((m) => (m + 1) % options.length);
+        return;
+      }
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setMenu((m) => (m - 1 + options.length) % options.length);
+        return;
+      }
+      if (e.key === "Enter") {
+        e.preventDefault();
+        pick(options[menu]!.type);
+        return;
+      }
+      if (e.key === "Escape") {
+        onChange({ text: "" });
+        return;
+      }
+    }
+    if (e.key === "Enter" && !e.shiftKey && b.type !== "callout") {
+      e.preventDefault();
+      const rest = el.value.slice(el.selectionEnd);
+      onChange({ text: el.value.slice(0, el.selectionStart) });
+      onEnter(rest);
+    } else if (e.key === "Backspace" && el.selectionStart === 0 && el.selectionEnd === 0) {
+      if (b.type !== "text" && b.type !== "divider") {
+        e.preventDefault();
+        onChange({ type: "text" });
+      } else if (!b.text) {
+        e.preventDefault();
+        onRemove();
+      }
+    } else if (e.key === "ArrowUp" && el.selectionStart === 0) {
+      e.preventDefault();
+      onUp();
+    } else if (e.key === "ArrowDown" && el.selectionStart === el.value.length) {
+      e.preventDefault();
+      onDown();
+    }
+  }
+
+  if (b.type === "divider")
+    return (
+      <div
+        className="blk blk-divider"
+        onMouseEnter={() => setTools(true)}
+        onMouseLeave={() => setTools(false)}
+      >
+        <hr />
+        {tools && (
+          <button
+            type="button"
+            className="blk-x no-print"
+            onClick={onRemove}
+            aria-label="Remove line"
+          >
+            ×
+          </button>
+        )}
+      </div>
+    );
+
+  return (
+    <div className={`blk blk-${b.type}${b.checked ? " is-checked" : ""}`}>
+      <div className="blk-tools no-print">
+        <button type="button" aria-label="Block menu" onClick={() => setTools(!tools)}>
+          ⋮⋮
+        </button>
+        {tools && (
+          <div className="blk-menu" onMouseLeave={() => setTools(false)}>
+            {BLOCK_MENU.filter((m) => m.type !== "divider").map((m) => (
+              <button
+                key={m.type}
+                type="button"
+                onClick={() => {
+                  onChange({ type: m.type });
+                  setTools(false);
+                }}
+              >
+                {m.label}
+              </button>
+            ))}
+            <hr />
+            <button
+              type="button"
+              onClick={() => {
+                onMove(-1);
+                setTools(false);
+              }}
+            >
+              Move up
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                onMove(1);
+                setTools(false);
+              }}
+            >
+              Move down
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                onDuplicate();
+                setTools(false);
+              }}
+            >
+              Duplicate
+            </button>
+            <button type="button" onClick={onRemove}>
+              Delete
+            </button>
+          </div>
+        )}
+      </div>
+      {b.type === "todo" && (
+        <input
+          type="checkbox"
+          className="blk-check"
+          checked={Boolean(b.checked)}
+          onChange={(e) => onChange({ checked: e.target.checked })}
+          aria-label="Done"
+        />
+      )}
+      {b.type === "bullet" && <span className="blk-mark">•</span>}
+      {b.type === "number" && <span className="blk-mark">{n}.</span>}
+      {b.type === "field" && (
+        <input
+          className="blk-label"
+          value={b.label ?? ""}
+          placeholder="Label"
+          aria-label="Label"
+          onChange={(e) => onChange({ label: e.target.value })}
+        />
+      )}
+      <textarea
+        ref={ref}
+        rows={1}
+        dir="auto"
+        value={b.text}
+        placeholder={
+          b.type === "text"
+            ? "Type, or / for blocks"
+            : BLOCK_MENU.find((m) => m.type === b.type)?.label
+        }
+        onChange={(e) => {
+          const v = e.target.value;
+          const s = b.type === "text" ? shortcut(v) : null;
+          if (s) onChange({ type: s.type, text: s.rest });
+          else onChange({ text: v });
+          setMenu(0);
+        }}
+        onKeyDown={onKeyDown}
+      />
+      {slash !== null && options.length > 0 && (
+        <div className="slash-menu no-print" role="listbox" aria-label="Blocks">
+          {options.map((m, i) => (
+            <button
+              key={m.type}
+              type="button"
+              role="option"
+              aria-selected={i === menu}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                pick(m.type);
+              }}
+            >
+              <strong>{m.label}</strong>
+              <span className="small">{m.hint}</span>
+              {m.keys && <kbd>{m.keys}</kbd>}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

@@ -42,7 +42,8 @@ import {
   useTeamScriptNote,
 } from "@/features/scripts/scriptsApi";
 import { friendlyError } from "@/lib/errors";
-import { useConcepts } from "./clientsApi";
+import { useClients, useConcepts } from "./clientsApi";
+import { CreativeKit } from "@/features/scripts/CreativeKit";
 import { CleanCopy, ShootPlanPicker, useApprovedProduction } from "./ShootPlan";
 import { useTemplates } from "./lookApi";
 import { TextArea } from "@/components/TextArea";
@@ -346,6 +347,8 @@ function ScriptForm({
   const idea = approved.find((c) => c.id === conceptId);
   const formRef = useRef<HTMLFormElement>(null);
   useSaveKeys(formRef);
+  const clientList = useClients();
+  const clientBrand = clientList.data?.find((c) => c.id === clientId)?.brand ?? "";
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -446,6 +449,31 @@ function ScriptForm({
         ]
       : []),
     {
+      key: "kit",
+      label: "Creative kit",
+      body: (
+        <CreativeKit
+          brand={clientBrand}
+          onHook={(line) => {
+            const kept = draft.hooks.filter((h) => !noWords([h]));
+            if (kept.length >= 3)
+              return toast({ text: "Three hooks already: remove one first", tone: "error" });
+            setDraft({ ...draft, hooks: [...kept, { hear: line }] });
+            toast({ text: "Hook added", detail: line });
+          }}
+          onBeat={(line) => {
+            const empty = draft.body.findIndex((b) => noWords([b]));
+            const body =
+              empty >= 0
+                ? draft.body.map((b, i) => (i === empty ? { ...b, see: line } : b))
+                : [...draft.body, { see: line }];
+            setDraft({ ...draft, body });
+            toast({ text: "Beat added to the body", detail: line });
+          }}
+        />
+      ),
+    },
+    {
       key: "idea",
       label: "The idea",
       badge: idea ? "✓" : undefined,
@@ -471,6 +499,7 @@ function ScriptForm({
           {script ? `Script · version ${script.version}` : "New script · kept on this device"}
         </span>
         <div className="write-actions">
+          <FocusToggle />
           <Button
             variant="link"
             onClick={() => {
@@ -547,7 +576,29 @@ function ScriptForm({
           ⌘S save{script ? "" : " · ⌘↵ share"} · Alt+1–{tabs.length} sections
         </p>
       </div>
-      <WritingTabs tabs={tabs} />
+      <div className={`write-body-grid${idea ? " has-idea" : ""}`}>
+        <WritingTabs tabs={tabs} />
+        {idea && (
+          <aside className="idea-rail" aria-label="The idea">
+            <span className="eyebrow">From the idea</span>
+            <strong dir="auto">{idea.title}</strong>
+            {idea.hook && <q dir="auto">{idea.hook}</q>}
+            {idea.body && (
+              <p className="small" dir="auto">
+                {idea.body}
+              </p>
+            )}
+            {idea.hook && noWords(draft.hooks) && (
+              <Button
+                variant="secondary"
+                onClick={() => setDraft({ ...draft, hooks: [{ hear: idea.hook ?? "" }, {}] })}
+              >
+                Use its hook
+              </Button>
+            )}
+          </aside>
+        )}
+      </div>
       {shared && (
         <p className="small muted">
           The client has seen this script. Saving a change makes version {script.version + 1}, and
@@ -556,5 +607,24 @@ function ScriptForm({
       )}
       {error && <Notice tone="error">{error}</Notice>}
     </form>
+  );
+}
+
+/** Focus: the sidebar and everything around the script fade away until you press it again (or Esc). */
+function FocusToggle() {
+  const [on, setOn] = useState(false);
+  useEffect(() => {
+    document.body.classList.toggle("focus-mode", on);
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOn(false);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.classList.remove("focus-mode");
+    };
+  }, [on]);
+  return (
+    <Button variant="link" aria-pressed={on} onClick={() => setOn(!on)}>
+      {on ? "Leave focus" : "Focus"}
+    </Button>
   );
 }

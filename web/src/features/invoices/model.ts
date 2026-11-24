@@ -74,7 +74,7 @@ export interface InvoiceSettings {
 
 export interface OpenCost {
   id: string;
-  kind: "talent" | "location" | "prop";
+  kind: "talent" | "location" | "prop" | "cost";
   name: string;
   role: string;
   cost: number | string;

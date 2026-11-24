@@ -65,6 +65,7 @@ export function BudgetMeter({
           <span className="seg seg-talent" style={{ width: pct(by.talent) }} />
           <span className="seg seg-location" style={{ width: pct(by.location) }} />
           <span className="seg seg-prop" style={{ width: pct(by.prop) }} />
+          <span className="seg seg-cost" style={{ width: pct(by.cost) }} />
           {budget.committed > cap && (
             <span className="budget-line" style={{ left: pct(cap) }} aria-hidden="true" />
           )}
@@ -92,6 +93,15 @@ export function BudgetMeter({
           </dt>
           <dd>{dt(by.prop)}</dd>
         </div>
+        {by.cost > 0 && (
+          <div>
+            <dt>
+              <i className="key key-cost" aria-hidden="true" />
+              {kindName("cost", true)}
+            </dt>
+            <dd>{dt(by.cost)}</dd>
+          </div>
+        )}
         {left != null && (
           <div className="budget-left">
             <dt>{left < 0 ? t("Over by", "Dépassement") : t("Left", "Reste")}</dt>
@@ -303,10 +313,10 @@ export function OptionCard({
         </header>
         <p className="prod-meta small">
           {o.role && <span>{o.kind === "talent" ? talentRole(o.role) : o.role}</span>}
-          {o.cost != null && o.kind !== "prop" && o.status !== "suggested" && (
+          {o.cost != null && o.kind !== "prop" && o.kind !== "cost" && o.status !== "suggested" && (
             <strong>{dt(o.cost)}</strong>
           )}
-          {o.cost != null && o.kind === "prop" && (
+          {o.cost != null && (o.kind === "prop" || o.kind === "cost") && (
             <strong>
               {o.boughtBy === "client"
                 ? reader === "client"

@@ -1,7 +1,7 @@
 import { t } from "@/lib/i18n";
 import { tw } from "@/lib/wording";
 
-export type OptionKind = "talent" | "location" | "prop";
+export type OptionKind = "talent" | "location" | "prop" | "cost";
 
 export type OptionStatus =
   | "suggested"
@@ -84,7 +84,7 @@ export function wouldGoOver(o: ProductionOption, budget: Budget | null): boolean
 
 /** Money committed per kind, for the meter's breakdown. */
 export function committedByKind(options: ProductionOption[]): Record<OptionKind, number> {
-  const out: Record<OptionKind, number> = { talent: 0, location: 0, prop: 0 };
+  const out: Record<OptionKind, number> = { talent: 0, location: 0, prop: 0, cost: 0 };
   for (const o of options) if (countsOnBudget(o) && o.cost != null) out[o.kind] += o.cost;
   return out;
 }
@@ -98,6 +98,7 @@ export function kindName(kind: OptionKind, plural = false): string {
     return plural
       ? tw(["Locations", "Lieux"], ["Sets", "Décors"])
       : tw(["Location", "Lieu"], ["Set", "Décor"]);
+  if (kind === "cost") return plural ? t("Costs and fees", "Frais") : t("Cost", "Frais");
   return plural ? t("Props", "Accessoires") : t("Prop", "Accessoire");
 }
 

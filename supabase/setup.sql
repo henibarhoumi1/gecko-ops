@@ -11701,3 +11701,290 @@ create policy studio_goals_delete on public.studio_goals for delete to authentic
 
 create trigger studio_goals_touch before update on public.studio_goals
   for each row execute function public.touch_updated_at();
+
+-- ==== 202612080001_studio_events.sql ====
+-- The studio calendar's own entries (Heni, 24 Nov 2026: "add tasks or shoot or project or anything").
+-- Meetings, events and notes on a day, optionally about a client. Any team member reads and adds; the author,
+-- the founder and producers change or remove. Tasks, shoots and projects keep their own tables.
+
+create table public.studio_events (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  day date not null,
+  at_time text not null default '' check (at_time ~ '^([01][0-9]|2[0-3]):[0-5][0-9]$' or at_time = ''),
+  kind text not null default 'event' check (kind in ('meeting', 'event', 'note')),
+  title text not null check (length(trim(title)) between 1 and 160),
+  notes text not null default '' check (length(notes) <= 2000),
+  link text not null default '' check (length(link) <= 500),
+  client_id text,
+  created_by uuid default auth.uid(),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index studio_events_day on public.studio_events(workspace_id, day);
+
+alter table public.studio_events enable row level security;
+revoke all on public.studio_events from anon, authenticated;
+grant select, insert, update, delete on public.studio_events to authenticated;
+
+create policy studio_events_read on public.studio_events for select to authenticated
+  using (public.is_workspace_member(workspace_id));
+create policy studio_events_insert on public.studio_events for insert to authenticated
+  with check (public.is_workspace_member(workspace_id) and created_by = (select auth.uid()));
+create policy studio_events_update on public.studio_events for update to authenticated
+  using (created_by = (select auth.uid()) or public.member_role(workspace_id) in ('founder', 'sales'))
+  with check (public.is_workspace_member(workspace_id));
+create policy studio_events_delete on public.studio_events for delete to authenticated
+  using (created_by = (select auth.uid()) or public.member_role(workspace_id) in ('founder', 'sales'));
+
+create trigger studio_events_touch before update on public.studio_events
+  for each row execute function public.touch_updated_at();
+
+-- ==== 202612090001_production_costs.sql ====
+-- Costs and fees next to talent, locations and props (Heni, 24 Nov 2026): transport, gear rental, permits,
+-- catering, a studio's fee… Each one is shared with the client in the production tab, approved like the rest
+-- and counted in the budget. It is a fourth kind of production option, so every rule (approval, budget,
+-- booking, balance invoice) applies unchanged.
+
+alter table public.production_options drop constraint production_options_kind_check;
+alter table public.production_options
+  add constraint production_options_kind_check check (kind in ('talent', 'location', 'prop', 'cost'));
+
+-- ==== 202612100001_banks.sql ====
+-- Gecko's banks (Heni, 24 Nov 2026): next to talent and locations, a bank of UGC creators and a bank of gear
+-- rental studios, each studio with the gear it rents and the rates. Same table, same rules (team only, the founder
+-- and producers delete, trash on delete). Additive: two more kinds and a gear list.
+
+alter table public.studio_roster drop constraint studio_roster_kind_check;
+alter table public.studio_roster
+  add constraint studio_roster_kind_check check (kind in ('talent', 'location', 'creator', 'studio'));
+
+alter table public.studio_roster
+  add column email text not null default '' check (length(email) <= 200),
+  add column gear jsonb not null default '[]'::jsonb
+    check (jsonb_typeof(gear) = 'array' and jsonb_array_length(gear) <= 100);
+
+-- ==== 202612110001_studio_pages.sql ====
+-- Pages and documents (Heni, 24 Nov 2026: "a new page with functions like Notion, but clearer" and "a document
+-- builder with Gecko branding: briefs, proposals, messages, lists"). One table: a page is a title, an icon and a
+-- list of blocks (text, headings, to-dos, lists, quotes, callouts, dividers). A page made from a template keeps
+-- the template's name, so documents print with the right Gecko layout. Optionally about a client.
+-- Team only: everyone reads and writes, the founder and producers delete (to the trash).
+
+create table public.studio_pages (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  title text not null default '' check (length(title) <= 200),
+  icon text not null default '' check (length(icon) <= 16),
+  kind text not null default 'page' check (kind in ('page', 'doc')),
+  template text not null default '' check (length(template) <= 40),
+  blocks jsonb not null default '[]'::jsonb
+    check (jsonb_typeof(blocks) = 'array' and jsonb_array_length(blocks) <= 2000 and pg_column_size(blocks) <= 1000000),
+  client_id text,
+  pinned boolean not null default false,
+  created_by uuid default auth.uid(),
+  author_name text not null default '' check (length(author_name) <= 120),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index studio_pages_recent on public.studio_pages(workspace_id, updated_at desc);
+
+create trigger studio_pages_touch before update on public.studio_pages
+  for each row execute function public.touch_updated_at();
+create trigger studio_pages_to_trash before delete on public.studio_pages
+  for each row execute function public.to_trash();
+
+alter table public.studio_pages enable row level security;
+revoke all on public.studio_pages from anon, authenticated;
+grant select, insert, update, delete on public.studio_pages to authenticated;
+
+create policy studio_pages_read on public.studio_pages for select to authenticated
+  using (public.member_role(workspace_id) is not null);
+create policy studio_pages_insert on public.studio_pages for insert to authenticated
+  with check (public.member_role(workspace_id) is not null);
+create policy studio_pages_update on public.studio_pages for update to authenticated
+  using (public.member_role(workspace_id) is not null)
+  with check (public.member_role(workspace_id) is not null);
+create policy studio_pages_delete on public.studio_pages for delete to authenticated
+  using (coalesce(public.member_role(workspace_id), '') in ('founder', 'sales'));
+
+-- ==== 202612120001_gecko_content.sql ====
+-- Gecko's own content and ads (Heni, 24 Nov 2026: "plan, pre-produce and produce Gecko content, and run ad
+-- campaigns with tracking"). Posts move through a board (idea → posted); ad campaigns keep budget, spend and
+-- results, entered by hand from Meta/TikTok, so cost per lead is always one glance away.
+-- Team reads; the founder and producers write and delete (to the trash).
+
+create table public.gecko_posts (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  title text not null check (length(trim(title)) between 1 and 160),
+  platform text not null default 'instagram' check (platform in ('instagram', 'tiktok', 'facebook', 'linkedin', 'youtube')),
+  format text not null default '' check (length(format) <= 60),
+  status text not null default 'idea' check (status in ('idea', 'script', 'shoot', 'edit', 'scheduled', 'posted')),
+  publish_on date,
+  hook text not null default '' check (length(hook) <= 300),
+  notes text not null default '' check (length(notes) <= 4000),
+  link text not null default '' check (length(link) <= 1000),
+  views integer check (views is null or views >= 0),
+  position integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index gecko_posts_ws on public.gecko_posts(workspace_id, status);
+
+create table public.gecko_ads (
+  id uuid primary key default gen_random_uuid(),
+  workspace_id uuid not null references public.workspaces(id) on delete cascade,
+  name text not null check (length(trim(name)) between 1 and 160),
+  platform text not null default 'meta' check (platform in ('meta', 'tiktok', 'google', 'linkedin', 'other')),
+  objective text not null default 'leads' check (objective in ('awareness', 'traffic', 'leads', 'messages', 'sales')),
+  status text not null default 'draft' check (status in ('draft', 'live', 'paused', 'done')),
+  starts_on date,
+  ends_on date,
+  budget numeric(12, 3) check (budget is null or budget >= 0),
+  spend numeric(12, 3) not null default 0 check (spend >= 0),
+  impressions integer not null default 0 check (impressions >= 0),
+  clicks integer not null default 0 check (clicks >= 0),
+  leads integer not null default 0 check (leads >= 0),
+  notes text not null default '' check (length(notes) <= 4000),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index gecko_ads_ws on public.gecko_ads(workspace_id, status);
+
+create trigger gecko_posts_touch before update on public.gecko_posts
+  for each row execute function public.touch_updated_at();
+create trigger gecko_ads_touch before update on public.gecko_ads
+  for each row execute function public.touch_updated_at();
+create trigger gecko_posts_to_trash before delete on public.gecko_posts
+  for each row execute function public.to_trash();
+create trigger gecko_ads_to_trash before delete on public.gecko_ads
+  for each row execute function public.to_trash();
+
+alter table public.gecko_posts enable row level security;
+alter table public.gecko_ads enable row level security;
+revoke all on public.gecko_posts, public.gecko_ads from anon, authenticated;
+grant select, insert, update, delete on public.gecko_posts, public.gecko_ads to authenticated;
+
+create policy gecko_posts_read on public.gecko_posts for select to authenticated
+  using (public.member_role(workspace_id) is not null);
+create policy gecko_posts_write on public.gecko_posts for insert to authenticated
+  with check (public.member_role(workspace_id) in ('founder', 'sales'));
+create policy gecko_posts_update on public.gecko_posts for update to authenticated
+  using (public.member_role(workspace_id) in ('founder', 'sales'))
+  with check (public.member_role(workspace_id) in ('founder', 'sales'));
+create policy gecko_posts_delete on public.gecko_posts for delete to authenticated
+  using (public.member_role(workspace_id) in ('founder', 'sales'));
+
+create policy gecko_ads_read on public.gecko_ads for select to authenticated
+  using (public.member_role(workspace_id) in ('founder', 'sales'));
+create policy gecko_ads_write on public.gecko_ads for insert to authenticated
+  with check (public.member_role(workspace_id) in ('founder', 'sales'));
+create policy gecko_ads_update on public.gecko_ads for update to authenticated
+  using (public.member_role(workspace_id) in ('founder', 'sales'))
+  with check (public.member_role(workspace_id) in ('founder', 'sales'));
+create policy gecko_ads_delete on public.gecko_ads for delete to authenticated
+  using (public.member_role(workspace_id) in ('founder', 'sales'));
+
+-- ==== 202612130001_invoice_cost_label.sql ====
+-- A production cost (kind 'cost', 24 Nov 2026) shows as "Costs:" on the balance invoice, not "Props:".
+-- Same function as 202611090001, only that label changes.
+
+create or replace function public.create_invoice(p_workspace_id uuid, p_client_id text, p_kind text, p_lang text)
+returns uuid
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  who text := public.invoice_team_check(p_workspace_id, p_client_id);
+  portal public.client_portals%rowtype;
+  settings jsonb := public.invoice_settings_json(p_workspace_id);
+  lang text := case when p_lang = 'en' then 'en' else 'fr' end;
+  en boolean := p_lang = 'en';
+  what text;
+  lines jsonb := '[]'::jsonb;
+  bill jsonb;
+  title text;
+  new_id uuid;
+  o record;
+begin
+  if p_kind is null or p_kind not in ('deposit', 'balance', 'month', 'extra') then raise exception 'invalid_invoice'; end if;
+  perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended('gecko.invoices.' || p_client_id, 0));
+  if (select count(*) from public.invoices i where i.workspace_id = p_workspace_id and i.client_id = p_client_id) >= 500 then
+    raise exception 'too_many_invoices';
+  end if;
+  if p_kind in ('deposit', 'balance') and exists (
+    select 1 from public.invoices i
+    where i.workspace_id = p_workspace_id and i.client_id = p_client_id and i.kind = p_kind and i.status <> 'void'
+  ) then raise exception 'invoice_exists'; end if;
+  select * into portal from public.client_portals where workspace_id = p_workspace_id and client_id = p_client_id;
+  if p_kind <> 'extra' and coalesce(portal.price, 0) <= 0 then raise exception 'invoice_needs_price'; end if;
+
+  what := coalesce(nullif(trim(portal.campaign), ''), case portal.plan
+    when 'test' then case when en then 'The Test' else 'Le Test' end
+    when 'regular' then case when en then 'Regular plan' else 'Formule Regular' end
+    when 'pro' then case when en then 'Pro plan' else 'Formule Pro' end
+    when 'partner' then 'Creative Partner'
+    else case when en then 'Video campaign' else 'Campagne vidéo' end end);
+
+  if p_kind = 'deposit' then
+    lines := jsonb_build_array(jsonb_build_object(
+      'label', what || case when en then ', deposit (50%)' else ', acompte (50 %)' end,
+      'qty', 1, 'unit', round(portal.price / 2, 3), 'taxed', true));
+    title := '';
+  elsif p_kind = 'balance' then
+    lines := jsonb_build_array(jsonb_build_object(
+      'label', what || case when en then ', balance (50%)' else ', solde (50 %)' end,
+      'qty', 1, 'unit', portal.price - round(portal.price / 2, 3), 'taxed', true));
+    title := '';
+  elsif p_kind = 'month' then
+    title := pg_catalog.to_char(current_date, 'MM/YYYY');
+    lines := jsonb_build_array(jsonb_build_object(
+      'label', what || ', ' || title, 'qty', 1, 'unit', portal.price, 'taxed', true));
+    title := case when en then 'Month ' else 'Mois ' end || title;
+  else
+    title := '';
+  end if;
+
+  if p_kind in ('balance', 'month') then
+    for o in
+      select * from jsonb_to_recordset(public.invoice_open_costs(p_workspace_id, p_client_id))
+        as x(id uuid, kind text, name text, role text, cost numeric, status text)
+    loop
+      lines := lines || jsonb_build_array(jsonb_build_object(
+        'label', case o.kind
+          when 'talent' then case when en then 'Talent: ' else 'Talent : ' end
+          when 'location' then case when en then 'Location: ' else 'Lieu : ' end
+          when 'cost' then case when en then 'Costs: ' else 'Frais : ' end
+          else case when en then 'Props: ' else 'Accessoires : ' end end || o.name,
+        'detail', case when en then 'Paid by Gecko on your behalf' else 'Avancé par Gecko pour votre compte' end,
+        'qty', 1, 'unit', o.cost, 'taxed', false, 'optionId', o.id));
+    end loop;
+  end if;
+
+  -- Bill the same company as last time; the first time, the name from onboarding.
+  select i.bill_to into bill from public.invoices i
+  where i.workspace_id = p_workspace_id and i.client_id = p_client_id and i.bill_to <> '{}'::jsonb
+  order by i.created_at desc limit 1;
+  if bill is null then
+    select jsonb_build_object(
+      'name', left(coalesce(nullif(trim(ob.data->>'company'), ''), nullif(trim(ob.data->>'brand'), ''), c.brand), 160),
+      'address', '', 'taxId', '',
+      'email', left(coalesce(nullif(trim(ob.data->>'email'), ''), ''), 160))
+    into bill
+    from public.clients c
+    left join public.client_onboarding ob on ob.workspace_id = c.workspace_id and ob.client_id = c.id
+    where c.workspace_id = p_workspace_id and c.id = p_client_id;
+  end if;
+
+  insert into public.invoices(workspace_id, client_id, kind, lang, title, issue_date, due_date, bill_to, lines, taxes,
+    subtotal, tax_total, total, author_name)
+  select p_workspace_id, p_client_id, p_kind, lang, title, current_date,
+    current_date + (settings->>'dueDays')::integer, coalesce(bill, '{}'::jsonb), lines, settings->'taxes',
+    t.subtotal, t.tax_total, greatest(t.total, 0), who
+  from public.invoice_totals(lines, settings->'taxes') t
+  returning id into new_id;
+  return new_id;
+end
+$$;

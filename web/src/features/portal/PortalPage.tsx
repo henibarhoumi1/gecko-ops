@@ -255,7 +255,7 @@ export function PortalPage({
     cuts,
     talent: proposed("talent"),
     location: proposed("location"),
-    prop: proposed("prop"),
+    prop: proposed("prop") + proposed("cost"),
     money: seesMoney(role) ? unpaid(invoices.data ?? []).length : null,
     results: resultsDue,
     brandFirst,

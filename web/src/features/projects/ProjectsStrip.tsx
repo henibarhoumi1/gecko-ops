@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import { friendlyError } from "@/lib/errors";
+import { StageTrack, stageOf } from "@/features/today/HomeMore";
 import { useProjectChoice } from "./projectChoice";
 import { useProjects, useSaveProject, type Project, type ProjectTarget } from "./projectsApi";
 
@@ -23,7 +24,14 @@ function day(iso: string): string {
  * The client's projects, each with its own work. The newest active one is where new ideas, scripts and
  * shoot days go. Founder and producers start, rename and close projects.
  */
-export function ProjectsStrip({ target }: { target: ProjectTarget }) {
+export function ProjectsStrip({
+  target,
+  onOpen,
+}: {
+  target: ProjectTarget;
+  /** On the client hub: each card opens its campaign's workspace. */
+  onOpen?: (projectId: string) => void;
+}) {
   const list = useProjects(target);
   const [chosen, choose] = useProjectChoice(target.workspaceId, target.clientId);
   const save = useSaveProject(target);
@@ -59,14 +67,27 @@ export function ProjectsStrip({ target }: { target: ProjectTarget }) {
               key={p.id}
               className={`project-card status-${p.status}${p.id === current?.id ? " current" : ""}${p.id === picked ? " picked" : ""}`}
             >
-              <button
-                type="button"
-                className="project-pick"
-                aria-pressed={p.id === picked}
-                onClick={() => choose(p.id === picked ? null : p.id)}
-              >
-                {p.id === picked ? "Showing only this project" : "Show only this project"}
-              </button>
+              {onOpen ? (
+                <button
+                  type="button"
+                  className="project-pick project-open"
+                  onClick={() => {
+                    choose(p.id);
+                    onOpen(p.id);
+                  }}
+                >
+                  Open campaign →
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="project-pick"
+                  aria-pressed={p.id === picked}
+                  onClick={() => choose(p.id === picked ? null : p.id)}
+                >
+                  {p.id === picked ? "Showing only this project" : "Show only this project"}
+                </button>
+              )}
               <span className="project-top">
                 <strong dir="auto">{p.name}</strong>
                 <span className="small">
@@ -74,6 +95,7 @@ export function ProjectsStrip({ target }: { target: ProjectTarget }) {
                   {STATUS[p.status]} · {p.kind === "cinematic" ? "Cinematic" : "Performance"}
                 </span>
               </span>
+              {onOpen && <StageTrack at={stageOf(p, new Date().toISOString().slice(0, 10))} />}
               <span className="small">
                 {[
                   `${p.ideas} ideas`,
@@ -127,7 +149,7 @@ export function ProjectsStrip({ target }: { target: ProjectTarget }) {
               />
             ) : (
               <Button variant="secondary" onClick={() => setAdding(true)}>
-                New project
+                {onOpen ? "New campaign" : "New project"}
               </Button>
             )}
           </li>
