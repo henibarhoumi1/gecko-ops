@@ -17,7 +17,11 @@ function seenAt(): string {
 
 export function Bell() {
   const { role } = useWorkspace();
-  const lead = role === "founder" || role === "sales";
+  // Client activity is for the founder and producers; others don't load it at all.
+  return role === "founder" || role === "sales" ? <BellInner /> : null;
+}
+
+function BellInner() {
   const alerts = useAlerts(14);
   const [open, setOpen] = useState(false);
   const [seen, setSeen] = useState(seenAt);
@@ -39,7 +43,6 @@ export function Bell() {
     };
   }, [open]);
 
-  if (!lead) return null;
   const toggle = () => {
     if (!open && items[0]) {
       try {
