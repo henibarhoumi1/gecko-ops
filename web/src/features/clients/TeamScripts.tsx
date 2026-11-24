@@ -44,6 +44,7 @@ import {
 import { friendlyError } from "@/lib/errors";
 import { useClients, useConcepts } from "./clientsApi";
 import { CreativeKit } from "@/features/scripts/CreativeKit";
+import { ShotListButton } from "@/features/scripts/ShotListButton";
 import { CleanCopy, ShootPlanPicker, useApprovedProduction } from "./ShootPlan";
 import { useTemplates } from "./lookApi";
 import { TextArea } from "@/components/TextArea";
@@ -232,6 +233,7 @@ function TeamScript({
           >
             Duplicate
           </Button>
+          <ShotListButton script={script} clientId={clientId} />
           <Button variant="link" onClick={() => setMode("clean")}>
             Clean copy
           </Button>

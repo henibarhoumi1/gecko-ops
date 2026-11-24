@@ -111,8 +111,7 @@ export function ContentPage() {
     <section className="page wide content-page">
       <header className="page-head">
         <div>
-          <p className="eyebrow">Gecko content</p>
-          <h1>Our own channel</h1>
+          <h1>Gecko content</h1>
           <p className="lede">
             Plan, make and post Gecko&rsquo;s content, and track what our ads bring in.
           </p>

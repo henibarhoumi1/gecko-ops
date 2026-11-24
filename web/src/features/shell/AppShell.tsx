@@ -12,6 +12,7 @@ import { memberLabel, ROLE_LABEL, useMembers } from "@/features/workspace/member
 import { CommandPalette, openPalette } from "./CommandPalette";
 import { Toaster } from "@/components/Toast";
 import { Shortcuts } from "./Shortcuts";
+import { Bell } from "./Bell";
 import { GROUP_LABEL, navFor, type NavGroup } from "./nav";
 
 const GROUPS: NavGroup[] = ["home", "work", "studio"];
@@ -66,10 +67,13 @@ export function AppShell({ workspace, email }: { workspace: Workspace; email: st
       <aside className="side">
         <SideToggle folded={folded} onToggle={() => setFolded(!folded)} />
         <Logo />
-        <button type="button" className="side-search" onClick={openPalette}>
-          <span>Search or jump</span>
-          <kbd>⌘K</kbd>
-        </button>
+        <div className="side-row">
+          <button type="button" className="side-search" onClick={openPalette}>
+            <span>Search or jump</span>
+            <kbd>⌘K</kbd>
+          </button>
+          <Bell />
+        </div>
         <nav aria-label="Main">
           {GROUPS.map((g) => {
             const list = items.filter((i) => i.group === g);

@@ -9,6 +9,8 @@ import { block, type Block } from "@/features/pages/blocks";
 import { usePageActions } from "@/features/pages/pagesApi";
 import { useMembers } from "@/features/workspace/members";
 import { friendlyError } from "@/lib/errors";
+import { HookBank } from "./HookBank";
+import { Pricing } from "./Pricing";
 import { batch, deliverableName } from "./naming";
 import {
   campaignMix,
@@ -21,7 +23,7 @@ import {
   type Stage,
 } from "./strategy";
 
-type Tab = "strategy" | "formats" | "naming";
+type Tab = "strategy" | "formats" | "hooks" | "pricing" | "naming";
 
 export function ToolsPage() {
   const [tab, setTab] = useState<Tab>("strategy");
@@ -29,8 +31,7 @@ export function ToolsPage() {
     <section className="page wide tools">
       <header className="page-head">
         <div>
-          <p className="eyebrow">Studio tools</p>
-          <h1>Plan it right</h1>
+          <h1>Studio tools</h1>
           <p className="lede">
             Build a campaign that works, pick the right formats, name every file the same way.
           </p>
@@ -41,6 +42,8 @@ export function ToolsPage() {
           [
             ["strategy", "Campaign builder"],
             ["formats", "Formats that work"],
+            ["hooks", "Hook bank"],
+            ["pricing", "Pricing"],
             ["naming", "File names"],
           ] as const
         ).map(([k, label]) => (
@@ -58,6 +61,8 @@ export function ToolsPage() {
       </div>
       {tab === "strategy" && <Builder />}
       {tab === "formats" && <Formats />}
+      {tab === "hooks" && <HookBank />}
+      {tab === "pricing" && <Pricing />}
       {tab === "naming" && <Naming />}
     </section>
   );
@@ -157,7 +162,7 @@ function Builder() {
       const client = clients.data?.find((c) => c.brand === brand);
       const id = await act.create.mutateAsync({
         title: `${brand || "Campaign"} plan`,
-        icon: "▦",
+        icon: "grid",
         kind: "doc",
         template: "content-plan",
         blocks,

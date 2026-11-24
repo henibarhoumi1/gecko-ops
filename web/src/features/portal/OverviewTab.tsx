@@ -1,3 +1,4 @@
+import { Icon } from "@/components/Icon";
 import { HomeTasks } from "@/features/tasks/TaskPanels";
 import { SinceLastVisit } from "./SinceLastVisit";
 import { byClient } from "@/features/scripts/model";
@@ -395,7 +396,7 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
                       <span className="small">{item.detail}</span>
                     </span>
                     <span className="waiting-go" aria-hidden="true">
-                      →
+                      <Icon name="arrow" size={18} />
                     </span>
                   </Link>
                 </li>
@@ -403,8 +404,9 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
             </ul>
           )}
 
-          <HomeTasks portal={target} />
           <SinceLastVisit target={target} />
+          <Progress plan={o?.plan ?? "custom"} reels={o?.reels ?? null} scripts={data.scripts} />
+          <HomeTasks portal={target} />
         </div>
 
         <aside className="home-side">
@@ -416,7 +418,6 @@ export function OverviewTab({ data, target }: { data: PortalData; target: SheetT
               </Link>
             ))}
           </nav>
-          <Progress plan={o?.plan ?? "custom"} reels={o?.reels ?? null} scripts={data.scripts} />
           {doing.length > 0 && (
             <div className="home-doing">
               <h2>{t("What Gecko is doing", "Ce que fait Gecko")}</h2>

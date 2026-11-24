@@ -397,6 +397,8 @@ const MESSAGES: [RegExp, string, string][] = [
     "Only your owner, an approver or finance can say yes to a cost. You can still comment.",
     "Seuls votre responsable, un valideur ou les finances peuvent accepter une dépense. Vous pouvez commenter.",
   ],
+  [/already_accepted/, "This was already accepted.", "Déjà accepté."],
+  [/name_required/, "Type your full name to accept.", "Écrivez votre nom complet pour accepter."],
   [
     /gecko_decided/,
     "Gecko already approved this. You can still leave a comment.",

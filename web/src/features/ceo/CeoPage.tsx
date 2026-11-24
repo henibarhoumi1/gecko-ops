@@ -223,7 +223,6 @@ export function CeoPage() {
     <section className="page wide ceo">
       <header className="page-head ceo-head">
         <div>
-          <p className="eyebrow">CEO cockpit</p>
           <h1>{monthName}</h1>
           <p className="lede">
             {goal.data?.note || "Where the studio stands this month, and what to push."}

@@ -77,7 +77,7 @@ export function CallSheetDocButton({
         void act.create
           .mutateAsync({
             title: `Call sheet · ${brand} · ${day.day}`,
-            icon: "☎",
+            icon: "phone",
             kind: "doc",
             template: "callsheet",
             blocks: callSheetBlocks(brand, day),

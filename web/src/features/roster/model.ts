@@ -27,6 +27,8 @@ export interface RosterEntry {
   rating: number | null;
   email: string;
   gear: GearItem[];
+  /** Days they are not free (YYYY-MM-DD). */
+  busy_on: string[];
   hidden: boolean;
   author_name: string;
   created_at: string;
@@ -50,6 +52,7 @@ export type RosterInput = Pick<
   | "rating"
   | "email"
   | "gear"
+  | "busy_on"
 >;
 
 export const ROLES: Record<RosterKind, string[]> = {
@@ -83,6 +86,7 @@ export function blank(kind: RosterKind): RosterInput {
     rating: null,
     email: "",
     gear: [],
+    busy_on: [],
   };
 }
 

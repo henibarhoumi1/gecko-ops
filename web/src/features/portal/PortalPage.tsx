@@ -288,14 +288,26 @@ export function PortalPage({
                   <Badge n={g.items[0]!.badge} />
                 </NavLink>
               ) : (
-                <div key={g.id} className="rail-group">
-                  <span className="rail-group-name">{g.label}</span>
-                  {g.items.map((item) => (
-                    <NavLink key={item.to} to={item.to} className="rail-link">
-                      {item.label}
-                      <Badge n={item.badge} />
-                    </NavLink>
-                  ))}
+                // One line per stage; only the open stage shows its pages (fewer things to read at once).
+                <div key={g.id} className={`rail-group${g === group ? " is-open" : ""}`}>
+                  <NavLink
+                    to={g.to}
+                    className={() => `rail-link rail-stage${g === group ? " active-stage" : ""}`}
+                  >
+                    {g.label}
+                    {g !== group && (
+                      <Badge
+                        n={g.items.reduce((sum, item) => sum + (item.badge ?? 0), 0) || undefined}
+                      />
+                    )}
+                  </NavLink>
+                  {g === group &&
+                    g.items.map((item) => (
+                      <NavLink key={item.to} to={item.to} className="rail-link rail-sub">
+                        {item.label}
+                        <Badge n={item.badge} />
+                      </NavLink>
+                    ))}
                 </div>
               ),
             )}

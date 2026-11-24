@@ -5,9 +5,13 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import type { ClientPortal } from "@/features/auth/account";
 import { AlertsPage } from "@/features/alerts/AlertsPage";
 import { CalendarPage } from "@/features/calendar/CalendarPage";
+import { WeekPage } from "@/features/today/WeekPage";
 import { CeoPage } from "@/features/ceo/CeoPage";
 import { FinancePage } from "@/features/finance/FinancePage";
+import { ActiveProjectsPage } from "@/features/projects/ActiveProjectsPage";
+import { EditBoard } from "@/features/review/EditBoard";
 import { PagesPage } from "@/features/pages/PagesPage";
+import { SharedDocPage } from "@/features/pages/SharedDocPage";
 import { ContentPage } from "@/features/content/ContentPage";
 import { ToolsPage } from "@/features/tools/ToolsPage";
 import { AuthProvider, useAuth } from "@/features/auth/AuthProvider";
@@ -78,7 +82,10 @@ const SCREENS: Record<string, () => ReactElement> = {
   alerts: () => <AlertsPage />,
   ceo: () => <CeoPage />,
   calendar: () => <CalendarPage />,
+  week: () => <WeekPage />,
   finance: () => <FinancePage />,
+  projects: () => <ActiveProjectsPage />,
+  edits: () => <EditBoard />,
   pages: () => <PagesPage />,
   content: () => <ContentPage />,
   tools: () => <ToolsPage />,
@@ -113,6 +120,7 @@ export function App() {
                   <Route path="/invite/:code" element={<InvitePage />} />
                   <Route path="/day/:token" element={<CrewDayPage />} />
                   <Route path="/p/:token" element={<ProposalPage />} />
+                  <Route path="/doc/:token" element={<SharedDocPage />} />
                   <Route path="/sign-in" element={<SignedOutOnly page={<SignInPage />} />} />
                   <Route path="/sign-up" element={<SignedOutOnly page={<SignUpPage />} />} />
                   <Route path="/forgot" element={<SignedOutOnly page={<ForgotPage />} />} />

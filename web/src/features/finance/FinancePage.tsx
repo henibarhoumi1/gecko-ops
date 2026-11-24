@@ -138,8 +138,7 @@ export function FinancePage() {
     <section className="page wide finance">
       <header className="page-head ceo-head">
         <div>
-          <p className="eyebrow">Finance</p>
-          <h1>Money</h1>
+          <h1>Finance</h1>
           <p className="lede">Every invoice, every client, in one place.</p>
         </div>
         <Button variant="secondary" onClick={download} disabled={rows.length === 0}>

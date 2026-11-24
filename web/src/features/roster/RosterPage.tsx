@@ -24,6 +24,8 @@ import { useRoster, useRosterActions } from "./rosterApi";
 
 type Editing = { id?: string; input: RosterInput } | null;
 
+const todayIso = new Date().toISOString().slice(0, 10);
+
 const COPY: Record<RosterKind, { lead: string; empty: string; add: string; rate: string }> = {
   talent: {
     lead: "Everyone we cast: faces, voices and creators, with their rate and how to reach them.",
@@ -224,6 +226,23 @@ export function RosterPage({ kind }: { kind: RosterKind }) {
                       {(e.gear ?? []).length > 4 && <li>+{(e.gear ?? []).length - 4} more</li>}
                     </ul>
                   )}
+                  {(e.busy_on ?? []).some((d) => d >= todayIso) && (
+                    <p className="small roster-busy">
+                      Not free{" "}
+                      {(e.busy_on ?? [])
+                        .filter((d) => d >= todayIso)
+                        .sort()
+                        .slice(0, 3)
+                        .map((d) =>
+                          new Date(`${d}T12:00:00Z`).toLocaleDateString("en-GB", {
+                            day: "numeric",
+                            month: "short",
+                            timeZone: "UTC",
+                          }),
+                        )
+                        .join(", ")}
+                    </p>
+                  )}
                   <div className="roster-meta">
                     {e.rate != null && (
                       <span className="roster-rate">
@@ -337,6 +356,7 @@ const pick = (e: RosterEntry): RosterInput => ({
   rating: e.rating,
   email: e.email ?? "",
   gear: e.gear ?? [],
+  busy_on: e.busy_on ?? [],
 });
 
 /** A steady colour per name for cards without a photo. */
@@ -494,6 +514,9 @@ function Editor({
             />
           </label>
           {kind === "studio" && <GearEditor value={v.gear} onChange={(g) => set("gear", g)} />}
+          {kind !== "studio" && (
+            <BusyEditor value={v.busy_on} onChange={(d) => set("busy_on", d)} />
+          )}
           <label className="field peek-wide">
             <span>Tags, separated by commas</span>
             <input
@@ -571,6 +594,56 @@ function GearEditor({ value, onChange }: { value: GearItem[]; onChange: (g: Gear
         >
           Add gear
         </Button>
+      )}
+    </fieldset>
+  );
+}
+
+/** The days this person or place is not free. Past days drop off when saved. */
+function BusyEditor({ value, onChange }: { value: string[]; onChange: (d: string[]) => void }) {
+  const [day, setDay] = useState("");
+  const today = new Date().toISOString().slice(0, 10);
+  const list = value.filter((d) => d >= today).sort();
+  return (
+    <fieldset className="field peek-wide busy-editor">
+      <legend>Not free on</legend>
+      <div className="busy-add">
+        <input
+          type="date"
+          value={day}
+          min={today}
+          onChange={(e) => setDay(e.target.value)}
+          aria-label="Day"
+        />
+        <Button
+          variant="secondary"
+          disabled={!day || list.includes(day)}
+          onClick={() => {
+            onChange([...list, day].sort());
+            setDay("");
+          }}
+        >
+          Add day
+        </Button>
+      </div>
+      {list.length > 0 && (
+        <div className="busy-days">
+          {list.map((d) => (
+            <button
+              key={d}
+              type="button"
+              className="chip"
+              onClick={() => onChange(list.filter((x) => x !== d))}
+            >
+              {new Date(`${d}T12:00:00Z`).toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "short",
+                timeZone: "UTC",
+              })}{" "}
+              ×
+            </button>
+          ))}
+        </div>
       )}
     </fieldset>
   );

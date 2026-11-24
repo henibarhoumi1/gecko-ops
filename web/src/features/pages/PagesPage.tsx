@@ -4,6 +4,8 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { Link, Route, Routes, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/Button";
+import { Icon, type IconName } from "@/components/Icon";
+import { Logo } from "@/components/Logo";
 import { Notice } from "@/components/Notice";
 import { toast } from "@/components/Toast";
 import { useClients } from "@/features/clients/clientsApi";
@@ -22,6 +24,7 @@ import {
   type Template,
 } from "./blocks";
 import { usePage, usePageActions, usePages } from "./pagesApi";
+import { SharePanel } from "./SharePanel";
 
 export function PagesPage() {
   return (
@@ -80,8 +83,7 @@ function PagesHome() {
     <section className="page wide pages">
       <header className="page-head ceo-head">
         <div>
-          <p className="eyebrow">Pages & docs</p>
-          <h1>Write anything</h1>
+          <h1>Pages &amp; docs</h1>
           <p className="lede">Notes, plans and Gecko documents you can print to PDF or send.</p>
         </div>
         <Button onClick={() => void start(TEMPLATES[0]!)} disabled={act.create.isPending}>
@@ -103,7 +105,7 @@ function PagesHome() {
               onClick={() => void start(t)}
             >
               <span className="tpl-icon" aria-hidden="true">
-                {t.icon}
+                <Icon name={t.icon} size={18} />
               </span>
               <strong>{t.name}</strong>
               <span className="small">{t.blurb}</span>
@@ -143,7 +145,7 @@ function PagesHome() {
               <li key={p.id}>
                 <Link to={`/pages/${p.id}`} className="page-row">
                   <span className="page-row-icon" aria-hidden="true">
-                    {p.icon || "◻"}
+                    <Icon name={iconOf(p.icon, p.template)} size={18} />
                   </span>
                   <span className="page-row-title" dir="auto">
                     <strong>{p.title || "Untitled"}</strong>
@@ -169,6 +171,13 @@ function PagesHome() {
   );
 }
 
+/** A page's icon: its stored name, else its template's, else a page. Older pages stored a glyph. */
+function iconOf(icon: string, template: string): IconName {
+  const names = new Set<string>(TEMPLATES.map((t) => t.icon));
+  if (names.has(icon)) return icon as IconName;
+  return TEMPLATES.find((t) => t.key === template)?.icon ?? "page";
+}
+
 const LISTY: BlockType[] = ["bullet", "number", "todo"];
 
 function PageEditor() {
@@ -184,6 +193,7 @@ function PageEditor() {
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState<"idle" | "saving" | "saved">("idle");
   const [focus, setFocus] = useState<{ id: string; at: "start" | "end" } | null>(null);
+  const [sharing, setSharing] = useState(false);
 
   useEffect(() => {
     if (page.data && loaded !== page.data.id) {
@@ -223,6 +233,7 @@ function PageEditor() {
   if (!page.data) return <Notice>This page is gone (maybe in the Trash).</Notice>;
   const p = page.data;
   const doc = p.kind === "doc";
+  const clientBrand = clients.data?.find((c) => c.id === p.clientId)?.brand ?? "";
   const text = toText(title || "Untitled", blocks);
 
   const at = (id: string) => blocks.findIndex((b) => b.id === id);
@@ -302,6 +313,9 @@ function PageEditor() {
           >
             Email
           </a>
+          <Button variant="secondary" aria-expanded={sharing} onClick={() => setSharing(!sharing)}>
+            Share link
+          </Button>
           <Button onClick={() => window.print()}>{doc ? "PDF" : "Print / PDF"}</Button>
           <Button
             variant="link"
@@ -329,16 +343,39 @@ function PageEditor() {
         </div>
       </div>
 
-      <article className="paper">
+      {sharing && (
+        <div className="no-print">
+          <SharePanel
+            pageId={p.id}
+            title={title}
+            acceptable={["quote", "proposal"].includes(p.template)}
+          />
+        </div>
+      )}
+      <article className={`paper tpl-${p.template || "blank"}`}>
         {doc && (
-          <header className="paper-head">
-            <span className="paper-logo">gecko.]</span>
-            <span className="small">Video ads that sell · Tunis</span>
+          <header className="paper-cover">
+            <div className="paper-cover-top">
+              <Logo className="paper-logo" />
+              <span className="paper-kind">
+                {TEMPLATES.find((x) => x.key === p.template)?.name ?? "Document"}
+              </span>
+            </div>
+            <div className="paper-cover-meta">
+              {clientBrand && <span>For {clientBrand}</span>}
+              <span>
+                {new Date(p.updatedAt).toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </span>
+            </div>
           </header>
         )}
         <div className="paper-title">
           <span className="paper-icon" aria-hidden="true">
-            {p.icon}
+            <Icon name={iconOf(p.icon, p.template)} size={30} />
           </span>
           <input
             className="paper-title-input"
@@ -391,8 +428,11 @@ function PageEditor() {
           + Add a block
         </button>
         {doc && (
-          <footer className="paper-foot small">
-            Gecko · gecko-creative.com · contact@gecko-creative.com
+          <footer className="paper-foot">
+            <Logo className="paper-foot-logo" />
+            <span>Video ads that sell · Tunis</span>
+            <span>gecko-creative.com</span>
+            <span>contact@gecko-creative.com</span>
           </footer>
         )}
       </article>
