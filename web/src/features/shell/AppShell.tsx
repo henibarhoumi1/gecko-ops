@@ -23,6 +23,9 @@ const ICONS: Record<string, string> = {
   ceo: "M4 19h16M6 16V11M10 16V7M14 16v-6M18 16V5",
   calendar:
     "M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1zM4 10h16M8 4v4M16 4v4",
+  week: "M4 6h16M4 12h10M4 18h7M16 16l2 2 4-4",
+  projects: "M4 5h7v6H4zM13 5h7v9h-7zM4 13h7v6H4zM13 16h7v3h-7z",
+  edits: "M4 5h16v14H4zM4 9h16M4 15h16M8 5v4M12 5v4M16 5v4M8 15v4M12 15v4M16 15v4",
   finance:
     "M4 7h16v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zM4 7l2-3h12l2 3M12 10v6M9.5 11.5c0-1 1-1.5 2.5-1.5s2.5.6 2.5 1.6-1 1.4-2.5 1.4-2.5.5-2.5 1.5 1 1.5 2.5 1.5 2.5-.5 2.5-1.5",
   pipeline: "M4 6h16M7 12h10M10 18h4",

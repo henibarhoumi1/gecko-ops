@@ -242,11 +242,24 @@ export function CeoPage() {
         />
       )}
 
-      <div className="ceo-rings">
-        <Ring value={money.cashIn} of={goal.data?.revenue ?? null} label="Cash in" money />
-        <Ring value={f.wonCount} of={goal.data?.deals ?? null} label="Deals signed" />
-        <Ring value={reelsInWork} of={goal.data?.reels ?? null} label="Reels in work" />
-      </div>
+      {goal.data && (goal.data.revenue || goal.data.deals || goal.data.reels) ? (
+        <div className="ceo-rings">
+          <Ring value={money.cashIn} of={goal.data.revenue} label="Cash in" money />
+          <Ring value={f.wonCount} of={goal.data.deals} label="Deals signed" />
+          <Ring value={reelsInWork} of={goal.data.reels} label="Reels in work" />
+        </div>
+      ) : (
+        !editing &&
+        !goal.isPending && (
+          <div className="ceo-nogoal">
+            <p>
+              <strong>No goals for {monthName.split(" ")[0]} yet.</strong> Set the cash, deals and
+              reels you want, and the month shows how far along you are.
+            </p>
+            <Button onClick={() => setEditing(true)}>Set the goals</Button>
+          </div>
+        )
+      )}
 
       <div className="ceo-tiles">
         <Tile label="Still owed" value={dt(money.owed)} hint="Sent, not paid" />
