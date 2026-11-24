@@ -1,4 +1,4 @@
-import { useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import { TextArea } from "@/components/TextArea";
@@ -172,10 +172,29 @@ export function PhotoPicker({
   addLabel?: string;
 }) {
   const input = useRef<HTMLInputElement>(null);
+  const box = useRef<HTMLDivElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [over, setOver] = useState(false);
+  const hot = useRef(false);
 
-  async function onFiles(files: FileList | null) {
+  // A photo pasted (⌘V) while the pointer is over the picker, or while you're filling in its form, lands here.
+  useEffect(() => {
+    const onPaste = (e: ClipboardEvent) => {
+      const scope = box.current?.closest("form") ?? box.current;
+      if (!hot.current && !(scope && scope.contains(document.activeElement))) return;
+      const files = Array.from(e.clipboardData?.files ?? []).filter((f) =>
+        IMAGE_TYPES.includes(f.type),
+      );
+      if (!files.length) return;
+      e.preventDefault();
+      void onFiles(files);
+    };
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+  });
+
+  async function onFiles(files: FileList | File[] | null) {
     if (!files?.length) return;
     setBusy(true);
     setError("");
@@ -194,7 +213,22 @@ export function PhotoPicker({
   }
 
   return (
-    <div className="field photo-picker">
+    <div
+      ref={box}
+      className={`field photo-picker${over ? " is-over" : ""}`}
+      onMouseEnter={() => (hot.current = true)}
+      onMouseLeave={() => (hot.current = false)}
+      onDragOver={(e) => {
+        e.preventDefault();
+        setOver(true);
+      }}
+      onDragLeave={() => setOver(false)}
+      onDrop={(e) => {
+        e.preventDefault();
+        setOver(false);
+        void onFiles(Array.from(e.dataTransfer.files).filter((f) => IMAGE_TYPES.includes(f.type)));
+      }}
+    >
       <span className="label">{label}</span>
       <div className="prod-photos n3">
         {value.map((p) => (
@@ -217,7 +251,10 @@ export function PhotoPicker({
             disabled={busy}
             onClick={() => input.current?.click()}
           >
-            {busy ? t("Uploading…", "Envoi…") : addLabel}
+            {busy ? t("Uploading…", "Envoi…") : over ? t("Drop here", "Déposez ici") : addLabel}
+            {!busy && !over && (
+              <span className="add-photo-hint">{t("or drop / paste", "ou glissez / collez")}</span>
+            )}
           </button>
         )}
       </div>

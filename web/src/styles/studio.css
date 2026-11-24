@@ -6347,3 +6347,197 @@ a[href*="airbnb."]::before {
     display: none;
   }
 }
+
+/* Pictures: drop, paste or click. One look everywhere a photo goes. */
+.img-drop-field {
+  display: grid;
+  gap: 8px;
+}
+.img-drop-field .label {
+  font-weight: 700;
+  font-size: 13px;
+}
+.img-drop {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 150px;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #f5f5f4;
+  box-shadow: inset 0 0 0 1.5px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  transition:
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+.img-drop.img-square {
+  aspect-ratio: 1;
+  min-height: 0;
+  max-width: 220px;
+}
+.img-drop:not(.has-img) {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0 10px,
+    rgba(0, 0, 0, 0.025) 10px 20px
+  );
+}
+.img-drop:hover,
+.img-drop:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+}
+.img-drop.is-over {
+  background: color-mix(in srgb, var(--pink) 40%, #fff);
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+.img-drop.has-img {
+  min-height: 0;
+  background: #fff;
+}
+.img-drop img {
+  display: block;
+  width: 100%;
+  max-height: 360px;
+  object-fit: cover;
+}
+.img-drop.img-square img {
+  height: 100%;
+}
+.img-drop-hint {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 18px;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: center;
+}
+.img-drop-hint svg {
+  opacity: 0.55;
+}
+.img-drop-busy {
+  position: absolute;
+  inset: auto 10px 10px auto;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+.img-drop.is-busy {
+  cursor: progress;
+}
+.img-drop-acts {
+  display: flex;
+  gap: 4px;
+}
+.img-drop-acts button {
+  padding: 5px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  font: 600 13px/1 var(--font);
+  cursor: pointer;
+}
+.img-drop-acts button:hover {
+  background: #f5f5f4;
+}
+.img-drop-err {
+  color: #b3261e;
+  font-size: 13px;
+}
+.peek .img-drop-field {
+  margin-bottom: 16px;
+}
+.blk-image .img-drop-field {
+  flex: 1;
+}
+.blk-image .img-drop {
+  min-height: 180px;
+}
+
+/* Client photo pickers and the logo: a drop lands there too. */
+.photo-picker.is-over .add-photo,
+.logo-panel.is-over .logo-well {
+  background: color-mix(in srgb, var(--pink) 40%, #fff);
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+.add-photo {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 4px;
+}
+.add-photo-hint {
+  font-size: 11.5px;
+  font-weight: 500;
+  opacity: 0.6;
+}
+.logo-panel .logo-well {
+  border: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Tables: worked-out columns and the studio templates. */
+.tbl-start {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.tbl-start select {
+  width: auto;
+  height: 32px;
+  padding: 0 28px 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background-color: color-mix(in srgb, var(--blue) 35%, #fff);
+  font: 700 13px/1 var(--font);
+  cursor: pointer;
+}
+.tbl td.is-auto {
+  background: #fafaf9;
+}
+.tbl-auto {
+  display: block;
+  padding: 8px 10px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.tbl-auto-k {
+  position: absolute;
+  top: 9px;
+  right: 30px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--blue) 45%, #fff);
+  font-size: 10.5px;
+  font-weight: 700;
+}
+.paper-uploading {
+  position: fixed;
+  z-index: 30;
+  left: 50%;
+  bottom: 24px;
+  margin: 0;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  transform: translateX(-50%);
+}
+.glyph svg {
+  display: block;
+}
+.blk-menu-grid .glyph svg {
+  width: 15px;
+  height: 15px;
+}

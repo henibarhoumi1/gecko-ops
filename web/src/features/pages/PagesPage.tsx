@@ -13,6 +13,7 @@ import { whatsappLink } from "@/features/clients/messages";
 import { useMembers } from "@/features/workspace/members";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { friendlyError } from "@/lib/errors";
+import { imageFrom, uploadMedia } from "@/lib/media";
 import { BrandIcon } from "@/components/BrandIcon";
 import { ItemMenu } from "@/components/ItemMenu";
 import { BlockRow } from "./BlockRow";
@@ -179,8 +180,9 @@ function PageEditor() {
   const page = usePage(pageId);
   const act = usePageActions();
   const navigate = useNavigate();
-  const { role } = useWorkspace();
+  const { role, id: workspaceId } = useWorkspace();
   const clients = useClients();
+  const [uploading, setUploading] = useState(0);
   const [title, setTitle] = useState("");
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [loaded, setLoaded] = useState<string | null>(null);
@@ -283,6 +285,31 @@ function PageEditor() {
     const k = rest.findIndex((b) => b.id === id) + (where === "below" ? 1 : 0);
     change([...rest.slice(0, k), moving, ...rest.slice(k)]);
   };
+  // A picture pasted or dropped anywhere on the page goes in right under the block you're in (or at the end).
+  async function addImage(file: File, afterId?: string | null) {
+    setUploading((n) => n + 1);
+    try {
+      const url = await uploadMedia(workspaceId, file);
+      const img = block("image", "", { url });
+      setBlocks((prev) => {
+        const i = afterId ? prev.findIndex((x) => x.id === afterId) : -1;
+        const at = i < 0 ? prev.length : i + 1;
+        // An empty line where the picture lands is replaced by it.
+        const here = prev[i];
+        if (here && here.type === "text" && !here.text.trim())
+          return prev.map((x) => (x.id === here.id ? img : x));
+        return [...prev.slice(0, at), img, ...prev.slice(at)];
+      });
+      setDirty(true);
+    } catch (e) {
+      toast({ text: friendlyError(e), tone: "error" });
+    } finally {
+      setUploading((n) => n - 1);
+    }
+  }
+  const blockAt = (el: EventTarget | null) =>
+    (el as HTMLElement | null)?.closest?.("[data-id]")?.getAttribute("data-id") ?? null;
+
   const copyText = () =>
     void navigator.clipboard
       .writeText(text)
@@ -413,7 +440,28 @@ function PageEditor() {
           />
         </div>
       )}
-      <article className={`paper tpl-${p.template || "blank"}`}>
+      <article
+        className={`paper tpl-${p.template || "blank"}`}
+        onPaste={(e) => {
+          if ((e.target as HTMLElement).closest(".img-drop, .tbl")) return;
+          const got = imageFrom(e.clipboardData);
+          if (!got?.file) return;
+          e.preventDefault();
+          void addImage(got.file, blockAt(e.target));
+        }}
+        onDragOver={(e) => {
+          if (!dragId && e.dataTransfer.types.includes("Files")) e.preventDefault();
+        }}
+        onDrop={(e) => {
+          if (dragId || (e.target as HTMLElement).closest(".img-drop")) return;
+          const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith("image/"));
+          if (!files.length) return;
+          e.preventDefault();
+          const after = blockAt(e.target) ?? blocks[blocks.length - 1]?.id ?? null;
+          files.slice(0, 6).forEach((f) => void addImage(f, after));
+        }}
+      >
+        {uploading > 0 && <p className="paper-uploading no-print">Adding the picture…</p>}
         {doc && (
           <header className="paper-cover">
             <div className="paper-cover-top">

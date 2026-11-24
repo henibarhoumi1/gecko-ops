@@ -8,7 +8,15 @@ import { Logo } from "@/components/Logo";
 import { friendlyError } from "@/lib/errors";
 import { requireSupabase } from "@/lib/supabase";
 import { EmbedView } from "./BlockRow";
-import { calculate, columnTotal, fmtNum, readBlocks, TEMPLATES, type Block } from "./blocks";
+import {
+  calculate,
+  columnTotal,
+  computeRows,
+  fmtNum,
+  readBlocks,
+  TEMPLATES,
+  type Block,
+} from "./blocks";
 
 interface Shared {
   title: string;
@@ -212,7 +220,7 @@ function BlockView({ b, n }: { b: Block; n: number }) {
         </p>
       );
     case "table": {
-      const rows = b.rows ?? [];
+      const rows = computeRows(b.rows ?? [], b.calcCols);
       const totals = (rows[0] ?? []).map((_, c) => columnTotal(rows, c));
       return (
         <div className="sb tbl-wrap">
