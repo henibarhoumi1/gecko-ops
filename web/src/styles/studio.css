@@ -4745,3 +4745,239 @@ a {
   animation: shimmer 1.3s linear infinite;
   box-shadow: none;
 }
+
+/* ---------- Share links ---------- */
+.share-panel {
+  display: grid;
+  gap: 12px;
+  max-width: 860px;
+  margin: 0 auto 18px;
+  padding: 16px 18px;
+  border-radius: var(--r-lg);
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+.share-new {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.share-fresh {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: var(--r);
+  background: var(--blue-soft);
+}
+.share-fresh code {
+  font:
+    600 13px/1.4 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  word-break: break-all;
+}
+.share-fresh-actions {
+  display: flex;
+  gap: 6px;
+}
+.share-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+}
+.share-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-top: 1px solid var(--hair);
+}
+
+/* The page a client opens from a link: Gecko paper on white, readable on a phone. */
+.shared-doc {
+  min-height: 100vh;
+  padding: clamp(12px, 4vw, 48px) clamp(0px, 3vw, 32px) 64px;
+  background: #fff;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.shared-bar {
+  display: flex;
+  justify-content: flex-end;
+  max-width: 860px;
+  margin: 0 auto 12px;
+  padding-inline: 16px;
+}
+.shared-paper {
+  --doc-accent: var(--yellow);
+  max-width: 860px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px var(--hair),
+    0 24px 60px -30px rgba(0, 0, 0, 0.25);
+}
+.shared-paper:not(.is-doc-paper) {
+  padding-top: 24px;
+}
+.shared-title {
+  margin: 0;
+  padding: 28px clamp(20px, 5vw, 64px) 12px;
+  font-size: clamp(34px, 6vw, 60px);
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+.shared-blocks {
+  display: grid;
+  gap: 6px;
+  padding: 0 clamp(20px, 5vw, 64px);
+  font-size: 16px;
+  line-height: 1.6;
+}
+.sb {
+  margin: 0;
+}
+.sb-h1 {
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 2px solid var(--ink);
+  font-size: clamp(22px, 3vw, 30px);
+  letter-spacing: -0.03em;
+}
+.sb-h2 {
+  margin-top: 16px;
+  font-size: 21px;
+  letter-spacing: -0.02em;
+}
+.sb-h3 {
+  margin-top: 8px;
+  font-size: 17px;
+}
+.sb-bullet,
+.sb-number,
+.sb-todo {
+  display: flex;
+  gap: 10px;
+}
+.sb-mark {
+  min-width: 18px;
+  font-weight: 700;
+  text-align: right;
+}
+.sb-box {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 4px;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+}
+.sb-todo.is-checked .sb-box {
+  background: var(--ink);
+}
+.sb-todo.is-checked .sb-text {
+  text-decoration: line-through;
+  opacity: 0.55;
+}
+.sb-quote {
+  margin: 6px 0;
+  padding-left: 14px;
+  border-left: 3px solid var(--doc-accent);
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.sb-callout {
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--doc-accent) 30%, #fff);
+}
+.sb-field {
+  display: grid;
+  grid-template-columns: minmax(120px, 190px) 1fr;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--hair);
+}
+.sb-label {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding-top: 3px;
+}
+.sb-divider {
+  margin: 12px 0;
+  border: 0;
+  border-top: 1px solid var(--hair);
+}
+.sb-empty {
+  height: 0.8em;
+}
+.shared-accept {
+  margin: 32px clamp(20px, 5vw, 64px) 0;
+  padding: 20px 22px;
+  border-radius: var(--r-lg);
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+.shared-accept h2 {
+  margin: 0 0 4px;
+  font-size: 22px;
+}
+.shared-accept-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+.shared-accept-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 11px 14px;
+}
+.shared-accepted {
+  margin: 0;
+  font-size: 16px;
+}
+.shared-error {
+  color: #a1122f;
+}
+.shared-gone {
+  display: grid;
+  place-content: center;
+  gap: 12px;
+  text-align: center;
+}
+.shared-gone .paper-logo {
+  width: 110px;
+  margin: 0 auto;
+}
+@media (max-width: 600px) {
+  .sb-field {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  .shared-accept-row {
+    flex-direction: column;
+  }
+  .shared-paper {
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+@media print {
+  .shared-doc {
+    padding: 0;
+  }
+  .shared-paper {
+    max-width: none;
+    box-shadow: none;
+  }
+}

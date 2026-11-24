@@ -24,6 +24,7 @@ import {
   type Template,
 } from "./blocks";
 import { usePage, usePageActions, usePages } from "./pagesApi";
+import { SharePanel } from "./SharePanel";
 
 export function PagesPage() {
   return (
@@ -192,6 +193,7 @@ function PageEditor() {
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState<"idle" | "saving" | "saved">("idle");
   const [focus, setFocus] = useState<{ id: string; at: "start" | "end" } | null>(null);
+  const [sharing, setSharing] = useState(false);
 
   useEffect(() => {
     if (page.data && loaded !== page.data.id) {
@@ -311,6 +313,9 @@ function PageEditor() {
           >
             Email
           </a>
+          <Button variant="secondary" aria-expanded={sharing} onClick={() => setSharing(!sharing)}>
+            Share link
+          </Button>
           <Button onClick={() => window.print()}>{doc ? "PDF" : "Print / PDF"}</Button>
           <Button
             variant="link"
@@ -338,6 +343,15 @@ function PageEditor() {
         </div>
       </div>
 
+      {sharing && (
+        <div className="no-print">
+          <SharePanel
+            pageId={p.id}
+            title={title}
+            acceptable={["quote", "proposal"].includes(p.template)}
+          />
+        </div>
+      )}
       <article className={`paper tpl-${p.template || "blank"}`}>
         {doc && (
           <header className="paper-cover">

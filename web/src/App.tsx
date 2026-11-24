@@ -9,6 +9,7 @@ import { CeoPage } from "@/features/ceo/CeoPage";
 import { FinancePage } from "@/features/finance/FinancePage";
 import { ActiveProjectsPage } from "@/features/projects/ActiveProjectsPage";
 import { PagesPage } from "@/features/pages/PagesPage";
+import { SharedDocPage } from "@/features/pages/SharedDocPage";
 import { ContentPage } from "@/features/content/ContentPage";
 import { ToolsPage } from "@/features/tools/ToolsPage";
 import { AuthProvider, useAuth } from "@/features/auth/AuthProvider";
@@ -115,6 +116,7 @@ export function App() {
                   <Route path="/invite/:code" element={<InvitePage />} />
                   <Route path="/day/:token" element={<CrewDayPage />} />
                   <Route path="/p/:token" element={<ProposalPage />} />
+                  <Route path="/doc/:token" element={<SharedDocPage />} />
                   <Route path="/sign-in" element={<SignedOutOnly page={<SignInPage />} />} />
                   <Route path="/sign-up" element={<SignedOutOnly page={<SignUpPage />} />} />
                   <Route path="/forgot" element={<SignedOutOnly page={<ForgotPage />} />} />
