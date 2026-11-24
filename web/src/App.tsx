@@ -8,6 +8,7 @@ import { CalendarPage } from "@/features/calendar/CalendarPage";
 import { CeoPage } from "@/features/ceo/CeoPage";
 import { FinancePage } from "@/features/finance/FinancePage";
 import { ActiveProjectsPage } from "@/features/projects/ActiveProjectsPage";
+import { EditBoard } from "@/features/review/EditBoard";
 import { PagesPage } from "@/features/pages/PagesPage";
 import { SharedDocPage } from "@/features/pages/SharedDocPage";
 import { ContentPage } from "@/features/content/ContentPage";
@@ -82,6 +83,7 @@ const SCREENS: Record<string, () => ReactElement> = {
   calendar: () => <CalendarPage />,
   finance: () => <FinancePage />,
   projects: () => <ActiveProjectsPage />,
+  edits: () => <EditBoard />,
   pages: () => <PagesPage />,
   content: () => <ContentPage />,
   tools: () => <ToolsPage />,
