@@ -1,7 +1,7 @@
 // Pages and documents (Heni, 24 Nov 2026). Pages like Notion but simpler: type, press Enter, "/" for any block,
 // "## " for a heading, "[] " for a to-do. Documents are the same pages printed on Gecko paper: briefs, proposals,
 // call sheets, messages, exported to PDF (the browser's Save as PDF) or sent as text.
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, Route, Routes, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/Button";
 import { Icon, type IconName } from "@/components/Icon";
@@ -13,16 +13,10 @@ import { whatsappLink } from "@/features/clients/messages";
 import { useMembers } from "@/features/workspace/members";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { friendlyError } from "@/lib/errors";
-import {
-  block,
-  BLOCK_MENU,
-  shortcut,
-  TEMPLATES,
-  toText,
-  type Block,
-  type BlockType,
-  type Template,
-} from "./blocks";
+import { BrandIcon } from "@/components/BrandIcon";
+import { ItemMenu } from "@/components/ItemMenu";
+import { BlockRow } from "./BlockRow";
+import { block, TEMPLATES, toText, type Block, type BlockType, type Template } from "./blocks";
 import { usePage, usePageActions, usePages } from "./pagesApi";
 import { SharePanel } from "./SharePanel";
 
@@ -194,6 +188,28 @@ function PageEditor() {
   const [saving, setSaving] = useState<"idle" | "saving" | "saved">("idle");
   const [focus, setFocus] = useState<{ id: string; at: "start" | "end" } | null>(null);
   const [sharing, setSharing] = useState(false);
+  const [shareMenu, setShareMenu] = useState(false);
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [over, setOver] = useState<{ id: string; at: "above" | "below" } | null>(null);
+  const shareBox = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!shareMenu) return;
+    const close = (e: MouseEvent | KeyboardEvent) => {
+      if (
+        e instanceof KeyboardEvent
+          ? e.key === "Escape"
+          : !shareBox.current?.contains(e.target as Node)
+      )
+        setShareMenu(false);
+    };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", close);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("keydown", close);
+    };
+  }, [shareMenu]);
 
   useEffect(() => {
     if (page.data && loaded !== page.data.id) {
@@ -259,6 +275,19 @@ function PageEditor() {
     [next[i], next[j]] = [next[j]!, next[i]!];
     change(next);
   };
+  const dropOn = (id: string, where: "above" | "below") => {
+    if (!dragId || dragId === id) return;
+    const moving = blocks.find((b) => b.id === dragId);
+    if (!moving) return;
+    const rest = blocks.filter((b) => b.id !== dragId);
+    const k = rest.findIndex((b) => b.id === id) + (where === "below" ? 1 : 0);
+    change([...rest.slice(0, k), moving, ...rest.slice(k)]);
+  };
+  const copyText = () =>
+    void navigator.clipboard
+      .writeText(text)
+      .then(() => toast({ text: "Copied as text" }))
+      .catch(() => toast({ text: "Couldn't copy", tone: "error" }));
 
   return (
     <section className={`page wide page-editor${doc ? " is-doc" : ""}`}>
@@ -273,6 +302,7 @@ function PageEditor() {
         </span>
         <div className="editor-actions">
           <select
+            className="editor-client"
             aria-label="Client"
             value={p.clientId ?? ""}
             onChange={(e) =>
@@ -288,63 +318,94 @@ function PageEditor() {
               </option>
             ))}
           </select>
-          <Button
-            variant="secondary"
-            onClick={() =>
-              void navigator.clipboard
-                .writeText(text)
-                .then(() => toast({ text: "Copied as text" }))
-                .catch(() => toast({ text: "Couldn't copy", tone: "error" }))
-            }
-          >
-            Copy text
-          </Button>
-          <a
-            className="btn btn-secondary"
-            href={whatsappLink(text)}
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            WhatsApp
-          </a>
-          <a
-            className="btn btn-secondary"
-            href={`mailto:?subject=${encodeURIComponent(title || "Gecko")}&body=${encodeURIComponent(text)}`}
-          >
-            Email
-          </a>
-          <Button variant="secondary" aria-expanded={sharing} onClick={() => setSharing(!sharing)}>
-            Share link
-          </Button>
-          <Button onClick={() => window.print()}>{doc ? "PDF" : "Print / PDF"}</Button>
-          <Button
-            variant="link"
-            onClick={() =>
-              void act.save
-                .mutateAsync({ id: p.id, pinned: !p.pinned })
-                .then(() => void page.refetch())
-            }
-          >
-            {p.pinned ? "Unpin" : "Pin"}
-          </Button>
-          {(role === "founder" || role === "sales") && (
+          <div className="share-box" ref={shareBox}>
             <Button
-              variant="link"
-              onClick={() =>
-                void act.remove.mutateAsync(p.id).then(() => {
-                  toast({ text: "Moved to the trash", detail: title || "Untitled" });
-                  navigate("/pages");
-                })
-              }
+              aria-expanded={shareMenu}
+              aria-haspopup="menu"
+              onClick={() => setShareMenu(!shareMenu)}
             >
-              Delete
+              Share
             </Button>
-          )}
+            {shareMenu && (
+              <div className="share-menu" role="menu">
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => (copyText(), setShareMenu(false))}
+                >
+                  <Icon name="page" size={16} /> Copy as text
+                </button>
+                <a
+                  role="menuitem"
+                  className="no-mark"
+                  href={whatsappLink(text)}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  onClick={() => setShareMenu(false)}
+                >
+                  <BrandIcon name="whatsapp" /> Send on WhatsApp
+                </a>
+                <a
+                  role="menuitem"
+                  href={`mailto:?subject=${encodeURIComponent(title || "Gecko")}&body=${encodeURIComponent(text)}`}
+                  onClick={() => setShareMenu(false)}
+                >
+                  <Icon name="mail" size={16} /> Email
+                </a>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => (setSharing(true), setShareMenu(false))}
+                >
+                  <Icon name="at" size={16} /> Public link
+                  {["quote", "proposal"].includes(p.template) ? ", to accept" : ""}
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => (setShareMenu(false), window.setTimeout(() => window.print(), 50))}
+                >
+                  <Icon name="receipt" size={16} /> {doc ? "Save as PDF" : "Print or save as PDF"}
+                </button>
+              </div>
+            )}
+          </div>
+          <ItemMenu
+            label="Page options"
+            actions={[
+              {
+                label: p.pinned ? "Unpin from the top" : "Pin to the top",
+                onSelect: () =>
+                  void act.save
+                    .mutateAsync({ id: p.id, pinned: !p.pinned })
+                    .then(() => void page.refetch()),
+              },
+              { label: "Copy as text", onSelect: copyText },
+              {
+                label: "Move to the trash",
+                danger: true,
+                hidden: !(role === "founder" || role === "sales"),
+                onSelect: () =>
+                  void act.remove.mutateAsync(p.id).then(() => {
+                    toast({ text: "Moved to the trash", detail: title || "Untitled" });
+                    navigate("/pages");
+                  }),
+              },
+            ]}
+          />
         </div>
       </div>
 
       {sharing && (
-        <div className="no-print">
+        <div className="no-print share-panel-wrap">
+          <button
+            type="button"
+            className="share-close"
+            aria-label="Close"
+            onClick={() => setSharing(false)}
+          >
+            ×
+          </button>
           <SharePanel
             pageId={p.id}
             title={title}
@@ -413,19 +474,44 @@ function PageEditor() {
               onDown={() => blocks[i + 1] && setFocus({ id: blocks[i + 1]!.id, at: "start" })}
               onMove={(d) => move(b.id, d)}
               onDuplicate={() => insertAfter(b.id, { ...b, id: block("text").id })}
+              onAddBelow={() => insertAfter(b.id, block("text", "/"))}
+              drag={{
+                over: over?.id === b.id && dragId !== b.id ? over.at : null,
+                onStart: () => setDragId(b.id),
+                onOver: (e) => {
+                  if (!dragId) return;
+                  e.preventDefault();
+                  const r = e.currentTarget.getBoundingClientRect();
+                  const at = e.clientY < r.top + r.height / 2 ? "above" : "below";
+                  if (over?.id !== b.id || over.at !== at) setOver({ id: b.id, at });
+                },
+                onDrop: () => {
+                  if (over) dropOn(over.id, over.at);
+                  setDragId(null);
+                  setOver(null);
+                },
+                onEnd: () => {
+                  setDragId(null);
+                  setOver(null);
+                },
+              }}
             />
           ))}
         </div>
         <button
           type="button"
           className="blocks-add no-print"
+          aria-label="Add a block at the end"
           onClick={() => {
+            const last = blocks[blocks.length - 1];
+            if (last && last.type === "text" && !last.text)
+              return setFocus({ id: last.id, at: "start" });
             const nb = block("text");
             change([...blocks, nb]);
             setFocus({ id: nb.id, at: "start" });
           }}
         >
-          + Add a block
+          <span>Click to write · type / for tables, embeds, a calculator and more</span>
         </button>
         {doc && (
           <footer className="paper-foot">
@@ -445,246 +531,4 @@ function numberOf(blocks: readonly Block[], i: number): number {
   let n = 0;
   for (let j = i; j >= 0 && blocks[j]?.type === "number"; j--) n++;
   return n;
-}
-
-function BlockRow({
-  b,
-  n,
-  focus,
-  onFocused,
-  onChange,
-  onEnter,
-  onRemove,
-  onUp,
-  onDown,
-  onMove,
-  onDuplicate,
-}: {
-  b: Block;
-  n: number;
-  focus: "start" | "end" | null;
-  onFocused: () => void;
-  onChange: (patch: Partial<Block>) => void;
-  onEnter: (rest: string) => void;
-  onRemove: () => void;
-  onUp: () => void;
-  onDown: () => void;
-  onMove: (d: -1 | 1) => void;
-  onDuplicate: () => void;
-}) {
-  const ref = useRef<HTMLTextAreaElement>(null);
-  const [menu, setMenu] = useState(0);
-  const [tools, setTools] = useState(false);
-  const slash = b.text.startsWith("/") ? b.text.slice(1).toLowerCase() : null;
-  const options = useMemo(
-    () =>
-      slash === null
-        ? []
-        : BLOCK_MENU.filter((m) => `${m.label} ${m.hint}`.toLowerCase().includes(slash)),
-    [slash],
-  );
-
-  useLayoutEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    el.style.height = "0px";
-    el.style.height = `${el.scrollHeight}px`;
-  }, [b.text, b.type]);
-
-  useEffect(() => {
-    if (!focus || !ref.current) return;
-    const el = ref.current;
-    el.focus();
-    const pos = focus === "start" ? 0 : el.value.length;
-    el.setSelectionRange(pos, pos);
-    onFocused();
-  }, [focus, onFocused]);
-
-  const pick = (type: BlockType) => {
-    onChange({ type, text: "" });
-    setMenu(0);
-    window.setTimeout(() => ref.current?.focus(), 0);
-  };
-
-  function onKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
-    const el = e.currentTarget;
-    if (slash !== null && options.length) {
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
-        setMenu((m) => (m + 1) % options.length);
-        return;
-      }
-      if (e.key === "ArrowUp") {
-        e.preventDefault();
-        setMenu((m) => (m - 1 + options.length) % options.length);
-        return;
-      }
-      if (e.key === "Enter") {
-        e.preventDefault();
-        pick(options[menu]!.type);
-        return;
-      }
-      if (e.key === "Escape") {
-        onChange({ text: "" });
-        return;
-      }
-    }
-    if (e.key === "Enter" && !e.shiftKey && b.type !== "callout") {
-      e.preventDefault();
-      const rest = el.value.slice(el.selectionEnd);
-      onChange({ text: el.value.slice(0, el.selectionStart) });
-      onEnter(rest);
-    } else if (e.key === "Backspace" && el.selectionStart === 0 && el.selectionEnd === 0) {
-      if (b.type !== "text" && b.type !== "divider") {
-        e.preventDefault();
-        onChange({ type: "text" });
-      } else if (!b.text) {
-        e.preventDefault();
-        onRemove();
-      }
-    } else if (e.key === "ArrowUp" && el.selectionStart === 0) {
-      e.preventDefault();
-      onUp();
-    } else if (e.key === "ArrowDown" && el.selectionStart === el.value.length) {
-      e.preventDefault();
-      onDown();
-    }
-  }
-
-  if (b.type === "divider")
-    return (
-      <div
-        className="blk blk-divider"
-        onMouseEnter={() => setTools(true)}
-        onMouseLeave={() => setTools(false)}
-      >
-        <hr />
-        {tools && (
-          <button
-            type="button"
-            className="blk-x no-print"
-            onClick={onRemove}
-            aria-label="Remove line"
-          >
-            ×
-          </button>
-        )}
-      </div>
-    );
-
-  return (
-    <div className={`blk blk-${b.type}${b.checked ? " is-checked" : ""}`}>
-      <div className="blk-tools no-print">
-        <button type="button" aria-label="Block menu" onClick={() => setTools(!tools)}>
-          ⋮⋮
-        </button>
-        {tools && (
-          <div className="blk-menu" onMouseLeave={() => setTools(false)}>
-            {BLOCK_MENU.filter((m) => m.type !== "divider").map((m) => (
-              <button
-                key={m.type}
-                type="button"
-                onClick={() => {
-                  onChange({ type: m.type });
-                  setTools(false);
-                }}
-              >
-                {m.label}
-              </button>
-            ))}
-            <hr />
-            <button
-              type="button"
-              onClick={() => {
-                onMove(-1);
-                setTools(false);
-              }}
-            >
-              Move up
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                onMove(1);
-                setTools(false);
-              }}
-            >
-              Move down
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                onDuplicate();
-                setTools(false);
-              }}
-            >
-              Duplicate
-            </button>
-            <button type="button" onClick={onRemove}>
-              Delete
-            </button>
-          </div>
-        )}
-      </div>
-      {b.type === "todo" && (
-        <input
-          type="checkbox"
-          className="blk-check"
-          checked={Boolean(b.checked)}
-          onChange={(e) => onChange({ checked: e.target.checked })}
-          aria-label="Done"
-        />
-      )}
-      {b.type === "bullet" && <span className="blk-mark">•</span>}
-      {b.type === "number" && <span className="blk-mark">{n}.</span>}
-      {b.type === "field" && (
-        <input
-          className="blk-label"
-          value={b.label ?? ""}
-          placeholder="Label"
-          aria-label="Label"
-          onChange={(e) => onChange({ label: e.target.value })}
-        />
-      )}
-      <textarea
-        ref={ref}
-        rows={1}
-        dir="auto"
-        value={b.text}
-        placeholder={
-          b.type === "text"
-            ? "Type, or / for blocks"
-            : BLOCK_MENU.find((m) => m.type === b.type)?.label
-        }
-        onChange={(e) => {
-          const v = e.target.value;
-          const s = b.type === "text" ? shortcut(v) : null;
-          if (s) onChange({ type: s.type, text: s.rest });
-          else onChange({ text: v });
-          setMenu(0);
-        }}
-        onKeyDown={onKeyDown}
-      />
-      {slash !== null && options.length > 0 && (
-        <div className="slash-menu no-print" role="listbox" aria-label="Blocks">
-          {options.map((m, i) => (
-            <button
-              key={m.type}
-              type="button"
-              role="option"
-              aria-selected={i === menu}
-              onMouseDown={(e) => {
-                e.preventDefault();
-                pick(m.type);
-              }}
-            >
-              <strong>{m.label}</strong>
-              <span className="small">{m.hint}</span>
-              {m.keys && <kbd>{m.keys}</kbd>}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
 }

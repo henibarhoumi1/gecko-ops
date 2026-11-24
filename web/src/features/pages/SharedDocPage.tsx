@@ -7,7 +7,8 @@ import { Button } from "@/components/Button";
 import { Logo } from "@/components/Logo";
 import { friendlyError } from "@/lib/errors";
 import { requireSupabase } from "@/lib/supabase";
-import { readBlocks, TEMPLATES, type Block } from "./blocks";
+import { EmbedView } from "./BlockRow";
+import { calculate, columnTotal, fmtNum, readBlocks, TEMPLATES, type Block } from "./blocks";
 
 interface Shared {
   title: string;
@@ -210,6 +211,77 @@ function BlockView({ b, n }: { b: Block; n: number }) {
           {text}
         </p>
       );
+    case "table": {
+      const rows = b.rows ?? [];
+      const totals = (rows[0] ?? []).map((_, c) => columnTotal(rows, c));
+      return (
+        <div className="sb tbl-wrap">
+          <table className="tbl">
+            <thead>
+              <tr>
+                {(rows[0] ?? []).map((h, c) => (
+                  <th key={c}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.slice(1).map((r, i) => (
+                <tr key={i}>
+                  {r.map((v, c) => (
+                    <td key={c} className={totals[c] !== null ? "is-num" : undefined}>
+                      {v}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+            {totals.some((t) => t !== null) && (
+              <tfoot>
+                <tr>
+                  {totals.map((t, c) => (
+                    <td key={c} className={t !== null ? "is-num" : undefined}>
+                      {t !== null ? fmtNum(t) : c === 0 ? "Total" : ""}
+                    </td>
+                  ))}
+                </tr>
+              </tfoot>
+            )}
+          </table>
+        </div>
+      );
+    }
+    case "calc": {
+      const v = calculate(b.text);
+      return (
+        <p className="sb sb-calc">
+          <span>{b.text}</span>
+          {v !== null && <strong>= {fmtNum(v)}</strong>}
+        </p>
+      );
+    }
+    case "embed":
+      return b.url ? (
+        <figure className="sb blk-media">
+          <EmbedView url={b.url} />
+          {b.text && <figcaption>{b.text}</figcaption>}
+        </figure>
+      ) : null;
+    case "image":
+      return b.url ? (
+        <figure className="sb blk-media">
+          <img className="blk-img" src={b.url} alt={b.text} loading="lazy" />
+          {b.text && <figcaption>{b.text}</figcaption>}
+        </figure>
+      ) : null;
+    case "toggle":
+      return (
+        <details className="sb sb-toggle" open={b.open}>
+          <summary>{b.text}</summary>
+          {b.body && <p className="sb-text">{b.body}</p>}
+        </details>
+      );
+    case "code":
+      return <pre className="sb sb-code">{b.text}</pre>;
     default:
       return b.text ? (
         <p className="sb sb-p">{text}</p>
