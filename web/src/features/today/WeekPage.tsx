@@ -46,7 +46,7 @@ export function WeekPage() {
   const dueTasks = (tasks.data ?? []).filter((x) => !x.doneAt && x.due && x.due <= weekOn);
   const lateTasks = dueTasks.filter((x) => x.due! < t0);
   const dates = (today.data?.dates ?? []).filter(
-    (d) => d.date >= t0 && d.date <= weekOn && d.kind !== "lead",
+    (d) => d.date >= t0 && d.date <= weekOn && d.kind !== "lead" && d.kind !== "shoot",
   );
   const followUps = (leads.data ?? []).filter(
     (l) => l.next_date && l.next_date <= weekOn && !["won", "lost", "nurture"].includes(l.stage),

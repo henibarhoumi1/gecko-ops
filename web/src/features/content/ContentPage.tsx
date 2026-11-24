@@ -190,6 +190,9 @@ function Board({ canEdit }: { canEdit: boolean }) {
               <h2 className="room-col-head">
                 {STATUS_LABEL[s]} <span className="count">{col.length}</span>
               </h2>
+              {col.length === 0 && s === "idea" && canEdit && (
+                <p className="small muted">Type an idea above: it lands here.</p>
+              )}
               {col.map((p) => (
                 <article key={p.id} className="content-card">
                   <strong dir="auto">{p.title}</strong>
