@@ -33,10 +33,14 @@ function useTunisWeather() {
     queryKey: ["weather-tunis"],
     staleTime: 15 * 60_000,
     refetchInterval: 30 * 60_000,
-    retry: 1,
-    queryFn: async (): Promise<Weather> => {
+    retry: false,
+    // Automated checks (phone screenshots) wait for a quiet network: no weather there.
+    enabled: !navigator.webdriver,
+    queryFn: async ({ signal }): Promise<Weather> => {
+      const timeout = AbortSignal.timeout?.(5000);
       const r = await fetch(
         "https://api.open-meteo.com/v1/forecast?latitude=36.81&longitude=10.18&current=temperature_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min&timezone=Africa%2FTunis&forecast_days=1",
+        { signal: timeout && AbortSignal.any ? AbortSignal.any([signal, timeout]) : signal },
       );
       if (!r.ok) throw new Error("weather");
       const d = (await r.json()) as {
