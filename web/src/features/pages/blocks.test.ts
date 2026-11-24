@@ -3,6 +3,8 @@ import {
   block,
   calculate,
   columnTotal,
+  computeRows,
+  TABLE_PRESETS,
   embedOf,
   parseNum,
   readBlocks,
@@ -106,5 +108,20 @@ describe("embedOf", () => {
       host: "gecko-creative.com",
     });
     expect(embedOf("javascript:alert(1)")).toBeNull();
+  });
+});
+
+describe("table presets", () => {
+  it("work their columns out, row by row, and total the right ones", () => {
+    const q = TABLE_PRESETS.find((t) => t.key === "quote")!;
+    const rows = computeRows(
+      [q.rows[0]!, ["Reels", "10", "290", ""], ["Shoot", "1", "", ""]],
+      q.calcCols,
+    );
+    expect(rows[1]![3]).toBe("2900");
+    expect(rows[2]![3]).toBe("");
+    expect(columnTotal(rows, 3)).toBe(2900);
+    expect(columnTotal(rows, 2)).toBeNull();
+    for (const t of TABLE_PRESETS) expect(new Set(t.rows.map((r) => r.length)).size).toBe(1);
   });
 });

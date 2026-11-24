@@ -29,6 +29,8 @@ export interface Block {
   label?: string;
   /** "table" blocks: the cells, row by row; the first row is the header. */
   rows?: string[][];
+  /** "table" blocks: columns worked out from two others, row by row (Total = Qty × Price). */
+  calcCols?: CalcCol[];
   /** "embed" and "image" blocks: the link. */
   url?: string;
   /** "toggle" blocks: open or folded, and what's inside. */
@@ -37,6 +39,14 @@ export interface Block {
 }
 
 export type BlockGroup = "Write" | "Lists" | "Data" | "Media";
+
+/** A column that works itself out: column c = column a (op) column b, on every row. */
+export interface CalcCol {
+  c: number;
+  a: number;
+  op: "*" | "/" | "+" | "-";
+  b: number;
+}
 
 export const BLOCK_MENU: {
   type: BlockType;
@@ -185,6 +195,7 @@ export function readBlocks(v: unknown): Block[] {
       ...(b.checked === true ? { checked: true } : {}),
       ...(typeof b.label === "string" ? { label: b.label } : {}),
       ...(Array.isArray(b.rows) ? { rows: readRows(b.rows) } : {}),
+      ...(Array.isArray(b.calcCols) ? { calcCols: readCalcCols(b.calcCols) } : {}),
       ...(typeof b.url === "string" && /^https?:\/\//i.test(b.url) ? { url: b.url } : {}),
       ...(b.open === true ? { open: true } : {}),
       ...(typeof b.body === "string" ? { body: b.body } : {}),
@@ -200,6 +211,189 @@ function readRows(v: unknown[]): string[][] {
   const w = Math.max(1, ...rows.map((r) => r.length));
   return rows.map((r) => [...r, ...Array<string>(w - r.length).fill("")]);
 }
+
+function readCalcCols(v: unknown[]): CalcCol[] {
+  const ok = (n: unknown): n is number =>
+    Number.isInteger(n) && (n as number) >= 0 && (n as number) < 12;
+  return v
+    .filter((x): x is Record<string, unknown> => !!x && typeof x === "object")
+    .filter((x) => ok(x.c) && ok(x.a) && ok(x.b) && ["*", "/", "+", "-"].includes(x.op as string))
+    .slice(0, 6)
+    .map((x) => ({
+      c: x.c as number,
+      a: x.a as number,
+      op: x.op as CalcCol["op"],
+      b: x.b as number,
+    }));
+}
+
+/** The table with its worked-out columns filled in (empty where an input is missing or not a number). */
+export function computeRows(
+  rows: readonly string[][],
+  calcCols: readonly CalcCol[] = [],
+): string[][] {
+  if (!calcCols.length) return rows as string[][];
+  return rows.map((row, i) => {
+    if (i === 0) return row;
+    const out = row.slice();
+    for (const k of calcCols) {
+      const a = parseNum(out[k.a] ?? "");
+      const b = parseNum(out[k.b] ?? "");
+      if (a === null || b === null || (k.op === "/" && b === 0)) {
+        out[k.c] = "";
+        continue;
+      }
+      const v = k.op === "*" ? a * b : k.op === "/" ? a / b : k.op === "+" ? a + b : a - b;
+      out[k.c] = String(Math.round(v * 100) / 100);
+    }
+    return out;
+  });
+}
+
+/** Ready-made tables for the studio's real work: shoots, content, ads, money and casting. */
+export const TABLE_PRESETS: {
+  key: string;
+  name: string;
+  hint: string;
+  rows: string[][];
+  calcCols?: CalcCol[];
+}[] = [
+  {
+    key: "shots",
+    name: "Shot list",
+    hint: "Every shot to get on set, ticked as you go",
+    rows: [
+      ["Shot", "Reel", "What we see", "Framing", "Done"],
+      ["1", "Reel 01", "", "Close-up", ""],
+      ["2", "Reel 01", "", "Wide", ""],
+    ],
+  },
+  {
+    key: "calendar",
+    name: "Content calendar",
+    hint: "What goes out, where and when",
+    rows: [
+      ["Date", "Platform", "Format", "Hook", "Status"],
+      ["", "Instagram", "Reel", "", "Idea"],
+      ["", "TikTok", "Reel", "", "Idea"],
+    ],
+  },
+  {
+    key: "hooks",
+    name: "Hook test",
+    hint: "Which opening holds, from the ad numbers",
+    rows: [
+      ["Hook", "Reel", "Hold at 3 s (%)", "CTR (%)", "Cost per result (DT)", "Keep?"],
+      ["A", "", "", "", "", ""],
+      ["B", "", "", "", "", ""],
+    ],
+  },
+  {
+    key: "ads",
+    name: "Ad results",
+    hint: "Spend, results and cost per result, worked out",
+    rows: [
+      ["Ad", "Spend (DT)", "Impressions", "Clicks", "Results", "Cost per result (DT)"],
+      ["", "", "", "", "", ""],
+      ["", "", "", "", "", ""],
+    ],
+    calcCols: [{ c: 5, a: 1, op: "/", b: 4 }],
+  },
+  {
+    key: "kpis",
+    name: "Monthly numbers",
+    hint: "Spend, revenue and ROAS month by month",
+    rows: [
+      ["Month", "Spend (DT)", "Revenue (DT)", "ROAS", "Orders"],
+      ["", "", "", "", ""],
+      ["", "", "", "", ""],
+    ],
+    calcCols: [{ c: 3, a: 2, op: "/", b: 1 }],
+  },
+  {
+    key: "budget",
+    name: "Production budget",
+    hint: "Every cost of a shoot, with a total",
+    rows: [
+      ["Item", "Supplier", "Cost (DT)", "Paid"],
+      ["Studio", "", "", ""],
+      ["Talent", "", "", ""],
+      ["Props", "", "", ""],
+    ],
+  },
+  {
+    key: "quote",
+    name: "Quote lines",
+    hint: "Qty × price = total, totalled",
+    rows: [
+      ["What", "Qty", "Unit price (DT)", "Total (DT)"],
+      ["Reels 9:16", "", "", ""],
+      ["Shoot day", "1", "", ""],
+    ],
+    calcCols: [{ c: 3, a: 1, op: "*", b: 2 }],
+  },
+  {
+    key: "casting",
+    name: "Casting",
+    hint: "Faces for a shoot, their fee and where they stand",
+    rows: [
+      ["Name", "Role", "Fee (DT)", "Instagram", "Status"],
+      ["", "Main role", "", "", "Proposed"],
+      ["", "Extra", "", "", "Proposed"],
+    ],
+  },
+  {
+    key: "locations",
+    name: "Locations",
+    hint: "Places to shoot, cost and contact",
+    rows: [
+      ["Place", "Area", "Cost (DT)", "Contact", "Notes"],
+      ["", "", "", "", ""],
+      ["", "", "", "", ""],
+    ],
+  },
+  {
+    key: "deliverables",
+    name: "Deliverables",
+    hint: "Every reel and format, version by version",
+    rows: [
+      ["Reel", "Format", "Version", "Status", "Delivered"],
+      ["Reel 01", "9:16", "v1", "In edit", ""],
+      ["Reel 01", "4:5", "v1", "In edit", ""],
+    ],
+  },
+  {
+    key: "payments",
+    name: "Payments",
+    hint: "Who owes what, and when",
+    rows: [
+      ["Client", "Invoice", "Amount (DT)", "Due", "Paid"],
+      ["", "", "", "", ""],
+      ["", "", "", "", ""],
+    ],
+  },
+  {
+    key: "competitors",
+    name: "Competitor ads",
+    hint: "What the best in the market run, and what to take",
+    rows: [
+      ["Brand", "Ad link", "Hook", "Angle", "What we take"],
+      ["", "", "", "", ""],
+      ["", "", "", "", ""],
+    ],
+  },
+  {
+    key: "gear",
+    name: "Gear list",
+    hint: "What to pack for the shoot",
+    rows: [
+      ["Item", "Qty", "Who brings it", "Packed"],
+      ["Camera", "1", "", ""],
+      ["Lights", "2", "", ""],
+      ["Mics", "2", "", ""],
+    ],
+  },
+];
 
 /** A new table: a header row and two empty rows, three columns. */
 export const newTable = (): string[][] => [
@@ -222,6 +416,9 @@ export function parseNum(v: string): number | null {
 
 /** The total of a column when every filled cell under the header is a number (and at least one is filled). */
 export function columnTotal(rows: readonly string[][], c: number): number | null {
+  // Percentages, ratios, unit prices and shot numbers don't add up; leave them without a total.
+  if (/%|roas|ratio|rate|per |unit|^shot$|^#$|^no\.?$/i.test((rows[0]?.[c] ?? "").trim()))
+    return null;
   const cells = rows
     .slice(1)
     .map((r) => (r[c] ?? "").trim())
@@ -396,7 +593,9 @@ export function toText(title: string, blocks: readonly Block[]): string {
       case "divider":
         return "———";
       case "table":
-        return (b.rows ?? []).map((r) => r.join(" | ")).join("\n");
+        return computeRows(b.rows ?? [], b.calcCols)
+          .map((r) => r.join(" | "))
+          .join("\n");
       case "calc": {
         const v = calculate(b.text);
         return v === null ? b.text : `${b.text} = ${fmtNum(v)}`;

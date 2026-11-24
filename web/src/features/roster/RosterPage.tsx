@@ -1,4 +1,5 @@
 import { useMemo, useState, type FormEvent } from "react";
+import { ImageDrop } from "@/components/ImageDrop";
 import { Button } from "@/components/Button";
 import { ItemMenu } from "@/components/ItemMenu";
 import { Notice } from "@/components/Notice";
@@ -411,9 +412,12 @@ function Editor({
             </Button>
           </div>
         </header>
-        {v.photo_url && (
-          <img className="peek-photo" src={v.photo_url} alt="" referrerPolicy="no-referrer" />
-        )}
+        <ImageDrop
+          label="Photo"
+          value={v.photo_url}
+          onChange={(url) => set("photo_url", url)}
+          pasteAnywhere
+        />
         <div className="peek-fields">
           <label className="field">
             <span>Name</span>
@@ -462,16 +466,7 @@ function Editor({
               maxLength={1000}
             />
           </label>
-          <label className="field">
-            <span>Photo link</span>
-            <input
-              type="url"
-              value={v.photo_url}
-              placeholder="https://"
-              onChange={(e) => set("photo_url", e.target.value)}
-              maxLength={1000}
-            />
-          </label>
+
           <label className="field">
             <span>{rateLabel}</span>
             <input
