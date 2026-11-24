@@ -16,6 +16,7 @@ describe("navFor", () => {
       "locations",
       "creators",
       "studios",
+      "pages",
       "team",
       "alerts",
       "trash",
@@ -49,6 +50,7 @@ describe("navFor", () => {
       "locations",
       "creators",
       "studios",
+      "pages",
       "team",
     ]);
   });
@@ -64,6 +66,7 @@ describe("navFor", () => {
       "locations",
       "creators",
       "studios",
+      "pages",
       "team",
     ]);
   });
@@ -89,6 +92,7 @@ describe("sidebar groups", () => {
       "work",
       "work",
       "work",
+      "studio",
       "studio",
       "studio",
       "studio",
