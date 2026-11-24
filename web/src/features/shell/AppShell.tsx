@@ -13,6 +13,7 @@ import { CommandPalette, openPalette } from "./CommandPalette";
 import { Toaster } from "@/components/Toast";
 import { Shortcuts } from "./Shortcuts";
 import { Bell } from "./Bell";
+import { useFinanceAccess } from "@/features/finance/financeApi";
 import { GROUP_LABEL, navFor, type NavGroup } from "./nav";
 
 const GROUPS: NavGroup[] = ["home", "work", "studio"];
@@ -63,7 +64,8 @@ export function AppShell({ workspace, email }: { workspace: Workspace; email: st
   const { signOut } = useAuth();
   const members = useMembers();
   const me = members.data?.find((m) => m.userId);
-  const items = navFor(workspace.role);
+  const finance = useFinanceAccess();
+  const items = navFor(workspace.role, { finance: !!finance.data });
   const [folded, setFolded] = useSideFolded();
   return (
     <div className={`shell${folded ? " side-folded" : ""}`}>

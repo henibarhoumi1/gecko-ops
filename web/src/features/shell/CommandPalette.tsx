@@ -6,6 +6,7 @@ import type { Role } from "@/features/auth/account";
 import { useClients } from "@/features/clients/clientsApi";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { requireSupabase } from "@/lib/supabase";
+import { useFinanceAccess } from "@/features/finance/financeApi";
 import { navFor } from "./nav";
 
 const OPEN = "gecko:palette";
@@ -61,6 +62,7 @@ export function CommandPalette({ role }: { role: Role }) {
   const [index, setIndex] = useState(0);
   const input = useRef<HTMLInputElement>(null);
   const lead = role === "founder" || role === "sales";
+  const finance = useFinanceAccess();
   const clients = useClients();
   const leads = useQuery({
     queryKey: ["palette-leads", workspaceId],
@@ -138,7 +140,7 @@ export function CommandPalette({ role }: { role: Role }) {
         });
     }
     hits.push(
-      ...navFor(role).map((n) => ({
+      ...navFor(role, { finance: !!finance.data }).map((n) => ({
         key: `page-${n.path}`,
         label: n.label,
         hint: "Page",
@@ -163,7 +165,7 @@ export function CommandPalette({ role }: { role: Role }) {
         to: `/pipeline?lead=${encodeURIComponent(l.id)}`,
       });
     return hits;
-  }, [role, lead, clients.data, leads.data]);
+  }, [role, lead, clients.data, leads.data, finance.data]);
 
   const shown = useMemo(() => {
     const q = query.trim();
