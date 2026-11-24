@@ -5542,3 +5542,808 @@ a {
   border: 0;
   box-shadow: inset 0 0 0 1px var(--hair);
 }
+
+/* Links that open another app wear its real mark (components/brands.ts). */
+a[href*="wa.me/"],
+a[href*="whatsapp.com"],
+a[href*="instagram.com"],
+a[href*="tiktok.com"],
+a[href*="drive.google.com"],
+a[href*="maps.google"],
+a[href*="google.com/maps"],
+a[href*="maps.app.goo.gl"],
+a[href*="airbnb."] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+}
+a[href*="wa.me/"]::before,
+a[href*="whatsapp.com"]::before,
+a[href*="instagram.com"]::before,
+a[href*="tiktok.com"]::before,
+a[href*="drive.google.com"]::before,
+a[href*="maps.google"]::before,
+a[href*="google.com/maps"]::before,
+a[href*="maps.app.goo.gl"]::before,
+a[href*="airbnb."]::before {
+  content: "";
+  flex: none;
+  width: 1.1em;
+  height: 1.1em;
+}
+a[href*="wa.me/"]::before,
+a[href*="whatsapp.com"]::before {
+  background: #25d366;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="002424"%3E%3Cpath d="M17.47214.382c-0.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.941.164-0.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52s.198-.298.298-.497c.099-.198.05-.371-.025-.52s-.669-1.612-.916-2.207c-.242-.579-.487-.5-.669-.51a1313000-0.57-.01c-.1980-0.52.074-.792.372-.272.297-1.041.016-1.042.47901.4621.0652.8751.2133.074s2.0963.25.0774.487c.709.3061.262.4891.694.625.712.2271.36.1951.871.118.571-0.0851.758-0.7192.006-1.413s.248-1.289.173-1.413c-0.074-.124-.272-.198-.57-.347m-5.4217.403h-0.004a9.879.87001-5.031-1.378l-0.361-.214-3.741.982.998-3.648-.235-.374a9.869.86001-1.51-5.26c.001-5.454.436-9.8849.888-9.8842.6405.1221.036.9882.898a9.829.820012.8936.994c-0.0035.45-4.4379.884-9.8859.884m8.413-18.297A11.8211.8200012.050C5.49500.165.335.15711.892c02.096.5474.1421.5885.945L.05724l6.305-1.654a11.911.90005.6831.448h.005c6.554011.89-5.33511.893-11.893a11.8211.82000-3.48-8.413"/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="002424"%3E%3Cpath d="M17.47214.382c-0.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.941.164-0.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52s.198-.298.298-.497c.099-.198.05-.371-.025-.52s-.669-1.612-.916-2.207c-.242-.579-.487-.5-.669-.51a1313000-0.57-.01c-.1980-0.52.074-.792.372-.272.297-1.041.016-1.042.47901.4621.0652.8751.2133.074s2.0963.25.0774.487c.709.3061.262.4891.694.625.712.2271.36.1951.871.118.571-0.0851.758-0.7192.006-1.413s.248-1.289.173-1.413c-0.074-.124-.272-.198-.57-.347m-5.4217.403h-0.004a9.879.87001-5.031-1.378l-0.361-.214-3.741.982.998-3.648-.235-.374a9.869.86001-1.51-5.26c.001-5.454.436-9.8849.888-9.8842.6405.1221.036.9882.898a9.829.820012.8936.994c-0.0035.45-4.4379.884-9.8859.884m8.413-18.297A11.8211.8200012.050C5.49500.165.335.15711.892c02.096.5474.1421.5885.945L.05724l6.305-1.654a11.911.90005.6831.448h.005c6.554011.89-5.33511.893-11.893a11.8211.82000-3.48-8.413"/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+a[href*="instagram.com"]::before {
+  background: #e4405f;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="002424"%3E%3Cpath d="M7.03.084c-1.277.06-2.149.264-2.91.563a5.95.9000-2.1241.3885.95.9000-1.382.127C.3214.926.125.8.0647.076s-0.0691.688-0.0634.947.0213.667.0834.947c.0611.277.2642.149.5632.911.308.789.721.4571.3882.123a5.95.90002.1291.38c.763.2951.636.4962.913.5521.278.0561.689.0694.947.063s3.668-0.0214.947-0.082c1.28-.062.147-0.2652.91-0.563a5.95.90002.123-1.3885.95.90001.38-2.129c.295-0.763.496-1.636.551-2.912.056-1.28.07-1.69.063-4.948-.006-3.258-.02-3.667-.081-4.947-.06-1.28-.264-2.148-.564-2.911a5.95.9000-1.387-2.1235.865.86000-2.128-1.38C19.074.32218.202.1216.924.06615.647.00915.236-0.00611.9770S8.31.0217.03.084m.1421.693c-1.17-0.05-1.805-.245-2.228-.408a3.73.7001-1.382-0.8953.73.7001-0.9-1.378c-.165-.423-.363-1.058-.417-2.228-.06-1.264-.072-1.644-.08-4.848-.006-3.204.006-3.583.061-4.848.05-1.169.246-1.805.408-2.228.216-.561.477-.96.895-1.382a3.73.70011.379-0.9c.423-.1651.057-0.3612.227-0.4171.265-0.061.644-0.0724.848-0.083.203-0.0063.583.0064.85.0621.168.051.804.2442.227.408.56.216.96.4751.382.895s.681.817.91.378c.165.422.3621.056.4172.227.061.265.0741.645.084.848.0053.203-0.0063.583-0.0614.848-0.0511.17-0.2451.805-0.4082.23-0.216.56-.477.96-.8961.38a3.73.7001-1.378.9c-0.422.165-1.058.362-2.226.418-1.266.06-1.645.072-4.85.079s-3.582-.006-4.848-.06m9.783-16.192a1.441.440101.437-1.4421.441.44000-1.4371.442M5.83912.012a6.1616.16101012.323-0.0246.1626.162000-12.323.024M812.008A4401112.0081644001812.008"/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="002424"%3E%3Cpath d="M7.03.084c-1.277.06-2.149.264-2.91.563a5.95.9000-2.1241.3885.95.9000-1.382.127C.3214.926.125.8.0647.076s-0.0691.688-0.0634.947.0213.667.0834.947c.0611.277.2642.149.5632.911.308.789.721.4571.3882.123a5.95.90002.1291.38c.763.2951.636.4962.913.5521.278.0561.689.0694.947.063s3.668-0.0214.947-0.082c1.28-.062.147-0.2652.91-0.563a5.95.90002.123-1.3885.95.90001.38-2.129c.295-0.763.496-1.636.551-2.912.056-1.28.07-1.69.063-4.948-.006-3.258-.02-3.667-.081-4.947-.06-1.28-.264-2.148-.564-2.911a5.95.9000-1.387-2.1235.865.86000-2.128-1.38C19.074.32218.202.1216.924.06615.647.00915.236-0.00611.9770S8.31.0217.03.084m.1421.693c-1.17-0.05-1.805-.245-2.228-.408a3.73.7001-1.382-0.8953.73.7001-0.9-1.378c-.165-.423-.363-1.058-.417-2.228-.06-1.264-.072-1.644-.08-4.848-.006-3.204.006-3.583.061-4.848.05-1.169.246-1.805.408-2.228.216-.561.477-.96.895-1.382a3.73.70011.379-0.9c.423-.1651.057-0.3612.227-0.4171.265-0.061.644-0.0724.848-0.083.203-0.0063.583.0064.85.0621.168.051.804.2442.227.408.56.216.96.4751.382.895s.681.817.91.378c.165.422.3621.056.4172.227.061.265.0741.645.084.848.0053.203-0.0063.583-0.0614.848-0.0511.17-0.2451.805-0.4082.23-0.216.56-.477.96-.8961.38a3.73.7001-1.378.9c-0.422.165-1.058.362-2.226.418-1.266.06-1.645.072-4.85.079s-3.582-.006-4.848-.06m9.783-16.192a1.441.440101.437-1.4421.441.44000-1.4371.442M5.83912.012a6.1616.16101012.323-0.0246.1626.162000-12.323.024M812.008A4401112.0081644001812.008"/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+a[href*="tiktok.com"]::before {
+  background: #000000;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="002424"%3E%3Cpath d="M12.525.02c1.31-.022.61-0.013.91-0.02.081.53.633.091.754.171.121.112.71.624.241.79v4.03c-1.44-0.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.012.92.015.84-0.028.75-0.081.4-0.542.79-1.353.94-1.311.92-3.583.17-5.913.21-1.43.08-2.86-0.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.91.12-3.722.58-4.961.66-1.443.98-2.136.15-1.72.021.48-0.042.96-0.044.44-0.99-.32-2.15-.23-3.02.37-.63.41-1.111.04-1.361.75-0.21.51-.151.07-0.141.61.241.641.823.023.52.871.12-0.012.19-0.662.77-1.61.19-0.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07"/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="002424"%3E%3Cpath d="M12.525.02c1.31-.022.61-0.013.91-0.02.081.53.633.091.754.171.121.112.71.624.241.79v4.03c-1.44-0.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.012.92.015.84-0.028.75-0.081.4-0.542.79-1.353.94-1.311.92-3.583.17-5.913.21-1.43.08-2.86-0.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.91.12-3.722.58-4.961.66-1.443.98-2.136.15-1.72.021.48-0.042.96-0.044.44-0.99-.32-2.15-.23-3.02.37-.63.41-1.111.04-1.361.75-0.21.51-.151.07-0.141.61.241.641.823.023.52.871.12-0.012.19-0.662.77-1.61.19-0.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07"/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+a[href*="drive.google.com"]::before {
+  background: #4285f4;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="002424"%3E%3Cpath d="M12.011.485c-2.0820-3.754.02-3.743.047.01.021.7083.0013.7746.62l3.766.574h3.76c2.08103.753-0.023.742-0.047-.005-.02-1.708-3.001-3.775-6.62l-3.76-6.574zm-4.761.73a789.828789.861000-3.636.319L015.868l1.893.2981.8853.2973.62-6.3353.618-6.33-1.88-3.287C8.14.7047.2553.227.253.214zm2.25912.653-0.203.348c-.114.198-.961.672-1.883.287a423.93423.948001-1.6982.97c-0.01.0263.24.0427.222.042h7.244l1.796-3.157c.992-1.7341.85-3.231.906-3.323l.104-0.167h-7.249z"/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="002424"%3E%3Cpath d="M12.011.485c-2.0820-3.754.02-3.743.047.01.021.7083.0013.7746.62l3.766.574h3.76c2.08103.753-0.023.742-0.047-.005-.02-1.708-3.001-3.775-6.62l-3.76-6.574zm-4.761.73a789.828789.861000-3.636.319L015.868l1.893.2981.8853.2973.62-6.3353.618-6.33-1.88-3.287C8.14.7047.2553.227.253.214zm2.25912.653-0.203.348c-.114.198-.961.672-1.883.287a423.93423.948001-1.6982.97c-0.01.0263.24.0427.222.042h7.244l1.796-3.157c.992-1.7341.85-3.231.906-3.323l.104-0.167h-7.249z"/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+a[href*="maps.google"]::before,
+a[href*="google.com/maps"]::before,
+a[href*="maps.app.goo.gl"]::before {
+  background: #4285f4;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="002424"%3E%3Cpath d="M19.5274.799c1.2122.608.9375.678-0.4058.173-1.1012.047-2.7443.74-4.0985.614-0.619.858-1.2441.75-1.6692.727-0.141.325-.263.658-.383.992-.121.333-.224.673-.341.008-0.109.314-.236.684-.627.687h-.007c-.466-.001-.579-.53-.695-.887-.284-.874-.581-1.713-1.019-2.525-.51-.944-1.145-1.817-1.79-2.671zM8.5457.705l-3.9594.707c.7241.541.8212.8632.8714.18q.371.465.737.936l4.984-5.925-0.029.01c-1.741.601-3.691-.291-4.392-1.987a3.43.4001-0.209-.716c-.063-.437-.077-.761-.004-1.198zM5.4923.149l-0.003.004c-1.9472.466-2.2815.88-1.1178.77l4.785-5.689-0.058-.05zM14.661.436l-3.8384.563.027-0.01c1.6-.5513.403.154.221.626.176.319.323.683.3771.045.068.446.085.773.0121.22l-0.003.0163.836-4.561A8.388.3800014.67.439zM9.4665.86814.162.285l-0.047-.012A8.38.300011.9860a8.448.44000-6.1692.766l-0.016.018z"/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="002424"%3E%3Cpath d="M19.5274.799c1.2122.608.9375.678-0.4058.173-1.1012.047-2.7443.74-4.0985.614-0.619.858-1.2441.75-1.6692.727-0.141.325-.263.658-.383.992-.121.333-.224.673-.341.008-0.109.314-.236.684-.627.687h-.007c-.466-.001-.579-.53-.695-.887-.284-.874-.581-1.713-1.019-2.525-.51-.944-1.145-1.817-1.79-2.671zM8.5457.705l-3.9594.707c.7241.541.8212.8632.8714.18q.371.465.737.936l4.984-5.925-0.029.01c-1.741.601-3.691-.291-4.392-1.987a3.43.4001-0.209-.716c-.063-.437-.077-.761-.004-1.198zM5.4923.149l-0.003.004c-1.9472.466-2.2815.88-1.1178.77l4.785-5.689-0.058-.05zM14.661.436l-3.8384.563.027-0.01c1.6-.5513.403.154.221.626.176.319.323.683.3771.045.068.446.085.773.0121.22l-0.003.0163.836-4.561A8.388.3800014.67.439zM9.4665.86814.162.285l-0.047-.012A8.38.300011.9860a8.448.44000-6.1692.766l-0.016.018z"/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+a[href*="airbnb."]::before {
+  background: #ff5a5f;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="002424"%3E%3Cpath d="M12.00118.275c-1.353-1.697-2.148-3.184-2.413-4.457-0.263-1.027-.16-1.848.291-2.465.477-.711.188-1.0562.121-1.056s1.643.3452.121.063c.446.61.5581.432.2862.465-0.2911.298-1.0852.785-2.4124.458zm9.6011.14c-0.1851.246-1.0342.28-2.22.783-2.253.98-4.483-0.583-6.392-2.7043.157-3.9513.74-7.0282.385-9.018-0.795-1.14-1.933-1.695-3.394-1.695-2.9440-4.5632.49-3.9275.382.371.5651.3523.3432.9175.332-0.981.085-1.911.856-2.7322.333-0.636.344-1.245.558-1.828.609-2.679.399-4.778-2.2-3.825-4.88.132-.345.395-.98.845-1.961l.025-.053c1.464-3.1783.242-6.795.285-10.795l.053-0.132.58-1.116c.45-.822.635-1.191.351-1.643.346-0.21.77-.3151.246-0.315.95401.698.5582.0161.007.158.239.345.557.582.953l.5581.089.08.159c2.0414.0043.8217.6085.27910.794l.026.025.5331.22.318.764c.243.613.2941.222.2131.858zm1.22-2.39c-0.186-.583-.505-1.271-.9-2.094v-.03c-1.889-4.006-3.642-7.608-5.307-10.844l-.111-.163C15.3171.46114.468012.0010c-2.440-3.4761.695-4.5353.898l-0.081.16c-1.6693.236-3.4216.843-5.30310.847v.053l-0.5591.22c-0.21.504-.317.768-.345.847C-.17220.742.611245.9824c.02700.13200.265-.027h.372c1.75-.2133.554-1.3255.384-3.3171.8291.9893.6353.1045.3823.317h.372c.133.027.239.027.265.0273.37.0036.152-3.2614.802-6.975"/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="002424"%3E%3Cpath d="M12.00118.275c-1.353-1.697-2.148-3.184-2.413-4.457-0.263-1.027-.16-1.848.291-2.465.477-.711.188-1.0562.121-1.056s1.643.3452.121.063c.446.61.5581.432.2862.465-0.2911.298-1.0852.785-2.4124.458zm9.6011.14c-0.1851.246-1.0342.28-2.22.783-2.253.98-4.483-0.583-6.392-2.7043.157-3.9513.74-7.0282.385-9.018-0.795-1.14-1.933-1.695-3.394-1.695-2.9440-4.5632.49-3.9275.382.371.5651.3523.3432.9175.332-0.981.085-1.911.856-2.7322.333-0.636.344-1.245.558-1.828.609-2.679.399-4.778-2.2-3.825-4.88.132-.345.395-.98.845-1.961l.025-.053c1.464-3.1783.242-6.795.285-10.795l.053-0.132.58-1.116c.45-.822.635-1.191.351-1.643.346-0.21.77-.3151.246-0.315.95401.698.5582.0161.007.158.239.345.557.582.953l.5581.089.08.159c2.0414.0043.8217.6085.27910.794l.026.025.5331.22.318.764c.243.613.2941.222.2131.858zm1.22-2.39c-0.186-.583-.505-1.271-.9-2.094v-.03c-1.889-4.006-3.642-7.608-5.307-10.844l-.111-.163C15.3171.46114.468012.0010c-2.440-3.4761.695-4.5353.898l-0.081.16c-1.6693.236-3.4216.843-5.30310.847v.053l-0.5591.22c-0.21.504-.317.768-.345.847C-.17220.742.611245.9824c.02700.13200.265-.027h.372c1.75-.2133.554-1.3255.384-3.3171.8291.9893.6353.1045.3823.317h.372c.133.027.239.027.265.0273.37.0036.152-3.2614.802-6.975"/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+
+/* Notifications: the panel opens beside the sidebar, on top of everything (it used to open inside the sidebar and
+   get cut off). */
+.bell-pop {
+  position: fixed;
+  z-index: 400;
+  top: 12px;
+  left: 12px;
+  width: min(400px, calc(100vw - 24px));
+  max-height: min(560px, calc(100vh - 24px));
+  overflow: auto;
+  border-radius: 18px;
+  background: #fff;
+  color: var(--ink);
+  box-shadow:
+    0 0 0 1px var(--hair),
+    0 24px 60px -24px rgba(0, 0, 0, 0.35);
+  animation: bell-in 180ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes bell-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+.bell-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--hair);
+  background: #fff;
+}
+.bell-head strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+}
+.bell-count {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--pink);
+  font-size: 12px;
+  font-weight: 700;
+}
+.bell-all {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+}
+.bell-all:hover {
+  text-decoration: underline;
+}
+.bell-pop ul {
+  padding: 6px;
+}
+.bell-pop li a {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+  padding: 10px 12px;
+}
+.bell-pop li a:hover {
+  background: #f5f5f4;
+}
+.bell-pop li.is-new a {
+  background: color-mix(in srgb, var(--pink) 28%, #fff);
+}
+.bell-av {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--blue);
+  font-weight: 800;
+  font-size: 13px;
+}
+.bell-txt {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.bell-meta {
+  font-size: 12.5px;
+  opacity: 0.65;
+}
+.bell-empty {
+  margin: 0;
+  padding: 20px 18px;
+}
+/* The bell's own button: same height as search, a calmer badge. */
+.bell-btn[aria-expanded="true"] {
+  background: #fff;
+  color: var(--ink);
+}
+/* Quick actions: the real marks sit on white. */
+.quick-actions .qa-icon {
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--hair);
+}
+.quick-actions a::before {
+  display: none !important;
+}
+
+/* ---------- Pages editor v2 (Heni, 24 Nov: "perfect, clean, practical, better than Notion") ---------- */
+.page-editor .editor-bar {
+  min-height: 60px;
+  padding-block: 10px;
+  border-bottom: 0;
+  background: rgba(255, 255, 255, 0.94);
+}
+.page-editor .editor-bar .crumbs {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 14px;
+}
+.page-editor .editor-saved {
+  font-size: 13px;
+  opacity: 0.45;
+}
+.page-editor .editor-actions {
+  gap: 8px;
+}
+.editor-client {
+  height: 38px;
+  padding: 0 30px 0 14px !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background-color: #f5f5f4 !important;
+  font: 600 14px/1 var(--font);
+  cursor: pointer;
+}
+.share-box {
+  position: relative;
+}
+.share-menu {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 8px);
+  right: 0;
+  display: grid;
+  min-width: 250px;
+  padding: 6px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px var(--hair),
+    0 20px 50px -20px rgba(0, 0, 0, 0.3);
+  animation: bell-in 160ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.share-menu > * {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 9px;
+  background: none;
+  color: var(--ink);
+  font: 600 14px/1.2 var(--font);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.share-menu > *:hover {
+  background: #f5f5f4;
+}
+.share-menu a::before {
+  display: none !important;
+}
+.share-panel-wrap {
+  position: relative;
+  max-width: 760px;
+  margin: 0 auto 24px;
+}
+.share-close {
+  position: absolute;
+  z-index: 1;
+  top: 10px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* The page itself: a calm column, the title big, no boxes around what you type. */
+.page-editor:not(.is-doc) .paper {
+  max-width: 760px;
+  padding-top: clamp(24px, 5vw, 64px);
+}
+.paper-title {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.paper-icon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: #f5f5f4;
+}
+.paper .paper-title-input {
+  width: 100%;
+  font-size: clamp(36px, 4vw, 52px);
+  line-height: 1.05;
+}
+.paper .paper-title-input::placeholder {
+  color: var(--ink);
+  opacity: 0.18;
+}
+.paper .paper-title-input:focus,
+.paper .paper-title-input:focus-visible,
+.blk textarea:focus,
+.blk textarea:focus-visible,
+.blk input:focus,
+.blk input:focus-visible {
+  outline: none !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+.blk textarea {
+  border: 0 !important;
+  font-size: 17px;
+  line-height: 1.65;
+}
+.blk textarea:focus::placeholder {
+  color: var(--ink);
+  opacity: 0.28;
+}
+.blk {
+  border-radius: 6px;
+}
+
+/* Hover chrome: a "+" and a grip, outside the text column. */
+.blk-tools {
+  left: -60px;
+  top: 3px;
+  display: flex;
+  gap: 2px;
+}
+.blk-h1 .blk-tools {
+  top: 24px;
+}
+.blk-h2 .blk-tools {
+  top: 18px;
+}
+.blk-tools > button {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: var(--ink);
+  letter-spacing: 0;
+  opacity: 0.4;
+  cursor: pointer;
+}
+.blk-tools > button:hover {
+  background: #f5f5f4;
+  opacity: 1;
+}
+.blk-grip {
+  cursor: grab !important;
+}
+.blk.drop-above {
+  box-shadow: 0 -3px 0 var(--pink);
+}
+.blk.drop-below {
+  box-shadow: 0 3px 0 var(--pink);
+}
+
+/* Menus: grouped, a small tile for each kind of block. */
+.blk-menu,
+.slash-menu {
+  min-width: 280px;
+  padding: 8px;
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 1px var(--hair),
+    0 20px 50px -20px rgba(0, 0, 0, 0.3);
+}
+.blk-menu {
+  top: 30px;
+  left: 0;
+  width: 320px;
+}
+.slash-menu {
+  left: 0;
+  width: 340px;
+  max-height: 380px;
+}
+.slash-group + .slash-group {
+  margin-top: 4px;
+}
+.slash-k,
+.blk-menu-k {
+  margin: 6px 8px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+.slash-menu button {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 6px 8px;
+}
+.slash-t {
+  display: grid;
+  gap: 1px;
+}
+.slash-t strong {
+  font-size: 14px;
+}
+.slash-t span {
+  font-size: 12.5px;
+  opacity: 0.6;
+}
+.slash-menu kbd {
+  grid-row: auto;
+  grid-column: auto;
+  background: #f5f5f4;
+}
+.glyph {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--hair);
+  font: 800 14px/1 var(--font);
+}
+.slash-menu button[aria-selected="true"],
+.slash-menu button:hover,
+.blk-menu button:hover {
+  background: #f5f5f4;
+}
+.blk-menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+}
+.blk-menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  font-size: 13.5px;
+}
+.blk-menu button kbd {
+  margin-left: auto;
+  font: 600 11px/1 var(--font);
+  opacity: 0.5;
+}
+.blk-menu-grid .glyph {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  font-size: 11px;
+}
+.blk-menu button.is-on {
+  background: color-mix(in srgb, var(--pink) 35%, #fff);
+}
+.blk-menu button.danger {
+  color: #b3261e;
+}
+
+/* Rich blocks. */
+.blk-table,
+.blk-embed,
+.blk-image {
+  margin: 10px 0;
+}
+.tbl-wrap {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+}
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+.tbl th,
+.tbl td {
+  position: relative;
+  padding: 0;
+  border: 1px solid var(--hair);
+  vertical-align: top;
+}
+.tbl th {
+  background: #f5f5f4;
+  text-align: left;
+}
+.tbl textarea {
+  display: block;
+  width: 100%;
+  min-width: 90px;
+  padding: 8px 10px !important;
+  border: 0 !important;
+  background: transparent;
+  font: 500 15px/1.4 var(--font) !important;
+  resize: none;
+  overflow: hidden;
+}
+.tbl th textarea {
+  font-weight: 700 !important;
+}
+.tbl textarea:focus {
+  outline: none;
+  background: color-mix(in srgb, var(--blue) 25%, #fff);
+}
+.tbl .is-num,
+.tbl .is-num textarea {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.tbl tfoot td {
+  padding: 8px 10px;
+  border-top: 2px solid var(--ink);
+  font-weight: 800;
+}
+.tbl-x {
+  position: absolute;
+  top: 6px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 15px;
+  line-height: 1;
+  opacity: 0;
+  cursor: pointer;
+}
+.tbl th:hover .tbl-x,
+.tbl tr:hover .tbl-xr {
+  opacity: 0.6;
+}
+.tbl-xr {
+  right: -28px;
+}
+.tbl-x:hover {
+  opacity: 1 !important;
+  background: var(--pink);
+}
+.tbl-add {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+.tbl-add button,
+.blk-swap {
+  padding: 5px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  font: 600 13px/1 var(--font);
+  opacity: 0.5;
+  cursor: pointer;
+}
+.tbl-add button:hover,
+.blk-swap:hover {
+  background: #f5f5f4;
+  opacity: 1;
+}
+
+.blk-calc {
+  align-items: center;
+  margin: 6px 0;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: #f5f5f4;
+}
+.blk-calc textarea {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace !important;
+  font-size: 16px;
+}
+.blk-eq {
+  font-weight: 800;
+  font-size: 18px;
+  opacity: 0.4;
+}
+.blk-result {
+  flex: none;
+  min-width: 80px;
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font: 800 18px/1.2 var(--font);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  cursor: copy;
+}
+.blk-result.is-empty {
+  background: transparent;
+  color: var(--ink);
+  opacity: 0.4;
+}
+
+.blk-url {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 12px;
+  background: #f5f5f4;
+}
+.blk-url input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 0 !important;
+  border-radius: 9px;
+  background: #fff;
+  font: 500 15px/1.2 var(--font);
+}
+.blk-media {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+.blk-media figcaption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+.blk-media figcaption textarea {
+  flex: 1;
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  font: 500 14px/1.4 var(--font);
+  resize: none;
+  opacity: 0.7;
+}
+.embed-frame {
+  width: 100%;
+  max-height: 80vh;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #f5f5f4;
+  box-shadow: inset 0 0 0 1px var(--hair);
+}
+.embed-frame[style*="9 / 16"],
+.embed-frame[style*="4 / 5"] {
+  max-width: 380px;
+}
+.embed-frame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.embed-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 1px var(--hair);
+  color: var(--ink);
+  text-decoration: none;
+}
+.embed-card::before {
+  display: none !important;
+}
+.embed-card:hover {
+  background: #f5f5f4;
+}
+.embed-card > span:nth-child(2) {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+.embed-card > span:nth-child(2) span {
+  overflow: hidden;
+  font-size: 13px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  opacity: 0.6;
+}
+.blk-img {
+  display: block;
+  max-width: 100%;
+  max-height: 70vh;
+  border-radius: 14px;
+}
+
+.blk-toggle.has-body {
+  flex-wrap: wrap;
+}
+.blk-fold {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  margin-top: 4px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.blk-fold:hover {
+  background: #f5f5f4;
+}
+.blk-fold.is-open {
+  transform: rotate(90deg);
+}
+.blk-toggle > textarea:not(.blk-body) {
+  font-weight: 700;
+}
+.blk-body {
+  flex-basis: 100%;
+  margin-left: 32px;
+  padding: 2px 0 6px !important;
+  border: 0;
+  background: none;
+  font: 400 16px/1.6 var(--font);
+  resize: none;
+}
+.blk-code textarea {
+  padding: 14px 16px !important;
+  border-radius: 12px;
+  background: #f5f5f4 !important;
+  font:
+    500 14px/1.6 ui-monospace,
+    "SF Mono",
+    Menlo,
+    monospace !important;
+}
+
+/* The end of the page: click anywhere below to keep writing. */
+.blocks-add {
+  display: block;
+  width: 100%;
+  min-height: 160px;
+  margin-top: 4px;
+  padding: 10px 0;
+  text-align: left;
+  opacity: 0;
+  cursor: text;
+}
+.blocks-add span {
+  font-weight: 500;
+  font-size: 14px;
+}
+.blocks-add:hover,
+.blocks-add:focus-visible {
+  opacity: 0.35;
+}
+
+/* Shared pages: the same rich blocks, read-only. */
+.sb-calc {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #f5f5f4;
+  font-family: ui-monospace, Menlo, monospace;
+}
+.sb-toggle summary {
+  font-weight: 700;
+  cursor: pointer;
+}
+.sb-code {
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #f5f5f4;
+  white-space: pre-wrap;
+}
+.tbl td {
+  padding: 0;
+}
+.shared-blocks .tbl td,
+.shared-blocks .tbl th {
+  padding: 8px 10px;
+}
+
+@media (max-width: 900px) {
+  .blk-tools {
+    left: -2px;
+    top: -26px;
+  }
+  .page-editor .editor-bar .crumbs {
+    flex-basis: 100%;
+  }
+}
+@media print {
+  .blk-tools,
+  .tbl-add,
+  .tbl-x,
+  .blk-swap,
+  .blocks-add {
+    display: none !important;
+  }
+  .embed-frame {
+    display: none;
+  }
+}
