@@ -3,6 +3,7 @@ import { batch, code, deliverableName } from "./naming";
 import { campaignMix } from "./strategy";
 import { toBank } from "./hookBank";
 import { missingRates, price } from "./pricing";
+import { creativePlan, diagnose, economics, hookLab, REEL_CHECKS, reelScore } from "./growth";
 
 describe("deliverableName", () => {
   it("builds the standard name", () => {
@@ -110,5 +111,76 @@ describe("price", () => {
         discountPct: 0,
       }),
     ).toEqual(["UGC video"]);
+  });
+});
+
+describe("growth tools", () => {
+  it("plans enough distinct concepts for the budget, none sharing angle, buyer and format with its neighbour", () => {
+    const p = creativePlan({
+      goal: "sales",
+      budget: 3000,
+      targetCpa: 20,
+      personas: ["Mums", "Students"],
+    });
+    expect(p.testSpend).toBe(50);
+    expect(p.concepts).toBe(18);
+    for (let i = 1; i < p.matrix.length; i++) {
+      const a = p.matrix[i - 1]!;
+      const b = p.matrix[i]!;
+      expect(a.angle === b.angle && a.persona === b.persona && a.format === b.format).toBe(false);
+    }
+    expect(creativePlan({ goal: "brand", budget: 0, targetCpa: 0, personas: [] }).concepts).toBe(3);
+  });
+  it("reads an ad's numbers and says what to fix", () => {
+    const base = {
+      name: "A",
+      impressions: 10000,
+      plays: 1200,
+      thruplays: 500,
+      clicks: 90,
+      results: 2,
+      revenue: 0,
+    };
+    expect(diagnose({ ...base, spend: 20 }, 25).verdict).toBe("early");
+    expect(diagnose({ ...base, spend: 150, results: 8 }, 25).verdict).toBe("scale");
+    expect(diagnose({ ...base, spend: 150 }, 25).verdict).toBe("fix-hook");
+    expect(diagnose({ ...base, plays: 3500, thruplays: 400, spend: 150 }, 25).verdict).toBe(
+      "fix-body",
+    );
+  });
+  it("counts refused cash-on-delivery parcels in the break-even", () => {
+    const e = economics({
+      price: 100,
+      productCost: 30,
+      delivery: 8,
+      packaging: 2,
+      returnRate: 0.2,
+      returnCost: 7,
+      fees: 0,
+      margin: 0.1,
+      orders: 100,
+    });
+    expect(e.profitPerOrder).toBe(44.6);
+    expect(e.breakEvenCpa).toBe(44.6);
+    expect(e.targetCpa).toBe(36.6);
+    expect(e.budget).toBe(3660);
+  });
+  it("scores a reel by what each platform weighs", () => {
+    const all = new Set(REEL_CHECKS.map((c) => c.key));
+    expect(reelScore(all, "reels").score).toBe(100);
+    const r = reelScore(new Set(["hook"]), "reels");
+    expect(r.level).toBe("rework");
+    expect(r.missing[0]?.key).toBe("send");
+  });
+  it("writes hooks and marks the missing words", () => {
+    const h = hookLab({
+      product: "Dany Clean",
+      audience: "",
+      pain: "the bathroom smells",
+      result: "",
+      objection: "",
+    });
+    expect(h.length).toBeGreaterThan(10);
+    expect(h[1]?.line).toBe("If you're [who it's for] and the bathroom smells, watch this.");
   });
 });
