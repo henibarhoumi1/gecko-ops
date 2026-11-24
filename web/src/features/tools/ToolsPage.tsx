@@ -1,65 +1,101 @@
-// Studio tools (Heni, 24 Nov 2026): the deliverable naming generator and the strategy assistant (formats, a
-// campaign mix from the goal, the rules that make ads work). A plan can be saved as a page to share.
+// Studio tools (Heni, 24 Nov 2026): Plan (Andromeda-aligned creative plan, profit and budget), Make (hook lab,
+// reel score, safe zones, formats, hook bank), Measure (ad doctor) and Studio (pricing, file names).
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/Button";
 import { toast } from "@/components/Toast";
 import { useClients } from "@/features/clients/clientsApi";
-import { block, type Block } from "@/features/pages/blocks";
-import { usePageActions } from "@/features/pages/pagesApi";
-import { useMembers } from "@/features/workspace/members";
-import { friendlyError } from "@/lib/errors";
+import { AdDoctor, CreativePlan, HookLab, Profit, ReelScore, SafeZones } from "./GrowthTools";
 import { HookBank } from "./HookBank";
 import { Pricing } from "./Pricing";
 import { batch, deliverableName } from "./naming";
-import {
-  campaignMix,
-  FORMATS,
-  GOAL_LABEL,
-  STAGE_LABEL,
-  TIPS,
-  type Format,
-  type Goal,
-  type Stage,
-} from "./strategy";
+import { FORMATS, STAGE_LABEL, TIPS, type Format, type Stage } from "./strategy";
 
-type Tab = "strategy" | "formats" | "hooks" | "pricing" | "naming";
+type Tab =
+  | "plan"
+  | "doctor"
+  | "profit"
+  | "score"
+  | "safe"
+  | "lab"
+  | "formats"
+  | "hooks"
+  | "pricing"
+  | "naming";
+
+const GROUPS: { name: string; tabs: [Tab, string][] }[] = [
+  {
+    name: "Plan",
+    tabs: [
+      ["plan", "Creative plan"],
+      ["profit", "Profit & budget"],
+    ],
+  },
+  {
+    name: "Make",
+    tabs: [
+      ["lab", "Hook lab"],
+      ["score", "Reel score"],
+      ["safe", "Safe zones"],
+      ["formats", "Formats"],
+      ["hooks", "Hook bank"],
+    ],
+  },
+  { name: "Measure", tabs: [["doctor", "Ad doctor"]] },
+  {
+    name: "Studio",
+    tabs: [
+      ["pricing", "Pricing"],
+      ["naming", "File names"],
+    ],
+  },
+];
 
 export function ToolsPage() {
-  const [tab, setTab] = useState<Tab>("strategy");
+  const [tab, setTab] = useState<Tab>(() => {
+    const h = window.location.hash.slice(1) as Tab;
+    return GROUPS.some((g) => g.tabs.some(([k]) => k === h)) ? h : "plan";
+  });
+  const go = (k: Tab) => {
+    setTab(k);
+    window.history.replaceState(null, "", `#${k}`);
+  };
   return (
     <section className="page wide tools">
       <header className="page-head">
         <div>
           <h1>Studio tools</h1>
           <p className="lede">
-            Build a campaign that works, pick the right formats, name every file the same way.
+            Plan creative the way the platforms rank it, read the numbers, and make every reel
+            count.
           </p>
         </div>
       </header>
-      <div className="wtabs-row tools-tabs" role="tablist">
-        {(
-          [
-            ["strategy", "Campaign builder"],
-            ["formats", "Formats that work"],
-            ["hooks", "Hook bank"],
-            ["pricing", "Pricing"],
-            ["naming", "File names"],
-          ] as const
-        ).map(([k, label]) => (
-          <button
-            key={k}
-            type="button"
-            role="tab"
-            className="wtab"
-            aria-selected={tab === k}
-            onClick={() => setTab(k)}
-          >
-            {label}
-          </button>
+      <nav className="tools-nav" aria-label="Tools">
+        {GROUPS.map((g) => (
+          <div key={g.name} className="tools-group">
+            <span className="tools-group-k">{g.name}</span>
+            <div className="tools-group-tabs" role="tablist">
+              {g.tabs.map(([k, label]) => (
+                <button
+                  key={k}
+                  type="button"
+                  role="tab"
+                  aria-selected={tab === k}
+                  onClick={() => go(k)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
         ))}
-      </div>
-      {tab === "strategy" && <Builder />}
+      </nav>
+      {tab === "plan" && <CreativePlan />}
+      {tab === "doctor" && <AdDoctor />}
+      {tab === "profit" && <Profit />}
+      {tab === "score" && <ReelScore />}
+      {tab === "safe" && <SafeZones />}
+      {tab === "lab" && <HookLab />}
       {tab === "formats" && <Formats />}
       {tab === "hooks" && <HookBank />}
       {tab === "pricing" && <Pricing />}
@@ -130,117 +166,6 @@ function Formats() {
           ))}
         </div>
       </section>
-    </>
-  );
-}
-
-function Builder() {
-  const [goal, setGoal] = useState<Goal>("launch");
-  const [videos, setVideos] = useState(8);
-  const [brand, setBrand] = useState("");
-  const mix = campaignMix(goal, videos);
-  const act = usePageActions();
-  const navigate = useNavigate();
-  const members = useMembers();
-  const clients = useClients();
-  const me = members.data?.find((m) => m.userId)?.name ?? "";
-
-  async function save() {
-    const blocks: Block[] = [
-      block("field", GOAL_LABEL[goal], { label: "Goal" }),
-      block("field", String(videos), { label: "Videos" }),
-      ...mix.flatMap((m) => [
-        block("h2", `${STAGE_LABEL[m.stage]} · ${m.count} videos`),
-        ...m.formats
-          .slice(0, 3)
-          .map((f) => block("todo", `${f.name} (${f.length}): ${f.hooks[0] ?? ""}`)),
-      ]),
-      block("h2", "Rules"),
-      ...TIPS.slice(0, 5).map((t) => block("bullet", `${t.title}: ${t.body}`)),
-    ];
-    try {
-      const client = clients.data?.find((c) => c.brand === brand);
-      const id = await act.create.mutateAsync({
-        title: `${brand || "Campaign"} plan`,
-        icon: "grid",
-        kind: "doc",
-        template: "content-plan",
-        blocks,
-        authorName: me,
-        clientId: client?.id ?? null,
-      });
-      toast({ text: "Plan saved as a document", celebrate: true });
-      navigate(`/pages/${id}`);
-    } catch (e) {
-      toast({ text: friendlyError(e), tone: "error" });
-    }
-  }
-
-  return (
-    <>
-      <div className="builder-form">
-        <label className="field">
-          <span>For</span>
-          <input
-            list="tools-clients"
-            value={brand}
-            placeholder="Client or Gecko"
-            onChange={(e) => setBrand(e.target.value)}
-          />
-          <datalist id="tools-clients">
-            <option value="Gecko" />
-            {(clients.data ?? []).map((c) => (
-              <option key={c.id} value={c.brand} />
-            ))}
-          </datalist>
-        </label>
-        <label className="field">
-          <span>Goal</span>
-          <select value={goal} onChange={(e) => setGoal(e.target.value as Goal)}>
-            {(Object.keys(GOAL_LABEL) as Goal[]).map((g) => (
-              <option key={g} value={g}>
-                {GOAL_LABEL[g]}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="field">
-          <span>Videos</span>
-          <input
-            type="number"
-            min={1}
-            max={60}
-            value={videos}
-            onChange={(e) => setVideos(Number(e.target.value) || 1)}
-          />
-        </label>
-        <Button onClick={() => void save()} disabled={act.create.isPending}>
-          Save as a document
-        </Button>
-      </div>
-      <div className="mix">
-        {mix.map((m) => (
-          <section key={m.stage} className="mix-col">
-            <div className="mix-head">
-              <strong>{STAGE_LABEL[m.stage]}</strong>
-              <span className="mix-count">{m.count}</span>
-            </div>
-            <div className="mix-bar">
-              <span style={{ width: `${(m.count / Math.max(1, videos)) * 100}%` }} />
-            </div>
-            <ul className="mix-formats">
-              {m.formats.map((f) => (
-                <li key={f.key}>
-                  <strong>{f.name}</strong>
-                  <span className="small">
-                    {f.length} · {f.hooks[0]}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
-      </div>
     </>
   );
 }
