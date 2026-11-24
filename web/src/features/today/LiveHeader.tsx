@@ -2,22 +2,23 @@
 // buttons people reach for many times a day (a Meet, a calendar event, WhatsApp, Drive).
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState, type ReactNode } from "react";
+import { Icon, type IconName } from "@/components/Icon";
 import { openPalette } from "@/features/shell/CommandPalette";
 
-const WEATHER: [number[], string, string][] = [
-  [[0], "Clear", "☀"],
-  [[1, 2], "Partly cloudy", "⛅"],
-  [[3], "Cloudy", "☁"],
-  [[45, 48], "Fog", "🌫"],
-  [[51, 53, 55, 56, 57], "Drizzle", "🌦"],
-  [[61, 63, 65, 66, 67, 80, 81, 82], "Rain", "🌧"],
-  [[71, 73, 75, 77, 85, 86], "Snow", "❄"],
-  [[95, 96, 99], "Storm", "⛈"],
+const WEATHER: [number[], string, IconName][] = [
+  [[0], "Clear", "sun"],
+  [[1, 2], "Partly cloudy", "cloudSun"],
+  [[3], "Cloudy", "cloud"],
+  [[45, 48], "Fog", "fog"],
+  [[51, 53, 55, 56, 57], "Drizzle", "rain"],
+  [[61, 63, 65, 66, 67, 80, 81, 82], "Rain", "rain"],
+  [[71, 73, 75, 77, 85, 86], "Snow", "snow"],
+  [[95, 96, 99], "Storm", "storm"],
 ];
 
-export function weatherLabel(code: number): [string, string] {
+export function weatherLabel(code: number): [string, IconName] {
   const hit = WEATHER.find(([codes]) => codes.includes(code));
-  return hit ? [hit[1], hit[2]] : ["", "·"];
+  return hit ? [hit[1], hit[2]] : ["", "cloud"];
 }
 
 interface Weather {
@@ -80,11 +81,10 @@ export function LiveHeader({ greeting, brief }: { greeting: string; brief: React
   const now = useNow();
   const weather = useTunisWeather();
   const w = weather.data;
-  const [label, icon] = w ? weatherLabel(w.code) : ["", ""];
+  const [label, icon] = w ? weatherLabel(w.code) : (["", "cloud"] as const);
   return (
     <header className="live-head">
       <div className="live-hello">
-        <p className="eyebrow">{tunis(now, { weekday: "long", day: "numeric", month: "long" })}</p>
         <h1>{greeting}</h1>
         <p className="live-brief">{brief}</p>
       </div>
@@ -93,12 +93,13 @@ export function LiveHeader({ greeting, brief }: { greeting: string; brief: React
           <strong>{tunis(now, { hour: "2-digit", minute: "2-digit", hour12: false })}</strong>
           <span className="live-sec">{tunis(now, { second: "2-digit" }).padStart(2, "0")}</span>
         </div>
+        <span className="live-date">
+          {tunis(now, { weekday: "long", day: "numeric", month: "long" })}
+        </span>
         <div className="live-weather">
           {w ? (
             <>
-              <span className="live-weather-icon" aria-hidden="true">
-                {icon}
-              </span>
+              <Icon name={icon} size={20} className="live-weather-icon" />
               <span>
                 <strong>{w.temp}°</strong> {label} in Tunis
                 <span className="small">
@@ -116,28 +117,28 @@ export function LiveHeader({ greeting, brief }: { greeting: string; brief: React
   );
 }
 
-const QUICK: { label: string; href?: string; run?: () => void; icon: string; hint: string }[] = [
+const QUICK: { label: string; href?: string; run?: () => void; icon: IconName; hint: string }[] = [
   {
     label: "New Meet",
     href: "https://meet.google.com/new",
-    icon: "◉",
+    icon: "video",
     hint: "Opens a fresh Google Meet",
   },
   {
     label: "Calendar event",
     href: "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Gecko%20%C2%B7%20",
-    icon: "▦",
+    icon: "calendar",
     hint: "New Google Calendar event",
   },
-  { label: "WhatsApp", href: "https://web.whatsapp.com/", icon: "✆", hint: "WhatsApp Web" },
+  { label: "WhatsApp", href: "https://web.whatsapp.com/", icon: "chat", hint: "WhatsApp Web" },
   {
     label: "Drive",
     href: "https://drive.google.com/drive/my-drive",
-    icon: "▲",
+    icon: "folder",
     hint: "Google Drive",
   },
-  { label: "Mail", href: "https://mail.zoho.com/", icon: "✉", hint: "Your Gecko inbox" },
-  { label: "Do anything", run: openPalette, icon: "⌘", hint: "⌘K: new idea, script, lead…" },
+  { label: "Mail", href: "https://mail.zoho.com/", icon: "mail", hint: "Your Gecko inbox" },
+  { label: "Do anything", run: openPalette, icon: "command", hint: "⌘K: new idea, script, lead…" },
 ];
 
 export function QuickActions() {
@@ -147,14 +148,14 @@ export function QuickActions() {
         q.href ? (
           <a key={q.label} href={q.href} target="_blank" rel="noreferrer noopener" title={q.hint}>
             <span className="qa-icon" aria-hidden="true">
-              {q.icon}
+              <Icon name={q.icon} size={15} />
             </span>
             {q.label}
           </a>
         ) : (
           <button key={q.label} type="button" onClick={q.run} title={q.hint}>
             <span className="qa-icon" aria-hidden="true">
-              {q.icon}
+              <Icon name={q.icon} size={15} />
             </span>
             {q.label}
           </button>

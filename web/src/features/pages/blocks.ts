@@ -1,3 +1,4 @@
+import type { IconName } from "@/components/Icon";
 // Pages and documents: blocks, templates, and the text a page turns into (supabase/migrations/202612110001).
 
 export type BlockType =
@@ -117,7 +118,7 @@ export function toText(title: string, blocks: readonly Block[]): string {
 export interface Template {
   key: string;
   name: string;
-  icon: string;
+  icon: IconName;
   kind: "page" | "doc";
   blurb: string;
   blocks: () => Block[];
@@ -129,7 +130,7 @@ export const TEMPLATES: Template[] = [
   {
     key: "blank",
     name: "Blank page",
-    icon: "◻",
+    icon: "page",
     kind: "page",
     blurb: "Start from nothing. Type / for blocks.",
     blocks: () => [block("text")],
@@ -137,7 +138,7 @@ export const TEMPLATES: Template[] = [
   {
     key: "brief",
     name: "Creative brief",
-    icon: "✎",
+    icon: "pen",
     kind: "doc",
     blurb: "What the client wants, for who, and how we'll know it worked.",
     blocks: () => [
@@ -166,7 +167,7 @@ export const TEMPLATES: Template[] = [
   {
     key: "proposal",
     name: "Proposal",
-    icon: "❖",
+    icon: "spark",
     kind: "doc",
     blurb: "A clear offer: what we'll make, when, and what it costs.",
     blocks: () => [
@@ -198,7 +199,7 @@ export const TEMPLATES: Template[] = [
   {
     key: "callsheet",
     name: "Call sheet",
-    icon: "☎",
+    icon: "phone",
     kind: "doc",
     blurb: "Who, where, when, and what to bring on shoot day.",
     blocks: () => [
@@ -230,7 +231,7 @@ export const TEMPLATES: Template[] = [
   {
     key: "quote",
     name: "Quote",
-    icon: "₸",
+    icon: "receipt",
     kind: "doc",
     blurb: "Line-by-line price for a package, ready to accept.",
     blocks: () => [
@@ -263,7 +264,7 @@ export const TEMPLATES: Template[] = [
   {
     key: "ugc-brief",
     name: "Creator brief",
-    icon: "◎",
+    icon: "user",
     kind: "doc",
     blurb: "What a UGC creator films, says and never says.",
     blocks: () => [
@@ -292,7 +293,7 @@ export const TEMPLATES: Template[] = [
   {
     key: "treatment",
     name: "Treatment & moodboard",
-    icon: "◐",
+    icon: "image",
     kind: "doc",
     blurb: "The look and feel of the film before the shoot.",
     blocks: () => [
@@ -318,7 +319,7 @@ export const TEMPLATES: Template[] = [
   {
     key: "shot-list",
     name: "Shot list",
-    icon: "▤",
+    icon: "list",
     kind: "doc",
     blurb: "Every shot to get, ticked on set.",
     blocks: () => [
@@ -338,7 +339,7 @@ export const TEMPLATES: Template[] = [
   {
     key: "report",
     name: "Monthly report",
-    icon: "↗",
+    icon: "chart",
     kind: "doc",
     blurb: "What we made, how it did, what's next.",
     blocks: () => [
@@ -362,7 +363,7 @@ export const TEMPLATES: Template[] = [
   {
     key: "onboarding",
     name: "Client onboarding",
-    icon: "✓",
+    icon: "flag",
     kind: "doc",
     blurb: "Everything we need from a new client to start.",
     blocks: () => [
@@ -384,7 +385,7 @@ export const TEMPLATES: Template[] = [
   {
     key: "message",
     name: "Message",
-    icon: "✉",
+    icon: "mail",
     kind: "doc",
     blurb: "A WhatsApp or email to send, written once and kept.",
     blocks: () => [
@@ -398,7 +399,7 @@ export const TEMPLATES: Template[] = [
   {
     key: "meeting",
     name: "Meeting notes",
-    icon: "◷",
+    icon: "clock",
     kind: "page",
     blurb: "Who was there, what we decided, who does what.",
     blocks: () => [
@@ -415,7 +416,7 @@ export const TEMPLATES: Template[] = [
   {
     key: "content-plan",
     name: "Content plan",
-    icon: "▦",
+    icon: "grid",
     kind: "page",
     blurb: "A month of posts: pillars, formats and dates.",
     blocks: () => [
@@ -436,7 +437,7 @@ export const TEMPLATES: Template[] = [
   {
     key: "list",
     name: "Checklist",
-    icon: "☑",
+    icon: "check",
     kind: "page",
     blurb: "Anything to tick off.",
     blocks: () => [block("todo"), block("todo"), block("todo")],

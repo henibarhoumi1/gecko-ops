@@ -1122,7 +1122,8 @@ textarea {
   z-index: 110;
   display: flex;
   justify-content: flex-end;
-  background: rgba(0, 0, 0, 0.22);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(2px);
   animation: studio-fade 140ms var(--ease) both;
 }
 
@@ -1472,8 +1473,7 @@ textarea {
 
 .crm tbody tr:hover,
 .crm tbody tr.is-open {
-  background: var(--card-hover);
-  box-shadow: inset 3px 0 0 var(--ink);
+  background: var(--blue-soft);
 }
 
 .crm tbody tr:last-child td {
@@ -2095,45 +2095,17 @@ section.budget,
   }
 }
 
+/* One quiet arrival per page: opacity only. A transform here would trap fixed panels (side peek, menus) inside
+   the page box, which cut the side panel off half way (Heni's screenshot, 24 Nov). */
+@keyframes page-in {
+  from {
+    opacity: 0;
+  }
+}
 .content > .page,
 .content > section,
 .portal-page > * {
-  animation: rise-in 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-
-.pulse > *,
-.today-cols > *,
-.prod-grid > *,
-.stage-list > *,
-.home-campaign-list > li,
-.room-col > .room-card,
-.concept-list > *,
-.do-next-item {
-  animation: rise-in 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-
-.pulse > :nth-child(2),
-.prod-grid > :nth-child(2),
-.today-cols > :nth-child(2),
-.home-campaign-list > li:nth-child(2) {
-  animation-delay: 50ms;
-}
-.pulse > :nth-child(3),
-.prod-grid > :nth-child(3),
-.home-campaign-list > li:nth-child(3) {
-  animation-delay: 100ms;
-}
-.pulse > :nth-child(4),
-.prod-grid > :nth-child(4) {
-  animation-delay: 150ms;
-}
-.pulse > :nth-child(5),
-.prod-grid > :nth-child(5) {
-  animation-delay: 200ms;
-}
-.pulse > :nth-child(6),
-.prod-grid > :nth-child(6) {
-  animation-delay: 250ms;
+  animation: page-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 /* Everything you can press answers: a lift on hover, a press on click. */
@@ -2851,16 +2823,26 @@ section.budget,
   background: var(--blue-soft);
   color: var(--ink);
   text-decoration: none;
-  border-left: 4px solid var(--ink);
 }
-.cal-item.kind-drafts {
-  border-left-color: var(--yellow);
+.cal-item > .small:first-child::before {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 999px;
+  background: var(--ink);
+  vertical-align: 1px;
 }
-.cal-item.kind-invoice {
-  border-left-color: var(--pink);
+.cal-item.kind-drafts > .small:first-child::before {
+  background: var(--yellow);
 }
-.cal-item.kind-milestone {
-  border-left-color: var(--blue);
+.cal-item.kind-invoice > .small:first-child::before {
+  background: var(--pink);
+}
+.cal-item.kind-milestone > .small:first-child::before,
+.cal-item.kind-lead > .small:first-child::before {
+  background: var(--blue);
 }
 @media (max-width: 980px) {
   .cal-layout {
@@ -3253,25 +3235,18 @@ section.budget,
   background: var(--ink);
   color: #fff;
 }
-.cal-chip.kind-drafts,
-.cal-chip.kind-milestone,
-.cal-chip.kind-invoice,
-.cal-chip.kind-lead {
-  background: #fff;
-  box-shadow:
-    inset 3px 0 0 var(--yellow),
-    inset 0 0 0 1px var(--hair);
+.cal-chip.kind-drafts {
+  background: var(--yellow);
+  box-shadow: none;
 }
 .cal-chip.kind-invoice {
-  box-shadow:
-    inset 3px 0 0 var(--pink),
-    inset 0 0 0 1px var(--hair);
+  background: var(--pink);
+  box-shadow: none;
 }
 .cal-chip.kind-milestone,
 .cal-chip.kind-lead {
-  box-shadow:
-    inset 3px 0 0 var(--blue),
-    inset 0 0 0 1px var(--hair);
+  background: var(--blue-soft);
+  box-shadow: none;
 }
 
 .seg-cost,
@@ -4375,7 +4350,7 @@ body.focus-mode .write-space {
 }
 .home .fact-next {
   box-shadow:
-    inset 3px 0 0 var(--ink),
+    inset 0 0 0 1.5px var(--ink),
     var(--shadow);
 }
 .home .portal-head h1,
@@ -4516,14 +4491,6 @@ body.focus-mode .write-space {
   padding-top: 18px;
   border-top: 2px solid var(--ink);
 }
-.page-editor.is-doc .blk-h1::before {
-  content: counter(doc-section, decimal-leading-zero);
-  min-width: 46px;
-  padding-top: 6px;
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-}
 .page-editor.is-doc .blk-h1 textarea {
   margin-top: 0;
   font-size: clamp(24px, 2.4vw, 30px);
@@ -4591,4 +4558,67 @@ body.focus-mode .write-space {
   .page-editor.is-doc .blk {
     break-inside: avoid;
   }
+}
+
+/* v5 polish: browser surfaces themed from the palette (Impeccable craft floor). */
+html {
+  scrollbar-color: rgba(0, 0, 0, 0.22) transparent;
+  scrollbar-width: thin;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.2) padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+input,
+textarea {
+  caret-color: var(--ink);
+}
+a {
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+}
+.fin-table,
+.ads-table,
+.pulse-value,
+.ceo-ring-text strong,
+.live-clock,
+.home-owed {
+  font-variant-numeric: tabular-nums;
+}
+.live-date {
+  font-size: 13px;
+  font-weight: 600;
+}
+.ic {
+  flex: none;
+  display: block;
+}
+.qa-icon .ic,
+.palette-icon .ic,
+.toast-mark .ic {
+  display: block;
+}
+.tpl-icon,
+.page-row-icon,
+.paper-icon {
+  display: grid;
+  place-items: center;
+}
+.live-weather-icon {
+  opacity: 0.8;
 }

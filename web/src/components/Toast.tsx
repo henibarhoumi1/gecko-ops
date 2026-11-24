@@ -1,4 +1,5 @@
 import { useEffect, useState, type CSSProperties } from "react";
+import { Icon } from "./Icon";
 
 /**
  * Feedback for every action, bottom right: "Approved · Dany Clean was told · Undo". A toast can celebrate (a
@@ -77,7 +78,7 @@ export function Toaster() {
         <div key={t.id} className={`toast${t.tone === "error" ? " is-error" : ""}`}>
           {t.celebrate && <Burst />}
           <span className="toast-mark" aria-hidden="true">
-            {t.tone === "error" ? "!" : "✓"}
+            {t.tone === "error" ? "!" : <Icon name="check" size={14} />}
           </span>
           <span className="toast-text">
             <strong>{t.text}</strong>

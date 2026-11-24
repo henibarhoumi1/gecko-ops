@@ -1,3 +1,4 @@
+import { Icon } from "@/components/Icon";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -223,13 +224,18 @@ export function CommandPalette({ role }: { role: Role }) {
                 onClick={() => go(h)}
               >
                 <span className="palette-icon" aria-hidden="true">
-                  {h.hint === "Action"
-                    ? "→"
-                    : h.hint === "Lead"
-                      ? "@"
-                      : h.hint === "Page"
-                        ? "#"
-                        : "◆"}
+                  <Icon
+                    name={
+                      h.hint === "Action"
+                        ? "arrow"
+                        : h.hint === "Lead"
+                          ? "at"
+                          : h.hint === "Page"
+                            ? "hash"
+                            : "diamond"
+                    }
+                    size={15}
+                  />
                 </span>
                 <span dir="auto">{h.label}</span>
                 <span className="small">{h.hint}</span>

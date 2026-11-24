@@ -4,6 +4,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { Link, Route, Routes, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/Button";
+import { Icon, type IconName } from "@/components/Icon";
 import { Logo } from "@/components/Logo";
 import { Notice } from "@/components/Notice";
 import { toast } from "@/components/Toast";
@@ -81,8 +82,7 @@ function PagesHome() {
     <section className="page wide pages">
       <header className="page-head ceo-head">
         <div>
-          <p className="eyebrow">Pages & docs</p>
-          <h1>Write anything</h1>
+          <h1>Pages &amp; docs</h1>
           <p className="lede">Notes, plans and Gecko documents you can print to PDF or send.</p>
         </div>
         <Button onClick={() => void start(TEMPLATES[0]!)} disabled={act.create.isPending}>
@@ -104,7 +104,7 @@ function PagesHome() {
               onClick={() => void start(t)}
             >
               <span className="tpl-icon" aria-hidden="true">
-                {t.icon}
+                <Icon name={t.icon} size={18} />
               </span>
               <strong>{t.name}</strong>
               <span className="small">{t.blurb}</span>
@@ -144,7 +144,7 @@ function PagesHome() {
               <li key={p.id}>
                 <Link to={`/pages/${p.id}`} className="page-row">
                   <span className="page-row-icon" aria-hidden="true">
-                    {p.icon || "◻"}
+                    <Icon name={iconOf(p.icon, p.template)} size={18} />
                   </span>
                   <span className="page-row-title" dir="auto">
                     <strong>{p.title || "Untitled"}</strong>
@@ -168,6 +168,13 @@ function PagesHome() {
       </section>
     </section>
   );
+}
+
+/** A page's icon: its stored name, else its template's, else a page. Older pages stored a glyph. */
+function iconOf(icon: string, template: string): IconName {
+  const names = new Set<string>(TEMPLATES.map((t) => t.icon));
+  if (names.has(icon)) return icon as IconName;
+  return TEMPLATES.find((t) => t.key === template)?.icon ?? "page";
 }
 
 const LISTY: BlockType[] = ["bullet", "number", "todo"];
@@ -354,7 +361,7 @@ function PageEditor() {
         )}
         <div className="paper-title">
           <span className="paper-icon" aria-hidden="true">
-            {p.icon}
+            <Icon name={iconOf(p.icon, p.template)} size={30} />
           </span>
           <input
             className="paper-title-input"

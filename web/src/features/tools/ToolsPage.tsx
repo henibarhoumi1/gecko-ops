@@ -29,8 +29,7 @@ export function ToolsPage() {
     <section className="page wide tools">
       <header className="page-head">
         <div>
-          <p className="eyebrow">Studio tools</p>
-          <h1>Plan it right</h1>
+          <h1>Studio tools</h1>
           <p className="lede">
             Build a campaign that works, pick the right formats, name every file the same way.
           </p>
@@ -157,7 +156,7 @@ function Builder() {
       const client = clients.data?.find((c) => c.brand === brand);
       const id = await act.create.mutateAsync({
         title: `${brand || "Campaign"} plan`,
-        icon: "▦",
+        icon: "grid",
         kind: "doc",
         template: "content-plan",
         blocks,

@@ -157,7 +157,6 @@ export function CalendarPage() {
     <section className="page wide calendar">
       <header className="page-head cal-head">
         <div>
-          <p className="eyebrow">Calendar</p>
           <h1>{title}</h1>
         </div>
         <div className="cal-nav">
