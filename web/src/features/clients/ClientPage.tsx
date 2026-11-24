@@ -201,35 +201,37 @@ export function ClientPage() {
         </>
       )}
       {!hub && (
-        <nav className="stage-tabs" aria-label={client.brand}>
-          {groups
-            .filter((g) => g.name !== "Client" || currentGroup === g)
-            .map((g) => (
-              <NavLink
-                key={g.name}
-                to={`/clients/${clientId}${g.tabs[0]![0] ? `/${g.tabs[0]![0]}` : ""}`}
-                className={() => `stage-tab${g === currentGroup ? " active" : ""}`}
-              >
-                {g.name}
-              </NavLink>
-            ))}
-        </nav>
-      )}
-      {!hub && currentGroup.tabs.length > 1 && (
-        <nav className="portal-tabs" aria-label={currentGroup.name}>
-          {currentGroup.tabs
-            .filter(([path]) => path !== "")
-            .map(([path, label]) => (
-              <NavLink
-                key={path}
-                to={`/clients/${clientId}${path ? `/${path}` : ""}`}
-                end={!["whiteboard", "review", "money", "results", "shoot"].includes(path)}
-                className="portal-tab"
-              >
-                {label}
-              </NavLink>
-            ))}
-        </nav>
+        <div className="workbar">
+          <nav className="stage-tabs" aria-label={client.brand}>
+            {groups
+              .filter((g) => g.name !== "Client" || currentGroup === g)
+              .map((g) => (
+                <NavLink
+                  key={g.name}
+                  to={`/clients/${clientId}${g.tabs[0]![0] ? `/${g.tabs[0]![0]}` : ""}`}
+                  className={() => `stage-tab${g === currentGroup ? " active" : ""}`}
+                >
+                  {g.name}
+                </NavLink>
+              ))}
+          </nav>
+          {currentGroup.tabs.filter(([path]) => path !== "").length > 1 && (
+            <nav className="portal-tabs sub-tabs" aria-label={currentGroup.name}>
+              {currentGroup.tabs
+                .filter(([path]) => path !== "")
+                .map(([path, label]) => (
+                  <NavLink
+                    key={path}
+                    to={`/clients/${clientId}${path ? `/${path}` : ""}`}
+                    end={!["whiteboard", "review", "money", "results", "shoot"].includes(path)}
+                    className="portal-tab"
+                  >
+                    {label}
+                  </NavLink>
+                ))}
+            </nav>
+          )}
+        </div>
       )}
       <Routes>
         {lead ? (
