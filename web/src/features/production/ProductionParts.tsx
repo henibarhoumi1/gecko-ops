@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { Icon } from "@/components/Icon";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import { TextArea } from "@/components/TextArea";
@@ -507,7 +508,7 @@ export function TalentYeses({
       {ready ? (
         <p className="yes-line">
           <span className="yes" aria-hidden="true">
-            ✓
+            <Icon name="check" size={12} />
           </span>{" "}
           <strong>{t("Approved", "Validé")}</strong>{" "}
           {gecko && studio

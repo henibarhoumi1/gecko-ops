@@ -1,5 +1,9 @@
 import { Select } from "@/components/Select";
 import { IdeaStarters } from "@/features/concepts/IdeaStarters";
+import { Sheet } from "@/components/Sheet";
+import { ClientPicks } from "@/features/picks/ClientPicks";
+import { BANK, ideaBody, type BankFormat } from "@/features/creative/bank";
+import { FormatBank } from "@/features/creative/FormatBank";
 import { canApprove, useClientRole } from "./role";
 import { Link } from "react-router-dom";
 import { DraftNotice } from "@/components/DraftNotice";
@@ -22,6 +26,8 @@ import { tw } from "@/lib/wording";
 
 export function ConceptsTab({ portal, concepts }: { portal: ClientPortal; concepts: Concept[] }) {
   const [adding, setAdding] = useState(false);
+  const [browsing, setBrowsing] = useState(false);
+  const [start, setStart] = useState<BankFormat | null>(null);
   const groups = groupConcepts(concepts, "client");
   useHashScroll(true);
 
@@ -38,14 +44,54 @@ export function ConceptsTab({ portal, concepts }: { portal: ClientPortal; concep
         ],
       )}
       action={
-        <Button variant="secondary" onClick={() => setAdding(true)}>
-          {tw(
-            ["Add your own idea", "Proposer une idée"],
-            ["Suggest a concept", "Proposer un concept"],
+        <span className="action-pair">
+          <Button variant="secondary" onClick={() => setBrowsing(true)}>
+            {t(`Browse ${BANK.length} formats`, `Voir les ${BANK.length} formats`)}
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setStart(null);
+              setAdding(true);
+            }}
+          >
+            {tw(
+              ["Add your own idea", "Proposer une idée"],
+              ["Suggest a concept", "Proposer un concept"],
+            )}
+          </Button>
+          {browsing && (
+            <Sheet
+              wide
+              title={t("Format bank", "Banque de formats")}
+              sub={t(
+                "The formats Gecko pitches and shoots, with how each one goes. Pick one to suggest it as an idea.",
+                "Les formats que Gecko propose et tourne, avec leur déroulé. Choisissez-en un pour le proposer comme idée.",
+              )}
+              onClose={() => setBrowsing(false)}
+            >
+              <FormatBank
+                useLabel={t("Suggest this", "Proposer celui-ci")}
+                onUse={(f) => {
+                  setStart(f);
+                  setAdding(true);
+                  setBrowsing(false);
+                }}
+              />
+            </Sheet>
           )}
-        </Button>
+        </span>
       }
-      form={adding ? <IdeaForm portal={portal} onDone={() => setAdding(false)} /> : null}
+      form={
+        adding ? (
+          <IdeaForm
+            key={start?.key ?? "blank"}
+            portal={portal}
+            start={start}
+            onDone={() => setAdding(false)}
+          />
+        ) : null
+      }
       empty={tw(
         [
           "Gecko is working on your ideas. They'll appear here for you to read and approve.",
@@ -60,6 +106,7 @@ export function ConceptsTab({ portal, concepts }: { portal: ClientPortal; concep
       itemKey={(c) => c.id}
       renderItem={(concept) => (
         <ConceptCard concept={concept} reader="client">
+          <ClientPicks portal={portal} kind="concept" id={concept.id} />
           {concept.status === "idea" ? (
             <IdeaActions portal={portal} concept={concept} />
           ) : (
@@ -133,12 +180,17 @@ function IdeaActions({ portal, concept }: { portal: ClientPortal; concept: Conce
 function IdeaForm({
   portal,
   idea,
+  start,
   onDone,
 }: {
   portal: ClientPortal;
   idea?: Concept;
+  start?: BankFormat | null;
   onDone: () => void;
 }) {
+  const seed = start
+    ? { title: `${start.name}: `, hook: start.hooks[0] ?? "", body: ideaBody(start) }
+    : null;
   const save = useSaveIdea(portal);
   const [error, setError] = useState("");
   // Kept on this device while writing: closing the tab doesn't lose it.
@@ -188,7 +240,7 @@ function IdeaForm({
         <Field
           label={t("Title", "Titre")}
           name="title"
-          defaultValue={idea?.title}
+          defaultValue={idea?.title ?? seed?.title}
           maxLength={160}
           autoFocus
         />
@@ -210,7 +262,7 @@ function IdeaForm({
           "L'accroche : les premiers mots entendus",
         )}
         name="hook"
-        defaultValue={idea?.hook}
+        defaultValue={idea?.hook ?? seed?.hook}
         maxLength={200}
         placeholder={t("Optional", "Facultatif")}
       />
@@ -218,7 +270,7 @@ function IdeaForm({
         label={tw(["The idea", "L'idée"], ["The concept", "Le concept"])}
         name="body"
         rows={4}
-        defaultValue={idea?.body}
+        defaultValue={idea?.body ?? seed?.body}
         maxLength={10000}
         placeholder={tw(
           [
