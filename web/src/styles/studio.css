@@ -5470,3 +5470,51 @@ a {
 .content-col {
   min-height: 140px;
 }
+/* Finance bars: no tinted tracks, just the bars on a baseline. */
+.fin-bars {
+  height: 180px;
+}
+.fin-bar-col {
+  background: none;
+  border-radius: 0;
+  box-shadow: inset 0 -1px 0 var(--hair);
+}
+.fin-bar-col > span {
+  border-radius: 8px 8px 0 0;
+}
+/* Client hub: the reel strip is a quiet panel, not a black frame. */
+.reel-strip {
+  border: 0;
+  box-shadow: inset 0 0 0 1px var(--hair);
+}
+/* Calendar: one hairline grid, like a paper planner, not 35 boxes. */
+.cal-grid {
+  gap: 0;
+  border-top: 1px solid var(--hair);
+  border-left: 1px solid var(--hair);
+}
+.cal-weekday {
+  padding: 8px 10px;
+  border-right: 1px solid var(--hair);
+  border-bottom: 1px solid var(--hair);
+}
+.cal-day,
+.cal-day:hover {
+  border-radius: 0;
+  border-right: 1px solid var(--hair);
+  border-bottom: 1px solid var(--hair);
+  box-shadow: none;
+}
+.cal-day:hover {
+  background: var(--soft);
+}
+.cal-day.is-picked,
+.cal-day.is-picked:hover {
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+.cal-day.out {
+  opacity: 1;
+}
+.cal-day.out .cal-num {
+  opacity: 0.3;
+}

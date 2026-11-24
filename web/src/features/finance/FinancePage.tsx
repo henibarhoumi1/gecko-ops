@@ -168,6 +168,9 @@ export function FinancePage() {
 
       <section className="today-section">
         <h2>Cash in, last 6 months</h2>
+        {top === 1 && paidBy.every((x) => x.total === 0) && (
+          <p className="small muted">No paid invoices in the last 6 months yet.</p>
+        )}
         <div className="fin-bars" role="img" aria-label="Cash in per month">
           {paidBy.map((x) => (
             <div key={x.m} className={`fin-bar${x.m === month ? " is-now" : ""}`}>
