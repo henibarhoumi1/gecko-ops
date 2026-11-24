@@ -1,6 +1,7 @@
 import { toast } from "@/components/Toast";
 import { WritingTabs, useSaveKeys } from "@/components/WritingTabs";
 import { IdeaStarters } from "@/features/concepts/IdeaStarters";
+import { TeamPicks } from "@/features/picks/TeamPicks";
 import { DraftNotice } from "@/components/DraftNotice";
 import { useFormDraft } from "@/lib/drafts";
 import { StageList } from "@/components/StageList";
@@ -89,6 +90,7 @@ function TeamConcept({ clientId, concept }: { clientId: string; concept: Concept
 
   return (
     <ConceptCard concept={concept} reader="team">
+      <TeamPicks clientId={clientId} kind="concept" id={concept.id} />
       {mode === "idle" && (
         <div className="concept-actions">
           {(concept.status === "draft" || concept.status === "idea") && (

@@ -1,4 +1,7 @@
-import type { RefObject } from "react";
+import { useRef, useState, type RefObject } from "react";
+import { Sheet } from "@/components/Sheet";
+import { BANK, ideaBody } from "@/features/creative/bank";
+import { FormatBank } from "@/features/creative/FormatBank";
 import { t } from "@/lib/i18n";
 
 /** Ways into an idea when the page is blank: each fills the title, a hook and a few prompts to answer. */
@@ -61,19 +64,25 @@ export function starters(): { name: string; title: string; hook: string; body: s
   ];
 }
 
-/** Fills the empty fields of an idea form from a starter, the way typing would (so it's kept as a draft). */
-function fill(form: HTMLFormElement, values: Record<string, string>) {
+/** Fills an idea form the way typing would (so it's kept as a draft). A field is only replaced when it's empty
+ *  or still holds what a starter put there, never over the writer's own words. */
+function fill(form: HTMLFormElement, values: Record<string, string>, ours: Record<string, string>) {
   for (const [name, value] of Object.entries(values)) {
     const field = form.elements.namedItem(name);
     if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement)) continue;
-    if (field.value.trim()) continue;
+    const now = field.value.trim();
+    if (now && now !== (ours[name] ?? "").trim()) continue;
     field.value = value;
+    ours[name] = value;
     field.dispatchEvent(new Event("input", { bubbles: true }));
   }
 }
 
-/** The starter chips above a new idea. */
+/** The ways into a new idea: six quick starters, and the whole format bank one click away. */
 export function IdeaStarters({ form }: { form: RefObject<HTMLFormElement | null> }) {
+  const ours = useRef<Record<string, string>>({});
+  const [bank, setBank] = useState(false);
+  const put = (v: Record<string, string>) => form.current && fill(form.current, v, ours.current);
   return (
     <div className="idea-starters">
       <span className="small">{t("Start from:", "Partir de :")}</span>
@@ -82,13 +91,33 @@ export function IdeaStarters({ form }: { form: RefObject<HTMLFormElement | null>
           key={s.name}
           type="button"
           className="hook-idea"
-          onClick={() =>
-            form.current && fill(form.current, { title: s.title, hook: s.hook, body: s.body })
-          }
+          onClick={() => put({ title: s.title, hook: s.hook, body: s.body })}
         >
           {s.name}
         </button>
       ))}
+      <button type="button" className="hook-idea is-bank" onClick={() => setBank(true)}>
+        {t(`All ${BANK.length} formats`, `Les ${BANK.length} formats`)}
+      </button>
+      {bank && (
+        <Sheet
+          wide
+          title={t("Format bank", "Banque de formats")}
+          sub={t(
+            "Formats that work on Reels, TikTok and Meta ads now. Pick one and the idea is laid out for you.",
+            "Les formats qui marchent sur Reels, TikTok et Meta. Choisissez-en un, l'idée est posée pour vous.",
+          )}
+          onClose={() => setBank(false)}
+        >
+          <FormatBank
+            useLabel={t("Start my idea from this", "Partir de ce format")}
+            onUse={(f) => {
+              put({ title: `${f.name}: `, hook: f.hooks[0] ?? "", body: ideaBody(f) });
+              setBank(false);
+            }}
+          />
+        </Sheet>
+      )}
     </div>
   );
 }

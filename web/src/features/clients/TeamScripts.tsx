@@ -1,4 +1,5 @@
 import { DraftNotice } from "@/components/DraftNotice";
+import { TeamPicks } from "@/features/picks/TeamPicks";
 import { useDraft } from "@/lib/drafts";
 import { StageList } from "@/components/StageList";
 import { useHashScroll } from "@/lib/useHashScroll";
@@ -144,6 +145,12 @@ function TeamScript({
       picked={script.hook}
       onComment={(line, body) => note.mutateAsync({ scriptId: script.id, line, body })}
     >
+      <TeamPicks
+        clientId={clientId}
+        kind="script"
+        id={script.id}
+        shoot={script.shoot as Record<string, unknown> | undefined}
+      />
       {planParts.length > 0 && (
         <p className="small shoot-summary">
           {planParts.map(([k, v]) => (
@@ -471,6 +478,14 @@ function ScriptForm({
                 : [...draft.body, { see: line }];
             setDraft({ ...draft, body });
             toast({ text: "Beat added to the body", detail: line });
+          }}
+          onBeats={(lines) => {
+            const kept = draft.body.filter((b) => !noWords([b]));
+            setDraft({ ...draft, body: [...kept, ...lines.map((see) => ({ see }))] });
+            toast({
+              text: `${lines.length} beats laid out`,
+              detail: "Write what we hear under each one",
+            });
           }}
         />
       ),

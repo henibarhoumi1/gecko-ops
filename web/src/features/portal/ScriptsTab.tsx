@@ -10,6 +10,7 @@ import { Button } from "@/components/Button";
 import { canApprove, useClientRole } from "./role";
 import { WriteScript } from "./WriteScript";
 import { ScriptView } from "@/features/scripts/ScriptView";
+import { ClientPicks } from "@/features/picks/ClientPicks";
 import { useClientScriptNote } from "@/features/scripts/scriptsApi";
 import { t } from "@/lib/i18n";
 import { tw } from "@/lib/wording";
@@ -102,6 +103,7 @@ function ClientScript({ portal, script }: { portal: ClientPortal; script: Script
           })
         }
       >
+        <ClientPicks portal={portal} kind="script" id={script.id} />
         <div className="concept-actions">
           {script.status !== "approved" && canApprove(role) && (
             <Button variant="secondary" onClick={() => setEditing(true)}>
@@ -127,6 +129,7 @@ function ClientScript({ portal, script }: { portal: ClientPortal; script: Script
     return <WriteScript portal={portal} script={script} onDone={() => setEditing(false)} />;
   return (
     <GeckoScript
+      portal={portal}
       script={script}
       note={note}
       onEdit={canApprove(role) ? () => setEditing(true) : undefined}
@@ -135,10 +138,12 @@ function ClientScript({ portal, script }: { portal: ClientPortal; script: Script
 }
 
 function GeckoScript({
+  portal,
   script,
   note,
   onEdit,
 }: {
+  portal: ClientPortal;
   script: Script;
   note: ReturnType<typeof useClientScriptNote>;
   /** Owners and approvers can rewrite the script themselves while it's with them. */
@@ -166,6 +171,7 @@ function GeckoScript({
       onPick={canDecide ? setPicked : undefined}
       onComment={(line, body) => send("comment", body, line)}
     >
+      <ClientPicks portal={portal} kind="script" id={script.id} />
       {canDecide && onEdit && (
         <div className="concept-actions">
           <Button variant="secondary" onClick={onEdit}>

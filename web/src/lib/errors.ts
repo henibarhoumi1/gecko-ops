@@ -325,6 +325,16 @@ const MESSAGES: [RegExp, string, string][] = [
     "Donnez au montage un titre de 160 caractères maximum.",
   ],
   [
+    /invalid_picks/,
+    "One of those picks isn't available any more. Refresh and pick again.",
+    "Un de ces choix n'est plus disponible. Actualisez et choisissez à nouveau.",
+  ],
+  [
+    /picks_target_not_found/,
+    "That idea or script isn't here any more.",
+    "Cette idée ou ce script n'est plus là.",
+  ],
+  [
     /viewer_read_only/,
     "You can read this but not add to it. Ask your owner if you need to.",
     "Vous pouvez consulter, mais pas ajouter. Demandez à votre responsable si besoin.",

@@ -3,7 +3,13 @@
 // a hook or a beat into the script.
 import { useState } from "react";
 import { useHookBank } from "@/features/tools/HookBank";
-import { FORMATS, STAGE_LABEL } from "@/features/tools/strategy";
+import {
+  BANK,
+  FAMILY_LABEL,
+  filterBank,
+  SIGNAL_LABEL,
+  type Family,
+} from "@/features/creative/bank";
 
 const ANGLES = [
   "Say the opposite of what everyone in the category says.",
@@ -35,12 +41,18 @@ export function CreativeKit({
   brand,
   onHook,
   onBeat,
+  onBeats,
 }: {
   brand: string;
   onHook: (line: string) => void;
   onBeat: (line: string) => void;
+  /** Puts a whole format's beats in the body at once. */
+  onBeats?: (lines: string[]) => void;
 }) {
-  const [open, setOpen] = useState<string | null>(FORMATS[0]?.key ?? null);
+  const [open, setOpen] = useState<string | null>(BANK[0]?.key ?? null);
+  const [q, setQ] = useState("");
+  const [family, setFamily] = useState<Family | "">("");
+  const list = filterBank({ q, family });
   const bank = useHookBank();
   const winners = (bank.data ?? []).filter((h) => h.picked).slice(0, 8);
   const fill = (s: string) => s.replace(/\[brand\]/gi, brand || "the brand");
@@ -79,8 +91,27 @@ export function CreativeKit({
       </section>
       <section className="kit-block">
         <h3>Formats that work</h3>
+        <p className="small muted">
+          {BANK.length} formats from the bank. Lay out a whole format as the body, or take one beat
+          at a time.
+        </p>
+        <div className="kit-filter">
+          <input value={q} placeholder="Search formats…" onChange={(e) => setQ(e.target.value)} />
+          <select
+            value={family}
+            onChange={(e) => setFamily(e.target.value as Family | "")}
+            aria-label="Family"
+          >
+            <option value="">All families</option>
+            {(Object.keys(FAMILY_LABEL) as Family[]).map((k) => (
+              <option key={k} value={k}>
+                {FAMILY_LABEL[k]}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="kit-formats">
-          {FORMATS.map((f) => (
+          {list.map((f) => (
             <article key={f.key} className={`kit-format${open === f.key ? " is-open" : ""}`}>
               <button
                 type="button"
@@ -90,22 +121,33 @@ export function CreativeKit({
               >
                 <strong>{f.name}</strong>
                 <span className="small">
-                  {f.length} · {f.stage.map((s) => STAGE_LABEL[s]).join(", ")}
+                  {f.length} · {f.signals.map((x) => SIGNAL_LABEL[x]).join(", ")}
                 </span>
               </button>
               {open === f.key && (
                 <div className="kit-format-body">
-                  <p className="small">{f.when}</p>
+                  <p className="small">
+                    {f.line} {f.why}
+                  </p>
                   <ol className="small">
-                    {f.structure.map((s) => (
-                      <li key={s}>
-                        {s}{" "}
-                        <button type="button" className="kit-add" onClick={() => onBeat(s)}>
+                    {f.beats.map((b) => (
+                      <li key={b.at}>
+                        <b>{b.at}</b> {b.what}{" "}
+                        <button type="button" className="kit-add" onClick={() => onBeat(b.what)}>
                           + beat
                         </button>
                       </li>
                     ))}
                   </ol>
+                  {onBeats && (
+                    <button
+                      type="button"
+                      className="kit-lay"
+                      onClick={() => onBeats(f.beats.map((b) => `${b.at}: ${b.what}`))}
+                    >
+                      Lay out all {f.beats.length} beats
+                    </button>
+                  )}
                   <div className="kit-chips">
                     {f.hooks.map((h) => (
                       <button
@@ -118,11 +160,10 @@ export function CreativeKit({
                       </button>
                     ))}
                   </div>
-                  <ul className="small kit-tips">
-                    {f.tips.map((t) => (
-                      <li key={t}>{t}</li>
-                    ))}
-                  </ul>
+                  <p className="small kit-tips">
+                    Needs: {f.needs.people} · {f.needs.place}
+                    {f.needs.props ? ` · ${f.needs.props}` : ""}
+                  </p>
                 </div>
               )}
             </article>

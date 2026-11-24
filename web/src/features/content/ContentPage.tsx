@@ -8,6 +8,8 @@ import { CountUp } from "@/features/today/HomeMore";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { friendlyError } from "@/lib/errors";
 import { requireSupabase } from "@/lib/supabase";
+import { CreativeLab } from "@/features/creative/CreativeLab";
+import { FormatBank } from "@/features/creative/FormatBank";
 
 const STATUSES = ["idea", "script", "shoot", "edit", "scheduled", "posted"] as const;
 type Status = (typeof STATUSES)[number];
@@ -103,43 +105,60 @@ function useTable<T>(table: string, order: string) {
   return { list, add, patch, remove };
 }
 
+type LabTab = "lab" | "formats" | "board" | "ads";
+const LAB_TABS: { key: LabTab; label: string; lead?: boolean }[] = [
+  { key: "lab", label: "Concept machine" },
+  { key: "formats", label: "Format bank" },
+  { key: "board", label: "Gecko board" },
+  { key: "ads", label: "Ad campaigns", lead: true },
+];
+
 export function ContentPage() {
   const { role } = useWorkspace();
   const lead = role === "founder" || role === "sales";
-  const [tab, setTab] = useState<"board" | "ads">("board");
+  const fromHash = window.location.hash.slice(1) as LabTab;
+  const [tab, setTabState] = useState<LabTab>(
+    LAB_TABS.some((x) => x.key === fromHash) ? fromHash : "lab",
+  );
+  const setTab = (k: LabTab) => {
+    setTabState(k);
+    history.replaceState(null, "", `#${k}`);
+  };
+  const tabs = LAB_TABS.filter((x) => !x.lead || lead);
   return (
-    <section className="page wide content-page">
+    <section className="page wide content-page lab-page">
       <header className="page-head">
         <div>
-          <h1>Gecko content</h1>
+          <h1>Creative Lab</h1>
           <p className="lede">
-            Plan, make and post Gecko&rsquo;s content, and track what our ads bring in.
+            Briefs in, concepts out. Every idea is a format that works now, filled with the
+            brand&rsquo;s own words.
           </p>
         </div>
       </header>
-      {lead && (
-        <div className="wtabs-row tools-tabs" role="tablist">
+      <div className="wtabs-row tools-tabs" role="tablist">
+        {tabs.map((x) => (
           <button
+            key={x.key}
             type="button"
             role="tab"
             className="wtab"
-            aria-selected={tab === "board"}
-            onClick={() => setTab("board")}
+            aria-selected={tab === x.key}
+            onClick={() => setTab(x.key)}
           >
-            Content board
+            {x.label}
           </button>
-          <button
-            type="button"
-            role="tab"
-            className="wtab"
-            aria-selected={tab === "ads"}
-            onClick={() => setTab("ads")}
-          >
-            Ad campaigns
-          </button>
-        </div>
+        ))}
+      </div>
+      {tab === "lab" && <CreativeLab canBoard={lead} />}
+      {tab === "formats" && (
+        <FormatBank
+          compact
+          intro="The formats we pitch and shoot. Each says which ranking signal it feeds, how it goes beat by beat, and what the shoot needs."
+        />
       )}
-      {tab === "board" || !lead ? <Board canEdit={lead} /> : <Ads />}
+      {tab === "board" && <Board canEdit={lead} />}
+      {tab === "ads" && lead && <Ads />}
     </section>
   );
 }
