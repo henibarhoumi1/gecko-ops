@@ -4622,3 +4622,126 @@ a {
 .live-weather-icon {
   opacity: 0.8;
 }
+
+/* ---------- Active projects ---------- */
+.stage-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.stage-filter button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: 1px solid var(--hair);
+  border-radius: 999px;
+  background: #fff;
+  font: 600 13px/1 var(--font);
+  cursor: pointer;
+}
+.stage-filter button[aria-pressed="true"] {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+}
+.ap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(280px, 24vw, 380px), 1fr));
+  gap: var(--gap);
+}
+.ap-card {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-height: 220px;
+  padding: 20px;
+  border: 0;
+  border-radius: var(--r-lg);
+  background: #fff;
+  box-shadow: var(--shadow);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ap-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+.ap-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.ap-client {
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0.6;
+}
+.ap-kind {
+  padding: 3px 9px;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--hair);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+.ap-name {
+  font-size: clamp(18px, 1.4vw, 22px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+.ap-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font-size: 13px;
+}
+.ap-bottom {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 6px 10px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--hair);
+  font-size: 13px;
+  font-weight: 600;
+}
+.ap-next.is-soon {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--yellow);
+}
+.ap-wait.is-late {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--pink);
+}
+.ap-open {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.ap-card:hover .ap-open {
+  opacity: 1;
+}
+.ap-card:hover .ap-kind {
+  opacity: 0;
+}
+.skeleton-card {
+  background: linear-gradient(90deg, var(--blue-soft) 0%, #fff 40%, var(--blue-soft) 80%) 0 0 / 200%
+    100%;
+  animation: shimmer 1.3s linear infinite;
+  box-shadow: none;
+}
