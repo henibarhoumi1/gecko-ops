@@ -5362,3 +5362,32 @@ a {
   background: var(--pink);
   opacity: 1;
 }
+
+/* Roster availability */
+.roster-busy {
+  margin: 2px 0 0;
+  padding: 2px 8px;
+  justify-self: start;
+  border-radius: 999px;
+  background: var(--pink);
+  font-weight: 600;
+}
+.busy-editor {
+  display: grid;
+  gap: 8px;
+  border: 0;
+  padding: 0;
+}
+.busy-editor legend {
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+.busy-add {
+  display: flex;
+  gap: 8px;
+}
+.busy-days {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}

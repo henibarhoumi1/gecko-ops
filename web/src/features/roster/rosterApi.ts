@@ -4,7 +4,7 @@ import { requireSupabase } from "@/lib/supabase";
 import type { RosterEntry, RosterInput, RosterKind } from "./model";
 
 const COLUMNS =
-  "id,workspace_id,kind,name,role,city,phone,instagram,link,photo_url,rate,rate_note,tags,notes,rating,email,gear,hidden,author_name,created_at,updated_at";
+  "id,workspace_id,kind,name,role,city,phone,instagram,link,photo_url,rate,rate_note,tags,notes,rating,email,gear,busy_on,hidden,author_name,created_at,updated_at";
 
 const key = (workspaceId: string, kind: RosterKind) => ["roster", workspaceId, kind];
 
