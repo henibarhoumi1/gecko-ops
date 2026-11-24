@@ -52,54 +52,65 @@ export function WritingRoom({
       </div>
     );
 
-  const shown = (stage: RoomStage) => only === null || only === stage || only === "mine";
   const filter = (list: Piece[]) =>
     only === "mine" ? list.filter((p) => p.waitingOn === reader) : list;
 
+  const ours = only === "mine";
+  const stagesWith = ROOM_STAGES.filter((st) => columns[st].length > 0);
   return (
-    <div className="room">
-      <div className="room-flow" role="toolbar" aria-label={t("Filter", "Filtrer")}>
+    <div className="room room-v2">
+      <div className="room-sum">
+        <p>
+          {stagesWith.length === 0
+            ? null
+            : stagesWith.map((st, i) => (
+                <span key={st}>
+                  {i > 0 && <span aria-hidden="true"> · </span>}
+                  <strong>{columns[st].length}</strong> {stageLabel(st, reader).toLowerCase()}
+                </span>
+              ))}
+        </p>
         {mine > 0 && (
           <button
             type="button"
-            className={`room-chip mine${only === "mine" ? " on" : ""}`}
-            aria-pressed={only === "mine"}
-            onClick={() => setOnly(only === "mine" ? null : "mine")}
+            className={`room-only${ours ? " on" : ""}`}
+            aria-pressed={ours}
+            onClick={() => setOnly(ours ? null : "mine")}
           >
+            <span className="room-only-dot" aria-hidden="true" />
             {reader === "client"
               ? t(`${mine} waiting for you`, `${mine} vous attendent`)
               : `${mine} waiting on us`}
+            <span className="room-only-k">
+              {ours ? t("Show all", "Tout voir") : t("Show only these", "Voir seulement")}
+            </span>
           </button>
         )}
-        {ROOM_STAGES.map((stage, i) => (
-          <button
-            key={stage}
-            type="button"
-            className={`room-chip${only === stage ? " on" : ""}`}
-            aria-pressed={only === stage}
-            onClick={() => setOnly(only === stage ? null : stage)}
-          >
-            {i > 0 && <span aria-hidden="true">→ </span>}
-            {stageLabel(stage, reader)} <strong>{columns[stage].length}</strong>
-          </button>
-        ))}
       </div>
 
-      <div className="room-columns">
-        {ROOM_STAGES.filter(shown).map((stage) => (
-          <section
-            key={stage}
-            className={`room-col room-${stage}${filter(columns[stage]).length ? "" : " empty"}`}
-          >
-            <h2 className="room-col-head">
-              {stageLabel(stage, reader)}{" "}
-              <span className="count">{filter(columns[stage]).length}</span>
-            </h2>
-            {filter(columns[stage]).map((p) => (
-              <PieceCard key={p.key} piece={p} reader={reader} base={base} />
-            ))}
-          </section>
-        ))}
+      <div className="room-board">
+        {ROOM_STAGES.map((stage) => {
+          const list = filter(columns[stage]);
+          return (
+            <section
+              key={stage}
+              className={`room-lane lane-${stage}${list.length ? "" : " is-empty"}`}
+            >
+              <h2 className="room-lane-head">
+                <span className="room-lane-dot" aria-hidden="true" />
+                {stageLabel(stage, reader)}
+                <span className="room-lane-n">{list.length}</span>
+              </h2>
+              <div className="room-lane-body">
+                {list.length === 0 ? (
+                  <p className="room-lane-none">{t("Nothing here", "Rien ici")}</p>
+                ) : (
+                  list.map((p) => <PieceCard key={p.key} piece={p} reader={reader} base={base} />)
+                )}
+              </div>
+            </section>
+          );
+        })}
       </div>
     </div>
   );
@@ -116,47 +127,57 @@ function PieceCard({
 }) {
   const { concept, scripts } = piece;
   const mine = piece.waitingOn === reader;
+  const meta = [
+    concept ? FORMAT_LABEL[concept.format] : "",
+    !isCinematic() && scripts[0] ? STYLE_LABEL[scripts[0].style] : "",
+  ].filter(Boolean);
+  const main = scripts[0];
+  const open = main
+    ? `${base}/scripts#script-${main.id}`
+    : concept
+      ? `${base}/concepts#idea-${concept.id}`
+      : base;
   return (
     <article className={`room-card${mine ? " mine" : ""}`}>
-      <div className="room-card-tags">
-        {concept && <span className="tag">{FORMAT_LABEL[concept.format]}</span>}
-        {!isCinematic() && scripts[0] && (
-          <span className="tag">{STYLE_LABEL[scripts[0].style]}</span>
-        )}
+      <p className="room-card-meta">
+        <span>{meta.join(" · ")}</span>
         {mine && (
-          <span className="tag room-up">
+          <span className="room-turn">
             {reader === "client" ? t("Your turn", "À vous") : "Our turn"}
           </span>
         )}
-      </div>
-      <h3 dir="auto">{piece.title}</h3>
+      </p>
+      <h3 dir="auto">
+        <Link to={open}>{piece.title}</Link>
+      </h3>
       {piece.hook && (
         <p className="room-hook" dir="auto">
-          “{piece.hook}”
+          {piece.hook}
         </p>
       )}
-      <ul className="room-links">
+      {main && (
+        <p className="room-card-status">
+          {scripts.length > 1 ? `${scripts.length} scripts · ` : ""}
+          {scriptStatus(main, reader)}
+        </p>
+      )}
+      <div className="room-card-foot">
         {concept && (
-          <li>
-            <Link to={`${base}/concepts#idea-${concept.id}`}>{t("The idea", "L'idée")}</Link>
-          </li>
+          <Link className="room-btn" to={`${base}/concepts#idea-${concept.id}`}>
+            {t("Idea", "Idée")}
+          </Link>
         )}
-        {scripts.map((s) => (
-          <li key={s.id}>
-            <Link to={`${base}/scripts#script-${s.id}`}>
-              {scripts.length > 1 || concept ? s.title : t("The script", "Le script")}
-            </Link>{" "}
-            <span className="small muted">· {scriptStatus(s, reader)}</span>
-          </li>
+        {scripts.map((s, i) => (
+          <Link key={s.id} className="room-btn" to={`${base}/scripts#script-${s.id}`}>
+            {scripts.length > 1 ? `${t("Script", "Script")} ${i + 1}` : t("Script", "Script")}
+          </Link>
         ))}
         {reader === "team" && piece.stage === "write" && concept && (
-          <li>
-            <Link className="room-act" to={`${base}/scripts?idea=${concept.id}`}>
-              Write the script →
-            </Link>
-          </li>
+          <Link className="room-btn primary" to={`${base}/scripts?idea=${concept.id}`}>
+            Write the script
+          </Link>
         )}
-      </ul>
+      </div>
     </article>
   );
 }
