@@ -8,6 +8,7 @@ describe("navFor", () => {
       "today",
       "ceo",
       "calendar",
+      "week",
       "finance",
       "pipeline",
       "clients",
@@ -91,6 +92,7 @@ describe("sidebar groups", () => {
   it("puts Today first, the work in the middle, the studio last", () => {
     const groups = navFor("founder").map((n) => n.group);
     expect(groups).toEqual([
+      "home",
       "home",
       "home",
       "home",

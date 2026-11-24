@@ -5,6 +5,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import type { ClientPortal } from "@/features/auth/account";
 import { AlertsPage } from "@/features/alerts/AlertsPage";
 import { CalendarPage } from "@/features/calendar/CalendarPage";
+import { WeekPage } from "@/features/today/WeekPage";
 import { CeoPage } from "@/features/ceo/CeoPage";
 import { FinancePage } from "@/features/finance/FinancePage";
 import { ActiveProjectsPage } from "@/features/projects/ActiveProjectsPage";
@@ -81,6 +82,7 @@ const SCREENS: Record<string, () => ReactElement> = {
   alerts: () => <AlertsPage />,
   ceo: () => <CeoPage />,
   calendar: () => <CalendarPage />,
+  week: () => <WeekPage />,
   finance: () => <FinancePage />,
   projects: () => <ActiveProjectsPage />,
   edits: () => <EditBoard />,
