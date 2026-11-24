@@ -4,6 +4,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { Link, Route, Routes, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/Button";
+import { Logo } from "@/components/Logo";
 import { Notice } from "@/components/Notice";
 import { toast } from "@/components/Toast";
 import { useClients } from "@/features/clients/clientsApi";
@@ -223,6 +224,7 @@ function PageEditor() {
   if (!page.data) return <Notice>This page is gone (maybe in the Trash).</Notice>;
   const p = page.data;
   const doc = p.kind === "doc";
+  const clientBrand = clients.data?.find((c) => c.id === p.clientId)?.brand ?? "";
   const text = toText(title || "Untitled", blocks);
 
   const at = (id: string) => blocks.findIndex((b) => b.id === id);
@@ -329,11 +331,25 @@ function PageEditor() {
         </div>
       </div>
 
-      <article className="paper">
+      <article className={`paper tpl-${p.template || "blank"}`}>
         {doc && (
-          <header className="paper-head">
-            <span className="paper-logo">gecko.]</span>
-            <span className="small">Video ads that sell · Tunis</span>
+          <header className="paper-cover">
+            <div className="paper-cover-top">
+              <Logo className="paper-logo" />
+              <span className="paper-kind">
+                {TEMPLATES.find((x) => x.key === p.template)?.name ?? "Document"}
+              </span>
+            </div>
+            <div className="paper-cover-meta">
+              {clientBrand && <span>For {clientBrand}</span>}
+              <span>
+                {new Date(p.updatedAt).toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </span>
+            </div>
           </header>
         )}
         <div className="paper-title">
@@ -391,8 +407,11 @@ function PageEditor() {
           + Add a block
         </button>
         {doc && (
-          <footer className="paper-foot small">
-            Gecko · gecko-creative.com · contact@gecko-creative.com
+          <footer className="paper-foot">
+            <Logo className="paper-foot-logo" />
+            <span>Video ads that sell · Tunis</span>
+            <span>gecko-creative.com</span>
+            <span>contact@gecko-creative.com</span>
           </footer>
         )}
       </article>

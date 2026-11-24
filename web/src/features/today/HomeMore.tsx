@@ -223,7 +223,7 @@ export function TeamLoad({ today }: { today: string }) {
 
 /** Counts a number up from 0 when it first shows ("36", "1,300 DT"); text without a number shows as is. */
 export function CountUp({ value }: { value: string }) {
-  const match = /^([^0-9]*)([0-9][0-9 ,.]*)(.*)$/.exec(value);
+  const match = /^([^0-9]*)([0-9](?:[0-9 ,.]*[0-9])?)(.*)$/.exec(value);
   const target = match ? Number((match[2] ?? "").replace(/[ ,]/g, "")) : NaN;
   const [shown, setShown] = useState(0);
   const started = useRef(false);

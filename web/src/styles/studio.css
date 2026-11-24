@@ -4395,3 +4395,200 @@ body.focus-mode .write-space {
   background: none;
   font-weight: 700;
 }
+
+/* v5 fixes from the live audit */
+.btn-primary:disabled {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--hair);
+  opacity: 0.55;
+}
+.project-card.picked,
+.project-card.current,
+.client-hub .project-card {
+  background: #fff !important;
+}
+.client-hub .project-card.picked {
+  box-shadow:
+    0 0 0 2px var(--ink),
+    var(--shadow) !important;
+}
+.hub-tiles {
+  grid-template-columns: repeat(auto-fit, minmax(clamp(150px, 12vw, 220px), 1fr));
+}
+
+/* ======================================================================
+   Gecko documents (v5): the website's identity on paper.
+   A colour cover per kind (yellow proposal and quote, blue brief, pink call sheet…), the real wordmark,
+   big Archivo titles, numbered sections like the site, fields as a clean two-column sheet, a branded footer.
+   Colours print (print-color-adjust: exact).
+   ====================================================================== */
+.page-editor.is-doc .paper {
+  --doc-accent: var(--yellow);
+  max-width: 860px;
+  padding: 0 0 40px;
+  overflow: hidden;
+  border-radius: 4px;
+  counter-reset: doc-section;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.paper.tpl-brief,
+.paper.tpl-content-plan,
+.paper.tpl-report {
+  --doc-accent: var(--blue);
+}
+.paper.tpl-callsheet,
+.paper.tpl-shot-list,
+.paper.tpl-ugc-brief {
+  --doc-accent: var(--pink);
+}
+.paper.tpl-message,
+.paper.tpl-meeting,
+.paper.tpl-onboarding {
+  --doc-accent: #fff;
+}
+.paper.tpl-treatment {
+  --doc-accent: var(--ink);
+}
+.paper-cover {
+  display: grid;
+  gap: 48px;
+  padding: 36px clamp(32px, 5vw, 64px) 28px;
+  background: var(--doc-accent);
+  color: var(--ink);
+}
+.paper.tpl-treatment .paper-cover {
+  color: #fff;
+}
+.paper.tpl-message .paper-cover,
+.paper.tpl-meeting .paper-cover,
+.paper.tpl-onboarding .paper-cover {
+  gap: 20px;
+  border-bottom: 2px solid var(--ink);
+}
+.paper-cover-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.paper-cover .paper-logo {
+  display: block;
+  width: 120px;
+}
+.paper-cover .paper-logo svg {
+  width: 100%;
+  height: auto;
+}
+.paper-kind {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.paper-cover-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.page-editor.is-doc .paper-title {
+  margin: 0;
+  padding: 28px clamp(32px, 5vw, 64px) 8px;
+}
+.page-editor.is-doc .paper-icon {
+  display: none;
+}
+.page-editor.is-doc .paper .paper-title-input {
+  font-size: clamp(38px, 4.6vw, 60px);
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+.page-editor.is-doc .blocks,
+.page-editor.is-doc .blocks-add {
+  padding-inline: clamp(32px, 5vw, 64px);
+}
+.page-editor.is-doc .blk-h1 {
+  counter-increment: doc-section;
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 2px solid var(--ink);
+}
+.page-editor.is-doc .blk-h1::before {
+  content: counter(doc-section, decimal-leading-zero);
+  min-width: 46px;
+  padding-top: 6px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+.page-editor.is-doc .blk-h1 textarea {
+  margin-top: 0;
+  font-size: clamp(24px, 2.4vw, 30px);
+}
+.page-editor.is-doc .blk-field {
+  padding: 4px 0;
+}
+.page-editor.is-doc .blk-field .blk-label {
+  flex-basis: 190px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.page-editor.is-doc .blk-callout {
+  background: transparent;
+  box-shadow:
+    inset 4px 0 0 var(--doc-accent),
+    inset 0 0 0 1px var(--hair);
+}
+.paper.tpl-message .blk-callout,
+.paper.tpl-meeting .blk-callout,
+.paper.tpl-onboarding .blk-callout {
+  box-shadow:
+    inset 4px 0 0 var(--ink),
+    inset 0 0 0 1px var(--hair);
+}
+.page-editor.is-doc .blk-quote {
+  border-left-color: var(--doc-accent);
+}
+.page-editor.is-doc .blk-quote textarea {
+  font-size: 22px;
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: -0.02em;
+}
+.paper-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  margin: 40px clamp(32px, 5vw, 64px) 0;
+  padding-top: 14px;
+  border-top: 2px solid var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 1;
+}
+.paper-foot-logo {
+  display: block;
+  width: 64px;
+  margin-right: auto;
+}
+.paper-foot-logo svg {
+  width: 100%;
+  height: auto;
+}
+@media print {
+  .page-editor.is-doc .paper {
+    max-width: none;
+    border-radius: 0;
+  }
+  .page-editor.is-doc .blk-h1 {
+    break-after: avoid;
+  }
+  .page-editor.is-doc .blk {
+    break-inside: avoid;
+  }
+}
