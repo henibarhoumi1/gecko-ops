@@ -38,6 +38,9 @@ export const NAV: readonly NavItem[] = [
   { path: "trash", label: "Trash", roles: ["founder", "sales"], group: "studio" },
 ];
 
-export function navFor(role: Role): NavItem[] {
-  return NAV.filter((item) => item.roles.includes(role));
+/** `finance`: the founder let this person look at Finance (read-only). */
+export function navFor(role: Role, opts: { finance?: boolean } = {}): NavItem[] {
+  return NAV.filter(
+    (item) => item.roles.includes(role) || (item.path === "finance" && opts.finance === true),
+  );
 }

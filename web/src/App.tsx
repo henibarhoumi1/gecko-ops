@@ -181,7 +181,10 @@ function Home() {
   }
   if (account.kind === "client") return <ClientHome portals={account.portals} email={email} />;
   setErrorContext({ workspaceId: account.workspace.id, clientId: null });
-  const items = navFor(account.workspace.role).filter((item) => SCREENS[item.path]);
+  // Finance is routed for everyone; the page itself checks who may look.
+  const items = navFor(account.workspace.role, { finance: true }).filter(
+    (item) => SCREENS[item.path],
+  );
   const home = `/${items[0]?.path ?? "team"}`;
   return (
     <WorkspaceProvider workspace={account.workspace}>
