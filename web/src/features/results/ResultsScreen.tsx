@@ -32,6 +32,7 @@ import {
 } from "./model";
 import { RESULTS_BUCKET, useResultActions, useResults, type ResultsTarget } from "./resultsApi";
 import { HooksThatWorked, ImportNumbers, PostSource } from "./ResultsExtras";
+import { ResultsBoard } from "./ResultsBoard";
 
 const day = (iso: string | null) => shortDate(iso).replace(/\.$/, "");
 
@@ -127,6 +128,7 @@ function ResultsList({
         </p>
       )}
 
+      <ResultsBoard page={page} template={template} base={base} />
       <MonthlyReads target={target} template={template} page={page} />
       <HooksThatWorked page={page} template={template} base={base} />
 
