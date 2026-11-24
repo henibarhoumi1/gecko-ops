@@ -1,4 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState, type CSSProperties } from "react";
+import { Icon } from "@/components/Icon";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import { useAuth } from "@/features/auth/AuthProvider";
@@ -155,7 +156,9 @@ export function OnboardingForm({ target, brand, mode, canFinish = false }: Props
           aria-current={at === SEND ? "step" : undefined}
           onClick={() => go(SEND)}
         >
-          <span className="num">✓</span>
+          <span className="num">
+            <Icon name="check" size={14} />
+          </span>
           {mode === "team" ? "Summary" : t("Send", "Envoyer")}
         </button>
       </nav>
@@ -254,7 +257,9 @@ function SendPart({
   return (
     <section className="ob-part">
       <header className="ob-head">
-        <span className="num">✓</span>
+        <span className="num">
+          <Icon name="check" size={14} />
+        </span>
         <div>
           <h2>{mode === "team" ? `${brand}: summary` : t("Ready to send?", "Prêt à envoyer ?")}</h2>
           <p className="muted">

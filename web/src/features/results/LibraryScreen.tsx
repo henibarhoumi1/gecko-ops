@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { Icon } from "@/components/Icon";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Notice } from "@/components/Notice";
@@ -228,7 +229,7 @@ function ItemCard({
       <button type="button" className="lib-card-body" aria-pressed={picked} onClick={onPick}>
         {body}
         <span className="lib-pick" aria-hidden="true">
-          {picked ? "✓" : "+"}
+          {picked ? <Icon name="check" size={14} /> : "+"}
         </span>
       </button>
     </li>

@@ -3,12 +3,12 @@ import { LangSwitch } from "@/components/LangSwitch";
 import { Logo } from "@/components/Logo";
 
 export function AuthLayout({
-  eyebrow,
   title,
   intro,
   children,
 }: {
-  eyebrow: string;
+  /** Kept for the callers; no longer shown (no labels above headings). */
+  eyebrow?: string;
   title: string;
   intro?: string;
   children: ReactNode;
@@ -20,7 +20,6 @@ export function AuthLayout({
           <Logo />
           <LangSwitch />
         </div>
-        <p className="eyebrow">{eyebrow}</p>
         <h1>{title}</h1>
         {intro && <p className="muted">{intro}</p>}
         {children}

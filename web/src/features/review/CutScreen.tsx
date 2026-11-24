@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { Icon } from "@/components/Icon";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import { shortDate } from "@/features/concepts/model";
@@ -125,7 +126,7 @@ export function CutScreen({
                   onClick={() => setShown(v.version)}
                 >
                   V{v.version}
-                  {v.version === cut.approvedVersion && " ✓"}
+                  {v.version === cut.approvedVersion && <Icon name="check" size={12} />}
                 </button>
               ))}
             </div>

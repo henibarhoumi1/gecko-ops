@@ -46,6 +46,7 @@ import { setTemplate, tw, words } from "@/lib/wording";
 import { asRole, roleName, RoleContext, seesMoney } from "./role";
 import { TeamTab } from "./TeamTab";
 import { ProductionTab } from "./ProductionTab";
+import { NavIcon } from "@/components/NavIcon";
 import { kindName } from "@/features/production/model";
 import { useMyProduction } from "@/features/production/productionApi";
 
@@ -284,7 +285,8 @@ export function PortalPage({
             {groups.map((g) =>
               g.items.length === 1 ? (
                 <NavLink key={g.id} to={g.items[0]!.to} end={g.items[0]!.end} className="rail-link">
-                  {g.label}
+                  <NavIcon path={g.id} />
+                  <span className="rail-label">{g.label}</span>
                   <Badge n={g.items[0]!.badge} />
                 </NavLink>
               ) : (
@@ -294,7 +296,8 @@ export function PortalPage({
                     to={g.to}
                     className={() => `rail-link rail-stage${g === group ? " active-stage" : ""}`}
                   >
-                    {g.label}
+                    <NavIcon path={g.id} />
+                    <span className="rail-label">{g.label}</span>
                     {g !== group && (
                       <Badge
                         n={g.items.reduce((sum, item) => sum + (item.badge ?? 0), 0) || undefined}
@@ -304,7 +307,7 @@ export function PortalPage({
                   {g === group &&
                     g.items.map((item) => (
                       <NavLink key={item.to} to={item.to} className="rail-link rail-sub">
-                        {item.label}
+                        <span className="rail-label">{item.label}</span>
                         <Badge n={item.badge} />
                       </NavLink>
                     ))}

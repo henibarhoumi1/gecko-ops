@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Icon } from "@/components/Icon";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Notice } from "@/components/Notice";
@@ -88,7 +89,7 @@ export function TalentPicker({
                 onChange(value.includes(o.id) ? value.filter((x) => x !== o.id) : [...value, o.id])
               }
             >
-              {stands === "ready" ? "✓ " : ""}
+              {stands === "ready" ? <Icon name="check" size={12} /> : null}
               {o.name}
               {stands !== "ready" ? ` · ${STANDS[stands]}` : ""}
             </button>
@@ -163,7 +164,7 @@ export function ShootPlanPicker({
                 title={STANDS[stands]}
                 onClick={() => onChange({ ...plan, talent: toggle(plan.talent, o.id) })}
               >
-                {stands === "ready" ? "✓ " : ""}
+                {stands === "ready" ? <Icon name="check" size={12} /> : null}
                 {o.name}
                 {o.role ? ` · ${talentRole(o.role)}` : ""}
                 {stands !== "ready" ? ` · ${STANDS[stands]}` : ""}

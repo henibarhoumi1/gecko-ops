@@ -898,3 +898,168 @@
     border-radius: var(--r);
   }
 }
+
+/* ---------- The client's sidebar = the team's sidebar ----------
+   Same black rail, same width, same line icons, same white pill for the open page, same "me" block.
+   The brand's logo sits on a white tile so any logo reads on black. */
+
+.rail-label {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+@media (min-width: 900px) {
+  .portal-v2 {
+    grid-template-columns: 244px minmax(0, 1fr);
+  }
+  .portal-v2 .portal-rail {
+    gap: 2px;
+    padding: 18px 12px 16px;
+    border-right: 0;
+    background: var(--ink) !important;
+    color: var(--white) !important;
+  }
+  .portal-v2 .portal-rail .logo {
+    width: 72px;
+    margin: 4px 12px 16px;
+    color: var(--white) !important;
+  }
+  .portal-v2 .portal-rail .side-toggle {
+    color: var(--white);
+  }
+  .portal-v2 .portal-rail .rail-brand {
+    margin: 0 0 14px;
+    padding: 12px 14px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--white);
+    color: var(--ink) !important;
+    font-size: 17px;
+  }
+  .portal-v2 .portal-rail .rail-brand img {
+    max-height: 36px;
+  }
+  .portal-v2 .portal-rail nav {
+    gap: 2px;
+  }
+  .portal-v2 .portal-rail .rail-group {
+    margin-top: 0;
+  }
+  .portal-v2 .portal-rail .rail-link {
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    color: var(--white) !important;
+    font-size: 14.5px;
+    font-weight: 600;
+    opacity: 1;
+  }
+  .portal-v2 .portal-rail .rail-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  .portal-v2 .portal-rail .rail-link.active,
+  .portal-v2 .portal-rail .rail-link.active-stage {
+    background: var(--white) !important;
+    color: var(--ink) !important;
+  }
+  .portal-v2 .portal-rail .rail-group.is-open .rail-link.active-stage:not(.active) {
+    background: rgba(255, 255, 255, 0.14) !important;
+    color: var(--white) !important;
+  }
+  .portal-v2 .portal-rail .rail-sub {
+    padding: 6px 12px 6px 40px;
+    font-size: 13.5px;
+    font-weight: 500;
+  }
+  .portal-v2 .portal-rail .rail-sub.active {
+    font-weight: 600;
+  }
+  .portal-v2 .portal-rail .badge {
+    background: var(--pink);
+    color: var(--ink);
+  }
+  .portal-v2 .portal-rail .rail-me {
+    margin-top: auto;
+    padding: 12px;
+    border: 0;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--white);
+    font-size: 13px;
+  }
+  .portal-v2 .portal-rail .rail-me .muted,
+  .portal-v2 .portal-rail .rail-me .btn-link,
+  .portal-v2 .portal-rail .rail-me select {
+    color: var(--white) !important;
+  }
+  .portal-v2 .portal-rail .rail-me select {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.24);
+  }
+  .portal-v2 .portal-rail .rail-me select option {
+    color: var(--ink);
+  }
+}
+
+/* ---------- Clean-up: no one-sided bars ----------
+   Older notes and states were marked with a thick left bar. The locked look marks them with a quiet fill
+   (pink = the client's, blue-soft = information, the soft red tint = a warning) and a hairline. */
+
+.request-open,
+.history-item.by-client,
+.concept-changes,
+.alerts-list li.action-changes {
+  border-left: 0 !important;
+  border-radius: var(--r-sm);
+  background: var(--picked-soft);
+}
+.concept-approved,
+.alerts-list li.action-approve,
+.inv-note,
+.today-items {
+  border-left: 0 !important;
+  border-radius: var(--r-sm);
+}
+.concept-approved,
+.alerts-list li.action-approve {
+  box-shadow: 0 0 0 1px var(--hair);
+}
+.inv-note,
+.lead-unsafe {
+  border-left: 0 !important;
+  border-radius: var(--r-sm);
+  background: var(--quiet);
+}
+.over-note,
+.never-hits {
+  border-left: 0 !important;
+  border-radius: var(--r-sm);
+  background: #fdeceb;
+}
+.script-line.changed {
+  border-left: 0 !important;
+  border-radius: 8px;
+  background: var(--picked-soft);
+}
+.line-page {
+  border-left: 0 !important;
+  border-radius: var(--r-sm);
+  padding-left: 12px;
+}
+.line-page:focus-within {
+  background: var(--quiet);
+}
+.today-items {
+  padding-left: 0;
+}
+
+/* ---------- Labels, not eyebrows ----------
+   No tracked capitals above a heading. Where a small label still carries information (a stat's name, a date),
+   it's plain sentence case. */
+.eyebrow {
+  font-size: var(--t-s);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
