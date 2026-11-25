@@ -21,51 +21,62 @@ const noteLabel = (kind: ConceptNote["kind"]) =>
 export function ConceptCard({
   concept,
   reader,
+  aside,
   children,
 }: {
   concept: Concept;
   reader: "client" | "team";
+  /** Beside the idea: its shoot plan (who, which sets, which props). */
+  aside?: ReactNode;
   children?: ReactNode;
 }) {
   const refs = refLines(concept.refs);
   return (
-    <article id={`idea-${concept.id}`} className={`concept concept-${concept.status}`}>
-      <header className="concept-head">
-        <span className="tag">{FORMAT_LABEL[concept.format]}</span>
-        <span className={`status status-${concept.status}`}>
-          {STATUS_LABEL[reader][concept.status]}
-        </span>
-        {concept.version > 1 && concept.status !== "idea" && (
-          <span className="small muted">
-            {t("Version", "Version")} {concept.version}
+    <article
+      id={`idea-${concept.id}`}
+      className={`concept concept-${concept.status}${aside ? " has-aside" : ""}`}
+    >
+      <div className="sheet-main">
+        <header className="concept-head">
+          <span className="tag">{FORMAT_LABEL[concept.format]}</span>
+          <span className={`status status-${concept.status}`}>
+            {STATUS_LABEL[reader][concept.status]}
           </span>
-        )}
-      </header>
-      <h3>{concept.title}</h3>
-      {concept.hook && (
-        <p className="concept-hook" dir="auto">
-          <span>{t("Hook", "Accroche")}</span> &ldquo;{concept.hook}&rdquo;
-        </p>
-      )}
-      {concept.body && <p className="concept-body">{concept.body}</p>}
-      {refs.length > 0 && (
-        <ul className="refs">
-          {refs.map((ref, i) => (
-            <li key={i}>{ref.href ? <LinkPlayer url={ref.href} label={ref.text} /> : ref.text}</li>
-          ))}
-        </ul>
-      )}
-      <p className="small muted">
-        {concept.fromClient ? t("Idea from ", "Idée de ") : t("By ", "Par ")}
-        {concept.authorName || (concept.fromClient ? t("the client", "le client") : "Gecko")}
-        {concept.approvedAt &&
-          t(
-            ` · Approved by ${concept.approvedBy ?? "the client"} on ${shortDate(concept.approvedAt)}`,
-            ` · Validée par ${concept.approvedBy ?? "le client"} le ${shortDate(concept.approvedAt)}`,
+          {concept.version > 1 && concept.status !== "idea" && (
+            <span className="small muted">
+              {t("Version", "Version")} {concept.version}
+            </span>
           )}
-      </p>
-      <NoteList notes={concept.notes} />
-      {children}
+        </header>
+        <h3>{concept.title}</h3>
+        {concept.hook && (
+          <p className="concept-hook" dir="auto">
+            <span>{t("Hook", "Accroche")}</span> &ldquo;{concept.hook}&rdquo;
+          </p>
+        )}
+        {concept.body && <p className="concept-body">{concept.body}</p>}
+        {refs.length > 0 && (
+          <ul className="refs">
+            {refs.map((ref, i) => (
+              <li key={i}>
+                {ref.href ? <LinkPlayer url={ref.href} label={ref.text} /> : ref.text}
+              </li>
+            ))}
+          </ul>
+        )}
+        <p className="small muted">
+          {concept.fromClient ? t("Idea from ", "Idée de ") : t("By ", "Par ")}
+          {concept.authorName || (concept.fromClient ? t("the client", "le client") : "Gecko")}
+          {concept.approvedAt &&
+            t(
+              ` · Approved by ${concept.approvedBy ?? "the client"} on ${shortDate(concept.approvedAt)}`,
+              ` · Validée par ${concept.approvedBy ?? "le client"} le ${shortDate(concept.approvedAt)}`,
+            )}
+        </p>
+        <NoteList notes={concept.notes} />
+        {children}
+      </div>
+      {aside && <div className="sheet-aside">{aside}</div>}
     </article>
   );
 }

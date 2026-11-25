@@ -53,6 +53,7 @@ export function TeamPicks({
                   ...(shoot ?? {}),
                   talent: picks.talent,
                   set: where,
+                  sets: where ? [where] : [],
                   props: picks.props,
                   ...(picks.note ? { extraProps: picks.note.slice(0, 500) } : {}),
                 },

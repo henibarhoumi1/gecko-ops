@@ -69,6 +69,7 @@ export function ScriptView({
   picked,
   onPick,
   onComment,
+  aside,
   children,
 }: {
   script: Script;
@@ -77,6 +78,8 @@ export function ScriptView({
   picked: number | null;
   onPick?: (hook: number) => void;
   onComment?: CommentFn;
+  /** Beside the script: the shoot plan (who, which sets, which props). */
+  aside?: ReactNode;
   children?: ReactNode;
 }) {
   const changed = changedParts(script, script.previous);
@@ -90,195 +93,217 @@ export function ScriptView({
       <ModeContext.Provider value={mode}>
         <article
           id={`script-${script.id}`}
-          className={`concept script concept-${script.status} mode-${mode}`}
+          className={`concept script concept-${script.status} mode-${mode}${aside ? " has-aside" : ""}`}
         >
-          <header className="concept-head">
-            {!isCinematic() && !(script.writtenBy === "client" && script.style === "other") && (
-              <span className="tag">{STYLE_LABEL[script.style]}</span>
-            )}
-            <span className={`status status-${script.status}`}>{scriptStatus(script, reader)}</span>
-            {script.version > 1 && (
-              <span className="small muted">
-                {t("Version", "Version")} {script.version}
+          <div className="sheet-main">
+            <header className="concept-head">
+              {!isCinematic() && !(script.writtenBy === "client" && script.style === "other") && (
+                <span className="tag">{STYLE_LABEL[script.style]}</span>
+              )}
+              <span className={`status status-${script.status}`}>
+                {scriptStatus(script, reader)}
               </span>
-            )}
-          </header>
-          <div className="script-title-row">
-            <h3 dir="auto">{script.title}</h3>
-            {!isCinematic() && (
-              <div
-                className="mode-switch"
-                role="group"
-                aria-label={t("How to read it", "Mode de lecture")}
-              >
-                {(["write", "breakdown"] as const).map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    aria-pressed={mode === m}
-                    onClick={() => setMode(m)}
-                  >
-                    {m === "write" ? t("Read", "Lecture") : t("Breakdown", "Découpage")}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          {!isCinematic() && (
-            <p className={`small script-runs${runs > script.seconds + 3 ? " over" : ""}`}>
-              {t(
-                `Runs about ${runs} s spoken · made for ${script.seconds} s`,
-                `Environ ${runs} s à l'oral · prévu pour ${script.seconds} s`,
+              {script.version > 1 && (
+                <span className="small muted">
+                  {t("Version", "Version")} {script.version}
+                </span>
               )}
-              {runs > script.seconds + 3 && reader === "team" && " · too long, trim it"}
-            </p>
-          )}
-
-          {changed.size > 0 && (
-            <p className="small script-changed-note">
-              {reader === "client"
-                ? t(
-                    "Marked lines changed since the version you read before.",
-                    "Les lignes marquées ont changé depuis la version que vous avez lue.",
-                  )
-                : "Marked lines changed since the version the client read before."}
-            </p>
-          )}
-
-          {script.treatment && TREATMENT_KEYS.some((k) => script.treatment?.[k]) && (
-            <dl className="treatment">
-              {TREATMENT_KEYS.filter((k) => script.treatment?.[k]).map((k) => (
-                <div key={k} className={changed.has(k) ? "changed" : ""}>
-                  <dt>{treatmentLabel(k)}</dt>
-                  <dd dir="auto">{script.treatment?.[k]}</dd>
-                </div>
-              ))}
-            </dl>
-          )}
-
-          {script.goal && (
-            <Line
-              id="goal"
-              changed={changed.has("goal")}
-              notes={byLine("goal")}
-              onComment={onComment}
-            >
-              <p className="script-goal" dir="auto">
-                <strong>{words.goal()}</strong> {script.goal}
-              </p>
-            </Line>
-          )}
-
-          {script.hooks.length > 0 && (
-            <section className="script-part">
-              <h4>
-                {script.hooks.length > 1
-                  ? onPick
-                    ? tw(
-                        ["Pick the hook you like best", "Choisissez l'accroche que vous préférez"],
-                        [
-                          "Pick the opening you like best",
-                          "Choisissez l'ouverture que vous préférez",
-                        ],
-                      )
-                    : tw(
-                        ["Hook options", "Accroches possibles"],
-                        ["Opening options", "Ouvertures possibles"],
-                      )
-                  : tw(["The hook", "L'accroche"], ["The opening shot", "Le plan d'ouverture"])}
-              </h4>
-              <div className="hooks" role={onPick ? "radiogroup" : undefined}>
-                {script.hooks.map((hook, i) => {
-                  const id = `hook-${i}`;
-                  const isPicked = picked === i;
-                  return (
-                    <Line
-                      key={id}
-                      id={id}
-                      changed={changed.has(id)}
-                      notes={byLine(id)}
-                      onComment={onComment}
-                      className={`hook${isPicked ? " picked" : ""}${
-                        picked !== null && !isPicked && !onPick ? " not-picked" : ""
-                      }`}
+            </header>
+            <div className="script-title-row">
+              <h3 dir="auto">{script.title}</h3>
+              {!isCinematic() && (
+                <div
+                  className="mode-switch"
+                  role="group"
+                  aria-label={t("How to read it", "Mode de lecture")}
+                >
+                  {(["write", "breakdown"] as const).map((m) => (
+                    <button
+                      key={m}
+                      type="button"
+                      aria-pressed={mode === m}
+                      onClick={() => setMode(m)}
                     >
-                      {onPick && script.hooks.length > 1 ? (
-                        <label className="hook-pick">
-                          <input
-                            type="radio"
-                            name={`hook-${script.id}`}
-                            checked={isPicked}
-                            onChange={() => onPick(i)}
-                          />
-                          <span className="hook-name">{hookName(i)}</span>
-                        </label>
-                      ) : (
-                        <span className="hook-name">
-                          {script.hooks.length > 1 ? hookName(i) : words.hook()}
-                          {isPicked && script.status === "approved" && t(" · picked", " · choisie")}
-                        </span>
-                      )}
-                      <LineText line={hook} />
-                    </Line>
-                  );
-                })}
-              </div>
-            </section>
-          )}
-
-          {/* Lead, then the body parts, in the order they play. */}
-          {(["lead", "body"] as const).map((part) => {
-            const rows = script.beats
-              .map((beat, i) => ({ beat, i }))
-              .filter(({ beat }) =>
-                part === "lead" ? beat.part === "lead" : beat.part !== "lead",
-              );
-            if (rows.length === 0) return null;
-            return (
-              <section key={part} className="script-part">
-                <h4>{part === "lead" ? t("Lead", "Mise en place") : t("Body", "Corps")}</h4>
-                <ol className="beats">
-                  {rows.map(({ beat, i }) => (
-                    <li key={i}>
-                      <Line
-                        id={`beat-${i}`}
-                        changed={changed.has(`beat-${i}`)}
-                        notes={byLine(`beat-${i}`)}
-                        onComment={onComment}
-                        className="beat"
-                      >
-                        <span className="beat-n" aria-hidden="true">
-                          {part === "lead" ? "L" : partLabel(script.beats, i).replace(/\D+/g, "")}
-                        </span>
-                        <LineText line={beat} />
-                      </Line>
-                    </li>
+                      {m === "write" ? t("Read", "Lecture") : t("Breakdown", "Découpage")}
+                    </button>
                   ))}
-                </ol>
-              </section>
-            );
-          })}
-
-          {script.cta && (
-            <Line id="cta" changed={changed.has("cta")} notes={byLine("cta")} onComment={onComment}>
-              <div className="script-cta" dir="auto">
-                <strong>{tw(["Ends on", "Finit sur"], ["Final frame", "Dernier plan"])}</strong>
-                <LineText line={ctaLine(script.cta)} />
-              </div>
-            </Line>
-          )}
-
-          <p className="small muted">
-            {t("By", "Par")} {script.authorName || "Gecko"}
-            {script.writtenBy === "client" && reader === "team" && " (client)"}
-            {script.approvedAt &&
-              t(
-                ` · Approved by ${script.approvedBy ?? "the client"} on ${shortDate(script.approvedAt)}`,
-                ` · Validé par ${script.approvedBy ?? "le client"} le ${shortDate(script.approvedAt)}`,
+                </div>
               )}
-          </p>
-          <Notes notes={general} />
-          {children}
+            </div>
+            {!isCinematic() && (
+              <p className={`small script-runs${runs > script.seconds + 3 ? " over" : ""}`}>
+                <span className="runs-bar" aria-hidden="true">
+                  <span
+                    style={{
+                      width: `${Math.min(100, Math.round((runs / Math.max(1, script.seconds)) * 100))}%`,
+                    }}
+                  />
+                </span>
+                {t(
+                  `Runs about ${runs} s spoken · made for ${script.seconds} s`,
+                  `Environ ${runs} s à l'oral · prévu pour ${script.seconds} s`,
+                )}
+                {runs > script.seconds + 3 && reader === "team" && " · too long, trim it"}
+              </p>
+            )}
+
+            {changed.size > 0 && (
+              <p className="small script-changed-note">
+                {reader === "client"
+                  ? t(
+                      "Marked lines changed since the version you read before.",
+                      "Les lignes marquées ont changé depuis la version que vous avez lue.",
+                    )
+                  : "Marked lines changed since the version the client read before."}
+              </p>
+            )}
+
+            {script.treatment && TREATMENT_KEYS.some((k) => script.treatment?.[k]) && (
+              <dl className="treatment">
+                {TREATMENT_KEYS.filter((k) => script.treatment?.[k]).map((k) => (
+                  <div key={k} className={changed.has(k) ? "changed" : ""}>
+                    <dt>{treatmentLabel(k)}</dt>
+                    <dd dir="auto">{script.treatment?.[k]}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+
+            {script.goal && (
+              <Line
+                id="goal"
+                changed={changed.has("goal")}
+                notes={byLine("goal")}
+                onComment={onComment}
+              >
+                <p className="script-goal" dir="auto">
+                  <strong>{words.goal()}</strong> {script.goal}
+                </p>
+              </Line>
+            )}
+
+            {script.hooks.length > 0 && (
+              <section className="script-part">
+                <h4>
+                  {script.hooks.length > 1
+                    ? onPick
+                      ? tw(
+                          [
+                            "Pick the hook you like best",
+                            "Choisissez l'accroche que vous préférez",
+                          ],
+                          [
+                            "Pick the opening you like best",
+                            "Choisissez l'ouverture que vous préférez",
+                          ],
+                        )
+                      : tw(
+                          ["Hook options", "Accroches possibles"],
+                          ["Opening options", "Ouvertures possibles"],
+                        )
+                    : tw(["The hook", "L'accroche"], ["The opening shot", "Le plan d'ouverture"])}
+                </h4>
+                <div className="hooks" role={onPick ? "radiogroup" : undefined}>
+                  {script.hooks.map((hook, i) => {
+                    const id = `hook-${i}`;
+                    const isPicked = picked === i;
+                    return (
+                      <Line
+                        key={id}
+                        id={id}
+                        changed={changed.has(id)}
+                        notes={byLine(id)}
+                        onComment={onComment}
+                        className={`hook${isPicked ? " picked" : ""}${
+                          picked !== null && !isPicked && !onPick ? " not-picked" : ""
+                        }`}
+                      >
+                        {onPick && script.hooks.length > 1 ? (
+                          <label className="hook-pick">
+                            <input
+                              type="radio"
+                              name={`hook-${script.id}`}
+                              checked={isPicked}
+                              onChange={() => onPick(i)}
+                            />
+                            <span className="hook-name">{hookName(i)}</span>
+                          </label>
+                        ) : (
+                          <span className="hook-name">
+                            {script.hooks.length > 1 ? hookName(i) : words.hook()}
+                            {isPicked &&
+                              script.status === "approved" &&
+                              t(" · picked", " · choisie")}
+                          </span>
+                        )}
+                        <LineText line={hook} />
+                      </Line>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
+
+            {/* Lead, then the body parts, in the order they play. */}
+            {(["lead", "body"] as const).map((part) => {
+              const rows = script.beats
+                .map((beat, i) => ({ beat, i }))
+                .filter(({ beat }) =>
+                  part === "lead" ? beat.part === "lead" : beat.part !== "lead",
+                );
+              if (rows.length === 0) return null;
+              return (
+                <section key={part} className="script-part">
+                  <h4>{part === "lead" ? t("Lead", "Mise en place") : t("Body", "Corps")}</h4>
+                  <ol className="beats">
+                    {rows.map(({ beat, i }) => (
+                      <li key={i}>
+                        <Line
+                          id={`beat-${i}`}
+                          changed={changed.has(`beat-${i}`)}
+                          notes={byLine(`beat-${i}`)}
+                          onComment={onComment}
+                          className="beat"
+                        >
+                          <span className="beat-n" aria-hidden="true">
+                            {part === "lead" ? "L" : partLabel(script.beats, i).replace(/\D+/g, "")}
+                          </span>
+                          <LineText line={beat} />
+                        </Line>
+                      </li>
+                    ))}
+                  </ol>
+                </section>
+              );
+            })}
+
+            {script.cta && (
+              <Line
+                id="cta"
+                changed={changed.has("cta")}
+                notes={byLine("cta")}
+                onComment={onComment}
+              >
+                <div className="script-cta" dir="auto">
+                  <strong>{tw(["Ends on", "Finit sur"], ["Final frame", "Dernier plan"])}</strong>
+                  <LineText line={ctaLine(script.cta)} />
+                </div>
+              </Line>
+            )}
+
+            <p className="small muted">
+              {t("By", "Par")} {script.authorName || "Gecko"}
+              {script.writtenBy === "client" && reader === "team" && " (client)"}
+              {script.approvedAt &&
+                t(
+                  ` · Approved by ${script.approvedBy ?? "the client"} on ${shortDate(script.approvedAt)}`,
+                  ` · Validé par ${script.approvedBy ?? "le client"} le ${shortDate(script.approvedAt)}`,
+                )}
+            </p>
+            <Notes notes={general} />
+            {children}
+          </div>
+          {aside && <div className="sheet-aside">{aside}</div>}
         </article>
       </ModeContext.Provider>
     </BeatsContext.Provider>

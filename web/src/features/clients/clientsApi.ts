@@ -10,6 +10,7 @@ import {
 } from "@/features/concepts/model";
 import type { Milestone } from "@/features/portal/portalApi";
 import type { ClientRole } from "@/features/portal/role";
+import type { ShootPlan } from "@/features/scripts/model";
 import { inProject, useProjectChoice } from "@/features/projects/projectChoice";
 import { useWorkspace } from "@/features/workspace/WorkspaceContext";
 import { inviteLink } from "@/lib/hosts";
@@ -279,7 +280,7 @@ export function useSaveLogo(clientId: string) {
 // ---------- concepts ----------
 
 const CONCEPT_COLUMNS =
-  "id,title,format,hook,body,refs,position,from_client,status,version,approved_version,approved_at,approved_by,author_name,created_at,updated_at,project_id,talent";
+  "id,title,format,hook,body,refs,position,from_client,status,version,approved_version,approved_at,approved_by,author_name,created_at,updated_at,project_id,talent,shoot";
 
 /** Every concept of one client (or of all clients, for the list), with its conversation. */
 export function useConcepts(clientId: string | null) {
@@ -324,6 +325,8 @@ export interface ConceptInput {
   hook: string;
   /** Talent the idea is written for. Left out, it stays as it is. */
   talent?: string[];
+  /** Who, where, with what. Left out, it stays as it is; its talent wins over talent above. */
+  shoot?: ShootPlan;
   status?: ConceptStatus;
   position?: number;
 }
@@ -342,6 +345,9 @@ export function useSaveConcept(clientId: string) {
         refs: input.refs,
         hook: input.hook,
         ...(input.talent ? { talent: input.talent.slice(0, 12) } : {}),
+        ...(input.shoot
+          ? { shoot: input.shoot, talent: (input.shoot.talent ?? []).slice(0, 12) }
+          : {}),
         ...(input.status ? { status: input.status } : {}),
         ...(input.position != null ? { position: input.position } : {}),
       };
@@ -356,6 +362,23 @@ export function useSaveConcept(clientId: string) {
       if (error) throw error;
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: ["concepts", workspaceId] }),
+  });
+}
+
+/** Gecko changes an idea's shoot plan without making a new version. */
+export function useSetConceptShoot(clientId: string) {
+  const { id: workspaceId } = useWorkspace();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { id: string; shoot: ShootPlan }) => {
+      const { error } = await requireSupabase()
+        .from("concepts")
+        .update({ shoot: input.shoot, talent: (input.shoot.talent ?? []).slice(0, 12) })
+        .eq("id", input.id);
+      if (error) throw error;
+    },
+    onSettled: () =>
+      queryClient.invalidateQueries({ queryKey: ["concepts", workspaceId, clientId] }),
   });
 }
 

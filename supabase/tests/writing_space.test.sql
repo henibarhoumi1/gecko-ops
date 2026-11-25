@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(13);
+select extensions.plan(15);
 
 insert into auth.users (id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at) values
   ('00000000-0000-4000-8000-0000000000f1', 'authenticated', 'authenticated', 'founder@ws.test', '', now(), '{}', '{}', now(), now()),
@@ -30,7 +30,12 @@ insert into public.scripts (id, workspace_id, client_id, title, style, hooks, st
    '[{"text":"Hook A"}]', 'approved', 2, 2, now(), 'Youcef', 0, 1);
 insert into public.concepts (id, workspace_id, client_id, title, status, from_client, created_by, position) values
   ('50000000-0000-4000-8000-0000000000f1', '10000000-0000-4000-8000-0000000000f1', 'c-w', 'Their idea', 'idea', true,
-   '00000000-0000-4000-8000-0000000000f2', 0);
+   '00000000-0000-4000-8000-0000000000f2', 0),
+  ('50000000-0000-4000-8000-0000000000f2', '10000000-0000-4000-8000-0000000000f1', 'c-w', 'Gecko''s idea', 'review', false,
+   '00000000-0000-4000-8000-0000000000f1', 1);
+insert into public.concepts (id, workspace_id, client_id, title, status, from_client, created_by, position, approved_version, approved_at, approved_by) values
+  ('50000000-0000-4000-8000-0000000000f3', '10000000-0000-4000-8000-0000000000f1', 'c-w', 'Approved idea', 'approved', false,
+   '00000000-0000-4000-8000-0000000000f1', 2, 1, now(), 'Youcef');
 
 create function pg_temp.act_as(p_user text, p_email text) returns void language sql as $$
   select set_config('request.jwt.claim.sub', p_user, true),
@@ -115,6 +120,18 @@ select extensions.is(
   (select public.concept_to_json(c)->'shoot'->'sets'->>0 from public.concepts c where id = '50000000-0000-4000-8000-0000000000f1'),
   '30000000-0000-4000-8000-0000000000f2', 'the client reads the idea''s shoot plan'
 );
+set local role authenticated;
+select pg_temp.act_as('00000000-0000-4000-8000-0000000000f2', 'owner@ws-brand.test');
+select extensions.lives_ok(
+  $$select public.client_set_idea_shoot('10000000-0000-4000-8000-0000000000f1', 'c-w', '50000000-0000-4000-8000-0000000000f2',
+    '{"talent":["20000000-0000-4000-8000-0000000000f1"]}')$$,
+  'the client plans an idea Gecko sent them while they review it'
+);
+select extensions.throws_ok(
+  $$select public.client_set_idea_shoot('10000000-0000-4000-8000-0000000000f1', 'c-w', '50000000-0000-4000-8000-0000000000f3', '{}')$$,
+  'P0001', 'invalid_idea', 'an approved idea''s plan stays with Gecko'
+);
+reset role;
 
 select * from extensions.finish();
 rollback;

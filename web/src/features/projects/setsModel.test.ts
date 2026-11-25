@@ -6,6 +6,7 @@ const set = (o: Partial<ProjectSet>): ProjectSet => ({
   projectId: "p1",
   name: "Kitchen",
   notes: "",
+  photos: [],
   position: 1,
   ...o,
 });

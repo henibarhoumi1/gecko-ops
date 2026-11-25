@@ -6,8 +6,8 @@
 -- 2. Sets get photos (paths in the private production bucket, like talent and location photos).
 -- 3. The client reads the campaign's sets with its production page, and reads the shoot plan of its ideas and scripts.
 -- 4. Ideas get a shoot plan too (talent, sets, props); the old talent column stays in step with it.
--- 5. The client can set the shoot plan of a script while it's with them (review or changes) and of its own ideas
---    while they're still ideas. Only ids of this client's talent, props and sets are accepted.
+-- 5. The client can set the shoot plan of a script or an idea while it's with them (review or changes), and of
+--    its own ideas while they're still ideas. Only ids of this client's talent, props and sets are accepted.
 -- Changing a shoot plan is logistics: it never makes a new version and never touches an approval.
 
 -- ---------- 1. a shoot plan with several sets ----------
@@ -255,7 +255,8 @@ $$;
 revoke all on function public.client_set_script_shoot(uuid, text, uuid, jsonb) from public, anon;
 grant execute on function public.client_set_script_shoot(uuid, text, uuid, jsonb) to authenticated;
 
--- The plan of an idea the client added, while it's still theirs (status idea).
+-- The plan of an idea: one the client added, while it's still theirs (status idea), or one Gecko sent them that
+-- they're reviewing (review or changes). Owners and approvers only.
 create function public.client_set_idea_shoot(p_workspace_id uuid, p_client_id text, p_id uuid, p_shoot jsonb)
 returns void
 language plpgsql
@@ -268,12 +269,13 @@ begin
   if (select auth.uid()) is null then raise exception 'authentication_required'; end if;
   acc := public.my_client_account(p_workspace_id, p_client_id);
   if acc.id is null then raise exception 'forbidden'; end if;
+  if acc.role not in ('owner', 'approver') then raise exception 'writer_only'; end if;
   if p_shoot is null or not public.shoot_plan_ids_ok(p_workspace_id, p_client_id, p_shoot) then
     raise exception 'invalid_shoot_plan';
   end if;
   update public.concepts set shoot = public.shoot_plan_tidy(p_shoot)
   where id = p_id and workspace_id = p_workspace_id and client_id = p_client_id
-    and from_client and status = 'idea' and created_by = (select auth.uid());
+    and ((from_client and status = 'idea' and created_by = (select auth.uid())) or status in ('review', 'changes'));
   if not found then raise exception 'invalid_idea'; end if;
 end
 $$;

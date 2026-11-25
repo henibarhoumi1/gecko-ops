@@ -1,4 +1,5 @@
 import { locale, t } from "@/lib/i18n";
+import type { ShootPlan } from "@/features/scripts/model";
 import { tw } from "@/lib/wording";
 export type ConceptStatus = "draft" | "review" | "changes" | "approved" | "idea";
 export type ConceptFormat = "reel" | "carousel" | "static" | "other";
@@ -24,8 +25,10 @@ export interface Concept {
   hook?: string;
   body: string;
   refs: string;
-  /** Talent the idea is written for (production option ids). Team side only. */
+  /** Talent the idea is written for (production option ids). */
   talent?: string[];
+  /** Who, where, with what: the same plan a script has. Missing on a database without it yet. */
+  shoot?: ShootPlan;
   position: number;
   fromClient: boolean;
   status: ConceptStatus;
@@ -172,6 +175,7 @@ export interface ConceptRow {
   refs: string;
   hook?: string;
   talent?: string[] | null;
+  shoot?: ShootPlan | null;
   position: number;
   from_client: boolean;
   status: ConceptStatus;
@@ -205,6 +209,7 @@ export function fromRows(rows: ConceptRow[], notes: NoteRow[]): Concept[] {
     refs: r.refs,
     hook: r.hook ?? "",
     talent: r.talent ?? [],
+    shoot: r.shoot ?? (r.talent?.length ? { talent: r.talent } : {}),
     position: r.position,
     fromClient: r.from_client,
     status: r.status,

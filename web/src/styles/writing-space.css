@@ -1,0 +1,1184 @@
+/* ======================================================================
+   The writing space v2 (Heni, 25 Nov 2026: "a real rework, the look and feel of an expert, the same on Gecko's
+   side and the client's"). One layout for every idea and script editor: a sticky bar, the page on the left, and a
+   rail on the right with the idea and "On set" (talent and sets with their photos, props). Reading a script or an
+   idea uses the same two columns. White, ink, hairlines; pink marks what's picked.
+   ====================================================================== */
+
+:root {
+  --ws-rail: 344px;
+  --ws-soft: #f6f6f4;
+  --ws-tile: #efefec;
+  --ws-hair: rgba(0, 0, 0, 0.09);
+}
+
+/* A link styled as a button (View as client, Write the script): the label sits in the middle, whatever the height. */
+a.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+  vertical-align: middle;
+}
+
+/* ---------- The editor ---------- */
+
+.ws {
+  position: relative;
+  display: block;
+  border-radius: 22px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px var(--ws-hair),
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 24px 48px -32px rgba(0, 0, 0, 0.18);
+}
+
+.ws-bar {
+  position: sticky;
+  top: 0;
+  z-index: 7;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  padding: 12px 18px 12px 24px;
+  border-bottom: 1px solid var(--ws-hair);
+  border-radius: 22px 22px 0 0;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: saturate(1.4) blur(12px);
+}
+.ws-where {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+.ws-where strong {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.ws-where span {
+  font-size: 12.5px;
+  line-height: 1.35;
+}
+.ws-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.ws-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--ws-soft);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ws-check input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: #000;
+}
+
+.ws-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--ws-rail);
+  align-items: start;
+}
+/* The rail's column is tinted all the way down, however short the rail is. */
+.ws-grid::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: var(--ws-rail);
+  border-left: 1px solid var(--ws-hair);
+  border-radius: 0 0 22px 0;
+  background: #fafaf8;
+  pointer-events: none;
+}
+.ws-main {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+  padding: 28px clamp(20px, 3vw, 44px) 32px;
+}
+.ws-rail {
+  position: sticky;
+  top: 72px;
+  z-index: 1;
+  display: grid;
+  gap: 14px;
+  max-height: calc(100vh - 88px);
+  overflow: auto;
+  padding: 20px 18px 24px;
+  scrollbar-width: thin;
+}
+
+.ws input.ws-title {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-family: var(--font);
+  font-size: clamp(28px, 2.5vw, 40px);
+  font-weight: 800;
+  font-stretch: 92%;
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+  color: var(--ink);
+  box-shadow: none;
+}
+.ws input.ws-title::placeholder {
+  color: rgba(0, 0, 0, 0.22);
+}
+
+.ws-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--ws-hair);
+}
+.ws-meta .field {
+  min-width: min(100%, 280px);
+  margin: 0;
+}
+
+/* The length, as one row of choices. */
+.len-pick {
+  display: grid;
+  gap: 6px;
+}
+.len-label {
+  font-size: 13px;
+  font-weight: 700;
+}
+.len-row {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--ws-soft);
+}
+.len-opt {
+  height: 34px;
+  min-width: 46px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  font: 700 13.5px/1 var(--font);
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.len-opt span {
+  margin-left: 1px;
+  font-weight: 500;
+}
+.len-opt:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+.len-opt[aria-checked="true"] {
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.08),
+    0 2px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+/* Ideas: the hook and what happens, written straight on the page. */
+.ws-page {
+  display: grid;
+  gap: 14px;
+}
+.ws-hook {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: var(--yellow-soft, #faf0cf);
+}
+.ws-hook span {
+  flex: none;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.ws-hook input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font: 600 18px/1.35 var(--font);
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  box-shadow: none;
+}
+.ws-hook input::placeholder,
+.ws textarea.ws-body::placeholder {
+  color: rgba(0, 0, 0, 0.3);
+}
+.ws textarea.ws-body {
+  width: 100%;
+  min-height: 240px;
+  padding: 4px 0;
+  border: 0;
+  outline: 0;
+  resize: vertical;
+  background: transparent;
+  font: 400 17px/1.65 var(--font);
+  letter-spacing: -0.005em;
+  color: var(--ink);
+  box-shadow: none;
+}
+
+.ws-keys {
+  margin: 0;
+  font-size: 12px;
+}
+.ws-keys kbd {
+  display: inline-block;
+  min-width: 18px;
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: var(--ws-soft);
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12);
+  font: 600 11px/1.5 var(--font);
+  text-align: center;
+}
+.ws-foot {
+  margin: 0;
+  padding: 0 24px 20px;
+}
+
+/* Section tabs inside the editor: a quiet underline row. */
+.ws .wtabs {
+  display: grid;
+  gap: 18px;
+}
+.ws .wtabs-row {
+  gap: 4px;
+  margin: 0;
+  border-bottom: 1px solid var(--ws-hair);
+}
+
+/* The script's parts: each part a block with air around it, the lines written on the page. */
+.ws .ad-parts {
+  display: grid;
+  gap: 16px;
+}
+.ws .script-lines {
+  border: 0;
+  border-radius: 16px;
+  padding: 16px 18px 18px;
+  background: #fff;
+  box-shadow: 0 0 0 1px var(--ws-hair);
+}
+.ws .script-lines > legend {
+  float: left;
+  width: 100%;
+  margin: 0 0 10px;
+  padding: 0;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.ws .script-lines > legend + * {
+  clear: both;
+}
+.ws .script-lines > legend .muted {
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.ws .part-tag {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin-right: 6px;
+  border-radius: 7px;
+  background: #000;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  vertical-align: 1px;
+}
+
+/* Focus mode: only the writing space stays, wider. */
+body.focus-mode .stage-list > .ws,
+body.focus-mode .stage-list > :has(.ws) {
+  display: block !important;
+}
+body.focus-mode .ws {
+  max-width: 1320px;
+  margin-inline: auto;
+}
+
+/* ---------- The idea, in the rail ---------- */
+
+.idea-card {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 0 0 1px var(--ws-hair);
+}
+.idea-card-head h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.idea-card-title {
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+.idea-card-hook {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--yellow-soft, #faf0cf);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  quotes: "“" "”";
+}
+.idea-card-body {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  white-space: pre-line;
+}
+.idea-card-body.is-clamped {
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.idea-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* ---------- On set ---------- */
+
+.onset {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 0 0 1px var(--ws-hair);
+}
+.onset-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.onset-head h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+.onset-count {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--picked-soft, #fbe3e4);
+  font-size: 12px;
+  font-weight: 700;
+}
+.onset-note {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  margin: -8px 0 0;
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+.onset-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  background: var(--ws-soft);
+}
+.onset-save::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.5;
+}
+.onset-save.is-saving::before {
+  animation: onset-pulse 0.9s ease-in-out infinite;
+}
+.onset-save.is-saved {
+  background: var(--green-soft, #e3f0e8);
+}
+.onset-save.is-error {
+  background: var(--pink-soft, #fbe3e4);
+}
+@keyframes onset-pulse {
+  50% {
+    opacity: 1;
+  }
+}
+.onset-empty {
+  margin: 0;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--ws-soft);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.onset-sec {
+  display: grid;
+  gap: 10px;
+}
+.onset-sec + .onset-sec {
+  padding-top: 14px;
+  border-top: 1px solid var(--ws-hair);
+}
+.onset-sec-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.onset-sec-head h4 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.onset-n {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #000;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+.onset-hint {
+  margin-left: auto;
+  font-size: 11.5px;
+}
+
+/* Photos: cover the tile; initials on a soft tile while there's none. */
+.cp {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--ws-tile);
+}
+.cp img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cp-initials {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.cp-dot,
+.cp-mini {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+.cp-dot .cp-initials,
+.cp-mini .cp-initials {
+  font-size: 9.5px;
+}
+
+/* Talent: faces in a grid; a pressed face gets an ink ring and a tick. */
+.onset-people {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.onset-person {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 6px;
+  width: 100%;
+  padding: 4px 2px 6px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+.onset-person.is-shown {
+  cursor: default;
+}
+.onset-face {
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: 76px;
+  aspect-ratio: 1;
+  border-radius: 18px;
+  overflow: visible;
+}
+.onset-face > .cp {
+  border-radius: 18px;
+  transition:
+    box-shadow 0.18s ease,
+    transform 0.18s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+button.onset-person:hover .onset-face > .cp {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px -10px rgba(0, 0, 0, 0.45);
+}
+.onset-person[aria-pressed="true"] .onset-face > .cp {
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px #000;
+}
+.onset-person[aria-pressed="false"] .onset-face > .cp img {
+  filter: saturate(0.85);
+}
+.onset-tick {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #000;
+  color: #fff;
+  box-shadow: 0 0 0 2px #fff;
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity 0.15s ease,
+    transform 0.2s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+.onset-person[aria-pressed="true"] .onset-tick {
+  opacity: 1;
+  transform: scale(1);
+}
+.onset-name {
+  display: -webkit-box;
+  max-width: 100%;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+.onset-meta {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  font-size: 11.5px;
+  line-height: 1.2;
+}
+.onset-wait {
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--yellow-soft, #faf0cf);
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+/* Sets: photo cards, two per row; the order they're shot in sits on the photo. */
+.onset-sets {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.onset-set {
+  display: grid;
+  align-content: start;
+  gap: 5px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.onset-set.is-shown {
+  cursor: default;
+}
+.onset-shot {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+}
+.onset-shot > .cp {
+  border-radius: 12px;
+  transition:
+    box-shadow 0.18s ease,
+    transform 0.18s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+button.onset-set:hover .onset-shot > .cp {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px -12px rgba(0, 0, 0, 0.5);
+}
+.onset-set[aria-pressed="true"] .onset-shot > .cp {
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px #000;
+}
+.onset-order {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  display: grid;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--pink, #f4c1c4);
+  font-size: 12px;
+  font-weight: 800;
+  box-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.35);
+}
+.onset-set .onset-name {
+  font-size: 13px;
+}
+.onset-detail {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 11.5px;
+  line-height: 1.35;
+}
+
+/* Props: chips; a picked chip turns ink. */
+.onset-props {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.onset-prop {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 12px 0 5px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.14);
+  color: var(--ink);
+  font: 600 13px/1 var(--font);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+span.onset-prop {
+  cursor: default;
+}
+button.onset-prop:hover {
+  box-shadow: inset 0 0 0 1px #000;
+}
+.onset-prop[aria-pressed="true"] {
+  background: #000;
+  color: #fff;
+  box-shadow: none;
+}
+.onset-more {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: 600 13px/1.4 var(--font);
+  text-decoration: underline;
+  text-decoration-color: rgba(0, 0, 0, 0.25);
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.onset-more:hover {
+  text-decoration-color: currentColor;
+}
+.onset-extra-edit {
+  display: grid;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.onset-extra-edit textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--ws-soft);
+  box-shadow: none;
+  font: 400 13.5px/1.45 var(--font);
+  resize: vertical;
+}
+.onset-extra-edit textarea:focus {
+  outline: 0;
+  box-shadow: 0 0 0 2px #000;
+}
+.onset-extra {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--ws-soft);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+/* Read-only and compact: what's picked, nothing to press. */
+.onset.is-empty {
+  gap: 10px;
+}
+.onset.is-read .onset-people {
+  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+}
+
+/* A one-line summary on a card. */
+.onset-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: 13px;
+}
+.onset-strip-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.onset-strip-label {
+  font-weight: 700;
+}
+.onset-stack {
+  display: inline-flex;
+}
+.onset-stack .cp-mini {
+  box-shadow: 0 0 0 2px #fff;
+}
+.onset-stack .cp-mini + .cp-mini {
+  margin-left: -8px;
+}
+
+/* ---------- Reading: the script or idea on the left, On set on the right ---------- */
+
+.concept > .sheet-main {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-width: 0;
+}
+.concept > .sheet-main > .small {
+  margin: 0;
+}
+.concept.has-aside {
+  grid-template-columns: minmax(0, 1fr) clamp(280px, 24vw, 340px);
+  align-items: start;
+  gap: 28px;
+  padding: 24px;
+}
+.sheet-aside {
+  position: sticky;
+  top: 84px;
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.sheet-aside .onset {
+  background: #fafaf8;
+  box-shadow: inset 0 0 0 1px var(--ws-hair);
+}
+.concept-changes .sheet-aside .onset {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* The script itself reads like a page. */
+.concept.script h3,
+.concept.script .script-title-row h3 {
+  font-size: clamp(22px, 1.8vw, 28px);
+  font-weight: 800;
+  font-stretch: 94%;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+}
+.script-runs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 12.5px;
+}
+.runs-bar {
+  position: relative;
+  flex: none;
+  width: 96px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--ws-tile);
+  overflow: hidden;
+}
+.runs-bar span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: #000;
+}
+.script-runs.over .runs-bar span {
+  background: #d9534f;
+}
+.concept.script .script-part {
+  display: grid;
+  gap: 10px;
+}
+.concept.script .script-part > h4 {
+  margin: 0;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.concept.script .script-cta {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--ws-soft);
+}
+
+/* ---------- Sets with photos (Production) ---------- */
+
+.set-list-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.set-list-lede {
+  margin: 4px 0 14px;
+  max-width: 70ch;
+}
+.set-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(200px, 17vw, 260px), 1fr));
+  gap: var(--gap, 16px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.set-card {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 0 0 1px var(--ws-hair);
+  transition:
+    box-shadow 0.18s ease,
+    transform 0.18s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.set-card:not(.is-editing):hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 0 0 1px var(--ws-hair),
+    0 18px 36px -22px rgba(0, 0, 0, 0.4);
+}
+.set-card.is-editing {
+  grid-column: 1 / -1;
+  padding: 18px;
+}
+.set-cover {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+}
+.set-cover .cp-initials {
+  font-size: 28px;
+}
+.set-order {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: grid;
+  place-items: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: 0 2px 8px -3px rgba(0, 0, 0, 0.35);
+}
+.set-more {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.66);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+.set-body {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: 12px 14px 6px;
+}
+.set-body strong {
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+.set-notes {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.set-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 6px 14px 12px;
+}
+.set-tools .btn-link {
+  font-size: 13px;
+}
+.set-empty {
+  margin: 0;
+  padding: 22px;
+  border-radius: 18px;
+  background: var(--ws-soft);
+  font-size: 14px;
+}
+.set-form {
+  display: grid;
+  gap: 14px;
+}
+.set-form-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 12px;
+}
+.set-from-place {
+  display: grid;
+  gap: 8px;
+}
+.set-from-place-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.set-place-photo {
+  position: relative;
+  width: 76px;
+  height: 56px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: 10px;
+  background: var(--ws-tile);
+  cursor: pointer;
+}
+.set-place-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.set-place-photo span {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.set-place-photo:hover span,
+.set-place-photo:focus-visible span {
+  opacity: 1;
+}
+.set-list.is-client {
+  margin-top: 28px;
+}
+
+/* ---------- Smaller screens: the rail goes under the page ---------- */
+
+@media (max-width: 1120px) {
+  .ws-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ws-grid::after {
+    display: none;
+  }
+  .ws-rail {
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding: 18px clamp(20px, 3vw, 44px) 28px;
+    border-top: 1px solid var(--ws-hair);
+    border-radius: 0 0 22px 22px;
+    background: #fafaf8;
+  }
+  .concept.has-aside {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .sheet-aside {
+    position: static;
+  }
+  .onset-people {
+    grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  }
+  .onset-sets {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
+@media (max-width: 640px) {
+  .ws-bar {
+    padding: 10px 14px;
+  }
+  .ws-main {
+    padding: 20px 16px 24px;
+  }
+  .concept.has-aside {
+    padding: 16px;
+  }
+  .set-form-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .onset-face > .cp,
+  .onset-shot > .cp,
+  .onset-tick,
+  .set-card {
+    transition: none;
+  }
+}
+
+/* The button under a plan being read: change it, or done. */
+.onset-foot {
+  display: flex;
+  justify-content: flex-start;
+  padding-top: 4px;
+}
+
+/* Ideas sit in a grid of narrower cards: their plan goes under the idea, not beside it. */
+.concept.has-aside:not(.script) {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  padding: 20px;
+}
+.concept.has-aside:not(.script) .sheet-aside {
+  position: static;
+}
+.concept.has-aside:not(.script) .onset-people {
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+}
+.concept.has-aside:not(.script) .onset-sets {
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
+
+/* The set card's tools: one quiet row. */
+.set-tools .btn,
+.set-tools .btn-link {
+  height: auto;
+  min-height: 0;
+  padding: 4px 2px;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+.set-tools .btn-link:first-child {
+  margin-right: auto;
+}
+
+/* The actions under an idea or a script: buttons first, quiet links after, on one tidy row. */
+.concept .concept-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+.concept .concept-actions .btn-link {
+  height: auto;
+  min-height: 0;
+  padding: 6px 0;
+}

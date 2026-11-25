@@ -1,6 +1,5 @@
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/Button";
-import { Field } from "@/components/Field";
 import { Notice } from "@/components/Notice";
 import { Select } from "@/components/Select";
 import { TextArea } from "@/components/TextArea";
@@ -33,8 +32,11 @@ import { useMyShared } from "@/features/shared/sharedApi";
 import { friendlyError } from "@/lib/errors";
 import { t } from "@/lib/i18n";
 import { isCinematic, tw } from "@/lib/wording";
-
-const LENGTHS = [9, 15, 20, 30, 45, 60, 90] as const;
+import type { ShootPlan } from "@/features/scripts/model";
+import { ShootPanel } from "@/features/writing/ShootPanel";
+import { IdeaCard, LengthPicker } from "@/features/writing/WriteParts";
+import { useClientShootChoices } from "@/features/writing/useShootChoices";
+import { planCount, samePlan, tidyPlan } from "@/features/writing/shootPlan";
 
 function treatmentHint(key: (typeof TREATMENT_KEYS)[number]): string {
   return {
@@ -84,10 +86,14 @@ export function WriteScript({
         beats: script?.beats.length ? script.beats : ([{}, {}] as ScriptLine[]),
         // Everyone but film clients writes the ad in parts, the same way the team does.
         draft: adDraft(script, undefined, startIdea?.hook || undefined, seconds),
+        // Who, where, with what: the script's own plan, or the idea's to start from.
+        shoot: (script?.shoot ?? startIdea?.shoot ?? {}) as ShootPlan,
       };
     },
   );
   const { title, conceptId, seconds, beats, draft } = keep.value;
+  const shoot: ShootPlan = keep.value.shoot ?? {};
+  const choices = useClientShootChoices(portal, script?.projectId ?? null);
   const set = (patch: Partial<typeof keep.value>) => keep.setValue((v) => ({ ...v, ...patch }));
   const setDraft = (next: AdDraft) => set({ draft: next });
   const setSeconds = (n: number) => set({ seconds: n });
@@ -118,6 +124,8 @@ export function WriteScript({
         treatment: tidyTreatment(treatment),
         ...(cine ? {} : { style: draft.style }),
         ...(approved.length || script?.conceptId ? { conceptId: conceptId || null } : {}),
+        // Sent only when it changed, so an untouched plan never costs a call.
+        ...(samePlan(shoot, script?.shoot) ? {} : { shoot: tidyPlan(shoot) }),
       });
       keep.clear();
       onDone();
@@ -130,174 +138,181 @@ export function WriteScript({
     setBeats((list) => list.map((b, j) => (j === i ? { ...b, [key]: value } : b)));
 
   return (
-    <form className="concept-form card write-script" onSubmit={onSubmit}>
-      <h3>
-        {script
-          ? tw(
-              ["Edit the script", "Modifier le script"],
-              ["Edit the treatment", "Modifier la note d'intention"],
-            )
-          : tw(["Your script", "Votre script"], ["Your treatment", "Votre note d'intention"])}
-      </h3>
-      <p className="small muted">
-        {tw(
-          [
-            "Write it the way you picture it. Gecko reads it, approves it or suggests changes, and may tighten it into a filmable version for you to approve.",
-            "Écrivez-le comme vous l'imaginez. Gecko le lit, le valide ou propose des changements, et peut le resserrer en une version tournable à valider.",
-          ],
-          [
-            "Describe the film the way you picture it. Gecko reads it, approves it or suggests changes, and may shape it into a shooting version for you to approve.",
-            "Décrivez le film comme vous l'imaginez. Gecko le lit, le valide ou propose des changements, et peut en faire une version de tournage à valider.",
-          ],
-        )}
-      </p>
-      {keep.restored && <DraftNotice onDiscard={keep.discard} />}
-      {(approved.length > 0 || idea) && (
-        <Select
-          label={t("Written from the idea", "Écrit à partir de l'idée")}
-          name="concept"
-          value={conceptId}
-          onChange={(e) => {
-            const c = approved.find((x) => x.id === e.target.value);
-            set({
-              conceptId: e.target.value,
-              ...(c && !title.trim() ? { title: c.title } : {}),
-              ...(c?.hook && noWords(draft.hooks)
-                ? { draft: { ...draft, hooks: [{ hear: c.hook }, ...draft.hooks.slice(1)] } }
-                : {}),
-            });
-          }}
-          options={[
-            ["", t("No idea, a script of its own", "Aucune, un script à part")],
-            ...approved.map((c) => [c.id, c.title] as const),
-          ]}
-        />
-      )}
-      {idea && (
-        <div className="script-idea">
-          <p className="small">
-            <strong>{t("The idea", "L'idée")}</strong>
-          </p>
-          {idea.hook && <p className="script-idea-hook">&ldquo;{idea.hook}&rdquo;</p>}
-          {idea.body && <p className="small">{idea.body}</p>}
+    <form className="ws write-script" onSubmit={onSubmit}>
+      <div className="ws-bar">
+        <div className="ws-where">
+          <strong>
+            {script
+              ? tw(
+                  ["Edit the script", "Modifier le script"],
+                  ["Edit the treatment", "Modifier la note d'intention"],
+                )
+              : tw(["Your script", "Votre script"], ["Your treatment", "Votre note d'intention"])}
+          </strong>
+          <span>
+            {t(
+              "Gecko reads it, then approves it or suggests changes.",
+              "Gecko le lit, puis le valide ou propose des changements.",
+            )}
+          </span>
         </div>
-      )}
-      <div className="row">
-        <Field
-          label={t("Title", "Titre")}
-          name="title"
-          maxLength={160}
-          value={title}
-          onChange={(e) => set({ title: e.target.value })}
-          autoFocus={!startIdea}
-        />
-        <Select
-          label={t("Length", "Durée")}
-          name="seconds"
-          value={String(seconds)}
-          onChange={(e) => setSeconds(Number(e.target.value))}
-          options={LENGTHS.map((n) => [String(n), `${n} s`] as const)}
-        />
+        <div className="ws-actions">
+          <Button variant="link" onClick={onDone} disabled={write.isPending}>
+            {t("Cancel", "Annuler")}
+          </Button>
+          <Button type="submit" disabled={write.isPending}>
+            {t("Send to Gecko", "Envoyer à Gecko")}
+          </Button>
+        </div>
       </div>
-
-      {cine && (
-        <fieldset className="write-part">
-          <legend>{t("The treatment", "La note d'intention")}</legend>
-          {TREATMENT_KEYS.map((key) => (
-            <TextArea
-              key={key}
-              label={treatmentLabel(key)}
-              name={`t-${key}`}
-              rows={2}
-              maxLength={2000}
-              defaultValue={script?.treatment?.[key]}
-              placeholder={treatmentHint(key)}
-            />
-          ))}
-        </fieldset>
-      )}
-
-      {cine ? (
-        <>
-          <fieldset className="write-part">
-            <legend>{t("The opening shot", "Le plan d'ouverture")}</legend>
-            <div className="row">
-              <TextArea
-                label={t("What we see", "Ce qu'on voit")}
-                name="hook-see"
-                rows={2}
-                maxLength={1000}
-                defaultValue={script?.hooks[0]?.see}
+      {keep.restored && <DraftNotice onDiscard={keep.discard} />}
+      <div className="ws-grid">
+        <div className="ws-main">
+          <input
+            className="ws-title"
+            name="title"
+            aria-label={t("Title", "Titre")}
+            placeholder={tw(
+              ["Untitled script", "Script sans titre"],
+              ["Untitled treatment", "Note sans titre"],
+            )}
+            value={title}
+            maxLength={160}
+            onChange={(e) => set({ title: e.target.value })}
+            autoFocus={!startIdea}
+          />
+          <div className="ws-meta">
+            {(approved.length > 0 || idea) && (
+              <Select
+                label={t("Written from the idea", "Écrit à partir de l'idée")}
+                name="concept"
+                value={conceptId}
+                onChange={(e) => {
+                  const c = approved.find((x) => x.id === e.target.value);
+                  set({
+                    conceptId: e.target.value,
+                    ...(c && !title.trim() ? { title: c.title } : {}),
+                    ...(c?.hook && noWords(draft.hooks)
+                      ? { draft: { ...draft, hooks: [{ hear: c.hook }, ...draft.hooks.slice(1)] } }
+                      : {}),
+                    ...(c?.shoot && planCount(shoot) === 0 ? { shoot: c.shoot } : {}),
+                  });
+                }}
+                options={[
+                  ["", t("No idea, a script of its own", "Aucune, un script à part")],
+                  ...approved.map((c) => [c.id, c.title] as const),
+                ]}
               />
-              <TextArea
-                label={t("What we hear", "Ce qu'on entend")}
-                name="hook-hear"
-                rows={2}
-                maxLength={1000}
-                defaultValue={script?.hooks[0]?.hear}
-              />
-            </div>
-          </fieldset>
+            )}
+            <LengthPicker value={seconds} onChange={setSeconds} />
+          </div>
+          {cine && (
+            <fieldset className="write-part">
+              <legend>{t("The treatment", "La note d'intention")}</legend>
+              {TREATMENT_KEYS.map((key) => (
+                <TextArea
+                  key={key}
+                  label={treatmentLabel(key)}
+                  name={`t-${key}`}
+                  rows={2}
+                  maxLength={2000}
+                  defaultValue={script?.treatment?.[key]}
+                  placeholder={treatmentHint(key)}
+                />
+              ))}
+            </fieldset>
+          )}
 
-          <fieldset className="write-part">
-            <legend>{t("The scenes", "Les scènes")}</legend>
-            <ol className="write-beats">
-              {beats.map((beat, i) => (
-                <li key={i}>
+          {cine ? (
+            <>
+              <fieldset className="write-part">
+                <legend>{t("The opening shot", "Le plan d'ouverture")}</legend>
+                <div className="row">
                   <TextArea
-                    label={t(`What we see, moment ${i + 1}`, `Ce qu'on voit, moment ${i + 1}`)}
+                    label={t("What we see", "Ce qu'on voit")}
+                    name="hook-see"
                     rows={2}
                     maxLength={1000}
-                    value={beat.see ?? ""}
-                    onChange={(e) => setBeat(i, "see", e.target.value)}
+                    defaultValue={script?.hooks[0]?.see}
                   />
                   <TextArea
                     label={t("What we hear", "Ce qu'on entend")}
+                    name="hook-hear"
                     rows={2}
                     maxLength={1000}
-                    value={beat.hear ?? ""}
-                    onChange={(e) => setBeat(i, "hear", e.target.value)}
+                    defaultValue={script?.hooks[0]?.hear}
                   />
-                </li>
-              ))}
-            </ol>
-            {beats.length < 40 && (
-              <Button variant="link" onClick={() => setBeats((list) => [...list, {}])}>
-                {t("+ Add a moment", "+ Ajouter un moment")}
-              </Button>
-            )}
-          </fieldset>
+                </div>
+              </fieldset>
 
-          <TextArea
-            label={t("The final frame", "Le dernier plan")}
-            name="cta"
-            rows={2}
-            maxLength={1000}
-            defaultValue={ctaLine(script?.cta).hear}
-            placeholder={t("The logo on white", "Le logo sur fond blanc")}
+              <fieldset className="write-part">
+                <legend>{t("The scenes", "Les scènes")}</legend>
+                <ol className="write-beats">
+                  {beats.map((beat, i) => (
+                    <li key={i}>
+                      <TextArea
+                        label={t(`What we see, moment ${i + 1}`, `Ce qu'on voit, moment ${i + 1}`)}
+                        rows={2}
+                        maxLength={1000}
+                        value={beat.see ?? ""}
+                        onChange={(e) => setBeat(i, "see", e.target.value)}
+                      />
+                      <TextArea
+                        label={t("What we hear", "Ce qu'on entend")}
+                        rows={2}
+                        maxLength={1000}
+                        value={beat.hear ?? ""}
+                        onChange={(e) => setBeat(i, "hear", e.target.value)}
+                      />
+                    </li>
+                  ))}
+                </ol>
+                {beats.length < 40 && (
+                  <Button variant="link" onClick={() => setBeats((list) => [...list, {}])}>
+                    {t("+ Add a moment", "+ Ajouter un moment")}
+                  </Button>
+                )}
+              </fieldset>
+
+              <TextArea
+                label={t("The final frame", "Le dernier plan")}
+                name="cta"
+                rows={2}
+                maxLength={1000}
+                defaultValue={ctaLine(script?.cta).hear}
+                placeholder={t("The logo on white", "Le logo sur fond blanc")}
+              />
+            </>
+          ) : (
+            <>
+              <BrandDrawer sheet={brand.sheet} never={brand.never} />
+              <AdParts
+                draft={draft}
+                onChange={setDraft}
+                seconds={seconds}
+                never={brand.never}
+                proven={proven}
+                hookNote={t(
+                  "write 1 to 3, Gecko helps pick",
+                  "écrivez-en 1 à 3, Gecko aide à choisir",
+                )}
+              />
+            </>
+          )}
+          {error && <Notice tone="error">{error}</Notice>}
+        </div>
+        <div className="ws-rail">
+          {idea && <IdeaCard title={idea.title} hook={idea.hook} body={idea.body} />}
+          <ShootPanel
+            choices={choices}
+            plan={shoot}
+            onChange={(next) => set({ shoot: next })}
+            empty={t(
+              "Gecko adds the talent, the sets and the props here. You'll pick them for each video.",
+              "Gecko ajoute ici les talents, les décors et les accessoires. Vous les choisirez pour chaque vidéo.",
+            )}
           />
-        </>
-      ) : (
-        <>
-          <BrandDrawer sheet={brand.sheet} never={brand.never} />
-          <AdParts
-            draft={draft}
-            onChange={setDraft}
-            seconds={seconds}
-            never={brand.never}
-            proven={proven}
-            hookNote={t("write 1 to 3, Gecko helps pick", "écrivez-en 1 à 3, Gecko aide à choisir")}
-          />
-        </>
-      )}
-      {error && <Notice tone="error">{error}</Notice>}
-      <div className="actions">
-        <Button variant="secondary" onClick={onDone} disabled={write.isPending}>
-          {t("Cancel", "Annuler")}
-        </Button>
-        <Button type="submit" disabled={write.isPending}>
-          {t("Send to Gecko", "Envoyer à Gecko")}
-        </Button>
+        </div>
       </div>
     </form>
   );

@@ -33,7 +33,7 @@ export function useProjectSets(clientId: string) {
     queryFn: async (): Promise<ProjectSet[]> => {
       const { data, error } = await requireSupabase()
         .from("project_sets")
-        .select("id,project_id,name,notes,position")
+        .select("id,project_id,name,notes,photos,position")
         .eq("workspace_id", workspaceId)
         .eq("client_id", clientId)
         .order("position");
@@ -52,6 +52,7 @@ export function useSetActions(clientId: string) {
       mutationFn: async (input: {
         name: string;
         notes?: string;
+        photos?: string[];
         projectId: string | null;
         position: number;
       }) => {
@@ -63,6 +64,7 @@ export function useSetActions(clientId: string) {
             project_id: input.projectId,
             name: input.name.trim().slice(0, 120),
             notes: (input.notes ?? "").trim().slice(0, 1000),
+            ...(input.photos?.length ? { photos: input.photos.slice(0, 6) } : {}),
             position: input.position,
           })
           .select("id")
@@ -77,9 +79,11 @@ export function useSetActions(clientId: string) {
         id: string;
         name?: string;
         notes?: string;
+        photos?: string[];
         position?: number;
       }) => {
         const fields: Record<string, unknown> = {};
+        if (input.photos != null) fields.photos = input.photos.slice(0, 6);
         if (input.name != null) fields.name = input.name.trim().slice(0, 120);
         if (input.notes != null) fields.notes = input.notes.trim().slice(0, 1000);
         if (input.position != null) fields.position = input.position;
