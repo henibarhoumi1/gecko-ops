@@ -1,7 +1,6 @@
 import { Select } from "@/components/Select";
 import { IdeaStarters } from "@/features/concepts/IdeaStarters";
 import { Sheet } from "@/components/Sheet";
-import { ClientPicks } from "@/features/picks/ClientPicks";
 import { BANK, ideaBody, type BankFormat } from "@/features/creative/bank";
 import { FormatBank } from "@/features/creative/FormatBank";
 import { canApprove, useClientRole } from "./role";
@@ -14,13 +13,18 @@ import { useState, type FormEvent, useRef } from "react";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import { TextArea } from "@/components/TextArea";
-import { Field } from "@/components/Field";
 import type { ClientPortal } from "@/features/auth/account";
 import { ConceptCard } from "@/features/concepts/ConceptCard";
 import { ReviewActions } from "@/features/concepts/ReviewActions";
 import { groupConcepts, type Concept } from "@/features/concepts/model";
 import { friendlyError } from "@/lib/errors";
-import { useConceptNote, useDeleteIdea, useSaveIdea } from "./portalApi";
+import { useClientSetIdeaShoot, useConceptNote, useDeleteIdea, useSaveIdea } from "./portalApi";
+import type { ShootPlan } from "@/features/scripts/model";
+import { ShootPanel } from "@/features/writing/ShootPanel";
+import { LiveShootPanel } from "@/features/writing/WriteParts";
+import { useClientShootChoices } from "@/features/writing/useShootChoices";
+import { samePlan, tidyPlan } from "@/features/writing/shootPlan";
+import { previewRole } from "@/lib/preview";
 import { t } from "@/lib/i18n";
 import { tw } from "@/lib/wording";
 
@@ -105,14 +109,48 @@ export function ConceptsTab({ portal, concepts }: { portal: ClientPortal; concep
       groups={groups.map((g) => ({ key: g.status, title: g.title, items: g.items }))}
       itemKey={(c) => c.id}
       renderItem={(concept) => (
-        <ConceptCard concept={concept} reader="client">
-          <ClientPicks portal={portal} kind="concept" id={concept.id} />
+        <ConceptCard
+          concept={concept}
+          reader="client"
+          aside={<IdeaShoot portal={portal} concept={concept} />}
+        >
           {concept.status === "idea" ? (
             <IdeaActions portal={portal} concept={concept} />
           ) : (
             <ClientActions portal={portal} concept={concept} />
           )}
         </ConceptCard>
+      )}
+    />
+  );
+}
+
+/** Who, which sets, which props: the same panel Gecko sees, editable while the idea is with the client. */
+function IdeaShoot({ portal, concept }: { portal: ClientPortal; concept: Concept }) {
+  const role = useClientRole();
+  const choices = useClientShootChoices(portal, concept.projectId ?? null);
+  const save = useClientSetIdeaShoot(portal);
+  const open =
+    (concept.status === "idea" && concept.fromClient) ||
+    concept.status === "review" ||
+    concept.status === "changes";
+  const canEdit = open && canApprove(role) && !previewRole();
+  return (
+    <LiveShootPanel
+      choices={choices}
+      plan={concept.shoot ?? {}}
+      onSave={canEdit ? (shoot) => save.mutateAsync({ id: concept.id, shoot }) : undefined}
+      note={
+        canEdit
+          ? t(
+              "Pick who, where and what. It saves on its own.",
+              "Choisissez qui, où et quoi. C'est enregistré tout seul.",
+            )
+          : undefined
+      }
+      empty={t(
+        "Gecko adds the talent, the sets and the props here.",
+        "Gecko ajoute ici les talents, les décors et les accessoires.",
       )}
     />
   );
@@ -193,6 +231,8 @@ function IdeaForm({
     : null;
   const save = useSaveIdea(portal);
   const [error, setError] = useState("");
+  const [shoot, setShoot] = useState<ShootPlan>(idea?.shoot ?? {});
+  const choices = useClientShootChoices(portal, idea?.projectId ?? null);
   // Kept on this device while writing: closing the tab doesn't lose it.
   const formRef = useRef<HTMLFormElement>(null);
   const keep = useFormDraft(formRef, `idea.${portal.clientId}.${idea?.id ?? "new"}`);
@@ -216,6 +256,7 @@ function IdeaForm({
         refs: text("refs"),
         hook: text("hook"),
         format: text("format") || "reel",
+        ...(samePlan(shoot, idea?.shoot) ? {} : { shoot: tidyPlan(shoot) }),
       });
       keep.clear();
       onDone();
@@ -225,93 +266,132 @@ function IdeaForm({
   }
 
   return (
-    <form ref={formRef} className="concept-form card" onSubmit={onSubmit}>
-      {keep.restored && <DraftNotice onDiscard={keep.discard} />}
-      <h3>
-        {idea
-          ? tw(
-              ["Edit your idea", "Modifier votre idée"],
-              ["Edit your concept", "Modifier votre concept"],
-            )
-          : tw(["Your idea", "Votre idée"], ["Your concept", "Votre concept"])}
-      </h3>
-      {!idea && <IdeaStarters form={formRef} />}
-      <div className="row">
-        <Field
-          label={t("Title", "Titre")}
-          name="title"
-          defaultValue={idea?.title ?? seed?.title}
-          maxLength={160}
-          autoFocus
-        />
-        <Select
-          label={t("Format", "Format")}
-          name="format"
-          defaultValue={idea?.format ?? "reel"}
-          options={[
-            ["reel", t("Reel / video", "Reel / vidéo")],
-            ["carousel", t("Carousel", "Carrousel")],
-            ["static", t("Single image", "Image seule")],
-            ["other", t("Other", "Autre")],
-          ]}
-        />
+    <form ref={formRef} className="ws idea-write" onSubmit={onSubmit}>
+      <div className="ws-bar">
+        <div className="ws-where">
+          <strong>
+            {idea
+              ? tw(
+                  ["Edit your idea", "Modifier votre idée"],
+                  ["Edit your concept", "Modifier votre concept"],
+                )
+              : tw(["Your idea", "Votre idée"], ["Your concept", "Votre concept"])}
+          </strong>
+          <span>
+            {t(
+              "Rough is fine. Gecko reads it and shapes it with you.",
+              "Brut, c'est très bien. Gecko la lit et la façonne avec vous.",
+            )}
+          </span>
+        </div>
+        <div className="ws-actions">
+          <Button
+            variant="link"
+            onClick={() => {
+              keep.clear();
+              onDone();
+            }}
+            disabled={save.isPending}
+          >
+            {t("Cancel", "Annuler")}
+          </Button>
+          <Button type="submit" disabled={save.isPending}>
+            {idea ? t("Save", "Enregistrer") : t("Send to Gecko", "Envoyer à Gecko")}
+          </Button>
+        </div>
       </div>
-      <Field
-        label={t(
-          "The hook: the first words people hear",
-          "L'accroche : les premiers mots entendus",
-        )}
-        name="hook"
-        defaultValue={idea?.hook ?? seed?.hook}
-        maxLength={200}
-        placeholder={t("Optional", "Facultatif")}
-      />
-      <TextArea
-        label={tw(["The idea", "L'idée"], ["The concept", "Le concept"])}
-        name="body"
-        rows={4}
-        defaultValue={idea?.body ?? seed?.body}
-        maxLength={10000}
-        placeholder={tw(
-          [
-            "Rough is fine: a scene, a line, a trend you saw.",
-            "Brut, c'est très bien : une scène, une phrase, une tendance repérée.",
-          ],
-          [
-            "Rough is fine: a mood, a place, a feeling, a reference.",
-            "Brut, c'est très bien : une ambiance, un lieu, une émotion, une référence.",
-          ],
-        )}
-      />
-      <TextArea
-        label={t("Links (one per line)", "Liens (un par ligne)")}
-        name="refs"
-        rows={2}
-        defaultValue={idea?.refs}
-        maxLength={2000}
-        placeholder={tw(
-          ["Reels or videos you like", "Des vidéos qui vous plaisent"],
-          [
-            "Films, photos or campaigns you like",
-            "Des films, photos ou campagnes qui vous plaisent",
-          ],
-        )}
-      />
-      {error && <Notice tone="error">{error}</Notice>}
-      <div className="actions">
-        <Button
-          variant="secondary"
-          onClick={() => {
-            keep.clear();
-            onDone();
-          }}
-          disabled={save.isPending}
-        >
-          {t("Cancel", "Annuler")}
-        </Button>
-        <Button type="submit" disabled={save.isPending}>
-          {idea ? t("Save", "Enregistrer") : t("Send to Gecko", "Envoyer à Gecko")}
-        </Button>
+      {keep.restored && <DraftNotice onDiscard={keep.discard} />}
+      <div className="ws-grid">
+        <div className="ws-main">
+          <input
+            className="ws-title"
+            name="title"
+            aria-label={t("Title", "Titre")}
+            placeholder={tw(
+              ["Untitled idea", "Idée sans titre"],
+              ["Untitled concept", "Concept sans titre"],
+            )}
+            defaultValue={idea?.title ?? seed?.title}
+            maxLength={160}
+            autoFocus
+          />
+          <div className="ws-meta">
+            <Select
+              label={t("Format", "Format")}
+              name="format"
+              defaultValue={idea?.format ?? "reel"}
+              options={[
+                ["reel", t("Reel / video", "Reel / vidéo")],
+                ["carousel", t("Carousel", "Carrousel")],
+                ["static", t("Single image", "Image seule")],
+                ["other", t("Other", "Autre")],
+              ]}
+            />
+          </div>
+          <div className="ws-page">
+            {!idea && <IdeaStarters form={formRef} />}
+            <label className="ws-hook">
+              <span>{t("Hook", "Accroche")}</span>
+              <input
+                name="hook"
+                aria-label={t(
+                  "The hook: the first words people hear",
+                  "L'accroche : les premiers mots entendus",
+                )}
+                defaultValue={idea?.hook ?? seed?.hook}
+                maxLength={200}
+                placeholder={t(
+                  "The first words people hear (optional)",
+                  "Les premiers mots entendus (facultatif)",
+                )}
+              />
+            </label>
+            <textarea
+              className="ws-body"
+              name="body"
+              aria-label={tw(["The idea", "L'idée"], ["The concept", "Le concept"])}
+              rows={8}
+              defaultValue={idea?.body ?? seed?.body}
+              maxLength={10000}
+              placeholder={tw(
+                [
+                  "Rough is fine: a scene, a line, a trend you saw.",
+                  "Brut, c'est très bien : une scène, une phrase, une tendance repérée.",
+                ],
+                [
+                  "Rough is fine: a mood, a place, a feeling, a reference.",
+                  "Brut, c'est très bien : une ambiance, un lieu, une émotion, une référence.",
+                ],
+              )}
+            />
+          </div>
+          <TextArea
+            label={t("Links (one per line)", "Liens (un par ligne)")}
+            name="refs"
+            rows={2}
+            defaultValue={idea?.refs}
+            maxLength={2000}
+            placeholder={tw(
+              ["Reels or videos you like", "Des vidéos qui vous plaisent"],
+              [
+                "Films, photos or campaigns you like",
+                "Des films, photos ou campagnes qui vous plaisent",
+              ],
+            )}
+          />
+          {error && <Notice tone="error">{error}</Notice>}
+        </div>
+        <div className="ws-rail">
+          <ShootPanel
+            choices={choices}
+            plan={shoot}
+            onChange={setShoot}
+            empty={t(
+              "Gecko adds the talent, the sets and the props here. You'll pick them for each video.",
+              "Gecko ajoute ici les talents, les décors et les accessoires. Vous les choisirez pour chaque vidéo.",
+            )}
+          />
+        </div>
       </div>
     </form>
   );

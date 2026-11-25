@@ -15,7 +15,7 @@ const ids = (t: ProductionTarget) => ({ p_workspace_id: t.workspaceId, p_client_
 
 function normalise(data: unknown): Production {
   const page = (data ?? {}) as Partial<Production>;
-  return { budget: page.budget ?? null, options: page.options ?? [] };
+  return { budget: page.budget ?? null, options: page.options ?? [], sets: page.sets ?? [] };
 }
 
 // ---------- client ----------

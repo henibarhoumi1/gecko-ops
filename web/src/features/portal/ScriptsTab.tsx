@@ -10,8 +10,10 @@ import { Button } from "@/components/Button";
 import { canApprove, useClientRole } from "./role";
 import { WriteScript } from "./WriteScript";
 import { ScriptView } from "@/features/scripts/ScriptView";
-import { ClientPicks } from "@/features/picks/ClientPicks";
-import { useClientScriptNote } from "@/features/scripts/scriptsApi";
+import { useClientScriptNote, useClientSetScriptShoot } from "@/features/scripts/scriptsApi";
+import { LiveShootPanel } from "@/features/writing/WriteParts";
+import { useClientShootChoices } from "@/features/writing/useShootChoices";
+import { previewRole } from "@/lib/preview";
 import { t } from "@/lib/i18n";
 import { tw } from "@/lib/wording";
 
@@ -80,6 +82,36 @@ export function ScriptsTab({
   );
 }
 
+/** Who, which sets, which props: the same panel Gecko sees, editable while the script is with the client. */
+function ScriptShoot({ portal, script }: { portal: ClientPortal; script: Script }) {
+  const role = useClientRole();
+  const choices = useClientShootChoices(portal, script.projectId ?? null);
+  const save = useClientSetScriptShoot(portal);
+  const open = (script.status === "review" || script.status === "changes") && canApprove(role);
+  const canEdit = open && !previewRole();
+  return (
+    <LiveShootPanel
+      choices={choices}
+      plan={script.shoot ?? {}}
+      onSave={canEdit ? (shoot) => save.mutateAsync({ id: script.id, shoot }) : undefined}
+      note={
+        script.status === "approved"
+          ? t("Set with Gecko for the shoot.", "Fixé avec Gecko pour le tournage.")
+          : canEdit
+            ? t(
+                "Pick who, where and what. It saves on its own.",
+                "Choisissez qui, où et quoi. C'est enregistré tout seul.",
+              )
+            : undefined
+      }
+      empty={t(
+        "Gecko adds the talent, the sets and the props here.",
+        "Gecko ajoute ici les talents, les décors et les accessoires.",
+      )}
+    />
+  );
+}
+
 function ClientScript({ portal, script }: { portal: ClientPortal; script: Script }) {
   const note = useClientScriptNote(portal);
   const role = useClientRole();
@@ -92,6 +124,7 @@ function ClientScript({ portal, script }: { portal: ClientPortal; script: Script
         script={script}
         reader="client"
         picked={script.hook}
+        aside={<ScriptShoot portal={portal} script={script} />}
         onComment={(line, body) =>
           note.mutateAsync({
             scriptId: script.id,
@@ -103,7 +136,6 @@ function ClientScript({ portal, script }: { portal: ClientPortal; script: Script
           })
         }
       >
-        <ClientPicks portal={portal} kind="script" id={script.id} />
         <div className="concept-actions">
           {script.status !== "approved" && canApprove(role) && (
             <Button variant="secondary" onClick={() => setEditing(true)}>
@@ -170,8 +202,8 @@ function GeckoScript({
       picked={script.status === "approved" ? script.hook : picked}
       onPick={canDecide ? setPicked : undefined}
       onComment={(line, body) => send("comment", body, line)}
+      aside={<ScriptShoot portal={portal} script={script} />}
     >
-      <ClientPicks portal={portal} kind="script" id={script.id} />
       {canDecide && onEdit && (
         <div className="concept-actions">
           <Button variant="secondary" onClick={onEdit}>

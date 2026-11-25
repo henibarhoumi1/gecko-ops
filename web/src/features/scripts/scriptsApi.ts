@@ -198,6 +198,8 @@ export function useClientWriteScript(portal: ClientPortal) {
       style?: ScriptStyle;
       /** The approved idea it's written from; undefined leaves the link as it is. */
       conceptId?: string | null;
+      /** Who, where, with what; undefined leaves the plan as it is. */
+      shoot?: ShootPlan;
     }) => {
       const { data, error } = await requireSupabase().rpc("client_write_script", {
         p_workspace_id: portal.workspaceId,
@@ -223,6 +225,50 @@ export function useClientWriteScript(portal: ClientPortal) {
         });
         if (link.error) throw link.error;
       }
+      if (id && input.shoot) {
+        const plan = await requireSupabase().rpc("client_set_script_shoot", {
+          p_workspace_id: portal.workspaceId,
+          p_client_id: portal.clientId,
+          p_id: id,
+          p_shoot: input.shoot,
+        });
+        if (plan.error) throw plan.error;
+      }
+    },
+    onSettled: () =>
+      queryClient.invalidateQueries({ queryKey: ["portal", portal.workspaceId, portal.clientId] }),
+  });
+}
+
+/** Gecko changes a script's shoot plan without touching its words: no new version. */
+export function useSetScriptShoot(clientId: string) {
+  const { id: workspaceId } = useWorkspace();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { id: string; shoot: ShootPlan }) => {
+      const { error } = await requireSupabase()
+        .from("scripts")
+        .update({ shoot: input.shoot })
+        .eq("id", input.id);
+      if (error) throw error;
+    },
+    onSettled: () =>
+      queryClient.invalidateQueries({ queryKey: ["scripts", workspaceId, clientId] }),
+  });
+}
+
+/** The client changes the shoot plan of a script that's with them (review or changes). */
+export function useClientSetScriptShoot(portal: ClientPortal) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { id: string; shoot: ShootPlan }) => {
+      const { error } = await requireSupabase().rpc("client_set_script_shoot", {
+        p_workspace_id: portal.workspaceId,
+        p_client_id: portal.clientId,
+        p_id: input.id,
+        p_shoot: input.shoot,
+      });
+      if (error) throw error;
     },
     onSettled: () =>
       queryClient.invalidateQueries({ queryKey: ["portal", portal.workspaceId, portal.clientId] }),

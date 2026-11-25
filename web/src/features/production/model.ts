@@ -62,6 +62,15 @@ export interface Production {
   /** Null for a viewer. */
   budget: Budget | null;
   options: ProductionOption[];
+  /** The campaigns' sets, on the client's side (the team reads them from the set list). */
+  sets?: {
+    id: string;
+    projectId: string | null;
+    name: string;
+    notes: string;
+    photos: string[];
+    position: number;
+  }[];
 }
 
 /** Statuses where the money is spoken for. */

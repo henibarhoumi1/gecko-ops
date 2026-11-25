@@ -5,7 +5,7 @@ import type { ClientPortal } from "@/features/auth/account";
 import { percentFilled, type Answers } from "@/features/onboarding/progress";
 import type { Concept, NoteKind } from "@/features/concepts/model";
 import type { PlanId } from "@/features/plans/model";
-import type { Script } from "@/features/scripts/model";
+import type { Script, ShootPlan } from "@/features/scripts/model";
 import type { Video } from "@/features/videos/model";
 import { videosOn } from "@/lib/features";
 import { requireSupabase } from "@/lib/supabase";
@@ -113,6 +113,8 @@ export function useSaveIdea(portal: ClientPortal) {
       /** The hook line and format, like the team's ideas. */
       hook?: string;
       format?: string;
+      /** Who, where, with what; left out, it stays as it is. */
+      shoot?: ShootPlan;
     }) => {
       const { data, error } = await requireSupabase().rpc("client_save_idea", {
         p_workspace_id: portal.workspaceId,
@@ -134,6 +136,32 @@ export function useSaveIdea(portal: ClientPortal) {
         });
         if (more.error) throw more.error;
       }
+      if (id && input.shoot) {
+        const plan = await requireSupabase().rpc("client_set_idea_shoot", {
+          p_workspace_id: portal.workspaceId,
+          p_client_id: portal.clientId,
+          p_id: id,
+          p_shoot: input.shoot,
+        });
+        if (plan.error) throw plan.error;
+      }
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: key(portal) }),
+  });
+}
+
+/** The client changes the shoot plan of an idea: one of theirs, or one of Gecko's they're reviewing. */
+export function useClientSetIdeaShoot(portal: ClientPortal) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { id: string; shoot: ShootPlan }) => {
+      const { error } = await requireSupabase().rpc("client_set_idea_shoot", {
+        p_workspace_id: portal.workspaceId,
+        p_client_id: portal.clientId,
+        p_id: input.id,
+        p_shoot: input.shoot,
+      });
+      if (error) throw error;
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: key(portal) }),
   });

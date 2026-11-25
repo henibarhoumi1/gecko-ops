@@ -6,9 +6,12 @@ import { useHashScroll } from "@/lib/useHashScroll";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { toast } from "@/components/Toast";
 import { WritingTabs, useSaveKeys, type WritingTab } from "@/components/WritingTabs";
+import { ShootPanel } from "@/features/writing/ShootPanel";
+import { IdeaCard, LengthPicker, LiveShootPanel } from "@/features/writing/WriteParts";
+import { useTeamShootChoices } from "@/features/writing/useShootChoices";
+import { planCount, tidyPlan } from "@/features/writing/shootPlan";
 import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/Button";
-import { Field } from "@/components/Field";
 import { Notice } from "@/components/Notice";
 import { Select } from "@/components/Select";
 import {
@@ -39,6 +42,7 @@ import {
   useDeleteScript,
   useSaveScript,
   useScripts,
+  useSetScriptShoot,
   useSetScriptStatus,
   useTeamScriptNote,
 } from "@/features/scripts/scriptsApi";
@@ -46,7 +50,7 @@ import { friendlyError } from "@/lib/errors";
 import { useClients, useConcepts } from "./clientsApi";
 import { CreativeKit } from "@/features/scripts/CreativeKit";
 import { ShotListButton } from "@/features/scripts/ShotListButton";
-import { CleanCopy, ShootPlanPicker, useApprovedProduction } from "./ShootPlan";
+import { CleanCopy, useApprovedProduction } from "./ShootPlan";
 import { useTemplates } from "./lookApi";
 import { TextArea } from "@/components/TextArea";
 import { ApproveForClient } from "./ApproveForClient";
@@ -110,19 +114,8 @@ function TeamScript({
 }) {
   const [mode, setMode] = useState<"idle" | "edit" | "delete" | "changes" | "clean">("idle");
   const production = useApprovedProduction(clientId, script.projectId);
-  const plan = script.shoot ?? {};
-  const optionName = (id: string | null | undefined) =>
-    production.named.find((o) => o.id === id)?.name ?? "";
-  const planParts = [
-    ["Talent", (plan.talent ?? []).map(optionName).filter(Boolean).join(", ")],
-    ["Set", optionName(plan.set)],
-    [
-      "Props",
-      [...(plan.props ?? []).map(optionName), plan.extraProps?.trim() ?? ""]
-        .filter(Boolean)
-        .join(", "),
-    ],
-  ].filter(([, v]) => v);
+  const choices = useTeamShootChoices(clientId, script.projectId);
+  const setShoot = useSetScriptShoot(clientId);
   const status = useSetScriptStatus();
   const save = useSaveScript(clientId);
   const remove = useDeleteScript();
@@ -144,22 +137,23 @@ function TeamScript({
       reader="team"
       picked={script.hook}
       onComment={(line, body) => note.mutateAsync({ scriptId: script.id, line, body })}
+      aside={
+        <>
+          <LiveShootPanel
+            choices={choices}
+            plan={script.shoot ?? {}}
+            onSave={(shoot) => setShoot.mutateAsync({ id: script.id, shoot })}
+            empty="Add talent, sets and props in Production, then pick them here."
+          />
+          <TeamPicks
+            clientId={clientId}
+            kind="script"
+            id={script.id}
+            shoot={script.shoot as Record<string, unknown> | undefined}
+          />
+        </>
+      }
     >
-      <TeamPicks
-        clientId={clientId}
-        kind="script"
-        id={script.id}
-        shoot={script.shoot as Record<string, unknown> | undefined}
-      />
-      {planParts.length > 0 && (
-        <p className="small shoot-summary">
-          {planParts.map(([k, v]) => (
-            <span key={k}>
-              <strong>{k}:</strong> {v}
-            </span>
-          ))}
-        </p>
-      )}
       {mode === "clean" && (
         <CleanCopy script={script} options={production.named} onClose={() => setMode("idle")} />
       )}
@@ -337,6 +331,7 @@ function ScriptForm({
       // A script written from an idea starts with the idea's talent.
       shoot:
         script?.shoot ??
+        startIdea?.shoot ??
         ((startIdea?.talent?.length ? { talent: startIdea.talent } : {}) as ShootPlan),
     }),
   );
@@ -358,6 +353,7 @@ function ScriptForm({
   useSaveKeys(formRef);
   const clientList = useClients();
   const clientBrand = clientList.data?.find((c) => c.id === clientId)?.brand ?? "";
+  const choices = useTeamShootChoices(clientId, script?.projectId ?? null);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -375,7 +371,7 @@ function ScriptForm({
         hooks: tidyLines(draft.hooks),
         beats,
         cta: draftCta(draft),
-        shoot: { ...shoot, extraProps: (shoot.extraProps ?? "").trim() },
+        shoot: tidyPlan(shoot),
         ...(cinematic
           ? {
               treatment: tidyTreatment(
@@ -400,7 +396,6 @@ function ScriptForm({
     }
   }
 
-  const shootCount = (shoot.talent?.length ?? 0) + (shoot.set ? 1 : 0) + (shoot.props?.length ?? 0);
   const tabs: WritingTab[] = [
     {
       key: "script",
@@ -417,19 +412,6 @@ function ScriptForm({
             hookNote="write 2 or 3, the client picks"
           />
         </>
-      ),
-    },
-    {
-      key: "shoot",
-      label: "Shoot plan",
-      badge: shootCount || undefined,
-      body: (
-        <ShootPlanPicker
-          clientId={clientId}
-          projectId={script?.projectId ?? null}
-          plan={shoot}
-          onChange={setShoot}
-        />
       ),
     },
     ...(cinematic
@@ -490,32 +472,20 @@ function ScriptForm({
         />
       ),
     },
-    {
-      key: "idea",
-      label: "The idea",
-      badge: idea ? "✓" : undefined,
-      body: idea ? (
-        <div className="script-idea">
-          <p className="small">
-            <strong>{idea.title}</strong>
-            {idea.format ? ` · ${idea.format}` : ""}
-          </p>
-          {idea.hook && <p className="script-idea-hook">&ldquo;{idea.hook}&rdquo;</p>}
-          {idea.body && <p>{idea.body}</p>}
-        </div>
-      ) : (
-        <p className="muted">No idea linked. Pick one above to keep its hook and talent close.</p>
-      ),
-    },
   ];
 
   return (
-    <form ref={formRef} className="write-space script-edit" onSubmit={onSubmit}>
-      <div className="write-top">
-        <span className="eyebrow">
-          {script ? `Script · version ${script.version}` : "New script · kept on this device"}
-        </span>
-        <div className="write-actions">
+    <form ref={formRef} className="ws script-edit" onSubmit={onSubmit}>
+      <div className="ws-bar">
+        <div className="ws-where">
+          <strong>{script ? "Script" : "New script"}</strong>
+          <span>
+            {script
+              ? `Version ${script.version}${shared ? " · the client has seen it" : ""}`
+              : "Kept on this device until you save"}
+          </span>
+        </div>
+        <div className="ws-actions">
           <FocusToggle />
           <Button
             variant="link"
@@ -529,7 +499,7 @@ function ScriptForm({
           </Button>
           {script ? (
             <Button type="submit" disabled={save.isPending} aria-keyshortcuts="Meta+S">
-              Save
+              {shared ? `Save as version ${script.version + 1}` : "Save"}
             </Button>
           ) : (
             <>
@@ -555,74 +525,67 @@ function ScriptForm({
         </div>
       </div>
       {keep.restored && <DraftNotice onDiscard={keep.discard} />}
-      <input
-        className="write-title"
-        name="title"
-        aria-label="Title"
-        placeholder="Untitled script"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        maxLength={160}
-        autoFocus={!startIdea && !script}
-        required
-      />
-      <div className="write-meta">
-        <Select
-          label="Idea"
-          name="concept"
-          value={conceptId}
-          onChange={(e) => {
-            setConceptId(e.target.value);
-            const concept = approved.find((c) => c.id === e.target.value);
-            if (concept && !title.trim()) setTitle(concept.title);
-            if (concept?.hook && noWords(draft.hooks))
-              setDraft({ ...draft, hooks: [{ hear: concept.hook }, {}] });
-          }}
-          options={[["", "No idea yet"], ...approved.map((c) => [c.id, c.title] as const)]}
-        />
-        <Field
-          label="Seconds"
-          name="seconds"
-          type="number"
-          min={5}
-          max={180}
-          value={seconds}
-          onChange={(e) => setSeconds(Number(e.target.value) || 30)}
-        />
-        <p className="small write-keys" aria-hidden="true">
-          ⌘S save{script ? "" : " · ⌘↵ share"} · Alt+1–{tabs.length} sections
-        </p>
+      <div className="ws-grid">
+        <div className="ws-main">
+          <input
+            className="ws-title"
+            name="title"
+            aria-label="Title"
+            placeholder="Untitled script"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            maxLength={160}
+            autoFocus={!startIdea && !script}
+            required
+          />
+          <div className="ws-meta">
+            <Select
+              label="Written from the idea"
+              name="concept"
+              value={conceptId}
+              onChange={(e) => {
+                setConceptId(e.target.value);
+                const concept = approved.find((c) => c.id === e.target.value);
+                if (concept && !title.trim()) setTitle(concept.title);
+                if (concept?.hook && noWords(draft.hooks))
+                  setDraft({ ...draft, hooks: [{ hear: concept.hook }, {}] });
+                // The idea's plan comes along while this script has none of its own yet.
+                if (concept?.shoot && planCount(shoot) === 0) setShoot(concept.shoot);
+              }}
+              options={[["", "No idea yet"], ...approved.map((c) => [c.id, c.title] as const)]}
+            />
+            <LengthPicker value={seconds} onChange={setSeconds} />
+          </div>
+          <WritingTabs tabs={tabs} />
+          {error && <Notice tone="error">{error}</Notice>}
+          <p className="ws-keys" aria-hidden="true">
+            <kbd>⌘S</kbd> save{script ? "" : " · "}
+            {!script && <kbd>⌘↵</kbd>}
+            {!script && " share"} · <kbd>Alt</kbd>+<kbd>1</kbd>–<kbd>{tabs.length}</kbd> sections
+          </p>
+        </div>
+        <div className="ws-rail">
+          {idea && (
+            <IdeaCard
+              title={idea.title}
+              hook={idea.hook}
+              body={idea.body}
+              onUseHook={
+                noWords(draft.hooks)
+                  ? () => setDraft({ ...draft, hooks: [{ hear: idea.hook ?? "" }, {}] })
+                  : undefined
+              }
+            />
+          )}
+          <ShootPanel
+            choices={choices}
+            plan={shoot}
+            onChange={setShoot}
+            empty="Add talent, sets and props in Production, then pick them here."
+            note={shared ? "Changing who, where or what never makes a new version." : undefined}
+          />
+        </div>
       </div>
-      <div className={`write-body-grid${idea ? " has-idea" : ""}`}>
-        <WritingTabs tabs={tabs} />
-        {idea && (
-          <aside className="idea-rail" aria-label="The idea">
-            <span className="eyebrow">From the idea</span>
-            <strong dir="auto">{idea.title}</strong>
-            {idea.hook && <q dir="auto">{idea.hook}</q>}
-            {idea.body && (
-              <p className="small" dir="auto">
-                {idea.body}
-              </p>
-            )}
-            {idea.hook && noWords(draft.hooks) && (
-              <Button
-                variant="secondary"
-                onClick={() => setDraft({ ...draft, hooks: [{ hear: idea.hook ?? "" }, {}] })}
-              >
-                Use its hook
-              </Button>
-            )}
-          </aside>
-        )}
-      </div>
-      {shared && (
-        <p className="small muted">
-          The client has seen this script. Saving a change makes version {script.version + 1}, and
-          the client approves it again.
-        </p>
-      )}
-      {error && <Notice tone="error">{error}</Notice>}
     </form>
   );
 }

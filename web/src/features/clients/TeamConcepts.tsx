@@ -21,14 +21,19 @@ import {
 } from "@/features/concepts/model";
 import { friendlyError } from "@/lib/errors";
 import { ApproveForClient } from "./ApproveForClient";
-import { TalentPicker } from "./ShootPlan";
 import {
   useAddNote,
   useConcepts,
   useDeleteConcept,
   useSaveConcept,
+  useSetConceptShoot,
   useSetConceptStatus,
 } from "./clientsApi";
+import type { ShootPlan } from "@/features/scripts/model";
+import { ShootPanel } from "@/features/writing/ShootPanel";
+import { LiveShootPanel } from "@/features/writing/WriteParts";
+import { useTeamShootChoices } from "@/features/writing/useShootChoices";
+import { tidyPlan } from "@/features/writing/shootPlan";
 
 const FORMATS = Object.entries(FORMAT_LABEL) as [ConceptFormat, string][];
 
@@ -81,6 +86,8 @@ function TeamConcept({ clientId, concept }: { clientId: string; concept: Concept
   const note = useAddNote(clientId);
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const choices = useTeamShootChoices(clientId, concept.projectId ?? null);
+  const setShoot = useSetConceptShoot(clientId);
 
   const run = (action: Promise<unknown>, after: () => void = () => setMode("idle")) =>
     action.then(after, (e: unknown) => setError(friendlyError(e)));
@@ -89,8 +96,21 @@ function TeamConcept({ clientId, concept }: { clientId: string; concept: Concept
     return <ConceptForm clientId={clientId} concept={concept} onDone={() => setMode("idle")} />;
 
   return (
-    <ConceptCard concept={concept} reader="team">
-      <TeamPicks clientId={clientId} kind="concept" id={concept.id} />
+    <ConceptCard
+      concept={concept}
+      reader="team"
+      aside={
+        <>
+          <LiveShootPanel
+            choices={choices}
+            plan={concept.shoot ?? {}}
+            onSave={(shoot) => setShoot.mutateAsync({ id: concept.id, shoot })}
+            empty="Add talent, sets and props in Production, then pick them here."
+          />
+          <TeamPicks clientId={clientId} kind="concept" id={concept.id} />
+        </>
+      }
+    >
       {mode === "idle" && (
         <div className="concept-actions">
           {(concept.status === "draft" || concept.status === "idea") && (
@@ -205,7 +225,10 @@ function ConceptForm({
 }) {
   const save = useSaveConcept(clientId);
   const [error, setError] = useState("");
-  const [talent, setTalent] = useState<string[]>(concept?.talent ?? []);
+  const [shoot, setShoot] = useState<ShootPlan>(
+    concept?.shoot ?? (concept?.talent?.length ? { talent: concept.talent } : {}),
+  );
+  const choices = useTeamShootChoices(clientId, concept?.projectId ?? null);
   const shared = concept && concept.status !== "draft" && concept.status !== "idea";
   // Kept on this device while writing: closing the tab doesn't lose it.
   const formRef = useRef<HTMLFormElement>(null);
@@ -225,7 +248,7 @@ function ConceptForm({
         body: text("body"),
         refs: text("refs"),
         hook: text("hook"),
-        talent,
+        shoot: tidyPlan(shoot),
         ...(concept ? {} : { status: form.get("share") ? "review" : "draft", position }),
       });
       keep.clear();
@@ -241,10 +264,22 @@ function ConceptForm({
   }
 
   return (
-    <form ref={formRef} className="write-space concept-edit" onSubmit={onSubmit}>
-      <div className="write-top">
-        <span className="eyebrow">{concept ? "Idea" : "New idea · kept on this device"}</span>
-        <div className="write-actions">
+    <form ref={formRef} className="ws concept-edit" onSubmit={onSubmit}>
+      <div className="ws-bar">
+        <div className="ws-where">
+          <strong>{concept ? "Idea" : "New idea"}</strong>
+          <span>
+            {concept
+              ? `Version ${concept.version}${shared ? " · the client has seen it" : ""}`
+              : "Kept on this device until you save"}
+          </span>
+        </div>
+        <div className="ws-actions">
+          {!concept && (
+            <label className="ws-check">
+              <input type="checkbox" name="share" /> Share with the client now
+            </label>
+          )}
           <Button
             variant="link"
             onClick={() => {
@@ -261,83 +296,87 @@ function ConceptForm({
         </div>
       </div>
       {keep.restored && <DraftNotice onDiscard={keep.discard} />}
-      <input
-        className="write-title"
-        name="title"
-        aria-label="Title"
-        placeholder="Untitled idea"
-        defaultValue={concept?.title}
-        maxLength={160}
-        autoFocus
-        required
-      />
-      <div className="write-meta">
-        <Select
-          label="Format"
-          name="format"
-          defaultValue={concept?.format ?? "reel"}
-          options={FORMATS}
-        />
-        {!concept && (
-          <label className="check">
-            <input type="checkbox" name="share" /> Share with the client now
-          </label>
-        )}
-        <p className="small write-keys" aria-hidden="true">
-          ⌘S save · Alt+1–3 sections
-        </p>
+      <div className="ws-grid">
+        <div className="ws-main">
+          <input
+            className="ws-title"
+            name="title"
+            aria-label="Title"
+            placeholder="Untitled idea"
+            defaultValue={concept?.title}
+            maxLength={160}
+            autoFocus
+            required
+          />
+          <div className="ws-meta">
+            <Select
+              label="Format"
+              name="format"
+              defaultValue={concept?.format ?? "reel"}
+              options={FORMATS}
+            />
+          </div>
+          <WritingTabs
+            tabs={[
+              {
+                key: "idea",
+                label: "The idea",
+                body: (
+                  <div className="ws-page">
+                    {!concept && <IdeaStarters form={formRef} />}
+                    <label className="ws-hook">
+                      <span>Hook</span>
+                      <input
+                        name="hook"
+                        aria-label="Hook line: the first words of the ad"
+                        defaultValue={concept?.hook}
+                        maxLength={200}
+                        placeholder="The first words of the ad…"
+                      />
+                    </label>
+                    <textarea
+                      className="ws-body"
+                      name="body"
+                      aria-label="The idea"
+                      rows={10}
+                      defaultValue={concept?.body}
+                      maxLength={10000}
+                      placeholder="What happens, in a few lines: who, where, what we show, how it ends."
+                    />
+                  </div>
+                ),
+              },
+              {
+                key: "refs",
+                label: "References",
+                body: (
+                  <TextArea
+                    label="One link per line"
+                    name="refs"
+                    rows={4}
+                    defaultValue={concept?.refs}
+                    maxLength={2000}
+                  />
+                ),
+              },
+            ]}
+          />
+          <p className="ws-keys" aria-hidden="true">
+            <kbd>⌘S</kbd> save · <kbd>Alt</kbd>+<kbd>1</kbd>–<kbd>2</kbd> sections
+          </p>
+        </div>
+        <div className="ws-rail">
+          <ShootPanel
+            choices={choices}
+            plan={shoot}
+            onChange={setShoot}
+            empty="Add talent, sets and props in Production, then pick them here."
+            note={shared ? "Changing who, where or what never makes a new version." : undefined}
+          />
+        </div>
       </div>
-      <WritingTabs
-        tabs={[
-          {
-            key: "idea",
-            label: "The idea",
-            body: (
-              <>
-                {!concept && <IdeaStarters form={formRef} />}
-                <input
-                  className="write-hook"
-                  name="hook"
-                  aria-label="Hook line: the first words of the ad"
-                  defaultValue={concept?.hook}
-                  maxLength={200}
-                  placeholder="Hook: the first words of the ad…"
-                />
-                <textarea
-                  className="write-body"
-                  name="body"
-                  aria-label="The idea"
-                  rows={10}
-                  defaultValue={concept?.body}
-                  maxLength={10000}
-                  placeholder="What happens, in a few lines: who, where, what we show, how it ends."
-                />
-              </>
-            ),
-          },
-          {
-            key: "talent",
-            label: "Talent",
-            badge: talent.length || undefined,
-            body: <TalentPicker clientId={clientId} value={talent} onChange={setTalent} />,
-          },
-          {
-            key: "refs",
-            label: "References",
-            body: (
-              <TextArea
-                label="One link per line"
-                name="refs"
-                rows={4}
-                defaultValue={concept?.refs}
-                maxLength={2000}
-              />
-            ),
-          },
-        ]}
-      />
       {shared && (
-        <p className="small muted">
+        <p className="small muted ws-foot">
           Changing the title, format, hook, idea or references makes a new version, and the client
           approves it again.
         </p>

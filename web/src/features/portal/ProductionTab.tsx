@@ -19,8 +19,10 @@ import {
   wouldGoOver,
   type Budget,
   type OptionKind,
+  type Production,
   type ProductionOption,
 } from "@/features/production/model";
+import { ChoicePhoto } from "@/features/writing/ShootPanel";
 import {
   useClientProduction,
   useMyProduction,
@@ -147,7 +149,45 @@ export function ProductionTab({
         budget={budget}
       />
       <Group title={t("Passed", "Écarté")} items={passed} portal={portal} budget={budget} />
+      {kind === "location" && <ClientSets sets={page.data.sets ?? []} />}
     </section>
+  );
+}
+
+/** The sets the videos are shot on, as the team sees them: one card each, with photos, in shooting order. */
+function ClientSets({ sets }: { sets: NonNullable<Production["sets"]> }) {
+  if (sets.length === 0) return null;
+  const list = [...sets].sort((a, b) => a.position - b.position || a.name.localeCompare(b.name));
+  return (
+    <div className="group set-list is-client">
+      <h2>
+        {t("Sets", "Décors")} <span className="count">{list.length}</span>
+      </h2>
+      <p className="small muted set-list-lede">
+        {t(
+          "The setups each video is shot on. Pick them beside every idea and script.",
+          "Les décors de chaque vidéo. Choisissez-les à côté de chaque idée et de chaque script.",
+        )}
+      </p>
+      <ol className="set-cards">
+        {list.map((s, i) => (
+          <li key={s.id} className="set-card">
+            <span className="set-cover">
+              <ChoicePhoto path={s.photos[0]} name={s.name} />
+              <span className="set-order">{i + 1}</span>
+            </span>
+            <span className="set-body">
+              <strong dir="auto">{s.name}</strong>
+              {s.notes && (
+                <span className="set-notes" dir="auto">
+                  {s.notes}
+                </span>
+              )}
+            </span>
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 }
 

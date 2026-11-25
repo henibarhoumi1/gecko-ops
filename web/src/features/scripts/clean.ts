@@ -1,4 +1,5 @@
 import type { ProductionOption } from "@/features/production/model";
+import { planSets } from "@/features/writing/shootPlan";
 import { hookName, partLabel, STYLE_LABEL, type Script, type ScriptLine } from "./model";
 
 /** The final script as plain text: the chosen hook (or every option), the parts in order, the shoot plan. */
@@ -27,10 +28,11 @@ export function cleanText(
     ...(plan.props ?? []).map(name).filter(Boolean),
     plan.extraProps?.trim() ?? "",
   ].filter(Boolean);
+  const sets = planSets(plan).map(name).filter(Boolean);
   if (talent.length) out.push(`Talent: ${talent.join(", ")}`);
-  if (name(plan.set)) out.push(`Set: ${name(plan.set)}`);
+  if (sets.length) out.push(`${sets.length > 1 ? "Sets" : "Set"}: ${sets.join(", ")}`);
   if (props.length) out.push(`Props: ${props.join(", ")}`);
-  if (talent.length || name(plan.set) || props.length) out.push("");
+  if (talent.length || sets.length || props.length) out.push("");
   const picked = script.status === "approved" && script.hook != null ? script.hook : null;
   script.hooks.forEach((h, i) => {
     if (picked == null || picked === i) line(picked == null ? hookName(i) : "Hook", h);

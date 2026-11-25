@@ -113,9 +113,12 @@ export interface ScriptNote {
   createdAt: string;
 }
 
-/** Who plays it, where, with what: picked from the client's approved production options. Team only. */
+/** Who plays it, where, with what: the client's talent, the campaign's sets, the approved props. Both sides. */
 export interface ShootPlan {
   talent?: string[];
+  /** Every set it's shot on, in order. */
+  sets?: string[];
+  /** The first set, kept for older readers (shoot days, plans saved before sets became a list). */
   set?: string | null;
   props?: string[];
   /** Anything else to bring, in plain words. */
@@ -126,7 +129,7 @@ export interface Script extends ScriptContent {
   id: string;
   /** The project the script belongs to; missing on a database without projects yet. */
   projectId?: string | null;
-  /** Team side only; missing on the client's side and on a database without it yet. */
+  /** Who, where, with what. Missing on a database without it yet. */
   shoot?: ShootPlan;
   conceptId: string | null;
   position: number;
