@@ -12870,9 +12870,13 @@ $$;
 -- 3. Talent, sets and props on any shared script or idea, approved ones included. That's logistics: no new
 --    version, nothing to re-approve.
 -- 4. Which idea a script comes from, on any shared script.
--- Drafts Gecko hasn't shared stay Gecko's. Viewers still read only. Same signatures: replaces the functions.
+-- Drafts Gecko hasn't shared stay Gecko's. Viewers still read only.
+--
+-- Expand only: the app that is live today keeps calling the old functions (client_write_script, client_save_idea,
+-- client_set_idea_details, client_set_*_shoot, client_set_script_idea) with their old rules, untouched. The new
+-- app calls the client_edit_* functions below. The old ones can go in a later contract step.
 
-create or replace function public.client_write_script(
+create function public.client_edit_script(
   p_workspace_id uuid, p_client_id text, p_id uuid, p_title text, p_seconds integer, p_goal text,
   p_hooks jsonb, p_beats jsonb, p_cta text, p_treatment jsonb, p_style text default null
 )
@@ -12895,23 +12899,7 @@ begin
   who := left(coalesce(nullif(trim(acc.display_name), ''), acc.email), 120);
   perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended('gecko.write.' || acc.id::text, 0));
   begin
-    if p_id is null then
-      if (select count(*) from public.scripts x
-          where x.workspace_id = p_workspace_id and x.client_id = p_client_id and x.written_by = 'client'
-            and x.created_at > now() - interval '1 hour') >= 20 then
-        raise exception 'feedback_rate_limited';
-      end if;
-      insert into public.scripts(workspace_id, client_id, title, style, seconds, goal, hooks, beats, cta, treatment,
-        position, status, written_by, created_by, author_name)
-      values (p_workspace_id, p_client_id, trim(coalesce(p_title, '')), coalesce(p_style, 'other'), coalesce(p_seconds, 30),
-        trim(coalesce(p_goal, '')), coalesce(p_hooks, '[]'), coalesce(p_beats, '[]'), trim(coalesce(p_cta, '')),
-        coalesce(p_treatment, '{}'),
-        coalesce((select max(x.position) + 1 from public.scripts x
-                  where x.workspace_id = p_workspace_id and x.client_id = p_client_id), 0),
-        'review', 'client', (select auth.uid()), who)
-      returning * into s;
-      return public.script_to_json(s);
-    end if;
+    if p_id is null then raise exception 'script_locked'; end if;
     select * into s from public.scripts
     where id = p_id and workspace_id = p_workspace_id and client_id = p_client_id for update;
     -- Any script the client can see: theirs, or Gecko's once shared (review, changes, approved).
@@ -12949,7 +12937,7 @@ begin
 end
 $$;
 
-create or replace function public.client_set_script_shoot(p_workspace_id uuid, p_client_id text, p_id uuid, p_shoot jsonb)
+create function public.client_edit_script_shoot(p_workspace_id uuid, p_client_id text, p_id uuid, p_shoot jsonb)
 returns jsonb
 language plpgsql
 security definer
@@ -12975,7 +12963,7 @@ begin
 end
 $$;
 
-create or replace function public.client_set_script_idea(
+create function public.client_edit_script_idea(
   p_workspace_id uuid, p_client_id text, p_script_id uuid, p_concept_id uuid
 )
 returns void
@@ -13005,7 +12993,7 @@ end
 $$;
 
 -- An idea the client may edit: their own (any stage), or Gecko's once shared, by an owner or approver.
-create or replace function public.client_may_edit_idea(c public.concepts, acc public.client_accounts)
+create function public.client_may_edit_idea(c public.concepts, acc public.client_accounts)
 returns boolean
 language sql
 stable
@@ -13016,7 +13004,7 @@ as $$
 $$;
 revoke all on function public.client_may_edit_idea(public.concepts, public.client_accounts) from public, anon;
 
-create or replace function public.client_save_idea(
+create function public.client_edit_idea(
   p_workspace_id uuid, p_client_id text, p_id uuid, p_title text, p_body text, p_refs text
 )
 returns jsonb
@@ -13038,20 +13026,7 @@ begin
     raise exception 'invalid_idea';
   end if;
   who := left(coalesce(nullif(trim(acc.display_name), ''), acc.email), 120);
-  if p_id is null then
-    perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended('gecko.ideas.' || acc.id::text, 0));
-    if (select count(*) from public.concepts x
-        where x.workspace_id = p_workspace_id and x.client_id = p_client_id and x.from_client) >= 200 then
-      raise exception 'too_many_ideas';
-    end if;
-    insert into public.concepts(workspace_id, client_id, title, body, refs, position, from_client, status, created_by, author_name)
-    values (p_workspace_id, p_client_id, trim(p_title), coalesce(p_body, ''), coalesce(p_refs, ''),
-      coalesce((select max(x.position) + 1 from public.concepts x
-        where x.workspace_id = p_workspace_id and x.client_id = p_client_id), 0),
-      true, 'idea', (select auth.uid()), who)
-    returning * into c;
-    return public.concept_to_json(c);
-  end if;
+  if p_id is null then raise exception 'invalid_idea'; end if;
 
   select * into c from public.concepts
   where id = p_id and workspace_id = p_workspace_id and client_id = p_client_id for update;
@@ -13078,7 +13053,7 @@ begin
 end
 $$;
 
-create or replace function public.client_set_idea_details(
+create function public.client_edit_idea_details(
   p_workspace_id uuid, p_client_id text, p_id uuid, p_hook text, p_format text
 )
 returns void
@@ -13115,7 +13090,7 @@ begin
 end
 $$;
 
-create or replace function public.client_set_idea_shoot(p_workspace_id uuid, p_client_id text, p_id uuid, p_shoot jsonb)
+create function public.client_edit_idea_shoot(p_workspace_id uuid, p_client_id text, p_id uuid, p_shoot jsonb)
 returns void
 language plpgsql
 security definer
@@ -13138,3 +13113,16 @@ begin
   update public.concepts set shoot = public.shoot_plan_tidy(p_shoot) where id = c.id;
 end
 $$;
+
+revoke all on function public.client_edit_script(uuid, text, uuid, text, integer, text, jsonb, jsonb, text, jsonb, text) from public, anon;
+revoke all on function public.client_edit_script_shoot(uuid, text, uuid, jsonb) from public, anon;
+revoke all on function public.client_edit_script_idea(uuid, text, uuid, uuid) from public, anon;
+revoke all on function public.client_edit_idea(uuid, text, uuid, text, text, text) from public, anon;
+revoke all on function public.client_edit_idea_details(uuid, text, uuid, text, text) from public, anon;
+revoke all on function public.client_edit_idea_shoot(uuid, text, uuid, jsonb) from public, anon;
+grant execute on function public.client_edit_script(uuid, text, uuid, text, integer, text, jsonb, jsonb, text, jsonb, text) to authenticated;
+grant execute on function public.client_edit_script_shoot(uuid, text, uuid, jsonb) to authenticated;
+grant execute on function public.client_edit_script_idea(uuid, text, uuid, uuid) to authenticated;
+grant execute on function public.client_edit_idea(uuid, text, uuid, text, text, text) to authenticated;
+grant execute on function public.client_edit_idea_details(uuid, text, uuid, text, text) to authenticated;
+grant execute on function public.client_edit_idea_shoot(uuid, text, uuid, jsonb) to authenticated;

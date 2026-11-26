@@ -76,12 +76,11 @@ select extensions.is(
 );
 
 select pg_temp.act_as('00000000-0000-4000-8000-000000000006', 'nour@client.test');
-reset role;
-select extensions.is(
-  (select status from public.scripts where id = (select id from pg_temp.ids where who = 'mine')),
-  'approved', 'the approved version stays approved until someone edits it'
+select extensions.throws_ok(
+  $$select public.client_write_script('10000000-0000-4000-8000-000000000001', 'c-at', (select id from pg_temp.ids where who = 'mine'),
+      'Night walk!', 45, '', '[]', '[]', '', '{}')$$,
+  'script_locked', 'an approved version is locked'
 );
-set local role authenticated;
 
 -- Gecko rewrites a client version: it becomes Gecko's and goes back to the client
 select pg_temp.act_as('00000000-0000-4000-8000-000000000001', 'founder@local.test');

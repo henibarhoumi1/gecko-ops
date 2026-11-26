@@ -201,23 +201,27 @@ export function useClientWriteScript(portal: ClientPortal) {
       /** Who, where, with what; undefined leaves the plan as it is. */
       shoot?: ShootPlan;
     }) => {
-      const { data, error } = await requireSupabase().rpc("client_write_script", {
-        p_workspace_id: portal.workspaceId,
-        p_client_id: portal.clientId,
-        p_id: input.id,
-        p_title: input.title,
-        p_seconds: input.seconds,
-        p_goal: input.goal,
-        p_hooks: input.hooks,
-        p_beats: input.beats,
-        p_cta: input.cta,
-        p_treatment: input.treatment,
-        ...(input.style ? { p_style: input.style } : {}),
-      });
+      // New scripts go through client_write_script; edits through client_edit_script, which works at every stage.
+      const { data, error } = await requireSupabase().rpc(
+        input.id ? "client_edit_script" : "client_write_script",
+        {
+          p_workspace_id: portal.workspaceId,
+          p_client_id: portal.clientId,
+          p_id: input.id,
+          p_title: input.title,
+          p_seconds: input.seconds,
+          p_goal: input.goal,
+          p_hooks: input.hooks,
+          p_beats: input.beats,
+          p_cta: input.cta,
+          p_treatment: input.treatment,
+          ...(input.style ? { p_style: input.style } : {}),
+        },
+      );
       if (error) throw error;
       const id = (data as { id?: string } | null)?.id;
       if (id && input.conceptId !== undefined) {
-        const link = await requireSupabase().rpc("client_set_script_idea", {
+        const link = await requireSupabase().rpc("client_edit_script_idea", {
           p_workspace_id: portal.workspaceId,
           p_client_id: portal.clientId,
           p_script_id: id,
@@ -226,7 +230,7 @@ export function useClientWriteScript(portal: ClientPortal) {
         if (link.error) throw link.error;
       }
       if (id && input.shoot) {
-        const plan = await requireSupabase().rpc("client_set_script_shoot", {
+        const plan = await requireSupabase().rpc("client_edit_script_shoot", {
           p_workspace_id: portal.workspaceId,
           p_client_id: portal.clientId,
           p_id: id,
@@ -257,12 +261,12 @@ export function useSetScriptShoot(clientId: string) {
   });
 }
 
-/** The client changes the shoot plan of a script that's with them (review or changes). */
+/** The client changes the shoot plan of a script, at any stage once it's shared (approved included). */
 export function useClientSetScriptShoot(portal: ClientPortal) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (input: { id: string; shoot: ShootPlan }) => {
-      const { error } = await requireSupabase().rpc("client_set_script_shoot", {
+      const { error } = await requireSupabase().rpc("client_edit_script_shoot", {
         p_workspace_id: portal.workspaceId,
         p_client_id: portal.clientId,
         p_id: input.id,

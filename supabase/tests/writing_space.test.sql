@@ -89,10 +89,10 @@ select extensions.throws_ok(
     '{"sets":["30000000-0000-4000-8000-0000000000f3"]}')$$,
   'P0001', 'invalid_shoot_plan', 'another client''s set is refused'
 );
-select extensions.lives_ok(
+select extensions.throws_ok(
   $$select public.client_set_script_shoot('10000000-0000-4000-8000-0000000000f1', 'c-w', '40000000-0000-4000-8000-0000000000f2',
     '{"sets":["30000000-0000-4000-8000-0000000000f2"]}')$$,
-  'the client changes the sets of an approved script too (26 Nov: always editable)'
+  'P0001', 'script_locked', 'an approved script''s plan stays with Gecko'
 );
 select pg_temp.act_as('00000000-0000-4000-8000-0000000000f3', 'viewer@ws-brand.test');
 select extensions.throws_ok(
@@ -127,9 +127,9 @@ select extensions.lives_ok(
     '{"talent":["20000000-0000-4000-8000-0000000000f1"]}')$$,
   'the client plans an idea Gecko sent them while they review it'
 );
-select extensions.lives_ok(
+select extensions.throws_ok(
   $$select public.client_set_idea_shoot('10000000-0000-4000-8000-0000000000f1', 'c-w', '50000000-0000-4000-8000-0000000000f3', '{}')$$,
-  'and the plan of an approved idea'
+  'P0001', 'invalid_idea', 'an approved idea''s plan stays with Gecko'
 );
 reset role;
 
