@@ -41,10 +41,10 @@ select extensions.throws_ok(
   $$select public.client_set_script_idea('10000000-0000-4000-8000-000000000c71', 'c-i',
       '20000000-0000-4000-8000-000000000c71', '30000000-0000-4000-8000-000000000c72')$$,
   'concept_not_found', 'not from a team draft');
-select extensions.throws_ok(
+select extensions.lives_ok(
   $$select public.client_set_script_idea('10000000-0000-4000-8000-000000000c71', 'c-i',
       '20000000-0000-4000-8000-000000000c72', null)$$,
-  'script_locked', 'and not on an approved script');
+  'and on an approved script too');
 select pg_temp.act_as('00000000-0000-4000-8000-000000000c73');
 select extensions.throws_ok(
   $$select public.client_set_script_idea('10000000-0000-4000-8000-000000000c71', 'c-i',

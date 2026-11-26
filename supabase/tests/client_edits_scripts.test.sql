@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select extensions.plan(5);
+select extensions.plan(7);
 
 insert into auth.users (id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at) values
   ('00000000-0000-4000-8000-000000000801', 'authenticated', 'authenticated', 'founder@edit.test', '', now(), '{}', '{}', now(), now()),
@@ -48,11 +48,20 @@ select extensions.lives_ok(
   $$select public.client_script_note('10000000-0000-4000-8000-000000000801', 'c-ed', '30000000-0000-4000-8000-000000000801', 'approve', '', 2, null, 0)$$,
   'the client approves their edited version');
 
--- An approved script is locked; a viewer cannot edit.
-select extensions.throws_ok(
+-- An approved script stays editable: the edit is a new version that goes back for one approval, with a note.
+select extensions.lives_ok(
   $$select public.client_write_script('10000000-0000-4000-8000-000000000801', 'c-ed', '30000000-0000-4000-8000-000000000802',
     'Approved', 30, '', '[]', '[]', 'Changed', '{}')$$,
-  'P0001', 'script_locked', 'an approved script cannot be edited');
+  'an approved script can still be edited');
+reset role;
+select extensions.is(
+  (select status || ' ' || coalesce(approved_version::text, 'none') from public.scripts where id = '30000000-0000-4000-8000-000000000802'),
+  'review none', 'and goes back to the client for one approval');
+select extensions.is(
+  (select body from public.script_notes where script_id = '30000000-0000-4000-8000-000000000802' order by created_at desc limit 1),
+  'Edited the approved script (version 2). It needs one more approval.', 'with a note the team sees');
+set local role authenticated;
+-- A viewer cannot edit.
 select pg_temp.act_as('00000000-0000-4000-8000-000000000803');
 select extensions.throws_ok(
   $$select public.client_write_script('10000000-0000-4000-8000-000000000801', 'c-ed', '30000000-0000-4000-8000-000000000801',

@@ -125,15 +125,16 @@ export function ConceptsTab({ portal, concepts }: { portal: ClientPortal; concep
   );
 }
 
-/** Who, which sets, which props: the same panel Gecko sees, editable while the idea is with the client. */
+/** Who, which sets, which props: the same panel Gecko sees, editable at every stage (26 Nov: always editable). */
 function IdeaShoot({ portal, concept }: { portal: ClientPortal; concept: Concept }) {
   const role = useClientRole();
   const choices = useClientShootChoices(portal, concept.projectId ?? null);
   const save = useClientSetIdeaShoot(portal);
   const open =
-    (concept.status === "idea" && concept.fromClient) ||
+    concept.fromClient ||
     concept.status === "review" ||
-    concept.status === "changes";
+    concept.status === "changes" ||
+    concept.status === "approved";
   const canEdit = open && canApprove(role) && !previewRole();
   return (
     <LiveShootPanel
@@ -159,13 +160,28 @@ function IdeaShoot({ portal, concept }: { portal: ClientPortal; concept: Concept
 function ClientActions({ portal, concept }: { portal: ClientPortal; concept: Concept }) {
   const note = useConceptNote(portal);
   const role = useClientRole();
-  // An approved idea: the client can write its script too.
+  const [editing, setEditing] = useState(false);
+  const canEdit = canApprove(role) && !previewRole();
+  if (editing) return <IdeaForm portal={portal} idea={concept} onDone={() => setEditing(false)} />;
+  const edit = canEdit ? (
+    <Button variant="secondary" onClick={() => setEditing(true)}>
+      {t("Edit", "Modifier")}
+    </Button>
+  ) : null;
+  // An approved idea: the client can write its script too, and still change the idea.
   if (concept.status === "approved" && canApprove(role))
     return (
       <div className="concept-actions">
         <Link className="btn" to={`/scripts?idea=${concept.id}`}>
           {t("Write the script", "Écrire le script")}
         </Link>
+        {edit}
+        <p className="small decide-note">
+          {t(
+            "You can still change it. A change makes a new version that needs one more approval.",
+            "Vous pouvez encore la modifier. Une modification crée une nouvelle version à valider une fois de plus.",
+          )}
+        </p>
         <ReviewActions
           canDecide={false}
           pending={note.isPending}
@@ -177,17 +193,20 @@ function ClientActions({ portal, concept }: { portal: ClientPortal; concept: Con
       </div>
     );
   return (
-    <ReviewActions
-      canDecide={concept.status === "review" || concept.status === "changes"}
-      pending={note.isPending}
-      approveNote={t(
-        `You're approving version ${concept.version} of "${concept.title}". Gecko goes ahead with it as written.`,
-        `Vous validez la version ${concept.version} de « ${concept.title} ». Gecko avance avec, tel quel.`,
-      )}
-      onSend={(kind, body) =>
-        note.mutateAsync({ conceptId: concept.id, kind, body, version: concept.version })
-      }
-    />
+    <>
+      {edit && <div className="concept-actions">{edit}</div>}
+      <ReviewActions
+        canDecide={concept.status === "review" || concept.status === "changes"}
+        pending={note.isPending}
+        approveNote={t(
+          `You're approving version ${concept.version} of "${concept.title}". Gecko goes ahead with it as written.`,
+          `Vous validez la version ${concept.version} de « ${concept.title} ». Gecko avance avec, tel quel.`,
+        )}
+        onSend={(kind, body) =>
+          note.mutateAsync({ conceptId: concept.id, kind, body, version: concept.version })
+        }
+      />
+    </>
   );
 }
 

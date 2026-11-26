@@ -82,12 +82,12 @@ export function ScriptsTab({
   );
 }
 
-/** Who, which sets, which props: the same panel Gecko sees, editable while the script is with the client. */
+/** Who, which sets, which props: the same panel Gecko sees, editable at every stage (26 Nov: always editable). */
 function ScriptShoot({ portal, script }: { portal: ClientPortal; script: Script }) {
   const role = useClientRole();
   const choices = useClientShootChoices(portal, script.projectId ?? null);
   const save = useClientSetScriptShoot(portal);
-  const open = (script.status === "review" || script.status === "changes") && canApprove(role);
+  const open = (byClient(script) || script.status !== "draft") && canApprove(role);
   const canEdit = open && !previewRole();
   return (
     <LiveShootPanel
@@ -95,14 +95,19 @@ function ScriptShoot({ portal, script }: { portal: ClientPortal; script: Script 
       plan={script.shoot ?? {}}
       onSave={canEdit ? (shoot) => save.mutateAsync({ id: script.id, shoot }) : undefined}
       note={
-        script.status === "approved"
-          ? t("Set with Gecko for the shoot.", "Fixé avec Gecko pour le tournage.")
-          : canEdit
-            ? t(
-                "Pick who, where and what. It saves on its own.",
-                "Choisissez qui, où et quoi. C'est enregistré tout seul.",
-              )
-            : undefined
+        canEdit && script.status === "approved"
+          ? t(
+              "Approved. You can still change who, where and what: Gecko sees it right away.",
+              "Validé. Vous pouvez encore changer qui, où et quoi : Gecko le voit tout de suite.",
+            )
+          : script.status === "approved"
+            ? t("Set with Gecko for the shoot.", "Fixé avec Gecko pour le tournage.")
+            : canEdit
+              ? t(
+                  "Pick who, where and what. It saves on its own.",
+                  "Choisissez qui, où et quoi. C'est enregistré tout seul.",
+                )
+              : undefined
       }
       empty={t(
         "Gecko adds the talent, the sets and the props here.",
@@ -137,7 +142,7 @@ function ClientScript({ portal, script }: { portal: ClientPortal; script: Script
         }
       >
         <div className="concept-actions">
-          {script.status !== "approved" && canApprove(role) && (
+          {canApprove(role) && (
             <Button variant="secondary" onClick={() => setEditing(true)}>
               {t("Edit", "Modifier")}
             </Button>
@@ -145,8 +150,8 @@ function ClientScript({ portal, script }: { portal: ClientPortal; script: Script
           <p className="small muted decide-note">
             {script.status === "approved"
               ? t(
-                  "Gecko approved this version. It's what we shoot.",
-                  "Gecko a validé cette version. C'est ce qu'on tourne.",
+                  "Gecko approved this version. You can still edit it: the change goes to Gecko for one more approval.",
+                  "Gecko a validé cette version. Vous pouvez encore la modifier : Gecko valide la nouvelle version.",
                 )
               : t(
                   "Gecko reads it and approves it or suggests changes.",
@@ -164,7 +169,7 @@ function ClientScript({ portal, script }: { portal: ClientPortal; script: Script
       portal={portal}
       script={script}
       note={note}
-      onEdit={canApprove(role) ? () => setEditing(true) : undefined}
+      onEdit={canApprove(role) && !previewRole() ? () => setEditing(true) : undefined}
     />
   );
 }
@@ -178,7 +183,7 @@ function GeckoScript({
   portal: ClientPortal;
   script: Script;
   note: ReturnType<typeof useClientScriptNote>;
-  /** Owners and approvers can rewrite the script themselves while it's with them. */
+  /** Owners and approvers can rewrite the script themselves, at any stage. */
   onEdit?: () => void;
 }) {
   const canDecide = script.status === "review" || script.status === "changes";
@@ -204,16 +209,21 @@ function GeckoScript({
       onComment={(line, body) => send("comment", body, line)}
       aside={<ScriptShoot portal={portal} script={script} />}
     >
-      {canDecide && onEdit && (
+      {onEdit && (
         <div className="concept-actions">
           <Button variant="secondary" onClick={onEdit}>
             {t("Edit the script", "Modifier le script")}
           </Button>
           <p className="small decide-note">
-            {t(
-              "Change the words yourself. It saves as a new version that Gecko sees, and you can approve it.",
-              "Changez les mots vous-même. C'est enregistré comme nouvelle version, Gecko la voit, et vous pouvez la valider.",
-            )}
+            {script.status === "approved"
+              ? t(
+                  "Approved, and still yours to change. An edit saves as a new version that Gecko sees; approve it again and it's the one we shoot.",
+                  "Validé, et toujours modifiable. Une modification crée une nouvelle version que Gecko voit ; validez-la à nouveau et c'est celle qu'on tourne.",
+                )
+              : t(
+                  "Change the words yourself. It saves as a new version that Gecko sees, and you can approve it.",
+                  "Changez les mots vous-même. C'est enregistré comme nouvelle version, Gecko la voit, et vous pouvez la valider.",
+                )}
           </p>
         </div>
       )}
