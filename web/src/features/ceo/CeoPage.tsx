@@ -1,6 +1,7 @@
 // The CEO cockpit (Heni, 23 Nov 2026: "tools for the CEO"). Founder only.
 // The month's goal and how far along it is, money in and owed, the weighted pipeline, each client's health with
 // the reasons, the pipeline as a funnel, and a weekly report ready for WhatsApp.
+import { GoArrow } from "@/components/GoArrow";
 import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
@@ -324,17 +325,22 @@ export function CeoPage() {
           <div className="today-section-head">
             <h2>Pipeline</h2>
             <Link className="small" to="/pipeline">
-              Open →
+              Open <GoArrow />
             </Link>
           </div>
           <ol className="ceo-funnel">
             {funnel.map((x) => (
               <li key={x.step}>
                 <span className="small">{STAGE_LABEL[x.step]}</span>
-                <span className="ceo-funnel-bar">
-                  <span style={{ width: `${Math.max(4, (x.count / widest) * 100)}%` }}>
-                    {x.count}
+                <span className={`ceo-funnel-bar${x.count === 0 ? " is-zero" : ""}`}>
+                  <span
+                    style={{
+                      width: x.count === 0 ? 0 : `${Math.max(6, (x.count / widest) * 100)}%`,
+                    }}
+                  >
+                    {x.count > 0 ? x.count : null}
                   </span>
+                  {x.count === 0 && <b className="ceo-funnel-zero">0</b>}
                 </span>
                 <span className="small">{x.value ? dt(x.value) : ""}</span>
               </li>

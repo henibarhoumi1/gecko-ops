@@ -1,4 +1,5 @@
 import { Link, useParams } from "react-router-dom";
+import { GoArrow } from "@/components/GoArrow";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import type { ClientPortal } from "@/features/auth/account";
@@ -54,7 +55,7 @@ export function MoneyTab({ portal }: { portal: ClientPortal }) {
       <section className="tab-body">
         <div className="inv-toolbar no-print">
           <Link to="/money" className="small">
-            ← {t("All invoices", "Toutes les factures")}
+            <GoArrow back /> {t("All invoices", "Toutes les factures")}
           </Link>
           <Button onClick={() => printInvoice(invoice)}>
             {t("Download PDF", "Télécharger en PDF")}

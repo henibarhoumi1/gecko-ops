@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { GoArrow } from "@/components/GoArrow";
 import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
@@ -453,7 +454,9 @@ function PostScreen({
   return (
     <section className="tab-body results">
       <p className="small">
-        <Link to={base}>← {words.results()}</Link>
+        <Link to={base}>
+          <GoArrow back /> {words.results()}
+        </Link>
       </p>
       <h2 className="screen-title" dir="auto">
         {post.title}

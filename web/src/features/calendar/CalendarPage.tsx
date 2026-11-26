@@ -1,6 +1,7 @@
 // The studio calendar (Heni, 23 Nov 2026): a month at a time, every shoot, first-draft date, milestone, invoice
 // due and lead follow-up on one grid. Click a day to see it, click an entry to open it. Everyone sees shoots;
 // the founder and producers also see money and leads.
+import { GoArrow } from "@/components/GoArrow";
 import { useMemo, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/Button";
@@ -161,7 +162,7 @@ export function CalendarPage() {
         </div>
         <div className="cal-nav">
           <Button variant="secondary" onClick={() => move(-1)} aria-label="Previous month">
-            ←
+            <GoArrow back />
           </Button>
           <Button
             variant="secondary"
@@ -173,7 +174,7 @@ export function CalendarPage() {
             Today
           </Button>
           <Button variant="secondary" onClick={() => move(1)} aria-label="Next month">
-            →
+            <GoArrow />
           </Button>
         </div>
       </header>

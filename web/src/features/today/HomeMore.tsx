@@ -1,6 +1,7 @@
 // More on Home (Heni, 23 Nov 2026: "home needs some real work, right now it's just dates and a lead list").
 // Every client's campaign at a glance, what clients just did, who on the team has what, and (founder) money.
 // All from data the app already reads; nothing new is stored.
+import { GoArrow } from "@/components/GoArrow";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { describeAction, useAlerts } from "@/features/alerts/alertsApi";
@@ -48,7 +49,7 @@ export function CampaignBoard({ founder }: { founder: boolean }) {
           Campaigns <span className="today-count">{list.length}</span>
         </h2>
         <Link className="small" to="/clients">
-          All clients →
+          All clients <GoArrow />
         </Link>
       </div>
       <ul className="home-campaign-list">
@@ -131,7 +132,7 @@ export function ClientActivity() {
       <div className="today-section-head">
         <h2>What clients did</h2>
         <Link className="small" to="/alerts">
-          All →
+          All <GoArrow />
         </Link>
       </div>
       {alerts.isPending ? (
@@ -193,7 +194,7 @@ export function TeamLoad({ today }: { today: string }) {
           The team <span className="today-count">{people.length}</span>
         </h2>
         <Link className="small" to="/team">
-          Team →
+          Team <GoArrow />
         </Link>
       </div>
       <ul className="home-team">
@@ -307,7 +308,7 @@ export function DoNext({ items }: { items: NextItem[] }) {
                 </a>
               ) : (
                 <Link className="btn btn-primary do-next-go" to={it.action.to ?? "/"}>
-                  {it.action.label} →
+                  {it.action.label} <GoArrow />
                 </Link>
               )}
             </li>

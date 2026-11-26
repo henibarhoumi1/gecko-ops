@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { GoArrow } from "@/components/GoArrow";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import { friendlyError } from "@/lib/errors";
@@ -76,7 +77,7 @@ export function ProjectsStrip({
                     onOpen(p.id);
                   }}
                 >
-                  Open campaign →
+                  Open campaign <GoArrow />
                 </button>
               ) : (
                 <button

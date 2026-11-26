@@ -1,4 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState, type CSSProperties } from "react";
+import { GoArrow } from "@/components/GoArrow";
 import { Icon } from "@/components/Icon";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
@@ -203,7 +204,7 @@ export function OnboardingForm({ target, brand, mode, canFinish = false }: Props
           <div className="ob-foot">
             {index > 0 ? (
               <Button variant="secondary" onClick={() => go(sections[index - 1]!.id)}>
-                ← {say(sections[index - 1]!.name)}
+                <GoArrow back /> {say(sections[index - 1]!.name)}
               </Button>
             ) : (
               <span />
@@ -217,7 +218,7 @@ export function OnboardingForm({ target, brand, mode, canFinish = false }: Props
                 : mode === "team"
                   ? "Summary"
                   : t("Review and send", "Relire et envoyer")}{" "}
-              →
+              <GoArrow />
             </Button>
           </div>
         </section>
@@ -319,7 +320,7 @@ function SendPart({
       )}
       <div className="ob-foot">
         <Button variant="secondary" onClick={() => onGo(sections[sections.length - 1]!.id)}>
-          ← {say(sections[sections.length - 1]!.name)}
+          <GoArrow back /> {say(sections[sections.length - 1]!.name)}
         </Button>
         {mode === "team" ? (
           <Button onClick={() => void onCopy()}>Copy answers</Button>

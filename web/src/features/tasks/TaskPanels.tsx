@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { GoArrow } from "@/components/GoArrow";
 import { Notice } from "@/components/Notice";
 import type { ClientPortal } from "@/features/auth/account";
 import { useClientRole } from "@/features/portal/role";
@@ -140,7 +141,9 @@ export function HomeTasks({ portal }: { portal: { workspaceId: string; clientId:
         }
       />
       <p className="small">
-        <Link to="/tasks">{t("All tasks", "Toutes les tâches")} →</Link>
+        <Link to="/tasks">
+          {t("All tasks", "Toutes les tâches")} <GoArrow />
+        </Link>
       </p>
     </section>
   );

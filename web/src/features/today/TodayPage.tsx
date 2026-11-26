@@ -1,4 +1,5 @@
 import { TodayTasks } from "@/features/tasks/TaskPanels";
+import { GoArrow } from "@/components/GoArrow";
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/Button";
@@ -188,7 +189,9 @@ function LeadsToday({ founder }: { founder: boolean }) {
               First drafts for {nextDrafts.brand} due {when(nextDrafts.date, t.today).toLowerCase()}
             </span>
           )}
-          <span className="today-next-go">Open Shoot Day →</span>
+          <span className="today-next-go">
+            Open Shoot Day <GoArrow />
+          </span>
         </Link>
       ) : (
         <p className="today-next today-next-empty">

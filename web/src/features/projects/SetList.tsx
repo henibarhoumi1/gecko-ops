@@ -1,4 +1,5 @@
 import { useMemo, useState, type FormEvent } from "react";
+import { GoArrow } from "@/components/GoArrow";
 import { Button } from "@/components/Button";
 import { Field } from "@/components/Field";
 import { Notice } from "@/components/Notice";
@@ -114,7 +115,7 @@ export function SetList({ clientId }: { clientId: string }) {
                     disabled={i === 0}
                     onClick={() => move(i, -1)}
                   >
-                    ←
+                    <GoArrow back />
                   </Button>
                   <Button
                     variant="link"
@@ -122,7 +123,7 @@ export function SetList({ clientId }: { clientId: string }) {
                     disabled={i === sets.length - 1}
                     onClick={() => move(i, 1)}
                   >
-                    →
+                    <GoArrow />
                   </Button>
                   <Button
                     variant="link"

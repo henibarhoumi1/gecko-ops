@@ -1,5 +1,6 @@
 // Notifications (Heni, 24 Nov 2026): a bell in the sidebar with what clients did (approved, asked for changes,
 // commented) since you last looked, refreshed every minute. Founder and producers.
+import { GoArrow } from "@/components/GoArrow";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
@@ -125,7 +126,7 @@ function BellInner() {
                 From clients{unread > 0 && <span className="bell-count">{unread} new</span>}
               </strong>
               <Link to="/alerts" className="bell-all" onClick={() => setOpen(false)}>
-                All alerts →
+                All alerts <GoArrow />
               </Link>
             </div>
             {items.length === 0 ? (

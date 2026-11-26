@@ -87,9 +87,18 @@ export function ClientsPage() {
             <li key={client.id} className="client-li">
               <Link to={`/clients/${client.id}`} className="card client-row">
                 <span className="client-row-top">
-                  {logos.data?.[client.id] && (
-                    <img className="client-row-logo" src={logos.data[client.id]} alt="" />
-                  )}
+                  <span className="client-row-mark" aria-hidden="true">
+                    {logos.data?.[client.id] ? (
+                      <img className="client-row-logo" src={logos.data[client.id]} alt="" />
+                    ) : (
+                      client.brand
+                        .split(/\s+/)
+                        .map((w) => w[0] ?? "")
+                        .join("")
+                        .slice(0, 2)
+                        .toUpperCase()
+                    )}
+                  </span>
                   <strong>{client.brand}</strong>
                   {forGecko.length > 0 && <span className="tag tag-pink">Needs Gecko</span>}
                 </span>

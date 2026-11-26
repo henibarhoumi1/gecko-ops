@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { GoArrow } from "@/components/GoArrow";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
@@ -205,7 +206,7 @@ function InvoiceScreen({
     <section className="tab-body">
       <div className="inv-toolbar">
         <Link to={base} className="small">
-          ← All invoices
+          <GoArrow back /> All invoices
         </Link>
         <Button variant="secondary" onClick={() => printInvoice(shown)}>
           {invoice.status === "draft" ? "Print a proof" : "Download PDF"}

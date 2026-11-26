@@ -1,3 +1,4 @@
+import { GoArrow } from "@/components/GoArrow";
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/Button";
@@ -204,7 +205,7 @@ function TaskRow({
         {task.private && <span className="task-private">Team only</span>}
         {link && (
           <Link to={link} className="task-link">
-            {t("Open", "Ouvrir")} →
+            {t("Open", "Ouvrir")} <GoArrow />
           </Link>
         )}
         {onEdit && (
