@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { GoArrow } from "@/components/GoArrow";
 import { Link, Route, Routes, useParams } from "react-router-dom";
 import { Notice } from "@/components/Notice";
 import { useClients } from "@/features/clients/clientsApi";
@@ -88,7 +89,9 @@ function ClientShoot() {
   return (
     <section className="page wide">
       <p className="small">
-        <Link to="/shoots">← Shoots</Link>
+        <Link to="/shoots">
+          <GoArrow back /> Shoots
+        </Link>
       </p>
       <h1>{brand || "Shoot day"}</h1>
       <ShootScreen target={target} base={`/shoots/${encodeURIComponent(clientId)}`} brand={brand} />

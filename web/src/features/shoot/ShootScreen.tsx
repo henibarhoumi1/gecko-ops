@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from "react";
+import { GoArrow } from "@/components/GoArrow";
 import { CallSheetDocButton } from "./CallSheetDoc";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/Button";
@@ -271,7 +272,9 @@ function DayView({
     <section className="tab-body shoot shoot-day">
       {offline && <OfflineNote target={target} />}
       <p className="small">
-        <Link to={base}>← {t("All shoot days", "Tous les tournages")}</Link>
+        <Link to={base}>
+          <GoArrow back /> {t("All shoot days", "Tous les tournages")}
+        </Link>
       </p>
 
       {editing ? (

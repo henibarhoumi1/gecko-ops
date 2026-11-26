@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { GoArrow } from "@/components/GoArrow";
 import { toast } from "@/components/Toast";
 import { afterCall, callScript, OUTCOME_LABEL, type CallOutcome } from "./calls";
 import type { LeadPatch } from "./leadsApi";
@@ -84,7 +85,7 @@ export function CallPanel({
                 disabled={step === 0}
                 onClick={() => setStep(step - 1)}
               >
-                ← Back
+                <GoArrow back /> Back
               </button>
               <button
                 type="button"
@@ -92,7 +93,7 @@ export function CallPanel({
                 disabled={step === script.length - 1}
                 onClick={() => setStep(step + 1)}
               >
-                Next →
+                Next <GoArrow />
               </button>
             </div>
           </div>

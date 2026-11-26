@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { GoArrow } from "@/components/GoArrow";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
 import type { Member } from "@/features/workspace/members";
@@ -383,7 +384,7 @@ export function OutreachSession({
                 ))}
               </select>
               <Button variant="link" onClick={() => setAt((n) => n + 1)}>
-                Skip →
+                Skip <GoArrow />
               </Button>
             </div>
             <p className="small">

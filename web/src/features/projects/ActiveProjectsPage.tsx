@@ -1,6 +1,7 @@
 // Active projects (Heni, 24 Nov 2026): every running campaign across clients on one page — where it is, what's
 // next and when, what waits on the client — so nothing is forgotten between clients. Open one to land in its
 // workspace.
+import { GoArrow } from "@/components/GoArrow";
 import { useQueries } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -189,7 +190,7 @@ export function ActiveProjectsPage() {
                   )}
                 </span>
                 <span className="ap-open" aria-hidden="true">
-                  Open →
+                  Open <GoArrow />
                 </span>
               </button>
             );

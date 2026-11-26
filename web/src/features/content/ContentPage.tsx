@@ -1,5 +1,6 @@
 // Gecko's own content and ads (Heni, 24 Nov 2026). A board for Gecko's posts from idea to posted, and ad
 // campaigns with spend and results (entered from Meta / TikTok) so cost per lead and per click are always there.
+import { GoArrow } from "@/components/GoArrow";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/Button";
@@ -287,7 +288,7 @@ function Board({ canEdit }: { canEdit: boolean }) {
                         onClick={() => move(p, -1)}
                         aria-label="Back a step"
                       >
-                        ←
+                        <GoArrow back />
                       </button>
                       <button
                         type="button"
@@ -306,7 +307,7 @@ function Board({ canEdit }: { canEdit: boolean }) {
                         onClick={() => move(p, 1)}
                         aria-label="Next step"
                       >
-                        →
+                        <GoArrow />
                       </button>
                     </div>
                   )}

@@ -1542,3 +1542,115 @@ a[href*="airbnb."]::before {
     text-align: center;
   }
 }
+
+/* The client's pages use the same width as the team's (they were a narrower column of 1008 px in the middle,
+   which cut the writing room's lanes). */
+@media (min-width: 900px) {
+  .portal-v2 .portal-page {
+    width: 100%;
+    max-width: var(--page-max, 1320px);
+    margin-inline: auto;
+    padding-inline: clamp(20px, 3vw, 56px);
+  }
+}
+
+/* Studio tools: the quiet stat tiles on the same blue as every other quiet surface (they were a grey). */
+.gt-stat:not(.is-ink):not(.is-pink) {
+  background: var(--quiet);
+}
+
+/* The writing room hides a lane with nothing in it on wide screens, so the lanes that have work get the room
+   (the counts line above the board still says "0 being written"). */
+@media (min-width: 1200px) {
+  .room-board {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+  }
+  .room-board > .room-lane.is-empty {
+    display: none;
+  }
+}
+
+/* Clients: every card carries the brand's mark (its logo, or its initials on a quiet tile). */
+.client-row-mark {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--quiet);
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.client-row-mark:has(img) {
+  background: #fff;
+  box-shadow: 0 0 0 1px var(--hair);
+}
+.client-row-mark .client-row-logo {
+  max-width: 36px;
+  max-height: 36px;
+}
+.client-row-top strong {
+  font-size: var(--t-l);
+}
+.client-row {
+  gap: 6px;
+  padding: 18px 20px;
+}
+.client-row > .small {
+  padding-left: 56px;
+}
+
+/* CEO: a short card sits at its own height next to a tall one, instead of stretching into empty space. */
+.ceo .today-cols {
+  align-items: start;
+}
+
+/* The arrow on "Open", "All clients" and the like: a drawn arrow, not a text character. */
+.go-arrow {
+  display: inline-block;
+  flex: none;
+  width: 0.95em;
+  height: 0.95em;
+  margin-left: 0.3em;
+  vertical-align: -0.12em;
+  transition: translate 140ms var(--ease, ease);
+}
+a:hover > .go-arrow,
+button:hover > .go-arrow {
+  translate: 2px 0;
+}
+.go-arrow.is-back {
+  margin-right: 0.3em;
+  margin-left: 0;
+}
+a:hover > .go-arrow.is-back,
+button:hover > .go-arrow.is-back {
+  translate: -2px 0;
+}
+/* The same drawn arrow on the client home's links (it was a text "→" added by CSS). */
+.home-link strong::after {
+  content: "";
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  margin-left: 0.35em;
+  vertical-align: -0.1em;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8h9.5M8.5 4l4 4-4 4' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8h9.5M8.5 4l4 4-4 4' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+
+/* Home clock: the seconds in black, smaller, not grey. */
+.live-sec {
+  color: var(--ink);
+  opacity: 1;
+  font-size: 0.32em;
+  font-weight: 700;
+}

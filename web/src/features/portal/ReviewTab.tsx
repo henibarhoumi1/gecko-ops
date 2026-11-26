@@ -1,4 +1,5 @@
 import { StageList } from "@/components/StageList";
+import { GoArrow } from "@/components/GoArrow";
 import { useState, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/Button";
@@ -104,7 +105,9 @@ function ClientScreening({ portal, cut }: { portal: ClientPortal; cut: Cut }) {
   return (
     <section className="tab-body">
       <p className="small">
-        <Link to="/review">← {words.review()}</Link>
+        <Link to="/review">
+          <GoArrow back /> {words.review()}
+        </Link>
       </p>
       <h2 className="screen-title" dir="auto">
         {cut.title}

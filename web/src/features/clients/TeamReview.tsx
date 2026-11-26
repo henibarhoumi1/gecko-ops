@@ -1,4 +1,5 @@
 import { StageList } from "@/components/StageList";
+import { GoArrow } from "@/components/GoArrow";
 import { useMemo, useState, type FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/Button";
@@ -147,7 +148,9 @@ function TeamScreening({
   return (
     <section className="tab-body">
       <p className="small">
-        <Link to={base}>← All cuts</Link>
+        <Link to={base}>
+          <GoArrow back /> All cuts
+        </Link>
       </p>
       <h2 className="screen-title" dir="auto">
         {cut.title}

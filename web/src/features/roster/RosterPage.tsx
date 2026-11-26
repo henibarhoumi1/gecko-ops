@@ -1,4 +1,5 @@
 import { useMemo, useState, type FormEvent } from "react";
+import { GoArrow } from "@/components/GoArrow";
 import { ImageDrop } from "@/components/ImageDrop";
 import { Button } from "@/components/Button";
 import { ItemMenu } from "@/components/ItemMenu";
@@ -329,7 +330,7 @@ export function RosterPage({ kind }: { kind: RosterKind }) {
                     }
                   >
                     {c.brand}
-                    <span aria-hidden="true">→</span>
+                    <GoArrow />
                   </button>
                 </li>
               ))}

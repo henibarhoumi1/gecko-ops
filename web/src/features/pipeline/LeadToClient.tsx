@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { GoArrow } from "@/components/GoArrow";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/Button";
 import { Notice } from "@/components/Notice";
@@ -26,7 +27,9 @@ export function LeadToClient({ lead }: { lead: Lead }) {
     return (
       <p className="lead-client small">
         Client since it was won ·{" "}
-        <Link to={`/clients/${encodeURIComponent(lead.client_id)}`}>Open the client →</Link>
+        <Link to={`/clients/${encodeURIComponent(lead.client_id)}`}>
+          Open the client <GoArrow />
+        </Link>
       </p>
     );
   if (role !== "founder" && role !== "sales") return null;

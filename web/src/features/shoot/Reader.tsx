@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { GoArrow } from "@/components/GoArrow";
 import { Button } from "@/components/Button";
 import { t } from "@/lib/i18n";
 import {
@@ -242,7 +243,7 @@ export function Reader({
                   onClick={() => go(index - 1)}
                   disabled={index === 0}
                 >
-                  ← {t("Back", "Retour")}
+                  <GoArrow back /> {t("Back", "Retour")}
                 </button>
                 {canTick && (
                   <button type="button" className="reader-btn" onClick={() => setEditing(line.key)}>
