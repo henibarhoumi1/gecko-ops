@@ -331,10 +331,15 @@ export function CeoPage() {
             {funnel.map((x) => (
               <li key={x.step}>
                 <span className="small">{STAGE_LABEL[x.step]}</span>
-                <span className="ceo-funnel-bar">
-                  <span style={{ width: `${Math.max(4, (x.count / widest) * 100)}%` }}>
-                    {x.count}
+                <span className={`ceo-funnel-bar${x.count === 0 ? " is-zero" : ""}`}>
+                  <span
+                    style={{
+                      width: x.count === 0 ? 0 : `${Math.max(6, (x.count / widest) * 100)}%`,
+                    }}
+                  >
+                    {x.count > 0 ? x.count : null}
                   </span>
+                  {x.count === 0 && <b className="ceo-funnel-zero">0</b>}
                 </span>
                 <span className="small">{x.value ? dt(x.value) : ""}</span>
               </li>

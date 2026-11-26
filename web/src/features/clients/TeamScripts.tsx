@@ -81,7 +81,7 @@ export function TeamScripts({ clientId }: { clientId: string }) {
 
   return (
     <StageList
-      lede="One script per reel, built Hook → Lead → Body → CTA. Pick the idea and a template; write two or three hooks so the client can pick. Once approved, a script is locked: editing it sends a new version back to the client."
+      lede="One script per reel, built Hook → Lead → Body → CTA. Pick the idea and a template; write two or three hooks so the client can pick. Approved scripts stay editable, by Gecko and by the client: an edit makes a new version that needs one more approval."
       action={<Button onClick={() => setAdding(true)}>New script</Button>}
       form={
         adding ? (
