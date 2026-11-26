@@ -116,18 +116,22 @@ export function useSaveIdea(portal: ClientPortal) {
       /** Who, where, with what; left out, it stays as it is. */
       shoot?: ShootPlan;
     }) => {
-      const { data, error } = await requireSupabase().rpc("client_save_idea", {
-        p_workspace_id: portal.workspaceId,
-        p_client_id: portal.clientId,
-        p_id: input.id,
-        p_title: input.title,
-        p_body: input.body,
-        p_refs: input.refs,
-      });
+      // New ideas go through client_save_idea; edits through client_edit_idea, which works at every stage.
+      const { data, error } = await requireSupabase().rpc(
+        input.id ? "client_edit_idea" : "client_save_idea",
+        {
+          p_workspace_id: portal.workspaceId,
+          p_client_id: portal.clientId,
+          p_id: input.id,
+          p_title: input.title,
+          p_body: input.body,
+          p_refs: input.refs,
+        },
+      );
       if (error) throw error;
       const id = (data as { id?: string } | null)?.id;
       if (id && (input.hook !== undefined || input.format !== undefined)) {
-        const more = await requireSupabase().rpc("client_set_idea_details", {
+        const more = await requireSupabase().rpc("client_edit_idea_details", {
           p_workspace_id: portal.workspaceId,
           p_client_id: portal.clientId,
           p_id: id,
@@ -137,7 +141,7 @@ export function useSaveIdea(portal: ClientPortal) {
         if (more.error) throw more.error;
       }
       if (id && input.shoot) {
-        const plan = await requireSupabase().rpc("client_set_idea_shoot", {
+        const plan = await requireSupabase().rpc("client_edit_idea_shoot", {
           p_workspace_id: portal.workspaceId,
           p_client_id: portal.clientId,
           p_id: id,
@@ -150,12 +154,12 @@ export function useSaveIdea(portal: ClientPortal) {
   });
 }
 
-/** The client changes the shoot plan of an idea: one of theirs, or one of Gecko's they're reviewing. */
+/** The client changes the shoot plan of an idea: one of theirs, or one of Gecko's once shared, approved included. */
 export function useClientSetIdeaShoot(portal: ClientPortal) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (input: { id: string; shoot: ShootPlan }) => {
-      const { error } = await requireSupabase().rpc("client_set_idea_shoot", {
+      const { error } = await requireSupabase().rpc("client_edit_idea_shoot", {
         p_workspace_id: portal.workspaceId,
         p_client_id: portal.clientId,
         p_id: input.id,
